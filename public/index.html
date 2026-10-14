@@ -8236,7 +8236,7 @@ function tutbDone78(){try{return localStorage.getItem(TUTB_KEY78)==='1'}catch(e)
 function tutbMark78(){try{localStorage.setItem(TUTB_KEY78,'1')}catch(e){}}
 tutEnd=(f=>function(silent){const k=TUT&&TUT.kind;const r=f.apply(this,arguments);if(k==='battle'){tutbMark78();document.body.classList.remove('tut-forced')}return r})(tutEnd);
 renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!tutbDone78()&&B&&!B.done&&!TUT&&!B.tut78){B.tut78=1;TUTB='run';
-  setTimeout(()=>{if(!B||B.done||TUT)return;tutStart(TUT_BATTLE,'battle');if(TUT){TUT.forced=true;document.body.classList.add('tut-forced')}},450)}}catch(e){}return r})(renderBattle);
+  setTimeout(()=>{if(typeof tutOffer79==='function')tutOffer79()},450)}}catch(e){}return r})(renderBattle);
 document.addEventListener('keydown',e=>{if(TUT&&TUT.forced&&e.key==='Escape')e.stopImmediatePropagation()},true);
 (function(){const st=document.createElement('style');st.textContent=`body.tut-forced #coach .co-x{display:none}#coach .co-bub{max-width:380px}#coach .co-bub p{line-height:1.6}`;document.body.appendChild(st)})();
 /* 초반 직원 작업량 하향: 1일차 직원 작업이 과하다는 평가 반영. 환상체가 하나뿐인 1일차는 직원이 거의 손대지 않게 한다. */
@@ -8385,7 +8385,7 @@ details.cb77:not([open]){padding:10px 12px}
 // --- 8. 튜토리얼: 슬롯 화면 기준으로 다시 쓴다 ---
 TUT_BATTLE.length=0;
 TUT_BATTLE.push(
- {t:'전투는 이렇게 흘러간다',b:'한 턴은 <b>① 슬롯 확인 → ② 카드 배치 → ③ [전투 개시]</b>다. 개시하면 <b>속도가 빠른 슬롯부터</b> 차례로 움직인다. 적의 체력을 0으로 만들면 이긴다.<br>평소 화면에는 꼭 필요한 것만 보이고, 자세한 내용은 <b>슬롯을 눌러</b> 확인한다.'},
+ {t:'전투는 이렇게 흘러간다',b:'언제든 오른쪽 위 [건너뛰기]로 끝낼 수 있다.<br>한 턴은 <b>① 슬롯 확인 → ② 카드 배치 → ③ [전투 개시]</b>다. 개시하면 <b>속도가 빠른 슬롯부터</b> 차례로 움직인다. 적의 체력을 0으로 만들면 이긴다.<br>평소 화면에는 꼭 필요한 것만 보이고, 자세한 내용은 <b>슬롯을 눌러</b> 확인한다.'},
  {sel:'#panel .lb-fo .lb-slots',t:'① 적의 슬롯',b:'적 머리 위 칸 하나가 <b>이번 턴 적의 공격 하나</b>다.<br>· 숫자 = <b>속도</b> (클수록 먼저)<br>· 점 = <b>코인</b> 수 (많을수록 강하다)<br>· <b style="color:#ff7a6e">빨간 테두리</b> = 아직 아무도 막지 않은 공격<br>슬롯을 누르면 <b>화면 위쪽</b>에 그 공격의 <b>스킬 이름 · 위력 · 코인</b>과 노리는 대상이 뜬다.'},
  {sel:'#panel .lb-fo .lb-bar.hp',t:'적의 체력과 흐트러짐',b:'막대 위 <b>세로선</b>까지 깎으면 적이 <b>흐트러진다</b> — 다음 턴 행동하지 못하고 <b>피해를 2배</b>로 받는다.'},
  {sel:'#panel .lb-fo .eu-i',t:'적 정보',b:'적 이름 아래 <b>[적 정보]</b>를 누르면 그 적의 <b>모든 스킬 · 패시브 · 내성</b>을 한 번에 본다. 처음 만나는 적이면 먼저 열어 보자.'},
@@ -8400,6 +8400,21 @@ TUT_BATTLE.push(
  {t:'적도 강해진다',b:'적의 슬롯도 늘어난다.<br>· 체력이 <b>절반 이하</b>로 몰리면 +1<br>· WAW 이상은 싸움이 <b>4턴</b>을 넘기면 +1<br>· 보스는 <b>페이즈</b>가 바뀔 때마다 행동이 늘어난다<br>슬롯이 늘기 전에 흐트러뜨리거나 끝내는 것이 좋다.'},
  {sel:'#autoBtn',t:'자동 배정',b:'헷갈리면 맡겨도 된다. 이길 확률이 높은 쪽으로 알아서 놓는다. 그다음 불리한 슬롯만 눌러 손보면 된다.'},
  {sel:'#goBtn',t:'⑥ 전투 개시',b:'준비가 끝나면 누른다. 결과는 아래 <b>전투 기록</b>에 남는다. 규칙은 위쪽 <b>[전투 방법]</b>에서 언제든 다시 볼 수 있다.',last:1});
+
+// --- 9. 첫 전투 튜토리얼: 강제 대신 권장 ---
+function tutOffer79(){if(!B||B.done||TUT||B.offer79)return;if(document.querySelector('.pop'))return setTimeout(tutOffer79,600);B.offer79=1;
+  popup('전투가 처음인가요?',`<div class="c76"><p>슬롯 읽는 법, 카드 내는 법, 합이 이기고 지는 규칙을 실제 화면에서 짚어 준다. <b>처음이라면 꼭 보는 것을 권한다.</b> (약 1분)</p>
+   <div class="row"><button class="btn" id="to79y" type="button">튜토리얼 보기 (권장)</button><button class="btn ghost" id="to79n" type="button">건너뛰기</button></div>
+   <p class="note">나중에 전투 화면 위쪽 [전투 방법]에서 다시 볼 수 있다.</p></div>`,b=>{
+    b.querySelector('#to79y').onclick=()=>{closePop();setTimeout(()=>{if(B&&!B.done)tutStart(TUT_BATTLE,'battle')},150)};
+    b.querySelector('#to79n').onclick=()=>{closePop();tutbMark78()}})}
+
+// --- 10. 타이틀: PC 권장 안내 ---
+function pcNote79(){try{const t=document.querySelector('#app .title');if(!t||t.querySelector('#pc79'))return;const lead=t.querySelector('.lead');
+  const p=document.createElement('p');p.id='pc79';p.className='pc79';p.innerHTML='<b>PC 권장</b> 이 게임은 PC 화면에 맞춰 만들어졌다. 모바일에서도 할 수 있지만, 전투와 관리 화면은 넓은 PC 화면에서 훨씬 보기 편하다.';
+  (lead||t.querySelector('h1')||t.firstChild).insertAdjacentElement('afterend',p)}catch(e){}}
+renderTitle=(f=>function(){const r=f.apply(this,arguments);pcNote79();return r})(renderTitle);setTimeout(pcNote79,0);
+(function(){const st=document.createElement('style');st.textContent=`.pc79{margin:0;font-size:14px;color:var(--fg2,#c9c4b8);background:var(--panel,#1a2225);border-radius:2px;padding:10px 12px;line-height:1.6}.pc79 b{display:inline-block;margin-right:8px;padding:1px 8px;border-radius:2px;background:#e3a43c;color:#141414;font-size:12.5px}`;document.body.appendChild(st)})();
 </script>
 
 </body></html>
