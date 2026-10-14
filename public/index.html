@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Lobotomy Corporation 팬메이드 관리 RPG"><meta name="theme-color" content="#12181a"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Project Moon 팬메이드 비공식·비영리 게임"><meta name="theme-color" content="#12181a"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>L사 지부 근무일지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600&display=swap">
@@ -1404,7 +1404,7 @@ function renderTitle(){
   <div class="field"><span class="lbl">출신</span><div class="seg" id="org">${[['nest','둥지 출신','정돈된 교육. 지혜·절제가 높다.'],['back','뒷골목 출신','밤을 버텨낸 몸. 용기·정의가 높다.'],['out','외곽 출신','아무것도 믿지 않는 눈. 고르게 단단하다.']].map(([k,n,d])=>`<button data-k="${k}" aria-pressed="${sel.origin===k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
   <p class="note">배치 부서: 지휘팀 (1일차에 열려 있는 유일한 부서). 이후 열리는 부서로 옮길 수 있다.</p>
   <div class="row"><button class="btn" id="go">입사한다</button></div></div>
-  <p class="note">팬메이드 비공식 게임. 세계관·환상체·장비·세피라 이름은 Project Moon의 Lobotomy Corporation, Limbus Company에서 가져왔고 문장은 모두 새로 썼다. 환상체 98종(도구형 17종, 미등장·구버전 14종 포함): 이름·식별 번호·등급은 나무위키 등급별 문서와 대조했고, 한국어 E.G.O 이름을 확인하지 못한 것은 「환상체명 E.G.O」로 표기했다.</p></div>`;
+  <p class="note fan-note">Project Moon의 Lobotomy Corporation을 바탕으로 한 비공식 팬메이드 게임.<br>원작 및 Project Moon과 직접적인 관련이 없으며, 비영리로 제작됨.</p></div>`;
   const seg=(id,key)=>$('#'+id).querySelectorAll('button').forEach(b=>b.onclick=()=>{sel[key]=b.dataset.k;$('#'+id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   seg('org','origin');
   if($('#cont'))$('#cont').onclick=()=>{G=sv;AB.forEach(a=>{if(!G.ab[a.id])G.ab[a.id]={cnt:a.cnt,pe:0,obs:0,works:0,melt:0,dept:null,day:0}});G.toolUse=G.toolUse||{};G.birdsToday=G.birdsToday||[];G.min=G.min??540;migrateInv();AID=G.agents.length+5;render();resumePhase()};
@@ -3117,7 +3117,7 @@ function startBattle(kind,opt){
   G.phase='ordeal';
   blog(`■ ${opt.title} · 출동: ${allies.map(a=>a.n).join(', ')}`,'bh');
   if(opt.queenJoined)blog(`"악당이 나타났어? 정의의 이름으로!" ${ABM.queen.n}이(가) 격리실을 박차고 나와 합류했다.`,'bh');
-  if(ABM[opt.ab]&&ABM[opt.ab].lim)blog('림버스 컴퍼니 관찰일지의 기믹이 반영된 전투다.','b');
+  if(ABM[opt.ab]&&ABM[opt.ab].lim)
   if(kind==='gen'&&B.units[0].gim)blog(`이 환상체의 기믹: ${GIMN[B.units[0].gim]}.`,'b');
   TAB='work';render();newTurn();
 }
@@ -3228,7 +3228,7 @@ function renderBattle(){
   if(B.ammo>0){tools.push(`<button class="btn ghost" data-am="hp">HP-N 탄환 (${B.ammo})</button><button class="btn ghost" data-am="sp">SP-E 탄환 (${B.ammo})</button>`);if(B.shieldOk)tools.push(`<button class="btn ghost" data-am="sh">보호막 탄환 (${B.ammo})</button>`)}
   if(B.slow>0)tools.push(`<button class="btn ghost" id="slowBtn">감속 탄환 (${B.slow})</button>`);
   setPanel(B.opt.title,'',[],
-  `<div class="bf"><details class="help"><summary>전투 규칙 요약 (림버스식 합)</summary>
+  `<div class="bf"><details class="help"><summary>전투 규칙 요약</summary>
   각 <b>적 공격</b> 아래의 버튼으로 대응한다. <b>합</b>: 코인을 던져 위력을 비교하고, 진 쪽이 코인을 하나 잃는다. 끝까지 코인이 남은 쪽만 공격한다. 합은 <b>나를 노리는 공격</b>이나 <b>나보다 느린 공격</b>과만 가능하다(“대신”). <b>수비</b>는 내가 표적일 때만. 대응 없는 공격은 표적이 그대로 맞는다. 정신력이 높을수록 코인 앞면 확률이 오른다(50+SP%). 체력 바의 노란 선은 흐트러짐 지점. 처음엔 자동 배정되어 있으니 바로 <b>전투 개시</b>를 눌러도 된다.</details>
   <div class="sec"><div class="lbl">적</div><div class="units">${units}</div></div>
   <div class="sec"><div class="lbl">적의 공격 (빠른 순) · 버튼으로 대응을 고른다</div>${rows}</div>
@@ -5314,7 +5314,7 @@ const _afaV48=attackFromAlly;attackFromAlly=function(a,s,coins,target,clashes){
 const _etV48=endTurn;endTurn=function(){if(B)for(const a of B.allies){if(a.dead)continue;for(const k of ['fairy','spore']){const f=a.st[k];if(f&&f.p>0){dmgAlly(a,f.p,'PALE',STN[k],0);f.p=Math.floor(f.p/2);if(!f.p)delete a.st[k]}}}return _etV48()};
 // 적 정보 창: 라오루 기믹 설명
 const _euiV48=eUnitInfo;eUnitInfo=function(u){_euiV48(u);if(!u.lor||!POP)return;const b=POP.querySelector('.einfo');if(!b)return;const L=(u.lorPass||[]);
-  b.insertAdjacentHTML('afterbegin',`<div class="lbl" style="margin-bottom:4px">패시브</div><ul>${L.map(([n,t])=>`<li><b>${n}</b> — ${t}</li>`).join('')||'<li>없음</li>'}${u.heart!=null&&u.form.heart?`<li>따뜻한 심장 ${u.heart}</li>`:''}</ul><p class="mut">이름·기믹: 라이브러리 오브 루이나 · 코인·효과 수치: 림버스 컴퍼니 방식 자체 설계</p>`)};
+  b.insertAdjacentHTML('afterbegin',`<div class="lbl" style="margin-bottom:4px">패시브</div><ul>${L.map(([n,t])=>`<li><b>${n}</b> — ${t}</li>`).join('')||'<li>없음</li>'}${u.heart!=null&&u.form.heart?`<li>따뜻한 심장 ${u.heart}</li>`:''}</ul>`)};
 /* ---------- 붉은 안개 · 조율자: 라오루 책장으로 교체 (페이즈는 감정 단계에 대응) ---------- */
 const RM_LOR=[
  {n:'붉은 안개',cres:{RED:1,WHITE:1,BLACK:1,PALE:1},spd:[7,8],acts:3,line:'"최강의 해결사. 그 이름을 다시 증명하지."',
@@ -7274,7 +7274,7 @@ abPop=(f=>function(a){f(a);try{if(!a||a.tool)return;const b=POP&&POP.querySelect
   const recH=rec?rec.map((t,k)=>ob>=k+1?`<p>${k+1}. ${t}</p>`:`<p class="note">${k+1}. 관찰 ${ROMAN[k+1]}에서 열린다</p>`).join(''):'<p class="note">남아 있는 기록이 없다.</p>';
   const rule=NOCNT60.has(a.id)?'클리포트 카운터가 없다 (원작). 다른 방식으로 관리한다.':(CRT60[a.id]||'결과 나쁨 -1 (기록이 부족해 기본 규칙을 따른다)');
   const ruleH=(i.e||i.m[0]||i.m[1])?`<p>${rule}</p>`:'<p class="note">관리 방법 또는 탈출 정보를 해금하면 공개된다.</p>';
-  anchor.insertAdjacentHTML('afterend',`<div class="isec"><span class="lbl">클리포트 카운터 규칙</span>${ruleH}</div><div class="isec"><span class="lbl">환상체 기록</span>${recH}<p class="note">나무위키 도감의 내용을 요약해 다시 쓴 것이다.</p></div>`)}catch(e){}})(abPop);
+  anchor.insertAdjacentHTML('afterend',`<div class="isec"><span class="lbl">클리포트 카운터 규칙</span>${ruleH}</div><div class="isec"><span class="lbl">환상체 기록</span>${recH}</div>`)}catch(e){}})(abPop);
 
 /* ================= v61: 침묵의 대가 — 라이브러리 오브 루이나 접대를 바탕으로 추론한 전투 기믹 ================= */
 // 흐르는 시간(30초 제한·아군 위력 +3) · 쌓이는 시간(매 막 시간의 흔적, 4체 넘치면 폭발) · 멈출 수 없는 시간(12막 안에 흔적 12체 처치 → 흐트러짐, 실패 시 13막 필연적인 파멸) · 당신의 시간(흔적이 사서의 속도와 직전 책장을 따라 함)
@@ -7324,7 +7324,7 @@ let SILLAST=Date.now();setInterval(()=>{const now=Date.now(),dt=now-SILLAST;SILL
 (function(){const a=ABM.silence;if(!a)return;a.fight='silence';a.breach=true;a.gim=null;
   a.d=['시곗바늘과 종을 품은 형체. 늘 무언가를 세고 있다. (구버전 환상체)','시간은 그 앞에서 고르게 흐르지 않는다. 남겨진 흔적들이 일한 사람의 몸짓을 그대로 따라 한다.','열세 번째 종이 울리기 전에 흔적을 모두 지워야 한다. 침묵을 택하면 시간은 멈추지만, 그 값은 몸으로 치른다.'];
   REC60.silence=['종이 열두 번 울리는 동안 아무도 그것을 건드릴 수 없었다.','흔적은 직원의 걸음과 손놀림을 한 박자 늦게 흉내 냈다.','열세 번째 종소리가 울린 뒤의 기록은 대부분 지워져 있다.'];
-  CRT60.silence='나무위키 관리 정보 없음 — 결과 나쁨 -1 (기본 규칙). 카운터가 0이 되면 탈출한다.'})();
+  CRT60.silence='결과 나쁨 -1 (기본 규칙). 카운터가 0이 되면 탈출한다.'})();
 
 /* ================= v62 ================= */
 /* --- A. 침묵의 대가: 작업 기믹 (라이브러리 오브 루이나 접대를 바탕으로 추론) ---
@@ -7339,7 +7339,7 @@ function silBell(){const T=silTr();
   if(T.list.length){log(`[13번째 종소리] 종이 울렸다. 지우지 못한 시간의 흔적 ${T.list.length}개가 무너진다.`,'hurt');const L=T.list.splice(0);L.forEach(id=>{cAdj(id,-1,'13번째 종소리');cAdj('silence',-1,'13번째 종소리')})}
   else{log('[13번째 종소리] 종이 울렸다. 지울 흔적이 하나도 없다. 시설이 잠시 고요해진다. (모두 정신력 +5)','good');cAdj('silence',1,'흔적 없는 종소리');addSp(5);G.agents.forEach(x=>{if(x.alive)x.sp=Math.min(45,x.sp+5)})}}
 CR60.silence=x=>{BAD60(x);if(x.res==='good'&&!silTr().list.length)x.add(1,'흔적 없는 고요')};
-CRT60.silence='결과 나쁨 -1 · 흔적이 없을 때 좋음 +1 · 쌓인 흔적이 부서지면 -1 · 13번째 종소리에 남은 흔적마다 -1 (나무위키 관리 정보가 없어 라오루 접대를 바탕으로 추론)';
+CRT60.silence='결과 나쁨 -1 · 흔적이 없을 때 좋음 +1 · 쌓인 흔적이 부서지면 -1 · 13번째 종소리에 남은 흔적마다 -1';
 levelUp=(f=>function(){const r=f.apply(this,arguments);try{if(silOn()){const T=silTr();if(!T.frz){
   const pool=contained().filter(a=>!a.tool&&a.id!=='silence'&&G.ab[a.id].dept&&!G.ab[a.id].esc&&!T.list.includes(a.id));
   if(pool.length){const a=pick(pool);T.list.push(a.id);log(`[쌓이는 시간] 침묵의 대가가 ${a.n} 격리실에 시간의 흔적을 남겼다. 그곳을 작업하면 지워진다. (흔적 ${T.list.length}/4)`,'warn')}
@@ -7975,7 +7975,7 @@ function accFmt74(t){if(!t)return '';try{const d=new Date(t);return `${d.getMont
 function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'';
   if(st==='wait'||st==='loading')return `<p class="note">${st==='wait'?'로그인 기능을 불러오는 중…':'저장소를 불러오는 중…'}</p>`;
   if(st==='noconfig'||st==='off')return `<p class="note">${st==='off'?'로그인 서버에 연결하지 못했다.':'계정 기능이 아직 준비되지 않았다.'} 비회원으로 플레이하면 이 기기에만 저장된다.</p>`;
-  if(st==='out')return `${err}<p>로그인하면 저장소 3칸을 쓸 수 있고, 다른 기기에서도 이어서 출근할 수 있다. 로그인하지 않고 아래에서 바로 입사하면 비회원으로 플레이한다.</p>
+  if(st==='out')return `${err}<p class="note">로그인하면 저장소 3칸을 쓰고 다른 기기에서도 이어서 출근할 수 있다. 로그인하지 않아도 바로 플레이할 수 있다.</p>
    <form class="acc-mail" id="a74i" autocomplete="on"><label class="field"><span class="lbl">아이디 (영문 소문자·숫자·_ 4~16자)</span><input id="a74id" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="16" pattern="[a-zA-Z0-9_]{4,16}" required></label>
    <label class="field"><span class="lbl">비밀번호 (8자 이상)</span><input type="password" id="a74ip" autocomplete="current-password" minlength="8" required></label>
    ${A74.idSign?`<label class="field"><span class="lbl">비밀번호 확인</span><input type="password" id="a74ip2" autocomplete="new-password" minlength="8" required></label><p class="note">비밀번호를 잊으면 스스로 되찾을 수 없다. 꼭 기억해 둔다.</p>`:''}
@@ -7985,11 +7985,21 @@ function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role=
    <div class="slots74">${[1,2,3].map(slotCard74).join('')}</div>
    ${gu.has?`<div class="acc-imp"><p><b>비회원 기록이 있다</b> · ${gu.g?`${esc(gu.g.name)} D${gu.g.day} · `:''}도감 ${cdxPct74(gu.cdx)}%. 옮길 저장소를 고른다. 옮기면 이 기기의 비회원 기록은 비워진다.</p><div class="row">${[1,2,3].map(n=>`<button class="btn ghost small" data-imp="${n}">저장소 ${n}(으)로 옮기기</button>`).join('')}</div></div>`:''}
    ${ACT74?`<p class="note">저장소 ${ACT74.n}에 새로 입사한다. 아래에서 이름과 출신을 고른다.</p>`:'<p class="note">저장소를 고른 뒤 입사한다.</p>'}`}
-function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');if(!t)return;let box=t.querySelector('#acc74');
-  if(!box){box=document.createElement('section');box.id='acc74';box.className='card acc74';const h=t.querySelector('h1');(h&&h.nextElementSibling?h.nextElementSibling:h||t.firstChild).insertAdjacentElement('afterend',box)}
-  box.innerHTML='<h2 class="acc-h">사원증</h2>'+acc74Html();
+function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');if(!t)return;
+  // 오른쪽 위의 작은 사원증 버튼 → 누르면 펼쳐지는 창. 서버가 없으면 버튼도 숨긴다.
+  let w=t.querySelector('#acc74w');
+  if(!w){w=document.createElement('div');w.id='acc74w';w.className='acc74w';w.innerHTML='<button type="button" class="acc74b" id="acc74b" aria-expanded="false" aria-controls="acc74"></button><section id="acc74" class="card acc74" role="dialog" aria-label="사원증" hidden></section>';t.prepend(w);
+    w.querySelector('#acc74b').onclick=()=>{A74.open=!A74.open;acc74Render();if(A74.open){const i=w.querySelector('input,button.btn');i&&i.focus()}}}
+  const show=['out','in','loading'].includes(A74.st);w.style.display=show?'':'none';
+  const pick=A74.st==='in'&&!ACT74;if(pick)A74.open=true;   // 로그인했는데 저장소를 아직 안 골랐으면 창을 열어 둔다
+  const bt=w.querySelector('#acc74b');bt.textContent=A74.st==='in'||A74.st==='loading'?((A74.user&&A74.user.name)||'사원')+(ACT74?` · 저장소 ${ACT74.n}`:''):'로그인';
+  bt.classList.toggle('in',A74.st==='in');bt.setAttribute('aria-expanded',!!A74.open);
+  const box=w.querySelector('#acc74');box.hidden=!A74.open;
+  box.innerHTML=`<div class="acc-hd"><h2 class="acc-h">사원증</h2><button type="button" class="acc-x" id="a74x" aria-label="닫기">닫기</button></div>`+acc74Html();
   const cont=t.querySelector('#cont');if(cont)cont.closest('.row').style.display=A74.st==='in'?'none':'';
-  const form=t.querySelector('#go')&&t.querySelector('#go').closest('.card');if(form)form.style.display=(A74.st==='in'&&!ACT74)?'none':'';
+  const form=t.querySelector('#go')&&t.querySelector('#go').closest('.card');if(form)form.style.display=pick?'none':'';
+  let hint=t.querySelector('#acc74hint');if(pick&&!hint){hint=document.createElement('p');hint.id='acc74hint';hint.className='note';hint.textContent='오른쪽 위 사원증에서 저장소를 고르면 입사할 수 있다.';form&&form.insertAdjacentElement('beforebegin',hint)}else if(!pick&&hint)hint.remove();
+  if(box.querySelector('#a74x'))box.querySelector('#a74x').onclick=()=>{A74.open=false;acc74Render();bt.focus()};
   const q=s=>box.querySelector(s);const run=async(p,ok)=>{A74.err='';try{await p;ok&&toast(ok,'good');return true}catch(e){A74.err=errMsg74(e);acc74Render();return false}};
   if(q('#a74isw'))q('#a74isw').onclick=()=>{A74.idSign=!A74.idSign;A74.err='';acc74Render()};
   if(q('#a74i'))q('#a74i').onsubmit=ev=>{ev.preventDefault();const id=q('#a74id').value.trim().toLowerCase(),p=q('#a74ip').value;
@@ -7999,19 +8009,28 @@ function acc74Render(){try{const app=document.getElementById('app');const t=app&
       run(window.FB.signup(id,p),`아이디 ${id}(으)로 가입했다`).then(ok=>{if(ok)A74.idSign=false})}
     else run(window.FB.login(id,p))};
   if(q('#a74o'))q('#a74o').onclick=async()=>{await flush74();ACT74=null;run(window.FB.logout(),'로그아웃했다')};
-  box.querySelectorAll('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
-  box.querySelectorAll('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
+  box.querySelectorAll('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;A74.open=false;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
+  box.querySelectorAll('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);A74.open=false;acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
   box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{A74.confirm={n:+b.dataset.del,kind:'del'};acc74Render()});
   box.querySelectorAll('[data-imp]').forEach(b=>b.onclick=()=>{const n=+b.dataset.imp;if(slotInfo74(n).g){A74.confirm={n,kind:'import'};return acc74Render()}import74(n)});
   box.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{A74.confirm=null;acc74Render()});
   box.querySelectorAll('[data-yes]').forEach(b=>b.onclick=async()=>{const c=A74.confirm;A74.confirm=null;const n=c.n;
     if(c.kind==='import')return import74(n);
-    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
+    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){A74.open=false;acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
 }catch(e){}}
 renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!ACT74)A74.confirm=null;acc74Render();return r})(renderTitle);
 // 로그아웃 상태에서 입사하면 비회원 저장, 로그인 상태면 고른 저장소에 저장
 (function(){const st=document.createElement('style');st.textContent=`
-.acc74{display:grid;gap:12px}.acc74 .acc-h{margin:0;font-size:18px}.acc74 p{margin:0}
+.title{position:relative}
+.acc74w{position:absolute;top:0;right:0;z-index:30;display:flex;flex-direction:column;align-items:flex-end}
+.acc74b{background:var(--raised);color:var(--fg);border:0;border-radius:2px;padding:0 14px;min-height:40px;font:inherit;font-size:14px;cursor:pointer;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc74w+*{padding-right:96px}.acc74b:hover{background:var(--panel2)}.acc74b.in{box-shadow:inset 0 -2px 0 var(--dept)}
+.acc74{position:absolute;top:48px;right:0;width:min(400px,calc(100vw - 32px));max-height:min(78vh,640px);overflow:auto;display:grid;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.45);animation:acc75 .2s cubic-bezier(.23,1,.32,1)}
+.acc74[hidden]{display:none}.acc74 .acc-h{margin:0;font-size:18px}.acc74 p{margin:0}
+.acc-hd{display:flex;justify-content:space-between;align-items:center}.acc-x{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;min-height:40px;padding:0 4px;cursor:pointer}
+.acc74 .slots74{grid-template-columns:1fr}
+@keyframes acc75{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.acc74{animation:none}}
 
 .acc-mail{display:grid;gap:8px}.acc-mail .field input{width:100%;max-width:none}.acc-err{color:var(--bad)}
 .acc-me{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
@@ -8020,7 +8039,15 @@ renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!AC
 .sl-h{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.sl-h em{font-style:normal;color:var(--fg2);font-variant-numeric:tabular-nums}
 .sl-b small{color:var(--muted);margin-left:4px}.sl-a{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .acc-imp{background:var(--sunk);padding:12px;border-radius:2px;display:grid;gap:8px}`;document.body.appendChild(st)})();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&A74.open&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
+document.addEventListener('click',e=>{const w=document.getElementById('acc74w');if(A74.open&&w&&!w.contains(e.target)&&document.body.contains(e.target)&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
 setTimeout(acc74Render,0);
+/* ================= v75: 전투 가이드 — 공용 키워드만 보인다 =================
+   요정·포자·향기·한기·죄·쾌락·최강·돌아오는 감각처럼 특정 적만 쓰는 키워드는 목록에서 뺀다. 적 정보 창의 설명은 그대로 둔다. */
+const KW_COMMON75=['bleed','burn','rupture','sinking','tremor','poise','fragile','protect','bind','haste','paralysis','charge'];
+renderBattle=(f=>function(){const r=f.apply(this,arguments);try{const k=document.querySelector('.lb-top .help .kwl');
+  if(k&&!k.dataset.v75){k.dataset.v75='1';const keep=new Set(KW_COMMON75.map(x=>KWD[x]).filter(Boolean));
+    k.querySelectorAll('span').forEach(s=>{const t=s.textContent;if(Object.values(KWD).includes(t)&&!keep.has(t))s.remove()})}}catch(e){}return r})(renderBattle);
 </script>
 
 </body></html>
