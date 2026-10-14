@@ -1567,7 +1567,7 @@ const MORNING=[
 function morningEvent(next){
   if(G.grief.length){const k=G.grief.shift();return grief(k,next)}
   if(chance(.3)){const ks=openDepts();const k=chance(.6)?G.dept:pick(ks);const S=SEPH[k];
-    return setPanel('출근 전','',[
+    if(S&&DEPT[k])return setPanel('출근 전','',[
       {l:'인사를 받는다',s:'정신력 +3',f:()=>{addSp(3);next()}},
       {l:'요즘 괜찮으시냐고 묻는다',s:'마음의 온기 +',f:()=>{hum(3);log(`${S.n}은(는) 잠시 말이 없었다. "그런 질문은… 처음 받아봐요."`,'seph');next()}}],'',{seph:1,spk:`세피라 · ${S.n} (${DEPT[k].n})`,t:pick(S.hi)})}
   const pool=MORNING.filter(m=>m.w()&&!(m.once&&G.flags['m_'+m.once]));
@@ -7976,7 +7976,7 @@ function slotCard74(n){const I=slotInfo74(n);const pct=cdxPct74(I.cdx);const bus
   const t=I.g?`<b>${esc(I.g.name||'')}</b> · D${I.g.day} <small>${accFmt74(I.at)}</small>`:`<b>빈 저장소</b>`;
   return `<div class="slot74${ACT74&&ACT74.n===n?' on':''}"><div class="sl-h"><span>저장소 ${n}</span><em>도감 ${pct}%</em></div><div class="sl-b">${t}</div>
    ${busy?`<div class="sl-a"><span class="note">${A74.confirm.kind==='new'?'진행 중인 기록을 지우고 새로 입사할까?':A74.confirm.kind==='import'?'이 저장소의 진행 기록을 비회원 기록으로 덮어쓸까? 도감은 합쳐진다.':'이 저장소의 진행 기록을 지울까? 도감은 남는다.'}</span><button class="btn small" data-yes="${n}">${A74.confirm.kind==='del'?'지운다':'그렇게 한다'}</button><button class="btn ghost small" data-no="1">취소</button></div>`
-   :`<div class="sl-a">${I.g?`<button class="btn small" data-cont="${n}">이어서 출근</button>`:''}<button class="btn ${I.g?'ghost ':''}small" data-new="${n}">새로 입사</button>${I.g?`<button class="btn ghost small" data-del="${n}">지우기</button>`:''}</div>`}</div>`}
+   :`<div class="sl-a">${I.g?`<button class="btn small" data-cont="${n}">이어서 출근</button>`:''}<button class="btn ${I.g?'ghost ':''}small" data-new="${n}">새로 입사</button>${I.g?`<button class="btn ghost small" data-code="${n}">코드 복사</button><button class="btn ghost small" data-del="${n}">지우기</button>`:''}</div>`}</div>`}
 function accFmt74(t){if(!t)return '';try{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
 function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'';
   if(st==='wait'||st==='loading')return `<p class="note">${st==='wait'?'로그인 기능을 불러오는 중…':'저장소를 불러오는 중…'}</p>`;
@@ -8028,6 +8028,7 @@ function acc74Render(){try{const app=document.getElementById('app');const t=app&
   if(!mid)return;const M=s=>mid.querySelectorAll(s);
   M('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
   M('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
+  M('[data-code]').forEach(b=>b.onclick=()=>{const n=+b.dataset.code;const I=slotInfo74(n);if(typeof exportPop76==='function')exportPop76(I.g,I.cdx,`저장소 ${n} · ${I.g.name||''}`)});
   M('[data-del]').forEach(b=>b.onclick=()=>{A74.confirm={n:+b.dataset.del,kind:'del'};acc74Render()});
   M('[data-imp]').forEach(b=>b.onclick=()=>{const n=+b.dataset.imp;if(slotInfo74(n).g){A74.confirm={n,kind:'import'};return acc74Render()}import74(n)});
   M('[data-imphide]').forEach(b=>b.onclick=()=>{A74.impHide=true;acc74Render()});
@@ -8066,6 +8067,86 @@ const KW_COMMON75=['bleed','burn','rupture','sinking','tremor','poise','fragile'
 renderBattle=(f=>function(){const r=f.apply(this,arguments);try{const k=document.querySelector('.lb-top .help .kwl');
   if(k&&!k.dataset.v75){k.dataset.v75='1';const keep=new Set(KW_COMMON75.map(x=>KWD[x]).filter(Boolean));
     k.querySelectorAll('span').forEach(s=>{const t=s.textContent;if(Object.values(KWD).includes(t)&&!keep.has(t))s.remove()})}}catch(e){}return r})(renderBattle);
+
+/* ================= v76: 설정 · 저장 후 종료 · 진행 코드 복사 / 기록 불러오기 =================
+   코드: "LCW1:" + deflate 압축 base64 (압축을 못 쓰는 브라우저는 "LCW0:" + base64). 내용은 진행 기록 + 도감.
+   불러온 기록은 이 기기의 비회원 기록으로 들어간다. 로그인한 배포판에서는 가운데 저장소 칸의 [넣기/덮어쓰기]로 옮긴다. */
+const CODE76={
+  b64e(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)},
+  b64d(t){const s=atob(t);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u},
+  async pipe(u8,Ctor){const st=new Blob([u8]).stream().pipeThrough(new Ctor('deflate-raw'));return new Uint8Array(await new Response(st).arrayBuffer())},
+  async enc(obj){const u=new TextEncoder().encode(JSON.stringify(obj));
+    try{if(typeof CompressionStream==='function')return 'LCW1:'+this.b64e(await this.pipe(u,CompressionStream))}catch(e){}
+    return 'LCW0:'+this.b64e(u)},
+  async dec(code){const t=String(code||'').replace(/\s+/g,'');const m=t.match(/^LCW([01]):([A-Za-z0-9+/=]+)$/);if(!m)throw new Error('코드 형식이 맞지 않는다.');
+    let u=this.b64d(m[2]);if(m[1]==='1'){if(typeof DecompressionStream!=='function')throw new Error('이 브라우저는 압축된 코드를 풀 수 없다.');u=await this.pipe(u,DecompressionStream)}
+    const o=JSON.parse(new TextDecoder().decode(u));if(!o||o.k!=='lcw'||typeof o.save!=='string')throw new Error('이 게임의 기록 코드가 아니다.');
+    const g=JSON.parse(o.save);if(!g||!g.ab||!Array.isArray(g.agents))throw new Error('기록 내용이 손상되었다.');return {o,g}}};
+const CDXK76=()=>typeof cdxKeyNow==='function'?cdxKeyNow():(typeof CDX_KEY!=='undefined'?CDX_KEY:'lcw_codex_v1');
+const CDXB76=()=>typeof CDX_BASE!=='undefined'?CDX_BASE:(typeof CDX_KEY!=='undefined'?CDX_KEY:'lcw_codex_v1');
+function ls76(k,v){try{if(v===undefined)return localStorage.getItem(k);v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}}
+function trimSave76(g){const c=JSON.parse(JSON.stringify(g));if(Array.isArray(c.log)&&c.log.length>120)c.log=c.log.slice(-120);return JSON.stringify(c)}
+function payload76(g,cdx){return {k:'lcw',v:1,save:trimSave76(g),cdx:cdx||'{}',name:g.name||'',day:g.day||0,at:Date.now()}}
+function cdxMerge76(a,b){let A={},B={};try{A=JSON.parse(a||'{}')}catch(e){}try{B=JSON.parse(b||'{}')}catch(e){}const o=Object.assign({},A);
+  for(const id in B){if(!o[id]||((B[id]&&B[id].o)||0)>((o[id]&&o[id].o)||0))o[id]=B[id]}return JSON.stringify(o)}
+async function copy76(text,ta){try{await navigator.clipboard.writeText(text);return true}catch(e){}
+  try{if(ta){ta.focus();ta.select();if(document.execCommand('copy'))return true}}catch(e){}return false}
+function dl76(text,name){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return true}catch(e){return false}}
+// --- 코드 내보내기 창 ---
+async function exportPop76(g,cdx,label){if(!g){toast('옮길 기록이 없다');return}
+  const code=await CODE76.enc(payload76(g,cdx));const kb=Math.ceil(code.length/1024);
+  popup('진행 코드',`<div class="c76"><p><b>${esc(label||g.name||'')}</b> · D${g.day||1}${label?'':''}</p>
+    <p class="note">다른 기기나 새 사이트의 타이틀 화면에서 <b>[기록 불러오기]</b>에 붙여 넣으면 이어서 할 수 있다. 코드에는 진행 기록과 도감이 들어 있다. (${kb}KB)</p>
+    <textarea class="c76-ta" readonly rows="5" aria-label="진행 코드">${code}</textarea>
+    <div class="row"><button class="btn" id="c76c" type="button">코드 복사</button>${typeof ACC==='undefined'?'<button class="btn ghost" id="c76f" type="button">파일로 받기</button>':''}</div><p class="note" id="c76m" role="status"></p></div>`,b=>{
+    const ta=b.querySelector('.c76-ta'),m=b.querySelector('#c76m');
+    b.querySelector('#c76c').onclick=async()=>{m.textContent=(await copy76(code,ta))?'복사했다.':'자동 복사가 막혔다. 위 칸을 길게 눌러 직접 복사한다.'};
+    if(b.querySelector('#c76f'))b.querySelector('#c76f').onclick=()=>{m.textContent=dl76(code,`lcorp-${(g.name||'save').replace(/[^\w가-힣-]/g,'')}-D${g.day||1}.txt`)?'파일을 내려받았다.':'이 화면에서는 파일을 받을 수 없다. 코드 복사를 쓴다.'}})}
+// --- 기록 불러오기 창 (타이틀) ---
+function importPop76(){popup('기록 불러오기',`<div class="c76"><p class="note">[진행 코드]에서 복사한 코드를 붙여 넣거나, 받은 파일을 고른다. 불러온 기록은 이 기기의 비회원 기록이 된다.</p>
+    <textarea class="c76-ta" id="c76in" rows="5" placeholder="LCW1:…" aria-label="진행 코드 붙여 넣기"></textarea>
+    <label class="btn ghost small c76-file">파일 고르기<input type="file" id="c76file" accept=".txt,text/plain" hidden></label>
+    <div id="c76prev" class="note" role="status"></div>
+    <div class="row"><button class="btn" id="c76go" type="button" disabled>불러온다</button></div></div>`,b=>{
+    let got=null;const prev=b.querySelector('#c76prev'),go=b.querySelector('#c76go'),inp=b.querySelector('#c76in');
+    const check=async()=>{got=null;go.disabled=true;const v=inp.value.trim();if(!v){prev.textContent='';return}
+      try{got=await CODE76.dec(v);const old=(()=>{try{const s=ls76(SAVE);const x=s?JSON.parse(s):null;return x&&!x.dead&&!x.ended?x:null}catch(e){return null}})();
+        prev.innerHTML=`<b>${esc(got.g.name||'')}</b> · D${got.g.day||1} 기록이다.${old?` 이 기기의 비회원 기록(${esc(old.name)} D${old.day})을 덮어쓴다. 도감은 합쳐진다.`:''}`;go.disabled=false;go.textContent=old?'덮어쓰고 불러온다':'불러온다'}
+      catch(e){prev.textContent=e.message||'코드를 읽지 못했다.'}};
+    inp.oninput=check;
+    b.querySelector('#c76file').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{inp.value=String(r.result||'');check()};r.readAsText(f)};
+    go.onclick=()=>{if(!got)return;ls76(SAVE,got.o.save);ls76(CDXB76(),cdxMerge76(ls76(CDXB76()),got.o.cdx));closePop();
+      toast(`${got.g.name||''} D${got.g.day||1} 기록을 불러왔다`,'good');try{if(typeof A74!=='undefined')A74.impHide=false}catch(e){}renderTitle()}})}
+// --- 설정 창 (근무 중) ---
+async function saveQuit76(){try{save();cdxSave()}catch(e){}
+  try{if(typeof flush74==='function'&&typeof ACT74!=='undefined'&&ACT74){A74.dirty=true;await flush74()}}catch(e){}
+  try{if(typeof accFlush==='function'&&typeof ACC!=='undefined'&&ACC.st==='in'){ACC.dirty=true;await accFlush()}}catch(e){}
+  location.reload()}
+function settingsPop76(){const inB=typeof B!=='undefined'&&B&&!B.done;
+  popup('설정',`<div class="c76 set76">
+    <section><h4>진행 코드</h4><p class="note">지금까지의 진행을 코드로 복사한다. 다른 기기나 새 사이트에서 [기록 불러오기]로 이어서 할 수 있다.</p><button class="btn ghost" id="s76code" type="button">진행 코드 복사</button></section>
+    <section><h4>소리</h4><button class="btn ghost" id="s76aud" type="button">소리 설정 열기</button></section>
+    <section><h4>저장 후 종료</h4><p class="note">${inB?'전투 중에는 저장하고 나갈 수 없다. 전투를 마친 뒤 다시 연다.':'지금 상태를 저장하고 타이틀 화면으로 돌아간다. 다음에 [이어서 출근]으로 계속한다.'}</p><button class="btn" id="s76quit" type="button"${inB?' disabled':''}>게임 저장 및 종료</button></section></div>`,b=>{
+    b.querySelector('#s76code').onclick=()=>{try{save()}catch(e){}exportPop76(G,ls76(CDXK76()))};
+    b.querySelector('#s76aud').onclick=()=>{closePop();if(typeof audioPop==='function')audioPop()};
+    b.querySelector('#s76quit').onclick=e=>{e.target.disabled=true;e.target.textContent='저장하는 중…';saveQuit76()}})}
+renderTop=(f=>function(){const r=f.apply(this,arguments);try{const t1=document.querySelector('.top1');if(t1&&!t1.querySelector('#setBtn')){
+  t1.insertAdjacentHTML('beforeend','<button class="guide-btn" id="setBtn" type="button" aria-label="설정" title="설정">⚙</button>');t1.querySelector('#setBtn').onclick=settingsPop76}}catch(e){}return r})(renderTop);
+// --- 타이틀: [기록 불러오기] · (기록이 있으면) [진행 코드] ---
+function titleSave76(){try{const s=ls76(SAVE);const g=s?JSON.parse(s):null;if(g&&!g.dead&&!g.ended)return g}catch(e){}
+  try{if(typeof ACC!=='undefined'&&ACC.cloud&&ACC.cloud.json){const g=JSON.parse(ACC.cloud.json);if(g&&!g.dead&&!g.ended)return g}}catch(e){}return null}
+function deco76(){try{const t=document.querySelector('#app .title');if(t&&!t.querySelector('#t76')){
+  const row=document.createElement('div');row.id='t76';row.className='row t76';
+  const g=titleSave76();
+  row.innerHTML=`<button class="btn ghost small" id="t76imp" type="button">기록 불러오기</button>${g?`<button class="btn ghost small" id="t76exp" type="button">진행 코드 복사 · ${esc(g.name||'')} D${g.day||1}</button>`:''}`;
+  const note=t.querySelector('.fan-note');note?note.insertAdjacentElement('beforebegin',row):t.appendChild(row);
+  row.querySelector('#t76imp').onclick=importPop76;if(g)row.querySelector('#t76exp').onclick=()=>exportPop76(g,ls76(CDXB76()))}}catch(e){}}
+renderTitle=(f=>function(){const r=f.apply(this,arguments);deco76();return r})(renderTitle);
+setTimeout(()=>{deco76();try{if(G&&document.querySelector('.top1'))renderTop()}catch(e){}},0);
+(function(){const st=document.createElement('style');st.textContent=`
+.c76{display:grid;gap:12px}.c76 p{margin:0}.c76-ta{width:100%;box-sizing:border-box;font:13px/1.4 ui-monospace,monospace;background:var(--sunk,#0e1315);color:var(--fg);border:1px solid var(--raised,#2b373b);border-radius:2px;padding:10px;resize:vertical;word-break:break-all}
+.c76-file{justify-self:start;cursor:pointer}.set76 section{display:grid;gap:8px;padding:12px;background:var(--panel2,#222c30);border-radius:2px}.set76 h4{margin:0;font-size:15px}.set76 .btn{justify-self:start}
+.t76{gap:8px;flex-wrap:wrap}.top1 #setBtn{margin-left:0!important;margin-right:0!important}`;document.body.appendChild(st)})();
 </script>
 
 </body></html>
