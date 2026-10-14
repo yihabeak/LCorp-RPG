@@ -1,0 +1,11 @@
+{
+  "name": "lcorp-branch-log",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo 정적 파일과 api 함수뿐이라 빌드할 것이 없다",
+    "dev": "vercel dev"
+  },
+  "engines": { "node": ">=18" }
+}
