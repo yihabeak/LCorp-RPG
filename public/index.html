@@ -8247,6 +8247,156 @@ renderTop=(f=>function(){const r=f.apply(this,arguments);hdr78();return r})(rend
 tutRender=(f=>function(){const r=f.apply(this,arguments);try{const st=TUT&&TUT.list[TUT.i];const el=st&&!st.hint&&tutTarget(st);const t=document.querySelector('#shell>.top');
   if(el&&t){const h=t.getBoundingClientRect().bottom;const q=el.getBoundingClientRect();if(q.top<h+8||q.bottom>innerHeight-220){el.scrollIntoView({block:'center'});tutPlace()}}}catch(e){}return r})(tutRender);
 (function(){const st=document.createElement('style');st.textContent=`@media (max-width:640px){#shell>.top>.daybox{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;gap:6px!important;grid-template-columns:none!important;scrollbar-width:none}#shell>.top>.daybox::-webkit-scrollbar{display:none}#shell>.top>.daybox>*{flex:0 0 auto!important;min-width:0}}`;document.body.appendChild(st)})();
+
+/* ================= v79: 슬롯 중심 전투 화면 (림버스 집중 전투 · 라오루 방식) =================
+   평소 화면: 머리 위 슬롯(속도 · 상태 색)만. 슬롯을 누르면 화면 위쪽 창에 그 슬롯의 스킬과, 합 상대 스킬 · 우세도를 보여 준다.
+   합 현황은 접어 두고 필요할 때 연다. 슬롯은 턴이 지날수록 늘어난다(아군: 등급 높은 순 · 적: 궁지 · 장기전 · 페이즈). */
+
+// --- 우세도 5단계 (림버스 기준: 0~10 / 10~40 / 40~60 / 60~90 / 90~100%) ---
+advWord=function(p){return p>=.9?['매우 우세','hi']:p>=.6?['우세','hi']:p>=.4?['균형','mid']:p>=.1?['불리','lo']:['매우 불리','lo']};
+
+// --- 1. 평소 화면: 슬롯에는 속도와 상태만 ---
+lbSlotBox=function(sl){const s=sl.tgt?slotSkill(sl):null;const k=sl.tgt?sl.tgt.k:null;
+  const lab=sl.corr?'침식':k==='clash'?'합':k==='def'?'수비':k==='atk'?'일방':'대기';
+  const sin=k!=='def'&&s&&s.sin?`--sc:var(--s-${s.sin})`:'';
+  return `<button type="button" class="lb-slot s79 ${k||'none'} ${sl.corr?'corr':''}" data-lbs="${sl.id}" style="${sin}" aria-label="${sl.a.n} 슬롯 · 속도 ${sl.a.speed} · ${lab}"><b>${sl.a.speed}</b><em>${lab}</em></button>`};
+const _lbInt79=lbIntentBox;lbIntentBox=function(it,noise){const o=ownerOf(it);const st=o?(o.tgt.k==='def'?'def':'cl'):'open';
+  return `<div class="lb-int i79 ${st} ${it.s.n.startsWith('★')?'star':''}" data-lbi="${it.id}" style="${it.s.sin?`--sc:var(--s-${it.s.sin})`:''}" role="button" tabindex="0" aria-label="${it.u.n}의 공격 · 속도 ${it.spd}"><b>${it.spd}</b><small class="tg">→ ${it.tgt.key==='player'?'나':it.tgt.n}</small><span class="cd">${'<i></i>'.repeat(it.s.coins)}</span><i class="lb-adv"></i></div>`};
+
+// --- 2. 위쪽 슬롯 정보 창 ---
+let INS79=null; // {k:'s'|'i', id}
+function sk79(u,s,t,noise,side){if(!s)return '';const lo=noise?'▒':powOf(u,s,0,t),hi=noise?'▒':powOf(u,s,s.coins,t);
+  return `<div class="i79-sk ${side}" style="${s.sin?`--sc:var(--s-${s.sin})`:''}"><span class="i79-who">${u.key==='player'?'나':u.n}</span><b class="i79-nm">${s.n}</b><div class="i79-pow"><span class="big">${lo}~${hi}</span><span class="cd" aria-label="코인 ${s.coins}개">${'<i></i>'.repeat(s.coins)}</span></div></div>`}
+function def79(a){const d=kit(a).def;return `<div class="i79-sk a def"><span class="i79-who">${a.key==='player'?'나':a.n}</span><b class="i79-nm">${ic('shield')} ${d.n}</b><div class="i79-pow"><span class="tag">${d.type==='guard'?'가드':'회피'}</span></div></div>`}
+function bar79(p){const [w,c]=advWord(p);return `<div class="i79-vs ${c}"><b>${w}</b><div class="i79-bar"><i style="width:${Math.round(p*100)}%"></i></div><small>${Math.round(p*100)}%</small></div>`}
+function ins79Html(){if(!B||B.done||!INS79)return null;const noise=infoHidden();let head='',body='',btns='';
+  if(INS79.k==='s'){const sl=B.slots[INS79.id];if(!sl)return null;const a=sl.a,k=sl.corr?'rand':sl.tgt?sl.tgt.k:null,s=slotSkill(sl);
+    head=`<span class="i79-spd">${a.speed}</span><b>${a.key==='player'?'나':a.n}</b><span class="i79-st ${k||'none'}">${sl.corr?'침식 · 무작위 대상':k==='clash'?'합':k==='def'?'수비':k==='atk'?'일방 공격':'대상 없음'}</span>`;
+    if(k==='clash'){const it=sl.tgt.it;body=`${sk79(a,s,it.u,false,'a')}${bar79(wc(sl,sl.ego?'ego':sl.pick,it))}${sk79(it.u,it.s,a,noise,'e')}`}
+    else if(k==='def'){const it=sl.tgt.it;body=`${def79(a)}<div class="i79-vs def"><b>막는다</b></div>${sk79(it.u,it.s,a,noise,'e')}`}
+    else if(k==='atk'){body=`${sk79(a,s,sl.tgt.u,false,'a')}<div class="i79-vs one"><b>일방</b></div><div class="i79-sk e"><span class="i79-who">대상</span><b>${sl.tgt.u?sl.tgt.u.n:'-'}</b></div>`}
+    else body=`${sk79(a,s,null,false,'a')}<div class="i79-vs"><b>배정 전</b></div>`;
+    if(!sl.corr){const it=sl.tgt&&sl.tgt.it;btns=`${it?`<button class="btn ghost small" data-i79="sheet">카드 바꾸기</button>`:''}${sl.tgt&&sl.tgt.k!=='atk'?'<button class="btn ghost small" data-i79="free">합 풀기</button>':''}`}}
+  else{const it=B.intents.find(i=>i.id===INS79.id);if(!it||it.u.hp<=0)return null;const o=ownerOf(it);
+    head=`<span class="i79-spd e">${it.spd}</span><b>${it.u.n}</b><span class="i79-st ${o?(o.tgt.k==='def'?'def':'clash'):'open'}">${o?(o.tgt.k==='def'?'수비로 막는 중':'합'):'막는 사람 없음'} · → ${it.tgt.key==='player'?'나':it.tgt.n}</span>`;
+    if(o&&o.tgt.k==='clash')body=`${sk79(o.a,slotSkill(o),it.u,false,'a')}${bar79(wc(o,o.ego?'ego':o.pick,it))}${sk79(it.u,it.s,o.a,noise,'e')}`;
+    else if(o)body=`${def79(o.a)}<div class="i79-vs def"><b>막는다</b></div>${sk79(it.u,it.s,o.a,noise,'e')}`;
+    else body=`<div class="i79-sk a empty"><span class="i79-who">아군</span><b class="bad">무방비</b></div><div class="i79-vs open"><b>!</b></div>${sk79(it.u,it.s,it.tgt,noise,'e')}`;
+    btns=`<button class="btn small" data-i79="sheet">${o?'카드 바꾸기':'막을 카드 고르기'}</button><button class="btn ghost small" data-i79="einfo">자세히</button>`}
+  return `<div class="i79-h">${head}<button type="button" class="i79-x" aria-label="닫기">✕</button></div><div class="i79-b">${body}</div>${btns?`<div class="i79-a">${btns}</div>`:''}`}
+function ins79Render(){let el=document.getElementById('ins79');const html=ins79Html();
+  if(!html){if(el)el.remove();INS79=null;document.body.classList.remove('ins79-on');document.body.style.removeProperty('--ins79pad');document.querySelectorAll('.sel79').forEach(x=>x.classList.remove('sel79'));return}
+  if(!el){el=document.createElement('div');el.id='ins79';el.setAttribute('role','dialog');el.setAttribute('aria-label','슬롯 정보');document.body.appendChild(el)}
+  el.innerHTML=html;el.style.top=(document.querySelector('#shell>.top')?Math.max(8,document.querySelector('#shell>.top').getBoundingClientRect().bottom+6):8)+'px';
+  document.querySelectorAll('.sel79').forEach(x=>x.classList.remove('sel79'));const tg=INS79.k==='s'?document.querySelector(`#panel [data-lbs="${INS79.id}"]`):document.querySelector(`#panel [data-lbi="${INS79.id}"]`);if(tg)tg.classList.add('sel79');
+  // 선택한 슬롯이 정보 창에 가리지 않게: 위로 스크롤하거나, 모자라면 전투 화면을 정보 창 높이만큼 내린다
+  try{const stg=document.querySelector('#panel .lb-stage');const cur=parseFloat(document.body.style.getPropertyValue('--ins79pad'))||0;if(tg&&stg){const ib=el.getBoundingClientRect().bottom+10;const tt=Math.min(tg.getBoundingClientRect().top,stg.getBoundingClientRect().top);let need=ib-tt;
+    if(need>0){const up=Math.min(window.scrollY,need);if(up>0){window.scrollBy(0,-up);need-=up}if(need>0)document.body.style.setProperty('--ins79pad',(cur+need)+'px')}document.body.classList.add('ins79-on')}}catch(e){}
+  el.querySelector('.i79-x').onclick=ins79Close;
+  el.querySelectorAll('[data-i79]').forEach(b=>b.onclick=()=>{const a=b.dataset.i79;
+    if(INS79.k==='s'){const sl=B.slots[INS79.id];if(a==='free'){freeSlot(sl);renderBattle()}else if(a==='sheet'&&sl.tgt&&sl.tgt.it)_aSheet79(sl.tgt.it,null)}
+    else{const it=B.intents.find(i=>i.id===INS79.id);if(!it)return;if(a==='sheet')_aSheet79(it,null);else if(a==='einfo')eIntInfo(it)}})}
+function ins79Open(k,id){INS79={k,id};ins79Render()}
+function ins79Close(){INS79=null;ins79Render()}
+const _aSheet79=assignSheet;assignSheet=function(it,u){if(it&&!u&&!assignSheet._raw){return ins79Open('i',it.id)}return _aSheet79.apply(this,arguments)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&INS79&&!document.querySelector('.pop'))ins79Close()});
+document.addEventListener('pointerdown',e=>{if(!INS79)return;const t=e.target;if(t.closest('#ins79,[data-lbs],[data-lbi],.pop,#coach'))return;ins79Close()},true);
+
+// --- 3. 합 현황: 기본은 접힘 ---
+const CB79K='lcw_cb_open';
+const _board79=board77;board77=function(){_board79();try{const el=document.getElementById('cb77');if(!el||el.tagName==='DETAILS')return;
+  const d=document.createElement('details');d.id='cb77';d.className='cb77';let op=false;try{op=localStorage.getItem(CB79K)==='1'}catch(e){}d.open=op;
+  const h=el.querySelector('.cb-h');const sum=document.createElement('summary');sum.className='cb-h';sum.innerHTML=h?h.innerHTML:'합 현황';if(h)h.remove();
+  d.appendChild(sum);while(el.firstChild)d.appendChild(el.firstChild);el.replaceWith(d);d.addEventListener('toggle',()=>{try{localStorage.setItem(CB79K,d.open?'1':'0')}catch(e){}})}catch(e){}};
+
+// --- 4. 렌더 뒤 처리: 슬롯 탭 → 정보 창 ---
+renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!B||B.done){ins79Close();return r}const P=document.getElementById('panel');if(!P)return r;
+  P.querySelectorAll('[data-lbs]').forEach(b=>b.onclick=e=>{e.stopPropagation();if(typeof LBSEL!=='undefined'&&LBSEL)return;ins79Open('s',+b.dataset.lbs)});
+  P.querySelectorAll('[data-lbi]').forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();ins79Open('i',+e.dataset.lbi)}}));
+  if(INS79)ins79Render()}catch(e){}return r})(renderBattle);
+
+// --- 5. 슬롯 증가 ---
+function allyRank79(a){try{return a.key==='player'?rank():(a.rank||agRank(a.ag||a)||1)}catch(e){return a.rank||1}}
+newTurn=(f=>function(){const r=f.apply(this,arguments);try{if(!B||B.done)return r;let changed=false;
+  // 아군: 1턴은 모두 1칸. 2턴부터 매 턴 한 칸씩, 등급이 높은 아군부터 늘어난다 (1차: 모두 2칸 · 2차: Ⅳ등급 이상은 3칸)
+  const act=B.allies.filter(a=>!a.dead&&!(a.stag>0)&&!a.panic&&!a.corr).sort((x,y)=>allyRank79(y)-allyRank79(x));
+  const cap1=act.length,cap2=act.filter(a=>allyRank79(a)>=4).length;let extra=Math.min(Math.max(0,B.turn-1),cap1+cap2);
+  const want=new Map(act.map(a=>[a,1]));for(const a of act){if(extra<=0)break;want.set(a,2);extra--}for(const a of act){if(extra<=0)break;if(allyRank79(a)>=4){want.set(a,3);extra--}}
+  for(const a of act){let d=want.get(a);if(B.charm&&a.key==='player')d=Math.max(0,d-1);const mine=B.slots.filter(s=>s.a===a&&!s.corr&&!s.ego);
+    while(mine.length>d){const s=mine.pop();B.slots.splice(B.slots.indexOf(s),1);changed=true}
+    while(mine.length<d){const s={a,opts:[drawSkill(a),drawSkill(a)],pick:0,tgt:null};B.slots.push(s);mine.push(s);changed=true}}
+  if(changed&&B.turn>1){const grew=act.filter(a=>(a.slot79||1)<want.get(a));grew.forEach(a=>blog(`${a.key==='player'?'나':a.n}의 슬롯이 ${want.get(a)}칸으로 늘었다.`,'b'))}
+  act.forEach(a=>a.slot79=want.get(a));
+  // 적: 체력 절반 이하(궁지) +1 · Ⅲ등급(WAW) 이상은 4턴부터(장기전) +1. 보스는 페이즈마다 행동 수가 따로 늘어난다.
+  const live=B.allies.filter(a=>!a.dead);
+  for(const u of B.units){if(u.hp<=0||u.stag>0||u.boss||u.minion||u.g==null)continue;const g=u.g;let add=0;const why=[];
+    if(g>=1&&u.hp<=u.max*.5){add++;why.push('궁지에 몰렸다')}if(g>=3&&B.turn>=4){add++;why.push('싸움이 길어졌다')}
+    if(!add)continue;const pool=u.skills.filter(s=>!s.aoe&&!String(s.n).startsWith('★'));if(!pool.length)continue;
+    for(let i=0;i<add;i++)B.intents.push({u,s:pick(pool),spd:Math.max(1,R(u.spd[0],u.spd[1])-(u.slowed?4:0)),id:B.intents.length,tgt:pick(live)});
+    if((u.grow79||0)<add){blog(`${u.n}의 공격 슬롯이 늘었다 — ${why.join(' · ')}.`,'bh');u.grow79=add}changed=true}
+  if(changed){B.slots.forEach((s,i)=>s.id=i);B.wc={};autoAssign();renderBattle()}}catch(e){}return r})(newTurn);
+
+// --- 6. 적 위력 · 스킬 다양성 ---
+// 같은 등급 아군 E.G.O 무기 스킬의 평균 위력(중간값)에 맞춘다. 실측: 아군 8.7/10.7/13.0/13.6/16.2 · 적 5.5/6.5/9.2/10.0/12.7
+const EPB79=[3,4,4,4,3];
+const ESX79={slash:[['난도질',2,2,4],['갈라 베기',7,6,1]],pierce:[['연속 찌르기',2,2,4],['꿰뚫기',7,6,1]],blunt:[['연타',2,2,4],['내려찍기',7,6,1]]};
+genEnemy=(f=>function(a){const r=f(a);const u=r[0];if(!u||!a||a.g==null)return r;try{const g=a.g;
+  u.skills.forEach(s=>{s.base=Math.max(1,(s.base||0)+EPB79[g])});
+  // 높은 등급일수록 스킬이 다양하다: ZAYIN·TETH 2개 · HE 3개 · WAW 4개 · ALEPH 5개
+  const want=[2,2,3,4,5][g];const t=(a.eq&&a.eq.wt)||'blunt',sin=(a.eq&&a.eq.sin)||'wrath';const hid=abHidden(a);const L=ESX79[t]||ESX79.blunt;let i=0;
+  while(u.skills.length<want&&i<L.length){const [n,b,cp,c]=L[i++];u.skills.push(S(hid?'공격':n,b+[0,1,2,3,4][g]+EPB79[g],cp+(g>>1),c,t,a.dt,sin))}}catch(e){}return r})(genEnemy);
+// 붉은 안개 · 조율자: 1·2페이즈 일반 공격의 위력을 아군 WAW 스킬 평균(중간 위력 ≈13.6) 수준으로. 보스 보정 +2를 감안해 원래 값 11.5에 맞춘다.
+function boss79(us){try{(us||[]).forEach(u=>{if(!u||!u.P)return;[0,1].forEach(pi=>{const P=u.P[pi];if(!P||!P.sk)return;P.sk.forEach(s=>{if(String(s.n).startsWith('★'))return;const mid=s.base+s.cp*s.coins/2;if(mid<11.5)s.base+=Math.round(11.5-mid)})});
+    if(u.phase===1||u.phase===2){const P=u.P[u.phase-1];u.skills=P.sk.map(s=>Object.assign({},s,{on:Object.assign({},s.on||{})}))}})}catch(e){}return us}
+['redmist','arbiter'].forEach(k=>{if(ENEMY[k])ENEMY[k]=(f=>function(o){return boss79(f.apply(this,arguments))})(ENEMY[k])});
+
+// --- 7. 스타일 ---
+(function(){const st=document.createElement('style');st.textContent=`
+#panel .lb-top>.lbl[data-en="CLASH"],#panel .lb-info,#panel .lb-res,#panel .int-i,#panel .eu-i,#panel .lb-int.i79 .int-card,#panel .lb-int.i79 .tg,#panel .one-stack .int-card em{display:none!important}
+.lb-slot.s79{width:44px!important;min-height:44px!important;display:grid;place-items:center;gap:0;padding:2px 0;border-radius:4px;border:2px solid var(--line2,#3a464a);background:rgba(12,14,15,.92);cursor:pointer}
+.lb-slot.s79 b{font-size:17px!important;line-height:1}.lb-slot.s79 em{font-style:normal;font-size:10.5px!important;color:var(--muted)}
+.lb-slot.s79.clash{border-color:#e3c36a}.lb-slot.s79.atk{border-color:#6fa8ff}.lb-slot.s79.def{border-color:#4cc9cf}.lb-slot.s79.none{border-style:dashed}
+.lb-int.i79{width:56px!important;min-height:56px!important;padding:4px 2px!important;display:grid;justify-items:center;align-content:center;gap:2px;border-radius:4px;cursor:pointer}
+.lb-int.i79>b{font-size:18px!important;line-height:1}.lb-int.i79 .tg{font-size:11px!important;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-int.i79 .cd{display:flex;gap:2px}.lb-int.i79 .cd i,.i79-pow .cd i{display:block;width:6px;height:6px;border-radius:50%;background:#e3a43c}
+.lb-int.i79.open{border-color:#ef5b51!important;box-shadow:0 0 0 2px rgba(239,91,81,.55)}.lb-int.i79.cl{border-color:#e3c36a!important}.lb-int.i79.def{border-color:#4cc9cf!important}
+.sel79{outline:3px solid #f4efe4!important;outline-offset:2px;z-index:6}
+#ins79{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 16px));z-index:2147481000;background:var(--panel,#1a2225);border-radius:4px;box-shadow:0 10px 32px rgba(0,0,0,.55);border-top:3px solid var(--dept,#e3a43c);padding:10px 12px 12px;display:grid;gap:10px;animation:ins79 .18s cubic-bezier(.23,1,.32,1)}
+@keyframes ins79{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}@media (prefers-reduced-motion:reduce){#ins79{animation:none}}
+.i79-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.i79-h b{font-size:16px}.i79-spd{display:grid;place-items:center;min-width:30px;height:30px;border-radius:50%;background:#e3a43c;color:#141414;font-weight:800}.i79-spd.e{background:#ef5b51;color:#fff}
+.i79-st{font-size:13px;color:var(--muted)}.i79-st.open{color:#ff7a6e;font-weight:600}.i79-st.clash{color:#e3c36a}.i79-st.def{color:#4cc9cf}
+.i79-x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:18px;min-width:40px;min-height:40px;cursor:pointer}
+.i79-b{display:grid;grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr);gap:8px;align-items:stretch}
+.i79-sk{background:var(--panel2,#222c30);border-radius:3px;padding:8px 10px;display:grid;gap:3px;align-content:start;box-shadow:inset 0 3px 0 var(--sc,transparent)}
+.i79-sk.e{text-align:right;justify-items:end}.i79-who{font-size:12px;color:var(--muted)}.i79-sk>b{font-size:15px}.i79-sk small{font-size:12.5px;color:var(--fg2,#c9c4b8)}.i79-sk small.fx{color:var(--muted)}.i79-sk .bad{color:#ff7a6e}
+.i79-pow{display:flex;align-items:center;gap:6px}.i79-sk.e .i79-pow{flex-direction:row-reverse}.i79-pow .big{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}.i79-pow .cd{display:flex;gap:3px}
+.i79-vs{display:grid;justify-items:center;align-content:center;text-align:center;gap:4px}.i79-vs b{font-size:16px}.i79-vs small{font-size:11.5px;color:var(--muted)}
+.i79-vs.hi b{color:#7fd69a}.i79-vs.mid b{color:#e3c36a}.i79-vs.lo b{color:#ff7a6e}.i79-vs.one b{color:#6fa8ff}.i79-vs.def b{color:#4cc9cf}.i79-vs.open b{color:#ff7a6e;font-size:22px}
+.i79-bar{width:96px;height:8px;border-radius:4px;background:rgba(239,91,81,.5);overflow:hidden}.i79-bar i{display:block;height:100%;background:#7fd69a}
+.i79-a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.i79-nm{font-size:15px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}.i79-pow .tag{font-size:13px;color:#4cc9cf}
+body.ins79-on #panel .lb-stage{margin-top:var(--ins79pad,0px);transition:margin-top .18s cubic-bezier(.23,1,.32,1)}
+details.cb77>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}details.cb77>summary::-webkit-details-marker{display:none}
+details.cb77>summary h4::before{content:'▸ ';color:var(--muted)}details.cb77[open]>summary h4::before{content:'▾ '}
+details.cb77:not([open]){padding:10px 12px}
+@media (max-width:640px){#ins79{padding:8px 10px 10px;gap:8px}.i79-h b{font-size:15px}.i79-spd{min-width:26px;height:26px;font-size:14px}.i79-x{min-width:36px;min-height:36px}.i79-b{grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:6px}.i79-pow .big{font-size:17px}.i79-sk{padding:6px 8px}.i79-nm{font-size:13.5px}.i79-who{font-size:11px}.i79-vs b{font-size:13.5px}.i79-bar{width:56px;height:6px}.i79-a .btn{min-height:38px;padding:0 12px}.lb-slot.s79{width:40px!important;min-height:40px!important}.lb-int.i79{width:50px!important;min-height:52px!important}}`;document.body.appendChild(st)})();
+
+// --- 8. 튜토리얼: 슬롯 화면 기준으로 다시 쓴다 ---
+TUT_BATTLE.length=0;
+TUT_BATTLE.push(
+ {t:'전투는 이렇게 흘러간다',b:'한 턴은 <b>① 슬롯 확인 → ② 카드 배치 → ③ [전투 개시]</b>다. 개시하면 <b>속도가 빠른 슬롯부터</b> 차례로 움직인다. 적의 체력을 0으로 만들면 이긴다.<br>평소 화면에는 꼭 필요한 것만 보이고, 자세한 내용은 <b>슬롯을 눌러</b> 확인한다.'},
+ {sel:'#panel .lb-fo .lb-slots',t:'① 적의 슬롯',b:'적 머리 위 칸 하나가 <b>이번 턴 적의 공격 하나</b>다.<br>· 숫자 = <b>속도</b> (클수록 먼저)<br>· 점 = <b>코인</b> 수 (많을수록 강하다)<br>· <b style="color:#ff7a6e">빨간 테두리</b> = 아직 아무도 막지 않은 공격<br>슬롯을 누르면 <b>화면 위쪽</b>에 그 공격의 <b>스킬 이름 · 위력 · 코인</b>과 노리는 대상이 뜬다.'},
+ {sel:'#panel .lb-fo .lb-bar.hp',t:'적의 체력과 흐트러짐',b:'막대 위 <b>세로선</b>까지 깎으면 적이 <b>흐트러진다</b> — 다음 턴 행동하지 못하고 <b>피해를 2배</b>로 받는다.'},
+ {sel:'#panel .lb-al .lb-slots',t:'② 아군의 슬롯',b:'아군 머리 위 칸이 그 아군의 행동이다. 숫자는 속도, 테두리 색은 할 일이다.<br>· <b style="color:#e3c36a">노랑 = 합</b> · <b style="color:#6fa8ff">파랑 = 일방 공격</b> · <b style="color:#4cc9cf">청록 = 수비</b><br>누르면 위쪽 창에 <b>내 스킬과 합 상대의 스킬, 우세도</b>가 함께 뜬다.<br><b>2턴부터 매 턴 슬롯이 하나씩 늘어난다</b> — 등급이 높은 아군부터.'},
+ {sel:'#panel .lb-al .lb-bar.sp',t:'정신력',b:'아래쪽 작은 막대가 <b>정신력</b>이다. 높을수록 <b>코인이 앞면</b>으로 잘 나온다. 합에서 이기면 오르고, 지거나 맞으면 내려간다. <b>-45</b>가 되면 한 턴 <b>패닉</b>.'},
+ {sel:'#lbDock .lb-tabs',t:'③ 아군 고르기',b:'카드를 낼 아군을 고른다. 이름 아래에 속도와 위력 보정이 보인다.'},
+ {sel:'#lbDock .lb-grp:not([hidden]) .lb-card[data-lbc]',t:'④ 스킬 카드',b:'· 이름 · 공격 종류 · <b>위력 범위</b> · <b>◆ 코인</b><br>카드를 끌어 <b>적 슬롯</b>에 놓으면 <b>합</b>, <b>적 몸</b>에 놓으면 <b>일방 공격</b>. 누른 뒤 놓을 곳을 눌러도 된다.'},
+ {sel:'#lbDock .lb-card.def',t:'수비 카드',b:'<b>나를 노리는 공격</b>이 있을 때만 생긴다. 합 없이 막기만 한다 — 가드는 보호막, 회피는 코인마다 피할 기회. 질 게 뻔한 합 대신 쓴다.'},
+ {t:'슬롯 정보 창 읽는 법',b:'슬롯을 누르면 위쪽에 짧은 창이 뜬다. 필요한 것만 담았다.<br>· 왼쪽 = 아군 스킬, 오른쪽 = 적 스킬 — <b>이름</b>, <b>위력(최소~최대)</b>, <b>코인 점</b><br>· 가운데 = <b>우세도</b>와 내 승률: <b style="color:#7fd69a">매우 우세 · 우세</b> / <b style="color:#e3c36a">균형</b> / <b style="color:#ff7a6e">불리 · 매우 불리</b><br>· [카드 바꾸기]로 바로 다른 카드를 대고, 적 슬롯의 [자세히]에서 효과와 내성을 본다.<br>창 밖을 누르면 닫힌다.'},
+ {sel:'#cb77',t:'⑤ 합 현황 (접힘)',b:'평소에는 접혀 있다. 누르면 <b>이번 턴의 모든 대결</b>이 실제 진행 순서대로 펼쳐진다. 오른쪽 표시는 <b>막지 않은 공격</b>이나 <b>불리한 합</b>이 몇 개인지 알려 준다.'},
+ {t:'합의 규칙',b:'합은 서로 코인을 던져 <b>위력이 높은 쪽이 이기는</b> 겨루기다. 진 쪽은 코인을 <b>하나 잃고</b>, 한쪽 코인이 다 떨어질 때까지 반복한다. <b>이긴 쪽만</b> 남은 코인으로 공격한다.<br>합은 <b>그 공격이 나를 노리거나, 내가 더 빠를 때</b>만 걸 수 있다.'},
+ {t:'적도 강해진다',b:'적의 슬롯도 늘어난다.<br>· 체력이 <b>절반 이하</b>로 몰리면 +1<br>· WAW 이상은 싸움이 <b>4턴</b>을 넘기면 +1<br>· 보스는 <b>페이즈</b>가 바뀔 때마다 행동이 늘어난다<br>슬롯이 늘기 전에 흐트러뜨리거나 끝내는 것이 좋다.'},
+ {sel:'#autoBtn',t:'자동 배정',b:'헷갈리면 맡겨도 된다. 이길 확률이 높은 쪽으로 알아서 놓는다. 그다음 불리한 슬롯만 눌러 손보면 된다.'},
+ {sel:'#goBtn',t:'⑥ 전투 개시',b:'준비가 끝나면 누른다. 결과는 아래 <b>전투 기록</b>에 남는다. 규칙은 위쪽 <b>[전투 방법]</b>에서 언제든 다시 볼 수 있다.',last:1});
 </script>
 
 </body></html>
