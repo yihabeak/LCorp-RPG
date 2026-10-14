@@ -7985,10 +7985,10 @@ function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role=
    <div class="slots74">${[1,2,3].map(slotCard74).join('')}</div>
    ${gu.has?`<div class="acc-imp"><p><b>비회원 기록이 있다</b> · ${gu.g?`${esc(gu.g.name)} D${gu.g.day} · `:''}도감 ${cdxPct74(gu.cdx)}%. 옮길 저장소를 고른다. 옮기면 이 기기의 비회원 기록은 비워진다.</p><div class="row">${[1,2,3].map(n=>`<button class="btn ghost small" data-imp="${n}">저장소 ${n}(으)로 옮기기</button>`).join('')}</div></div>`:''}
    ${ACT74?`<p class="note">저장소 ${ACT74.n}에 새로 입사한다. 아래에서 이름과 출신을 고른다.</p>`:'<p class="note">저장소를 고른 뒤 입사한다.</p>'}`}
-function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');if(!t)return;
+function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');const ow=document.getElementById('acc74w');if(!t){if(ow)ow.remove();return}
   // 오른쪽 위의 작은 사원증 버튼 → 누르면 펼쳐지는 창. 서버가 없으면 버튼도 숨긴다.
-  let w=t.querySelector('#acc74w');
-  if(!w){w=document.createElement('div');w.id='acc74w';w.className='acc74w';w.innerHTML='<button type="button" class="acc74b" id="acc74b" aria-expanded="false" aria-controls="acc74"></button><section id="acc74" class="card acc74" role="dialog" aria-label="사원증" hidden></section>';t.prepend(w);
+  let w=ow;   // 화면 모서리에 고정하려고 body에 붙인다 (타이틀 쪽 transform의 영향을 받지 않게)
+  if(!w){w=document.createElement('div');w.id='acc74w';w.className='acc74w';w.innerHTML='<button type="button" class="acc74b" id="acc74b" aria-expanded="false" aria-controls="acc74"></button><section id="acc74" class="card acc74" role="dialog" aria-label="사원증" hidden></section>';document.body.appendChild(w);
     w.querySelector('#acc74b').onclick=()=>{A74.open=!A74.open;acc74Render();if(A74.open){const i=w.querySelector('input,button.btn');i&&i.focus()}}}
   const show=['out','in','loading'].includes(A74.st);w.style.display=show?'':'none';
   const pick=A74.st==='in'&&!ACT74;if(pick)A74.open=true;   // 로그인했는데 저장소를 아직 안 골랐으면 창을 열어 둔다
@@ -8021,10 +8021,9 @@ function acc74Render(){try{const app=document.getElementById('app');const t=app&
 renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!ACT74)A74.confirm=null;acc74Render();return r})(renderTitle);
 // 로그아웃 상태에서 입사하면 비회원 저장, 로그인 상태면 고른 저장소에 저장
 (function(){const st=document.createElement('style');st.textContent=`
-.title{position:relative}
-.acc74w{position:absolute;top:0;right:0;z-index:30;display:flex;flex-direction:column;align-items:flex-end}
+.acc74w{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:60;display:flex;flex-direction:column;align-items:flex-end}
 .acc74b{background:var(--raised);color:var(--fg);border:0;border-radius:2px;padding:0 14px;min-height:40px;font:inherit;font-size:14px;cursor:pointer;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acc74w+*{padding-right:96px}.acc74b:hover{background:var(--panel2)}.acc74b.in{box-shadow:inset 0 -2px 0 var(--dept)}
+.acc74b:hover{background:var(--panel2)}.acc74b.in{box-shadow:inset 0 -2px 0 var(--dept)}
 .acc74{position:absolute;top:48px;right:0;width:min(400px,calc(100vw - 32px));max-height:min(78vh,640px);overflow:auto;display:grid;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.45);animation:acc75 .2s cubic-bezier(.23,1,.32,1)}
 .acc74[hidden]{display:none}.acc74 .acc-h{margin:0;font-size:18px}.acc74 p{margin:0}
 .acc-hd{display:flex;justify-content:space-between;align-items:center}.acc-x{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;min-height:40px;padding:0 4px;cursor:pointer}
@@ -8041,6 +8040,7 @@ renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!AC
 .acc-imp{background:var(--sunk);padding:12px;border-radius:2px;display:grid;gap:8px}`;document.body.appendChild(st)})();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&A74.open&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
 document.addEventListener('click',e=>{const w=document.getElementById('acc74w');if(A74.open&&w&&!w.contains(e.target)&&document.body.contains(e.target)&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
+render=(f=>function(){const r=f.apply(this,arguments);if(!document.querySelector('#app .title')){const w=document.getElementById('acc74w');if(w)w.remove()}return r})(render);
 setTimeout(acc74Render,0);
 /* ================= v75: 전투 가이드 — 공용 키워드만 보인다 =================
    요정·포자·향기·한기·죄·쾌락·최강·돌아오는 감각처럼 특정 적만 쓰는 키워드는 목록에서 뺀다. 적 정보 창의 설명은 그대로 둔다. */
