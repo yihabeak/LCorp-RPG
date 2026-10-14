@@ -8157,6 +8157,96 @@ body:not(.wn) #app{filter:none}
 .top1 #guideBtn,.top1 #audBtn,.top1 #setBtn{position:static!important;height:38px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 .top1 #audBtn,.top1 #setBtn{width:38px;padding:0!important}
 @media (max-width:899px){.top1 .tabs{order:9!important;flex:1 1 100%!important;min-width:0}.top1 #guideBtn{width:38px;padding:0!important}.top1 #guideBtn span{display:none}}`;document.body.appendChild(st)})();
+
+/* ================= v77: 전투 가독성 — 이번 턴 합 현황판 · 행동 순서 · 내성 표기 · 큰 글씨 =================
+   림버스 전투 화면처럼 "누가 · 무엇으로 · 누구와 · 얼마나 유리하게" 겨루는지를 한 줄씩 보여 준다. */
+function who77(a){return a&&a.key==='player'?'나':(a&&a.n)||''}
+function rng77(u,s,t,noise){if(noise)return '▒▒';try{return `${powOf(u,s,0,t)}~${powOf(u,s,s.coins,t)}`}catch(e){return powRange(s)}}
+function coins77(n){return '<i class="cb-coin"></i>'.repeat(Math.max(0,n||0))}
+function rows77(){const noise=infoHidden();const R=[];
+  for(const sl of B.slots){if(!sl.tgt&&!sl.corr)continue;const a=sl.a,k=sl.corr?'rand':sl.tgt.k,s=slotSkill(sl);
+    const mine=`<b>${who77(a)}</b><span>${k==='def'?ic('shield')+' '+kit(a).def.n:s.n}</span><small>${k==='def'?(kit(a).def.type==='guard'?'보호막을 얻고 맞는다':'코인마다 회피'):`${rng77(a,s,k==='clash'?sl.tgt.it.u:sl.tgt.u,false)} ${coins77(s.coins)}`}</small>`;
+    if(k==='clash'){const it=sl.tgt.it;const p=wc(sl,sl.ego?'ego':sl.pick,it);const [w,c]=advWord(p);
+      R.push({spd:Math.max(a.speed,it.spd),cls:'clash',html:`<div class="cb-side a">${mine}</div><div class="cb-vs ${c}"><em>합</em><b>${w}</b><small>승률 ${Math.round(p*100)}%</small></div><div class="cb-side e"><b>${it.u.n}</b><span>${it.s.n}</span><small>${rng77(it.u,it.s,a,noise)} ${coins77(it.s.coins)}</small></div>`,sa:a.speed,se:it.spd})}
+    else if(k==='def'){const it=sl.tgt.it;
+      R.push({spd:it.spd,cls:'def',html:`<div class="cb-side a">${mine}</div><div class="cb-vs def"><em>수비</em><b>막는다</b><small>합 없음</small></div><div class="cb-side e"><b>${it.u.n}</b><span>${it.s.n}</span><small>${rng77(it.u,it.s,a,noise)} ${coins77(it.s.coins)}</small></div>`,sa:a.speed,se:it.spd})}
+    else if(k==='atk'){const u=sl.tgt.u;
+      R.push({spd:a.speed,cls:'one',html:`<div class="cb-side a">${mine}</div><div class="cb-vs one"><em>일방</em><b>공격</b><small>상대가 맞기만 한다</small></div><div class="cb-side e"><b>${u?u.n:'-'}</b><span class="mut">대응 없음</span><small>&nbsp;</small></div>`,sa:a.speed})}
+    else R.push({spd:a.speed,cls:'rand',html:`<div class="cb-side a">${mine}</div><div class="cb-vs lo"><em>침식</em><b>무작위</b><small>대상을 고를 수 없다</small></div><div class="cb-side e"><span class="mut">무작위 대상</span></div>`,sa:a.speed})}
+  for(const it of B.intents){if(it.u.hp<=0||ownerOf(it))continue;
+    R.push({spd:it.spd,cls:'open',html:`<div class="cb-side a"><b class="bad">막는 사람 없음</b><span class="mut">${who77(it.tgt)}이(가) 그대로 맞는다</span></div><div class="cb-vs open"><em>!</em><b>무방비</b><small>카드를 대어 막는다</small></div><div class="cb-side e"><b>${it.u.n}</b><span>${it.s.n}</span><small>${rng77(it.u,it.s,it.tgt,noise)} ${coins77(it.s.coins)} → ${who77(it.tgt)}</small></div>`,se:it.spd,iid:it.id})}
+  return R.sort((x,y)=>y.spd-x.spd)}
+function board77(){try{const P=document.getElementById('panel');if(!P||!B||B.done)return;const st=P.querySelector('.lb-stage');if(!st)return;
+  let el=P.querySelector('#cb77');if(!el){el=document.createElement('section');el.id='cb77';el.className='cb77';st.insertAdjacentElement('afterend',el)}
+  const R=rows77();const open=R.filter(r=>r.cls==='open').length;const lo=R.filter(r=>/cb-vs lo/.test(r.html)).length;
+  el.innerHTML=`<header class="cb-h"><h4>이번 턴 합 현황</h4><span class="cb-sum ${open?'bad':lo?'warn':'ok'}">${open?`막지 않은 공격 ${open}개`:lo?`불리한 합 ${lo}개`:'모든 공격에 대응했다'}</span></header>
+   <p class="cb-legend"><b class="hi">우세</b> 이길 가능성이 높다 · <b class="lo">불리</b> 질 가능성이 높다 · <b class="one">일방</b> 합 없이 때린다 · <b class="open">무방비</b> 막지 않은 공격. 위에서부터 <b>속도가 빠른 순서</b>로 진행된다.</p>
+   <ol class="cb-list">${R.map((r,i)=>`<li class="cb-row ${r.cls}" ${r.iid!=null?`data-cbi="${r.iid}"`:''}><span class="cb-ord" title="행동 순서">${i+1}<small>속도 ${r.spd}</small></span>${r.html}</li>`).join('')||'<li class="cb-row none">이번 턴에 할 수 있는 행동이 없다</li>'}</ol>`;
+  el.querySelectorAll('[data-cbi]').forEach(li=>li.onclick=()=>{const t=P.querySelector(`[data-lbi="${li.dataset.cbi}"]`);if(t){t.scrollIntoView({block:'center',behavior:'smooth'});t.click()}})}catch(e){}}
+// 적 내성: 숫자만 있던 것을 "낮을수록 덜 아프다"가 보이게
+function resTag77(v){return v>=2?['매우 취약','w2']:v>1?['취약','w1']:v<=.5?['강한 내성','r2']:v<1?['내성','r1']:['보통','n']}
+function res77(){try{document.querySelectorAll('#panel .lb-fo[data-lbu]').forEach(f=>{const u=B.units.find(x=>String(x.uid)===f.dataset.lbu);const r=f.querySelector('.lb-res');if(!u||!r||r.dataset.v77)return;r.dataset.v77=1;
+    const one=(lab,v,cls)=>{const [w,c]=resTag77(+v);return `<span class="rs ${c} ${cls||''}" title="${lab} 피해 ×${v} · ${w}"><i>${lab}</i>×${v}</span>`};
+    const extra=[u.panicked?'<b style="color:var(--bad)">패닉</b>':'',u.pray?'<b style="color:var(--accent)">기도 중 · 반사</b>':''].filter(Boolean).join(' ');
+    r.innerHTML=`<div class="rs-row">${one('참격',u.res.slash)}${one('관통',u.res.pierce)}${one('타격',u.res.blunt)}</div>${u.cres?`<div class="rs-row">${Object.entries(u.cres).map(([k,v])=>one(k,v,'d'+k)).join('')}</div>`:''}${extra?`<div>${extra}</div>`:''}`})}catch(e){}}
+renderBattle=(f=>function(){const r=f.apply(this,arguments);board77();res77();return r})(renderBattle);
+assign=(f=>function(){const r=f.apply(this,arguments);setTimeout(board77,0);return r})(assign);
+(function(){const st=document.createElement('style');st.textContent=`
+.cb77{margin:12px 0 4px;background:var(--sunk,#0e1315);border-radius:2px;padding:12px;display:grid;gap:8px}
+.cb-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.cb-h h4{margin:0;font-size:16px}
+.cb-sum{font-size:13px;font-weight:600;padding:2px 8px;border-radius:2px}.cb-sum.ok{color:#7fd69a;background:rgba(127,214,154,.1)}.cb-sum.warn{color:#e3a43c;background:rgba(227,164,60,.12)}.cb-sum.bad{color:#ff7a6e;background:rgba(239,91,81,.15)}
+.cb-legend{margin:0;font-size:12.5px;color:var(--muted);line-height:1.6}.cb-legend b{font-weight:700}.cb-legend .hi{color:#7fd69a}.cb-legend .lo{color:#ff7a6e}.cb-legend .one{color:#9cc3ff}.cb-legend .open{color:#ff7a6e}
+.cb-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cb-row{display:grid;grid-template-columns:44px minmax(0,1fr) 92px minmax(0,1fr);align-items:center;gap:8px;background:var(--panel2,#222c30);border-radius:2px;padding:8px 10px;font-size:14px}
+.cb-row.open{background:rgba(239,91,81,.12);box-shadow:inset 3px 0 0 #ef5b51;cursor:pointer}.cb-row.none{display:block;color:var(--muted)}
+.cb-ord{display:grid;justify-items:center;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}.cb-ord small{font-size:11px;font-weight:400;color:var(--muted)}
+.cb-side{display:grid;gap:1px;min-width:0}.cb-side b{font-size:14px}.cb-side span{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cb-side small{font-size:12.5px;color:var(--fg2,#c9c4b8);font-variant-numeric:tabular-nums}
+.cb-side.e{text-align:right;justify-items:end}.cb-side .mut{color:var(--muted)}.cb-side .bad{color:#ff7a6e}
+.cb-coin{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e3a43c;margin-left:2px;vertical-align:middle}
+.cb-vs{display:grid;justify-items:center;text-align:center;border-radius:2px;padding:4px 2px;background:rgba(255,255,255,.04)}.cb-vs em{font-style:normal;font-size:11px;color:var(--muted)}.cb-vs b{font-size:15px}.cb-vs small{font-size:11.5px;color:var(--muted)}
+.cb-vs.hi b{color:#7fd69a}.cb-vs.mid b{color:#e3c36a}.cb-vs.lo b{color:#ff7a6e}.cb-vs.one b{color:#9cc3ff}.cb-vs.def b{color:#4cc9cf}.cb-vs.open b{color:#ff7a6e}
+.lb-res{font-size:12px!important;display:grid;gap:3px;justify-items:center}.rs-row{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}
+.rs{font-size:11.5px;padding:1px 4px;border-radius:2px;background:rgba(255,255,255,.05);white-space:nowrap}.rs i{font-style:normal;margin-right:2px;color:var(--muted)}
+.rs.w1,.rs.w2{color:#ff9a8f;background:rgba(239,91,81,.14)}.rs.w2{font-weight:700}.rs.r1,.rs.r2{color:#8fd3a5;background:rgba(127,214,154,.1)}.rs.r2{font-weight:700}
+.lb-int small,.lb-slot span,.lb-slot em{font-size:12px!important}.lb-int .nm{font-size:12.5px!important;font-weight:600}.lb-int b,.lb-slot b{font-size:13px!important}.lb-nm{font-size:14px!important}
+.lb-fig.lb-fo{width:172px!important}.rs.n{opacity:.7}
+.lb-int.open{box-shadow:0 0 0 2px rgba(239,91,81,.7)}
+@media (max-width:640px){.cb-row{grid-template-columns:34px minmax(0,1fr) 74px minmax(0,1fr);gap:6px;padding:8px 6px;font-size:13px}.cb-side b,.cb-side span{font-size:13px}.cb-side small{font-size:11.5px}.cb-vs b{font-size:13.5px}
+ .lb-stage{grid-template-columns:1fr!important}.lb-stage .lb-mid{display:none}.lb-stage .lb-side.r{order:-1}.lb-stage .lb-side{justify-content:center}.lb-stage .lb-fig.lb-fo{width:min(100%,260px)!important}}`;document.body.appendChild(st)})();
+
+/* ================= v78: 전투 튜토리얼 상세판 · 첫 전투 필수 =================
+   처음 하는 사람은 첫 전투에서 반드시 전투 튜토리얼을 본다 (건너뛰기 없음). 이후에는 [전투 방법] → 튜토리얼로 다시 볼 수 있다. */
+TUT_BATTLE.length=0;
+TUT_BATTLE.push(
+ {t:'전투는 이렇게 흘러간다',b:'한 턴은 <b>① 적의 공격 확인 → ② 아군 카드 배치 → ③ [전투 개시]</b> 순서다. 개시하면 <b>속도가 빠른 행동부터</b> 차례로 벌어진다. 적의 체력을 0으로 만들면 이긴다.<br>천천히 하나씩 짚어 보자.'},
+ {sel:'#panel .lb-fo .lb-slots',t:'① 적의 공격 카드',b:'적 머리 위 카드 하나가 <b>이번 턴 적의 공격 하나</b>다.<br>· 동그라미 숫자 = <b>속도</b> (클수록 먼저 움직인다)<br>· <b>5~11</b> = 위력 범위 (최소~최대)<br>· <b>◆</b> = 코인 수 (많을수록 강하다)<br>· <b>→ 이름</b> = 노리는 아군<br>빨간 테두리는 <b>아직 아무도 막지 않은 공격</b>이다.'},
+ {sel:'#panel .lb-fo .lb-bar.hp',t:'적의 체력과 흐트러짐',b:'초록 막대가 체력이다. 막대 위 <b>세로선</b>까지 깎으면 적이 <b>흐트러진다</b> — 다음 턴 행동하지 못하고 <b>피해를 2배</b>로 받는다. 큰 기회다.'},
+ {sel:'#panel .lb-fo .lb-res',t:'적의 내성',b:'공격 종류(참격·관통·타격)와 피해 색(RED·WHITE·BLACK·PALE)마다 배율이 있다.<br><b style="color:#ff9a8f">빨간 칸 ×1.3 · ×2</b> = 취약, 더 아프게 들어간다.<br><b style="color:#8fd3a5">초록 칸 ×0.8 · ×0.5</b> = 내성, 덜 들어간다.<br>취약한 쪽을 노리는 무기가 유리하다.'},
+ {sel:'#panel .lb-al .lb-slots',t:'② 아군의 행동 칸',b:'아군 머리 위 칸이 <b>이번 턴 그 아군의 행동</b>이다. 숫자는 속도, 아래 글자는 무엇을 하는지다.<br>· <b>합</b> = 적 공격과 맞부딪친다<br>· <b>일방</b> = 적을 그냥 때린다<br>· <b>수비</b> = 나를 노리는 공격을 막는다'},
+ {sel:'#panel .lb-al .lb-bar.sp',t:'정신력',b:'아래쪽 작은 막대가 <b>정신력</b>이다. 높을수록 <b>코인이 앞면</b>으로 잘 나온다. 합에서 이기면 오르고, 지거나 맞으면 내려간다. <b>-45</b>가 되면 한 턴 <b>패닉</b> — 아무것도 할 수 없다.'},
+ {sel:'#lbDock .lb-tabs',t:'③ 아군 고르기',b:'카드를 낼 아군을 고른다. 이름 아래에 <b>속도</b>와 지금 위력 보정이 보인다.'},
+ {sel:'#lbDock .lb-grp:not([hidden]) .lb-card[data-lbc]',t:'④ 스킬 카드 읽기',b:'· 이름과 공격 종류 (참격·관통·타격)<br>· <b>3~9</b> = 위력 범위, <b>◆</b> = 코인<br>코인이 앞면일 때마다 위력이 오른다.<br><br><b>내는 법</b>: 카드를 끌어 <b>적 공격 카드</b>에 놓으면 <b>합</b>, <b>적 몸</b>에 놓으면 <b>일방 공격</b>. 누른 뒤 놓을 곳을 눌러도 된다.'},
+ {sel:'#lbDock .lb-card.def',t:'수비 카드',b:'<b>나를 노리는 공격</b>이 있을 때만 생긴다. 합을 하지 않고 막기만 한다.<br>· 가드 = 보호막을 얻고 맞는다<br>· 회피 = 코인마다 피할 기회<br>질 게 뻔한 합 대신 고르면 피해를 줄일 수 있다.'},
+ {sel:'#cb77',t:'⑤ 이번 턴 합 현황',b:'지금 배치한 결과를 한 줄씩 보여 준다. <b>위에서부터 실제로 벌어지는 순서</b>다.<br>· <b style="color:#7fd69a">우세</b> · <b style="color:#e3c36a">균형</b> · <b style="color:#ff7a6e">불리</b> = 그 합을 이길 확률<br>· <b style="color:#ff7a6e">무방비</b> = 막지 않은 공격. 누르면 그 공격 카드로 이동한다.<br>불리하면 다른 카드나 다른 아군으로 바꿔 본다.'},
+ {sel:'#cb77 .cb-vs',t:'합의 규칙',b:'합은 서로 코인을 던져 <b>위력이 높은 쪽이 이기는</b> 겨루기다. 진 쪽은 코인을 <b>하나 잃고</b>, 한쪽 코인이 다 떨어질 때까지 반복한다. <b>이긴 쪽만</b> 남은 코인으로 공격한다.<br>합은 <b>그 공격이 나를 노리거나, 내가 더 빠를 때</b>만 걸 수 있다.'},
+ {sel:'#autoBtn',t:'자동 배정',b:'헷갈리면 이 버튼에 맡겨도 된다. 이길 확률이 높은 쪽으로 알아서 카드를 놓는다. 그다음 합 현황을 보고 손보면 된다.'},
+ {sel:'#goBtn',t:'⑥ 전투 개시',b:'준비가 끝나면 누른다. 결과는 아래 <b>전투 기록</b>에 한 줄씩 남는다. 규칙이 헷갈리면 위쪽 <b>[전투 방법]</b>에서 언제든 다시 볼 수 있다.',last:1});
+const TUTB_KEY78='lcw_tutb_done';
+function tutbDone78(){try{return localStorage.getItem(TUTB_KEY78)==='1'}catch(e){return false}}
+function tutbMark78(){try{localStorage.setItem(TUTB_KEY78,'1')}catch(e){}}
+tutEnd=(f=>function(silent){const k=TUT&&TUT.kind;const r=f.apply(this,arguments);if(k==='battle'){tutbMark78();document.body.classList.remove('tut-forced')}return r})(tutEnd);
+renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!tutbDone78()&&B&&!B.done&&!TUT&&!B.tut78){B.tut78=1;TUTB='run';
+  setTimeout(()=>{if(!B||B.done||TUT)return;tutStart(TUT_BATTLE,'battle');if(TUT){TUT.forced=true;document.body.classList.add('tut-forced')}},450)}}catch(e){}return r})(renderBattle);
+document.addEventListener('keydown',e=>{if(TUT&&TUT.forced&&e.key==='Escape')e.stopImmediatePropagation()},true);
+(function(){const st=document.createElement('style');st.textContent=`body.tut-forced #coach .co-x{display:none}#coach .co-bub{max-width:380px}#coach .co-bub p{line-height:1.6}`;document.body.appendChild(st)})();
+/* 초반 직원 작업량 하향: 1일차 직원 작업이 과하다는 평가 반영. 환상체가 하나뿐인 1일차는 직원이 거의 손대지 않게 한다. */
+agWorkRate=(f=>function(){const d=G.day||1;if(d<=1)return .05;if(d===2)return .08;if(d===3)return .12;if(d<=5)return Math.min(.2,f());if(d<=7)return Math.min(.26,f());return f()})(agWorkRate);
+/* 모바일: 고정된 상단 바가 화면을 덜 가리게 — 일차·시각·할당량 칸을 한 줄(가로 스크롤)로. 스크롤 이동은 상단 바 높이만큼 비켜 준다 */
+function hdr78(){try{const t=document.querySelector('#shell>.top');document.documentElement.style.scrollPaddingTop=(t?t.offsetHeight+8:0)+'px'}catch(e){}}
+renderTop=(f=>function(){const r=f.apply(this,arguments);hdr78();return r})(renderTop);addEventListener('resize',hdr78);
+tutRender=(f=>function(){const r=f.apply(this,arguments);try{const st=TUT&&TUT.list[TUT.i];const el=st&&!st.hint&&tutTarget(st);const t=document.querySelector('#shell>.top');
+  if(el&&t){const h=t.getBoundingClientRect().bottom;const q=el.getBoundingClientRect();if(q.top<h+8||q.bottom>innerHeight-220){el.scrollIntoView({block:'center'});tutPlace()}}}catch(e){}return r})(tutRender);
+(function(){const st=document.createElement('style');st.textContent=`@media (max-width:640px){#shell>.top>.daybox{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;gap:6px!important;grid-template-columns:none!important;scrollbar-width:none}#shell>.top>.daybox::-webkit-scrollbar{display:none}#shell>.top>.daybox>*{flex:0 0 auto!important;min-width:0}}`;document.body.appendChild(st)})();
 </script>
 
 </body></html>
