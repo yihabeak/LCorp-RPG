@@ -7072,6 +7072,8 @@ function st60(){G.p60=G.p60||{peb:{},slime:{},wk:{},par:0,esc:0,pan:0,qd:null};r
 // 카운터 조정 공통: 격리 중(탈출 아님)인 환상체만, 0~최대 사이
 function cAdj(id,d,why,ctx){const a=ABM[id],s=G&&G.ab[id];if(!a||!s||!s.dept||s.esc||a.tool||!d)return 0;
   const c0=s.cnt;s.cnt=clamp(s.cnt+d,0,a.cnt);const dd=s.cnt-c0;if(!dd)return 0;
+  const known=!infoHidden()&&!!(a.breach||s.obs>=2||has('gov'));
+  if(!known){if(dd<0&&!(ctx&&ctx.notes))log(`${a.n}에게서 불길한 기색이 느껴진다.`,ctx&&ctx.quiet?'npc':'warn');if(s.cnt<=0&&!(ctx&&ctx.defer))counterZero(a,(ctx&&ctx.src)||'rule');return dd}
   const t=`${a.n} 카운터 ${dd>0?'+':''}${dd} (${s.cnt}/${a.cnt})${why?' — '+why:''}`;
   if(ctx&&ctx.notes)ctx.notes.push(t);else log(t,dd>0?'good':(ctx&&ctx.quiet?'npc':'warn'));
   if(s.cnt<=0&&!(ctx&&ctx.defer))counterZero(a,(ctx&&ctx.src)||'rule');return dd}
@@ -7149,7 +7151,7 @@ function cr60(a,res,ctx){if(!a||a.tool)return 0;const s=G.ab[a.id];const ag=ctx.
   let tot=0;const why=[];parts.forEach(([d,w])=>{tot+=d;why.push(w)});
   says.forEach(t=>ag&&ctx.notes?ctx.notes.push(t):log(t,'sys'));
   if(tot)cAdj(a.id,tot,why.join(' · '),c);
-  else if(parts.length)(ag&&ctx.notes?ctx.notes.push(`${a.n} 카운터 변화 없음 (${why.join(' · ')})`):log(`${a.n} 카운터 변화 없음 (${why.join(' · ')})`,'sys'));
+  else if(parts.length&&!infoHidden()&&(a.breach||s.obs>=2||has('gov')))(ag&&ctx.notes?ctx.notes.push(`${a.n} 카운터 변화 없음 (${why.join(' · ')})`):log(`${a.n} 카운터 변화 없음 (${why.join(' · ')})`,'sys'));
   other60(a,who,ctx);return tot}
 // 작업 도중 패닉으로 중단
 function cr60pan(a){if(!a||a.tool||NOCNT60.has(a.id))return;if(PANIC60.has(a.id)||!CR60[a.id])cAdj(a.id,-1,'작업 중 패닉',{defer:1})}
@@ -7374,6 +7376,8 @@ battleLose=(f=>function(){try{ds62().loss++}catch(e){}return f.apply(this,argume
 startPanic=(f=>function(ag){const w=ag&&ag.panic;f(ag);try{if(ag&&ag.panic&&!w)ds62().pan++}catch(e){}})(startPanic);
 levelUp=(f=>function(){const r=f.apply(this,arguments);try{const D=ds62();D.ml=Math.max(D.ml,G.mLevel)}catch(e){}return r})(levelUp);
 const RESK={good:'좋음',normal:'보통',bad:'나쁨'};
+// 카운터는 도감에서 열렸을 때만 보인다 (격리실 화면의 표시 조건과 같다)
+function cntKnown62(a){try{const s=G.ab[a.id];return !a.tool&&!infoHidden()&&!!(a.breach||s.obs>=2||has('gov'))}catch(e){return false}}
 function wr62(html,cls){document.querySelectorAll('.wr62').forEach(x=>x.remove());const el=document.createElement('div');el.className='wr62 '+(cls||'');el.innerHTML=html+'<small class="wr-x">눌러서 닫기</small>';el.onclick=()=>el.remove();document.body.appendChild(el);setTimeout(()=>{if(el.isConnected)el.remove()},5000)}
 finishWork=(f=>function(a,w,m){const s=a&&G.ab[a.id];const b={hp:G.hp,sp:G.sp,st:Object.assign({},G.st),cnt:s?s.cnt:0,obs:s?s.obs:0,pe:s?s.pe:0};LASTW62=null;const r=f(a,w,m);if(a&&a.id==='silence')SIL62.bonus=0;
   try{if(!G||G.dead||!a||a.tool)return r;const s2=G.ab[a.id];
@@ -7384,14 +7388,14 @@ finishWork=(f=>function(a,w,m){const s=a&&G.ab[a.id];const b={hp:G.hp,sp:G.sp,st
     const cell=(k,v,c)=>`<span${c?` class="${c}"`:''}><small>${k}</small><b>${v}</b></span>`;
     wr62(`<div class="wr-h"><b>${a.n}</b> · ${w&&w.n?w.n:''} 작업 <em class="r-${res}">${RESK[res]}</em></div>
      <div class="wr-g">${L.boxes?cell('에너지',`${L.succ}/${L.boxes}`)+cell('성공률',pct+'%'):''}${cell('체력',(G.hp-b.hp>=0?'+':'')+(G.hp-b.hp),G.hp<b.hp?'neg':'')}${cell('정신력',(G.sp-b.sp>=0?'+':'')+(G.sp-b.sp),G.sp<b.sp?'neg':'')}
-     ${dv.map(([k,v])=>cell(VIRT[k],'+'+v,'pos')).join('')||cell('가치관','변화 없음')}${cell('카운터',`${b.cnt} → ${s2.cnt}`,s2.cnt<b.cnt?'neg':s2.cnt>b.cnt?'pos':'')}${s2.obs>b.obs?cell('관찰',`${ROMAN[s2.obs]}`,'pos'):''}</div>`,res)}catch(e){}return r})(finishWork);
-function xLine62(gr,dth,up,D){const nm=(G&&G.name?esc(G.name):'직원')+'님';
-  const base={S:[`${nm}, 오늘 당신이 연 문 덕분에 많은 사람이 내일을 맞습니다. 그 사실을 잊지 말아 주세요.`,`완벽했습니다, ${nm}. 다만 완벽해야만 가치 있는 건 아니라는 것도 기억해 주세요.`],
-   A:[`잘 버텨 주었습니다, ${nm}. 오늘의 당신은 어제보다 조금 더 단단해졌어요.`,`좋은 하루였습니다. ${nm}의 판단을 믿고 있습니다.`],
-   B:[`평범한 하루를 지켜 내는 일이 가장 어렵습니다. 수고했어요, ${nm}.`,`오늘도 무사히 돌아와 주었군요, ${nm}. 내일도 함께합시다.`],
-   C:[`버거운 날이었죠, ${nm}. 그래도 당신은 돌아왔습니다. 그거면 충분합니다. 내일은 제가 조금 더 잘 지휘하겠습니다.`,`실수는 내일의 지도가 됩니다. 오늘 배운 것을 가지고, 푹 쉬세요, ${nm}.`],
-   D:[`살아 있어 줘서 고맙습니다, ${nm}. 잃은 것은 제 책임입니다. 오늘은 아무 생각 말고 쉬세요.`,`무너진 날에도 다시 일어서는 사람을, 저는 끝까지 믿습니다. ${nm}.`]}[gr]||[];
-  let t=pick(base);if(up)t+=' 그리고 승급, 축하합니다.';if(dth>0)t+=` 먼저 간 ${dth}명의 몫까지 제가 기억하겠습니다.`;else if(D.w>0&&gr!=='S')t+=' 오늘은 아무도 잃지 않았습니다. 당신 덕분이에요.';return `"${t}"`}
+     ${dv.map(([k,v])=>cell(VIRT[k],'+'+v,'pos')).join('')||cell('가치관','변화 없음')}${cntKnown62(a)?cell('카운터',`${b.cnt} → ${s2.cnt}`,s2.cnt<b.cnt?'neg':s2.cnt>b.cnt?'pos':''):''}${s2.obs>b.obs?cell('관찰',`${ROMAN[s2.obs]}`,'pos'):''}</div>`,res)}catch(e){}return r})(finishWork);
+function xLine62(gr,dth,up,D){const nm=(G&&G.name?esc(G.name):'직원');
+  const base={S:[`${nm}, 오늘 네가 연 문 덕분에 많은 사람이 내일을 맞아. 그거 잊지 마.`,`완벽했어, ${nm}. 그래도 완벽해야만 가치 있는 건 아니라는 것도 기억해 둬.`],
+   A:[`잘 버텼어, ${nm}. 오늘의 너는 어제보다 조금 더 단단해졌어.`,`좋은 하루였어. 네 판단, 믿고 있어.`],
+   B:[`평범한 하루를 지켜 내는 게 제일 어려워. 수고했어, ${nm}.`,`오늘도 무사히 돌아왔구나, ${nm}. 내일도 같이 가자.`],
+   C:[`버거운 날이었지, ${nm}. 그래도 넌 돌아왔어. 그거면 충분해. 내일은 내가 조금 더 잘 지휘할게.`,`실수는 내일의 지도가 돼. 오늘 배운 거 챙겨서, 푹 쉬어, ${nm}.`],
+   D:[`살아 있어 줘서 고마워, ${nm}. 잃은 건 내 책임이야. 오늘은 아무 생각 말고 쉬어.`,`무너진 날에도 다시 일어서는 사람을, 난 끝까지 믿어. ${nm}.`]}[gr]||[];
+  let t=pick(base);if(up)t+=' 그리고 승급, 축하해.';if(dth>0)t+=` 먼저 간 ${dth}명 몫까지 내가 기억할게.`;else if(D.w>0&&gr!=='S')t+=' 오늘은 아무도 잃지 않았어. 네 덕분이야.';return `"${t}"`}
 function dayReport62(D,P){const pe=(G.peTotal||0)-D.pe;const q=quota();const rate=D.boxes?Math.round(D.succ/D.boxes*100):0;
   const dst=Object.keys(VIRT).map(k=>[k,(G.st[k]||0)-(D.st[k]||0)]);const stSum=dst.reduce((s,x)=>s+x[1],0);const dth=(G.deaths||0)-D.deaths;
   const cur={w:D.w,rate,pe,hpL:Math.round(D.hpL),spL:Math.round(D.spL),st:stSum,wins:D.wins,dth,npcW:D.npcW};
@@ -7405,7 +7409,7 @@ function dayReport62(D,P){const pe=(G.peTotal||0)-D.pe;const q=quota();const rat
    ${row('받은 피해',`체력 ${Math.round(D.hpL)} · 정신력 ${Math.round(D.spL)}`,dl('hpL',1))}${row('가치관 증가',dst.map(([k,v])=>`${VIRT[k]} ${v>0?'+':''}${v}`).join(' · '),dl('st'))}
    ${row('등급',`${ROMAN[D.rank]} → ${ROMAN[rank()]}${rank()>D.rank?' (승급!)':''}`)}${row('진압',`승리 ${D.wins} · 패배 ${D.loss}`,dl('wins'))}${row('탈출 · 시련',`탈출 ${D.esc} · 시련 ${D.ord}`)}
    ${row('희생',`사망 ${dth} · 패닉 ${D.pan}`,dl('dth',1))}${row('최고 폭주 레벨',`Lv ${D.ml}`)}${row('LOB · 마음의 온기',`LOB +${(G.lob||0)-D.lob} · 온기 ${(G.hum||0)-D.hum>=0?'+':''}${(G.hum||0)-D.hum}`)}</table>
-   <div class="dr-x"><span class="lbl">X (아인)</span><p>${xLine62(gr,dth,rank()>D.rank,D)}</p></div>
+   <div class="dr-x"><span class="lbl">관리자</span><p>${xLine62(gr,dth,rank()>D.rank,D)}</p></div>
    <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" type="button">다음 날로</button></div></div>`;
   return {html,cur}}
 endDay=(f=>function(){let rep=null;try{const D=G.ds62;if(D&&D.d===G.day){rep=dayReport62(D,G.dsPrev62);G.dsPrev62=rep.cur}}catch(e){}const r=f.apply(this,arguments);
