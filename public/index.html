@@ -7952,7 +7952,7 @@ function slotInfo74(n){const c=A74.slots[n];const L=A74.user?slotLocal74(A74.use
   return {g:(g&&!g.dead&&!g.ended)?g:null,cdx:useL?L.cdx:(c&&c.cdx),at:useL?L.at:(c&&c.at)}}
 async function flush74(){if(!ACT74||!A74.dirty||A74.busy||!window.FB||!A74.user)return;A74.busy=true;A74.dirty=false;
   try{const k=ACT74.key;let sv=lsGet(k+'_sav');if(sv&&sv.length>700000){try{const g=JSON.parse(sv);g.log=(g.log||[]).slice(-120);sv=JSON.stringify(g)}catch(e){}}
-    const at=Date.now();const data={save:sv||null,cdx:lsGet(k+'_cdx')||'{}',name:(G&&G.name)||'',day:(G&&G.day)||0,at,v:1};
+    const at=Date.now();let sg=null;try{sg=sv?JSON.parse(sv):null}catch(e){}const data={save:sv||null,cdx:lsGet(k+'_cdx')||'{}',name:(sg&&sg.name)||'',day:(sg&&sg.day)||0,at,v:1};
     await window.FB.setSlot(ACT74.uid,ACT74.n,data);A74.slots[ACT74.n]=data;lsSet(k+'_at',String(at))}catch(e){A74.dirty=true;A74.err=errMsg74(e)}finally{A74.busy=false}}
 save=(f=>function(){const r=f.apply(this,arguments);if(ACT74){A74.dirty=true;lsSet(ACT74.key+'_at',String(Date.now()))}return r})(save);
 clearSave=(f=>function(){const r=f.apply(this,arguments);if(ACT74){A74.dirty=true;lsSet(ACT74.key+'_at',String(Date.now()));setTimeout(flush74,50)}return r})(clearSave);
@@ -7962,14 +7962,16 @@ endDay=(f=>function(){const r=f.apply(this,arguments);setTimeout(flush74,100);re
 function resume74(sv){G=sv;AB.forEach(a=>{if(!G.ab[a.id])G.ab[a.id]={cnt:a.cnt,pe:0,obs:0,works:0,melt:0,dept:null,day:0}});G.toolUse=G.toolUse||{};G.birdsToday=G.birdsToday||[];G.min=G.min??540;try{migrateInv()}catch(e){}AID=G.agents.length+5;render();resumePhase()}
 // 비회원 기록 → 저장소로 옮기기
 function guest74(){let g=null;try{const s=lsGet(SAVE);g=s?JSON.parse(s):null}catch(e){}const c=lsGet(CDX_BASE);return {g:(g&&!g.dead&&!g.ended)?g:null,raw:lsGet(SAVE),cdx:c,has:!!(g&&!g.dead&&!g.ended)||(!!c&&c!=='{}')}}
-async function import74(n){const gu=guest74();const uid=A74.user.uid;const k=LKEY74(uid,n);
-  lsSet(k+'_sav',gu.g?gu.raw:null);lsSet(k+'_cdx',gu.cdx||'{}');lsSet(k+'_at',String(Date.now()));const prev=ACT74;ACT74={uid,n,key:k};A74.dirty=true;await flush74();
+function cdxMerge74(a,b){let A={},B={};try{A=JSON.parse(a||'{}')}catch(e){}try{B=JSON.parse(b||'{}')}catch(e){}const o=Object.assign({},A);
+  for(const id in B){if(!o[id]||((B[id]&&B[id].o)||0)>((o[id]&&o[id].o)||0))o[id]=B[id]}return JSON.stringify(o)}
+async function import74(n){const gu=guest74();const uid=A74.user.uid;const k=LKEY74(uid,n);const I=slotInfo74(n);
+  lsSet(k+'_sav',gu.g?gu.raw:null);lsSet(k+'_cdx',cdxMerge74(I.cdx,gu.cdx));lsSet(k+'_at',String(Date.now()));const prev=ACT74;ACT74={uid,n,key:k};A74.dirty=true;await flush74();
   if(!A74.dirty){lsSet(SAVE,null);lsSet(CDX_BASE,null);toast(`비회원 기록을 저장소 ${n}(으)로 옮겼다`,'good')}else toast('옮기지 못했다. 잠시 뒤 다시 시도한다','hurt');ACT74=prev;acc74Render()}
 // --- 화면 ---
 function slotCard74(n){const I=slotInfo74(n);const pct=cdxPct74(I.cdx);const busy=A74.confirm&&A74.confirm.n===n;
   const t=I.g?`<b>${esc(I.g.name||'')}</b> · D${I.g.day} <small>${accFmt74(I.at)}</small>`:`<b>빈 저장소</b>`;
   return `<div class="slot74${ACT74&&ACT74.n===n?' on':''}"><div class="sl-h"><span>저장소 ${n}</span><em>도감 ${pct}%</em></div><div class="sl-b">${t}</div>
-   ${busy?`<div class="sl-a"><span class="note">${A74.confirm.kind==='new'?'진행 중인 기록을 지우고 새로 입사할까?':A74.confirm.kind==='import'?'이 저장소의 진행 기록을 비회원 기록으로 덮어쓸까?':'이 저장소의 진행 기록을 지울까? 도감은 남는다.'}</span><button class="btn small" data-yes="${n}">${A74.confirm.kind==='del'?'지운다':'그렇게 한다'}</button><button class="btn ghost small" data-no="1">취소</button></div>`
+   ${busy?`<div class="sl-a"><span class="note">${A74.confirm.kind==='new'?'진행 중인 기록을 지우고 새로 입사할까?':A74.confirm.kind==='import'?'이 저장소의 진행 기록을 비회원 기록으로 덮어쓸까? 도감은 합쳐진다.':'이 저장소의 진행 기록을 지울까? 도감은 남는다.'}</span><button class="btn small" data-yes="${n}">${A74.confirm.kind==='del'?'지운다':'그렇게 한다'}</button><button class="btn ghost small" data-no="1">취소</button></div>`
    :`<div class="sl-a">${I.g?`<button class="btn small" data-cont="${n}">이어서 출근</button>`:''}<button class="btn ${I.g?'ghost ':''}small" data-new="${n}">새로 입사</button>${I.g?`<button class="btn ghost small" data-del="${n}">지우기</button>`:''}</div>`}</div>`}
 function accFmt74(t){if(!t)return '';try{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
 function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'';
@@ -7980,43 +7982,55 @@ function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role=
    <label class="field"><span class="lbl">비밀번호 (8자 이상)</span><input type="password" id="a74ip" autocomplete="current-password" minlength="8" required></label>
    ${A74.idSign?`<label class="field"><span class="lbl">비밀번호 확인</span><input type="password" id="a74ip2" autocomplete="new-password" minlength="8" required></label><p class="note">비밀번호를 잊으면 스스로 되찾을 수 없다. 꼭 기억해 둔다.</p>`:''}
    <div class="row">${A74.idSign?'<button class="btn small" type="submit">아이디로 가입</button><button class="btn ghost small" type="button" id="a74isw">이미 아이디가 있다</button>':'<button class="btn small" type="submit">로그인</button><button class="btn ghost small" type="button" id="a74isw">아이디 만들기</button>'}</div></form>`;
-  const u=A74.user;const gu=guest74();
-  return `${err}<div class="acc-me"><span><b>${esc(u.name||'사원')}</b>님</span><button class="btn ghost small" id="a74o" type="button">로그아웃</button></div>
+  const u=A74.user;
+  return `${err}<div class="acc-me"><span><b>${esc(u.name||'사원')}</b>님${ACT74?` · 저장소 ${ACT74.n}`:''}</span><button class="btn ghost small" id="a74o" type="button">로그아웃</button></div>
+   <p class="note">저장소는 화면 가운데에서 고른다. 진행은 30초마다 계정에 저장된다.</p>`}
+// 화면 가운데: 저장소 3칸 + 비회원 기록 옮기기 (로그인했을 때만)
+function slots74Html(){const gu=guest74();const imp=gu.has&&!A74.impHide;
+  return `<h2 class="acc-h">저장소</h2>
+   ${imp?`<div class="acc-imp"><p><b>이 기기에 비회원 기록이 있다</b> · ${gu.g?`${esc(gu.g.name)} D${gu.g.day} · `:''}도감 ${cdxPct74(gu.cdx)}%</p>
+     <p class="note">넣을 저장소를 고른다. 진행 기록이 있는 칸은 덮어쓴다. 도감은 두 기록 중 더 많이 관찰한 쪽을 남긴다. 옮기면 이 기기의 비회원 기록은 비워진다.</p>
+     <div class="row">${[1,2,3].map(n=>`<button class="btn ${slotInfo74(n).g?'ghost ':''}small" data-imp="${n}">저장소 ${n}${slotInfo74(n).g?' 덮어쓰기':'에 넣기'}</button>`).join('')}<button class="btn ghost small" data-imphide="1">그대로 둔다</button></div></div>`:''}
    <div class="slots74">${[1,2,3].map(slotCard74).join('')}</div>
-   ${gu.has?`<div class="acc-imp"><p><b>비회원 기록이 있다</b> · ${gu.g?`${esc(gu.g.name)} D${gu.g.day} · `:''}도감 ${cdxPct74(gu.cdx)}%. 옮길 저장소를 고른다. 옮기면 이 기기의 비회원 기록은 비워진다.</p><div class="row">${[1,2,3].map(n=>`<button class="btn ghost small" data-imp="${n}">저장소 ${n}(으)로 옮기기</button>`).join('')}</div></div>`:''}
-   ${ACT74?`<p class="note">저장소 ${ACT74.n}에 새로 입사한다. 아래에서 이름과 출신을 고른다.</p>`:'<p class="note">저장소를 고른 뒤 입사한다.</p>'}`}
+   ${ACT74?`<p class="note">저장소 ${ACT74.n}에 새로 입사한다. 아래에서 이름과 출신을 고른다.</p>`:'<p class="note">이어서 출근하거나, 새로 입사할 저장소를 고른다.</p>'}`}
 function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');const ow=document.getElementById('acc74w');if(!t){if(ow)ow.remove();return}
-  // 오른쪽 위의 작은 사원증 버튼 → 누르면 펼쳐지는 창. 서버가 없으면 버튼도 숨긴다.
-  let w=ow;   // 화면 모서리에 고정하려고 body에 붙인다 (타이틀 쪽 transform의 영향을 받지 않게)
+  // 오른쪽 위: 로그인 버튼 → 누르면 펼쳐지는 작은 창 (로그인·로그아웃만). body에 붙여 화면 모서리에 고정한다.
+  let w=ow;
   if(!w){w=document.createElement('div');w.id='acc74w';w.className='acc74w';w.innerHTML='<button type="button" class="acc74b" id="acc74b" aria-expanded="false" aria-controls="acc74"></button><section id="acc74" class="card acc74" role="dialog" aria-label="사원증" hidden></section>';document.body.appendChild(w);
-    w.querySelector('#acc74b').onclick=()=>{A74.open=!A74.open;acc74Render();if(A74.open){const i=w.querySelector('input,button.btn');i&&i.focus()}}}
+    w.querySelector('#acc74b').onclick=()=>{A74.open=!A74.open;acc74Render();if(A74.open){const i=w.querySelector('#acc74 input,#acc74 button.btn');i&&i.focus()}}}
   const show=['out','in','loading'].includes(A74.st);w.style.display=show?'':'none';
-  const pick=A74.st==='in'&&!ACT74;if(pick)A74.open=true;   // 로그인했는데 저장소를 아직 안 골랐으면 창을 열어 둔다
-  const bt=w.querySelector('#acc74b');bt.textContent=A74.st==='in'||A74.st==='loading'?((A74.user&&A74.user.name)||'사원')+(ACT74?` · 저장소 ${ACT74.n}`:''):'로그인';
+  const bt=w.querySelector('#acc74b');bt.textContent=A74.st==='in'||A74.st==='loading'?((A74.user&&A74.user.name)||'사원'):'로그인';
   bt.classList.toggle('in',A74.st==='in');bt.setAttribute('aria-expanded',!!A74.open);
   const box=w.querySelector('#acc74');box.hidden=!A74.open;
   box.innerHTML=`<div class="acc-hd"><h2 class="acc-h">사원증</h2><button type="button" class="acc-x" id="a74x" aria-label="닫기">닫기</button></div>`+acc74Html();
-  const cont=t.querySelector('#cont');if(cont)cont.closest('.row').style.display=A74.st==='in'?'none':'';
+  // 가운데: 로그인했으면 저장소 칸을 입사 양식 위에 둔다
+  const inn=A74.st==='in';const pick=inn&&!ACT74;
+  const cont=t.querySelector('#cont');if(cont)cont.closest('.row').style.display=inn?'none':'';
   const form=t.querySelector('#go')&&t.querySelector('#go').closest('.card');if(form)form.style.display=pick?'none':'';
-  let hint=t.querySelector('#acc74hint');if(pick&&!hint){hint=document.createElement('p');hint.id='acc74hint';hint.className='note';hint.textContent='오른쪽 위 사원증에서 저장소를 고르면 입사할 수 있다.';form&&form.insertAdjacentElement('beforebegin',hint)}else if(!pick&&hint)hint.remove();
-  if(box.querySelector('#a74x'))box.querySelector('#a74x').onclick=()=>{A74.open=false;acc74Render();bt.focus()};
+  let mid=t.querySelector('#slot74c');
+  if(inn){if(!mid){mid=document.createElement('section');mid.id='slot74c';mid.className='card slot74c';if(form)form.insertAdjacentElement('beforebegin',mid);else t.appendChild(mid)}mid.innerHTML=(A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'')+slots74Html()}
+  else if(mid)mid.remove();
+  const close=()=>{A74.open=false;acc74Render();const b=document.getElementById('acc74b');b&&b.focus()};
+  box.querySelector('#a74x').onclick=close;
   const q=s=>box.querySelector(s);const run=async(p,ok)=>{A74.err='';try{await p;ok&&toast(ok,'good');return true}catch(e){A74.err=errMsg74(e);acc74Render();return false}};
   if(q('#a74isw'))q('#a74isw').onclick=()=>{A74.idSign=!A74.idSign;A74.err='';acc74Render()};
   if(q('#a74i'))q('#a74i').onsubmit=ev=>{ev.preventDefault();const id=q('#a74id').value.trim().toLowerCase(),p=q('#a74ip').value;
     if(!/^[a-z0-9_]{4,16}$/.test(id)){A74.err='아이디는 영문 소문자·숫자·밑줄(_)로 4~16자다.';return acc74Render()}
     if(p.length<8||p.length>128){A74.err='비밀번호는 8~128자다.';return acc74Render()}
     if(A74.idSign){if(p!==q('#a74ip2').value){A74.err='비밀번호 확인이 맞지 않는다.';return acc74Render()}
-      run(window.FB.signup(id,p),`아이디 ${id}(으)로 가입했다`).then(ok=>{if(ok)A74.idSign=false})}
-    else run(window.FB.login(id,p))};
-  if(q('#a74o'))q('#a74o').onclick=async()=>{await flush74();ACT74=null;run(window.FB.logout(),'로그아웃했다')};
-  box.querySelectorAll('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;A74.open=false;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
-  box.querySelectorAll('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);A74.open=false;acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
-  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{A74.confirm={n:+b.dataset.del,kind:'del'};acc74Render()});
-  box.querySelectorAll('[data-imp]').forEach(b=>b.onclick=()=>{const n=+b.dataset.imp;if(slotInfo74(n).g){A74.confirm={n,kind:'import'};return acc74Render()}import74(n)});
-  box.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>{A74.confirm=null;acc74Render()});
-  box.querySelectorAll('[data-yes]').forEach(b=>b.onclick=async()=>{const c=A74.confirm;A74.confirm=null;const n=c.n;
+      run(window.FB.signup(id,p),`아이디 ${id}(으)로 가입했다`).then(ok=>{if(ok){A74.idSign=false;A74.open=false;acc74Render()}})}
+    else run(window.FB.login(id,p)).then(ok=>{if(ok){A74.open=false;acc74Render()}})};
+  if(q('#a74o'))q('#a74o').onclick=async()=>{await flush74();ACT74=null;A74.open=false;run(window.FB.logout(),'로그아웃했다')};
+  if(!mid)return;const M=s=>mid.querySelectorAll(s);
+  M('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
+  M('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
+  M('[data-del]').forEach(b=>b.onclick=()=>{A74.confirm={n:+b.dataset.del,kind:'del'};acc74Render()});
+  M('[data-imp]').forEach(b=>b.onclick=()=>{const n=+b.dataset.imp;if(slotInfo74(n).g){A74.confirm={n,kind:'import'};return acc74Render()}import74(n)});
+  M('[data-imphide]').forEach(b=>b.onclick=()=>{A74.impHide=true;acc74Render()});
+  M('[data-no]').forEach(b=>b.onclick=()=>{A74.confirm=null;acc74Render()});
+  M('[data-yes]').forEach(b=>b.onclick=async()=>{const c=A74.confirm;A74.confirm=null;const n=c.n;
     if(c.kind==='import')return import74(n);
-    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){A74.open=false;acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
+    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
 }catch(e){}}
 renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!ACT74)A74.confirm=null;acc74Render();return r})(renderTitle);
 // 로그아웃 상태에서 입사하면 비회원 저장, 로그인 상태면 고른 저장소에 저장
@@ -8027,7 +8041,7 @@ renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!AC
 .acc74{position:absolute;top:48px;right:0;width:min(400px,calc(100vw - 32px));max-height:min(78vh,640px);overflow:auto;display:grid;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.45);animation:acc75 .2s cubic-bezier(.23,1,.32,1)}
 .acc74[hidden]{display:none}.acc74 .acc-h{margin:0;font-size:18px}.acc74 p{margin:0}
 .acc-hd{display:flex;justify-content:space-between;align-items:center}.acc-x{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;min-height:40px;padding:0 4px;cursor:pointer}
-.acc74 .slots74{grid-template-columns:1fr}
+.slot74c{display:grid;gap:12px}.slot74c .acc-h{margin:0;font-size:18px}.slot74c p{margin:0}
 @keyframes acc75{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.acc74{animation:none}}
 
@@ -8038,8 +8052,8 @@ renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!AC
 .sl-h{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.sl-h em{font-style:normal;color:var(--fg2);font-variant-numeric:tabular-nums}
 .sl-b small{color:var(--muted);margin-left:4px}.sl-a{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .acc-imp{background:var(--sunk);padding:12px;border-radius:2px;display:grid;gap:8px}`;document.body.appendChild(st)})();
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&A74.open&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
-document.addEventListener('click',e=>{const w=document.getElementById('acc74w');if(A74.open&&w&&!w.contains(e.target)&&document.body.contains(e.target)&&!(A74.st==='in'&&!ACT74)){A74.open=false;acc74Render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&A74.open){A74.open=false;acc74Render()}});
+document.addEventListener('click',e=>{const w=document.getElementById('acc74w');if(A74.open&&w&&!w.contains(e.target)&&document.body.contains(e.target)){A74.open=false;acc74Render()}});
 render=(f=>function(){const r=f.apply(this,arguments);if(!document.querySelector('#app .title')){const w=document.getElementById('acc74w');if(w)w.remove()}return r})(render);
 setTimeout(acc74Render,0);
 /* ================= v75: 전투 가이드 — 공용 키워드만 보인다 =================
