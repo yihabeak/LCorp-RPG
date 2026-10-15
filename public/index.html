@@ -9802,8 +9802,13 @@ window.redFlash84=function(n,text,hard){let el=document.getElementById('rf84');i
 
 /* ---------- 1. 만지지마: 누르거나 도감을 열기만 해도 기믹이 일어난다 ---------- */
 const DTM_TXT=()=>T84('만지지 마시오','DO NOT TOUCH','触れてはならない');
+// 세 번째로 누르면 도감 정보가 모두 열린다. 그 뒤로는 도감 카드에서 기록을 읽을 수 있다 (작업은 여전히 버튼을 누르는 것이다)
+function dtmOpenAll84(){const a=ABM.dontouch,s=G.ab&&G.ab[a.id];if(!s)return;const i=infoOf(a);
+  i.b=1;Object.keys(i.f).forEach(k=>i.f[k]=1);i.m=i.m.map(()=>1);i.e=1;G.dtmInfo84=1;try{refreshObs(a)}catch(e){}
+  log(T84('만지지마의 모든 정보가 도감에 기록되었다.','Every record on Don\'t Touch Me has been written into the Codex.','「触れてはならない」のすべての情報が図鑑に記録された。'),'good')}
 function dtmTouch84(){if(typeof G==='undefined'||!G||G.dead||G.ended||(typeof B!=='undefined'&&B&&!B.done))return;
   const n=(G.dtm84||0)+1;G.dtm84=n>=3?0:n;
+  if(n>=3)try{dtmOpenAll84()}catch(e){}
   const pool=shuffle(G.agents.filter(a=>a.alive&&!a.out));
   const dieN=n===2?1:n===3?5:0,panN=n===1?1:n===2?2:0;
   const dead=pool.splice(0,dieN),pan=pool.filter(a=>!a.panic).slice(0,panN);
@@ -9820,7 +9825,7 @@ function dtmTouch84(){if(typeof G==='undefined'||!G||G.dead||G.ended||(typeof B!
   const go=async()=>{try{if(typeof flush74==='function'&&typeof ACT74!=='undefined'&&ACT74){A74.dirty=true;await flush74()}}catch(e){}setTimeout(()=>location.reload(),900)};setTimeout(go,700)}
 window.dtmTouch84=dtmTouch84;
 pickWork=(f=>function(a){if(a&&a.id==='dontouch')return dtmTouch84();return f.apply(this,arguments)})(pickWork);
-abPop=(f=>function(a){if(a&&a.id==='dontouch'){try{closePop()}catch(e){}return dtmTouch84()}const r=f.apply(this,arguments);
+abPop=(f=>function(a){if(a&&a.id==='dontouch'&&!(G&&G.dtmInfo84)){try{closePop()}catch(e){}return dtmTouch84()}const r=f.apply(this,arguments);
   // 징벌 새: 탈출 정보를 해금하면 "때리면 안 된다"는 기록이 보인다
   try{if(a&&a.id==='pbird'&&infoOf(a).e&&POP){const sec=[...POP.querySelectorAll('.isec')].pop();const tgt=[...POP.querySelectorAll('.isec')].find(x=>/탈출|Breach|脱走/.test(x.textContent))||sec;
     if(tgt&&!tgt.querySelector('.pb84'))tgt.insertAdjacentHTML('beforeend',`<p class="note pb84" data-no80>${T84('때리지 마세요. 공격하지 않고 두면 스스로 격리실로 돌아가요. 맞으면 마지막으로 때린 사람에게 징벌(위력 40 · 최대 체력 100% 피해)을 내려요. 이 기록을 본 직원들은 징벌 새와 싸우지 않아요.','Do not hit it. Left alone, it returns to its cell on its own. If struck, it punishes the last attacker (Power 40 · damage equal to 100% max HP). Staff who have read this record will not fight the Punishing Bird.','叩かないでください。攻撃せずに放っておけば、自分から収容室に戻ります。攻撃されると最後に叩いた者に懲罰（威力40・最大体力100%ダメージ）を下します。この記録を読んだ職員は罰鳥と戦いません。')}</p>`)}}catch(e){}
@@ -10189,6 +10194,17 @@ setTimeout(()=>hit(true),4000);
 // 탭을 내릴 때: 1분 이상 모였고, 마지막 전송 뒤 10분이 지났을 때만
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;const o=get();if(total(o)<60||Date.now()-lastSent<600000)return;
   put({});const ok=navigator.sendBeacon&&navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({vid,play:o})],{type:'application/json'}));if(ok)lastSent=Date.now();else back(o)});
+})();
+
+/* ================= v92: 타이틀 화면 버전 표기 =================
+   Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
+(function(){const V='Ver. 3.5.3.261016';window.GAME_VER=V;
+const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
+function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
+  if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
+renderTitle=(f=>function(){const r=f.apply(this,arguments);try{put()}catch(e){}return r})(renderTitle);
+render=(f=>function(){const r=f.apply(this,arguments);try{put()}catch(e){}return r})(render);
+setTimeout(put,0);
 })();
 </script>
 
