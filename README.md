@@ -57,3 +57,9 @@ npm run dev        # = vercel dev, http://localhost:3000
 
 ## 무료 한도
 플레이 중에는 최대 30초에 한 번 저장한다. 한 사람이 한 시간 플레이하면 약 120회다. Upstash와 Vercel 함수에는 무료 사용량 한도가 있으니, 정확한 값은 두 서비스의 요금 페이지에서 확인한다. 플레이어가 많아지면 `public/index.html`의 `setInterval(flush74,30000)`에서 숫자를 늘린다(밀리초 단위).
+
+## 운영 통계 (/stats)
+1. Vercel 프로젝트 → Settings → Environment Variables에 `STATS_KEY`(8자 이상 아무 문자열)를 추가하고 다시 배포한다.
+2. `https://(사이트 주소)/stats`를 열고 같은 키를 넣는다.
+- 방문·고유 방문자·플레이 시간·접속 국가/도시·서버 저장 횟수와 용량, 무료 한도 대비 추정치를 보여 준다.
+- 정확한 사용량은 Vercel 대시보드 Usage, Upstash 콘솔에서 확인한다.

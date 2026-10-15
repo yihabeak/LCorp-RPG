@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>운영 통계</title>
+<style>
+:root{--bg:#12181a;--pn:#1a2326;--ln:#2c3a3e;--tx:#dfe7e4;--mu:#8fa19c;--ac:#e8b04a;--ok:#5fc48a;--wn:#e8b04a;--bad:#ff5a4f;--b1:#4fa3e0;--b2:#e8b04a;--b3:#5fc48a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 2px}h2{font-size:15px;margin:22px 0 8px;color:var(--ac)}
+.mu{color:var(--mu);font-size:12.5px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+input,select,button{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:7px 10px}
+button{cursor:pointer;background:#2a3a3f}button:hover{border-color:var(--ac)}
+input{min-width:220px;flex:1 1 220px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.card{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:10px 12px}
+.card b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.card span{color:var(--mu);font-size:12px}
+.lim{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.lim .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gauge{height:10px;background:#0c1113;border-radius:5px;overflow:hidden;margin:6px 0 2px;position:relative}
+.gauge i{position:absolute;inset:0 auto 0 0;background:var(--ok)}.gauge i.p{background:rgba(255,255,255,.18)}
+.tw{overflow-x:auto;border:1px solid var(--ln);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}th{background:var(--pn);color:var(--mu);font-weight:600;position:sticky;top:0}
+td:first-child,th:first-child{text-align:left}
+svg{display:block;width:100%;height:auto;background:var(--pn);border:1px solid var(--ln);border-radius:8px}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin:6px 0}.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.err{color:var(--bad)}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:720px){.two{grid-template-columns:1fr}}
+a{color:var(--b1)}ul{margin:4px 0;padding-left:18px}
+</style></head><body><main>
+<h1>운영 통계</h1>
+<div class="mu">한국 시간 기준 · 개인 식별 정보 없이 집계 (방문자 번호는 기기마다 무작위로 만든 값) · 통계는 100일 뒤 자동 삭제</div>
+<div class="bar">
+  <input id="key" type="password" placeholder="STATS_KEY 입력" autocomplete="current-password">
+  <select id="days"><option value="31">최근 31일</option><option value="60">최근 60일</option><option value="90">최근 90일</option></select>
+  <button id="go">불러오기</button>
+</div>
+<div id="msg" class="mu"></div>
+<div id="out"></div>
+</main>
+<script>
+const PAGE_GZ=808471;              // 게임 페이지 한 번 받을 때 전송량(압축 기준, 바이트)
+const LIMITS={inv:1e6,fdt:100e9,cmd:5e5,ubw:10e9};
+const $=s=>document.querySelector(s);
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const N=n=>Math.round(n).toLocaleString('ko-KR');
+const B=b=>b>=1e9?(b/1e9).toFixed(2)+' GB':b>=1e6?(b/1e6).toFixed(1)+' MB':b>=1e3?(b/1e3).toFixed(0)+' KB':Math.round(b)+' B';
+const H=s=>s>=3600?(s/3600).toFixed(1)+'시간':Math.round(s/60)+'분';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('#key').value=ls.g('lcw_stats_key')||'';
+$('#go').onclick=load;$('#key').addEventListener('keydown',e=>{if(e.key==='Enter')load()});
+if($('#key').value)load();
+async function load(){const k=$('#key').value.trim();if(!k){$('#msg').textContent='키를 입력해 주세요.';return}
+  $('#msg').textContent='불러오는 중…';
+  try{const r=await fetch('/api/stats?days='+$('#days').value,{headers:{'x-stats-key':k}});const j=await r.json().catch(()=>({}));
+    if(!r.ok){const m={auth:'키가 맞지 않습니다.',nokey:'Vercel 환경 변수 STATS_KEY(8자 이상)가 아직 없습니다. 추가한 뒤 다시 배포해 주세요.',nodb:'저장소(Upstash Redis)가 연결되어 있지 않습니다.','too-many':'잘못된 키 시도가 많아 15분 동안 막혔습니다.'}[j.code]||('오류 '+r.status);
+      $('#msg').innerHTML='<span class="err">'+m+'</span>';return}
+    ls.s('lcw_stats_key',k);$('#msg').textContent='갱신: '+new Date().toLocaleString('ko-KR');draw(j)}
+  catch(e){$('#msg').innerHTML='<span class="err">서버에 연결하지 못했습니다.</span>'}}
+const f=(h,k)=>+(h&&h[k])||0;
+function sum(rows,fn){return rows.reduce((a,r)=>a+fn(r),0)}
+function draw(j){
+  const D=j.days,M=D.filter(r=>r.d.startsWith(j.month));
+  const v=sum(M,r=>f(r.h,'v')),vl=sum(M,r=>f(r.h,'vl')),p=sum(M,r=>f(r.h,'p')),pud=sum(M,r=>r.pu),un=sum(M,r=>f(r.h,'un')),ub=sum(M,r=>f(r.h,'ub')),su=sum(M,r=>f(r.h,'su'));
+  const [Y,Mo,Dd]=j.today.split('-').map(Number);const dim=new Date(Y,Mo,0).getDate();const proj=dim/Dd;
+  // 추정치: 접속 1회 = 페이지 1번 + /api/auth 1번 + /api/hit 1번 (+로그인이면 /api/slot 1번)
+  const inv=v*2+vl+un+pud,fdt=v*PAGE_GZ+ub*2,cmd=v*3+vl*5+pud*3+un*4+M.length*2,ubw=ub*2+vl*(un?ub/un:0);
+  let h='<h2>이번 달 ('+j.month+', '+Dd+'일째)</h2><div class="cards">'+[
+    [N(v),'방문'],[N(j.monthU),'고유 방문자'],[N(j.monthPU),'플레이한 사람'],[H(p),'총 플레이 시간'],
+    [pud?H(p/pud):'-','1인 하루 평균 플레이'],[j.monthU?(v/j.monthU).toFixed(1)+'회':'-','1인 평균 방문'],
+    [v?Math.round(vl/v*100)+'%':'-','로그인 상태 방문'],[N(su),'신규 가입'],[N(un)+'회 · '+B(ub),'서버 저장'],[N(j.keys),'저장소 키 수']
+  ].map(([a,b])=>'<div class="card"><b>'+a+'</b><span>'+b+'</span></div>').join('')+'</div>';
+  h+='<h2>무료 한도 대비 (이번 달 추정 · 회색 = 월말 예상)</h2>'+[
+    ['Vercel 함수 호출 (Function Invocations)',inv,LIMITS.inv,N],
+    ['Vercel 전송량 (Fast Data Transfer)',fdt,LIMITS.fdt,B],
+    ['Upstash 명령 수 (Commands)',cmd,LIMITS.cmd,N],
+    ['Upstash 전송량 (Bandwidth)',ubw,LIMITS.ubw,B]
+  ].map(([t,x,L,fm])=>{const pr=x*proj,pc=x/L*100,pp=Math.min(100,pr/L*100);const col=pp>=90?'var(--bad)':pp>=60?'var(--wn)':'var(--ok)';
+    return '<div class="lim"><div class="t"><span>'+t+'</span><span class="mu">'+fm(x)+' / '+fm(L)+' · 월말 예상 '+fm(pr)+' ('+pp.toFixed(1)+'%)</span></div><div class="gauge"><i class="p" style="width:'+pp+'%"></i><i style="width:'+Math.min(100,pc)+'%;background:'+col+'"></i></div></div>'}).join('')+
+    '<div class="mu">추정치는 이 사이트가 직접 센 방문·저장 횟수로 계산합니다. 정확한 값은 <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">Vercel 대시보드 → Usage</a>와 <a href="https://console.upstash.com/" target="_blank" rel="noopener">Upstash 콘솔</a>의 사용량 화면에서 확인해 주세요. Active CPU(월 4 CPU-시간)는 여기서 추정하지 않습니다.</div>';
+  // 일별 그래프
+  const W=1000,HH=220,pad=28,bw=(W-pad*2)/D.length,mx=Math.max(1,...D.map(r=>f(r.h,'v'))),mp=Math.max(60,...D.map(r=>f(r.h,'p')));
+  let g='';D.forEach((r,i)=>{const x=pad+i*bw,hv=f(r.h,'v')/mx*(HH-50),hu=r.u/mx*(HH-50),hp=f(r.h,'p')/mp*(HH-50);
+    g+='<rect x="'+(x+1)+'" y="'+(HH-24-hv)+'" width="'+(bw/3-1)+'" height="'+hv+'" fill="var(--b1)"><title>'+r.d+' 방문 '+f(r.h,'v')+'</title></rect>';
+    g+='<rect x="'+(x+bw/3)+'" y="'+(HH-24-hu)+'" width="'+(bw/3-1)+'" height="'+hu+'" fill="var(--b2)"><title>'+r.d+' 고유 방문자 '+r.u+'</title></rect>';
+    g+='<rect x="'+(x+bw*2/3)+'" y="'+(HH-24-hp)+'" width="'+(bw/3-1)+'" height="'+hp+'" fill="var(--b3)"><title>'+r.d+' 플레이 '+H(f(r.h,'p'))+'</title></rect>';
+    if(i%Math.ceil(D.length/10)===0||i===D.length-1)g+='<text x="'+(x+bw/2)+'" y="'+(HH-8)+'" fill="#8fa19c" font-size="11" text-anchor="middle">'+r.d.slice(5)+'</text>'});
+  h+='<h2>일별 추이</h2><div class="lg"><span><i style="background:var(--b1)"></i>방문 (최대 '+N(mx)+')</span><span><i style="background:var(--b2)"></i>고유 방문자</span><span><i style="background:var(--b3)"></i>플레이 시간 (최대 '+H(mp)+')</span></div><svg viewBox="0 0 '+W+' '+HH+'" role="img" aria-label="일별 방문과 플레이 시간">'+g+'</svg>';
+  // 지역
+  const loc={};D.forEach(r=>{for(const k in r.h)if(k.startsWith('l:'))loc[k.slice(2)]=(loc[k.slice(2)]||0)+f(r.h,k)});
+  const cc={};for(const k in loc){const c=k.split('/')[0];cc[c]=(cc[c]||0)+loc[k]}
+  let dn;try{dn=new Intl.DisplayNames(['ko'],{type:'region'})}catch(e){}const cn=c=>{try{return dn&&c!=='??'?dn.of(c)+' ('+c+')':c}catch(e){return c}};
+  const tot=Object.values(cc).reduce((a,b)=>a+b,0)||1;
+  const lt=(o,name)=>'<div class="tw"><table><tr><th>'+name+'</th><th>방문</th><th>비율</th></tr>'+Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,15).map(([k,n])=>'<tr><td>'+esc(name==='국가'?cn(k):k.replace(/^([A-Z?]{2})\//,(m,c)=>c+' · '))+'</td><td>'+N(n)+'</td><td>'+(n/tot*100).toFixed(1)+'%</td></tr>').join('')+'</table></div>';
+  h+='<h2>접속 지역 (기간 전체)</h2><div class="two">'+lt(cc,'국가')+lt(loc,'도시')+'</div>';
+  // 표
+  h+='<h2>일별 상세</h2><div class="tw"><table><tr><th>날짜</th><th>방문</th><th>고유</th><th>로그인</th><th>플레이 인원</th><th>플레이 합계</th><th>1인 평균</th><th>저장</th><th>저장 용량</th><th>가입</th></tr>'+
+    D.slice().reverse().map(r=>{const P=f(r.h,'p');return '<tr><td>'+r.d+'</td><td>'+N(f(r.h,'v'))+'</td><td>'+N(r.u)+'</td><td>'+N(f(r.h,'vl'))+'</td><td>'+N(r.pu)+'</td><td>'+H(P)+'</td><td>'+(r.pu?H(P/r.pu):'-')+'</td><td>'+N(f(r.h,'un'))+'</td><td>'+B(f(r.h,'ub'))+'</td><td>'+N(f(r.h,'su'))+'</td></tr>'}).join('')+'</table></div>';
+  h+='<h2>읽는 법</h2><ul class="mu"><li>고유 방문자·플레이 인원은 근사 집계(오차 약 1%)입니다. 한 사람이 기기를 바꾸거나 브라우저 기록을 지우면 다른 사람으로 셉니다.</li><li>플레이 시간은 화면을 보고 있고 2분 안에 조작이 있었던 시간만 셉니다. 탭을 그냥 닫으면 그 시간은 다음 접속 때 함께 들어옵니다.</li><li>1인 하루 평균 플레이 = 그날 플레이 합계 ÷ 그날 플레이한 사람 수.</li><li>지역은 Vercel이 접속 주소로 판단한 국가·도시이며, 주소 자체는 저장하지 않습니다.</li></ul>';
+  $('#out').innerHTML=h}
+</script></body></html>

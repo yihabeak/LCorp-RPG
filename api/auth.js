@@ -1,7 +1,7 @@
 // GET  /api/auth                         → { ok, db, user }   (지금 로그인한 아이디. 없으면 null)
 // POST /api/auth { action:'signup'|'login', id, pw } → { id, token }
 // POST /api/auth { action:'logout' }
-import { hasDb, redis, ID_RE, hashPw, checkPw, newSession, sessionUser, endSession, limited, send, body } from './_lib.js';
+import { hasDb, redis, kday, ID_RE, hashPw, checkPw, newSession, sessionUser, endSession, limited, send, body } from './_lib.js';
 
 export default async function handler(req, res) {
   try {
@@ -24,6 +24,7 @@ export default async function handler(req, res) {
       const rec = await hashPw(pw);
       const ok = await redis('SET', 'u:' + id, JSON.stringify({ ...rec, at: Date.now() }), 'NX');
       if (ok !== 'OK') return send(res, 409, { code: 'id-taken' });
+      try { await redis('HINCRBY', 'st:' + kday(), 'su', 1); } catch { }
       return send(res, 200, { id, token: await newSession(id) });
     }
     if (b.action === 'login') {

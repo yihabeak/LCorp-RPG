@@ -17,6 +17,23 @@ export async function redis(...cmd) {
   return j.result;
 }
 
+// 여러 명령을 한 번의 요청으로 (Upstash /pipeline). 명령 수는 그대로 세지만 왕복이 1번이다.
+export async function pipe(cmds) {
+  if (!cmds.length) return [];
+  const r = await fetch(URL_.replace(/\/$/, '') + '/pipeline', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(cmds)
+  });
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !Array.isArray(j)) throw new Error('redis pipe: ' + r.status);
+  return j.map(x => (x && 'result' in x ? x.result : null));
+}
+
+// 통계용 날짜 (한국 시간 기준 YYYY-MM-DD)
+export const kday = (t = Date.now()) => new Date(t + 9 * 3600e3).toISOString().slice(0, 10);
+export const STAT_TTL = 100 * 86400;   // 통계는 100일 뒤 자동 삭제
+
 export const ID_RE = /^[a-z0-9_]{4,16}$/;
 export const SESSION_DAYS = 30;
 
