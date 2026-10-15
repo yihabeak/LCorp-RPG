@@ -1,3 +1,4 @@
+// GET /api/slot?n=all         → { list:[1,2,3번 칸], pref }   (한 번에 — 서버 호출 절약)
 // GET /api/slot?n=1..3        → { data }   (본인 저장소만)
 // PUT /api/slot?n=1..3  {save, cdx, name, day, at, v}
 import { hasDb, redis, sessionUser, send, body } from './_lib.js';
@@ -9,7 +10,13 @@ export default async function handler(req, res) {
     if (!hasDb) return send(res, 503, { code: 'nodb' });
     const id = await sessionUser(req);
     if (!id) return send(res, 401, { code: 'auth' });
-    const n = Number(req.query?.n ?? new URL(req.url, 'http://x').searchParams.get('n'));
+    const q = req.query?.n ?? new URL(req.url, 'http://x').searchParams.get('n');
+    if (q === 'all' && req.method === 'GET') {
+      const raw = await redis('MGET', `s:${id}:1`, `s:${id}:2`, `s:${id}:3`, `p:${id}`);
+      const list = raw.slice(0, 3).map(v => (v ? JSON.parse(v) : null));
+      return send(res, 200, { list, pref: raw[3] ? JSON.parse(raw[3]) : null });
+    }
+    const n = Number(q);
     if (![1, 2, 3].includes(n)) return send(res, 400, { code: 'bad' });
     const key = `s:${id}:${n}`;
 
