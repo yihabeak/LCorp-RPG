@@ -10199,7 +10199,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.0.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.8.1.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10438,6 +10438,45 @@ const st=document.createElement('style');st.textContent=`
 .em96s{background:var(--bg2,#1a1a1a);color:var(--fg);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 6px;font-size:13px;max-width:100%}
 @media (max-width:760px),(orientation:portrait) and (max-width:900px){.rs96{font-size:8.5px;gap:1px;flex-wrap:wrap;width:100%;row-gap:2px;margin:3px 0 1px}.rs96 .r96{padding:1px 1.5px;letter-spacing:-.2px}.rs96 .sep96{flex-basis:100%;width:auto;height:0;margin:0;background:none}}`;
 document.head.appendChild(st);
+})();
+/* ============ v97: 플레이어 아바타가 든 무기 형태 ============ */
+// 원작에서 형태가 확인된 E.G.O만 지정. 나머지는 현재 공격 유형으로: 참격=칼 · 관통=총 · 타격=망치
+(function(){
+const WF97={baton:'baton',fixer:'sword',redmist58:'great',
+  penitence:'mace',wingbeat:'mace',tough:'pistol',beak:'pistol',match:'cannon',fragments:'spear',lanternw:'mace',socute:'claw',
+  sanguine:'axe',bullet:'rifle',lament:'dual',lovehate:'wand',lamp:'mace',crimson:'cleaver',cobalt:'claw',justitia:'sword',
+  goldrush:'fist',spore:'spear',blackswan:'umbrella',ecstasy:'pistol',heavenw:'spear',tears:'rapier',diffraction:'sword',
+  mimicry:'great',dacapo:'scythe',smile:'mace',censoredw:'spear',adoration:'pistol',twilight:'great',
+  murdererw:'mace',armorw:'sword',bathw:'knife',teddyw:'fist',woodsmanw:'axe',snowqueenw:'spear',armyw:'rifle'};
+const FB97={slash:'sword',pierce:'pistol',blunt:'hammer'};
+window.wForm97=function(id){if(WF97[id])return WF97[id];let t='blunt';try{t=weapOf(id).skills[0].t||t}catch(e){}return FB97[t]||'hammer'};
+const M='#d9dde3',H='#3a2f25';
+function shape97(f,c){const s=`stroke="${c}" stroke-width="1.4" stroke-linejoin="round"`;
+  switch(f){
+  case 'sword':return `<rect x="-1.6" y="0" width="3.2" height="10" fill="${H}"/><rect x="-7" y="-2.5" width="14" height="3" rx="1" fill="${c}"/><path d="M-3 -3H3L2.2 -44L0 -50L-2.2 -44Z" fill="${M}" ${s}/>`;
+  case 'great':return `<rect x="-2" y="0" width="4" height="11" fill="${H}"/><rect x="-10" y="-3" width="20" height="4" rx="1" fill="${c}"/><path d="M-6 -4H6L5 -50L0 -56L-5 -50Z" fill="${M}" ${s}/><path d="M0 -6V-48" stroke="${c}" stroke-width="1.2" opacity=".6"/>`;
+  case 'rapier':return `<rect x="-1.4" y="0" width="2.8" height="9" fill="${H}"/><path d="M-6 -1a6 5 0 0 0 12 0Z" fill="${c}"/><path d="M-1 -2H1L0.4 -52L0 -55L-0.4 -52Z" fill="${M}" ${s}/>`;
+  case 'knife':return `<rect x="-1.6" y="0" width="3.2" height="9" fill="${H}"/><rect x="-4.5" y="-2" width="9" height="2.4" fill="${c}"/><path d="M-2.8 -2.5H2.8L0 -22Z" fill="${M}" ${s}/>`;
+  case 'cleaver':return `<rect x="-1.6" y="0" width="3.2" height="10" fill="${H}"/><path d="M-3 -2H9V-30L-3 -34Z" fill="${M}" ${s}/>`;
+  case 'axe':return `<path d="M0 10V-46" stroke="${H}" stroke-width="3" stroke-linecap="round"/><path d="M-1 -44C-14 -52 -19 -36 -14 -26L-1 -32Z" fill="${M}" ${s}/>`;
+  case 'scythe':return `<path d="M0 10V-50" stroke="${H}" stroke-width="3" stroke-linecap="round"/><path d="M0 -50C-18 -54 -30 -44 -33 -32C-24 -42 -12 -45 0 -43Z" fill="${M}" ${s}/>`;
+  case 'spear':return `<path d="M0 10V-44" stroke="${H}" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -60L-4.5 -45L0 -42L4.5 -45Z" fill="${M}" ${s}/><path d="M-4 -42H4" stroke="${c}" stroke-width="2"/>`;
+  case 'mace':return `<path d="M0 10V-30" stroke="${H}" stroke-width="3" stroke-linecap="round"/><circle cy="-37" r="7.5" fill="${M}" ${s}/><path d="M0 -48V-44M-11 -37H-7M7 -37H11M-8 -45L-5.5 -42.5M8 -45L5.5 -42.5M-8 -29L-5.5 -31.5M8 -29L5.5 -31.5" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`;
+  case 'hammer':return `<path d="M0 10V-34" stroke="${H}" stroke-width="3" stroke-linecap="round"/><rect x="-12" y="-46" width="24" height="13" rx="2" fill="${M}" ${s}/><path d="M-12 -39.5H12" stroke="${c}" stroke-width="1" opacity=".6"/>`;
+  case 'baton':return `<rect x="-2" y="-38" width="4" height="46" rx="2" fill="#2b2f36" stroke="${c}" stroke-width="1"/><path d="M2 -6H9" stroke="#2b2f36" stroke-width="3" stroke-linecap="round"/>`;
+  case 'fist':return `<rect x="-8" y="-12" width="16" height="15" rx="4" fill="${M}" ${s}/><path d="M-4 -12V-8M0 -12V-8M4 -12V-8" stroke="${c}" stroke-width="1.4"/><rect x="-6" y="3" width="12" height="6" rx="2" fill="${c}"/>`;
+  case 'claw':return `<rect x="-7" y="-8" width="14" height="13" rx="4" fill="${M}" ${s}/><path d="M-5 -8L-8 -24M0 -8L0 -26M5 -8L8 -24" stroke="${M}" stroke-width="2.2" stroke-linecap="round"/><path d="M-5 -8L-8 -24M0 -8L0 -26M5 -8L8 -24" stroke="${c}" stroke-width=".8" stroke-linecap="round"/>`;
+  case 'pistol':return `<g transform="rotate(62)"><rect x="-2.5" y="-2" width="5" height="11" rx="1" fill="${H}"/><rect x="-3.5" y="-22" width="7" height="22" rx="1.5" fill="${M}" ${s}/><circle cy="-20" r="1.4" fill="${c}"/></g>`;
+  case 'dual':return shape97('pistol',c);
+  case 'rifle':return `<g transform="rotate(18)"><path d="M-3 12L3 12L3 0L-3 0Z" fill="${H}"/><rect x="-3" y="-34" width="6" height="34" rx="1" fill="${M}" ${s}/><rect x="-1.2" y="-46" width="2.4" height="12" fill="${c}"/><rect x="-2" y="-24" width="4" height="7" fill="${c}" opacity=".7"/></g>`;
+  case 'cannon':return `<g transform="rotate(12)"><rect x="-7" y="-34" width="14" height="38" rx="3" fill="${M}" ${s}/><ellipse cy="-34" rx="7" ry="2.6" fill="#111" stroke="${c}"/><rect x="-8.5" y="-12" width="17" height="4" fill="${c}"/></g>`;
+  case 'wand':return `<path d="M0 10V-40" stroke="${H}" stroke-width="2.4" stroke-linecap="round"/><path d="M0 -40C-7 -46 -10 -52 -5 -55C-2 -56 0 -53 0 -51C0 -53 2 -56 5 -55C10 -52 7 -46 0 -40Z" fill="${c}" stroke="${M}" stroke-width="1"/>`;
+  case 'umbrella':return `<path d="M0 10V-46" stroke="${H}" stroke-width="2.2" stroke-linecap="round"/><path d="M0 -50L-7 -16Q0 -12 7 -16Z" fill="#15151a" stroke="${c}" stroke-width="1.2"/><path d="M0 10a4 4 0 0 1 -6 2" stroke="${H}" stroke-width="2.2" fill="none"/>`;
+  default:return shape97(FB97.blunt,c)}}
+window.wSvg97=function(id,c){const f=wForm97(id);const one=`<g class="wp97 f-${f}" transform="translate(75 88) rotate(9)">${shape97(f,c)}</g>`;
+  return f==='dual'?one+`<g class="wp97" transform="translate(25 88) scale(-1 1) rotate(9)">${shape97('pistol',c)}</g>`:one};
+avatarSvg=(f=>function(){const h=f.apply(this,arguments);try{if(h.startsWith('<img'))return h;const w=weapOf(G.weapon);const c=(typeof DCOLV!=='undefined'&&DCOLV[w.dc])||'#e05040';
+  return h.replace(/<path d="M80 70l14-30"[^>]*\/>/,wSvg97(G.weapon,c))}catch(e){return h}})(avatarSvg);
 })();
 </script>
 
