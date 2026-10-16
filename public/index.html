@@ -10198,13 +10198,77 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.5.3.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.7.0.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
 renderTitle=(f=>function(){const r=f.apply(this,arguments);try{put()}catch(e){}return r})(renderTitle);
 render=(f=>function(){const r=f.apply(this,arguments);try{put()}catch(e){}return r})(render);
 setTimeout(put,0);
+})();
+// 3.6.0(공식 OST 영상) 되돌림: 그 설정을 켰던 기기는 원래 상태로
+(function(){try{if(typeof AUD!=='undefined'&&AUD&&'ost93' in AUD){delete AUD.ost93;if(!Object.keys(AUD.files||{}).length)AUD.bgmOn=false;audSave()}}catch(e){}})();
+
+/* ================= v93: 배경 음악 — 제작자가 만든 곡 (로비 · 일상 1~3 · 경보 1~3) =================
+   곡 파일은 사이트의 bgm/ 폴더에 있고, 지금 상황에 맞는 곡 하나만 받아서 재생한다 (한 번 받은 곡은 브라우저에 남는다).
+   로비: 타이틀 화면 · 일상 1~3: 근무 중 평상시(클리포트 폭주 단계에 따라) · 경보 1~3: 회사 경보 단계.
+   곡이 바뀌거나 한 곡이 끝나 처음으로 돌아갈 때는 3초 동안 앞 곡을 줄이며 다음 곡을 올린다. */
+(function(){if(typeof bgmPlay!=='function'||typeof AUD==='undefined')return;
+const T=(ko,en,ja)=>i80(ko,en,ja);
+const TRK={lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
+const NAME={lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
+const RANK={lobby:0,d1:1,d2:1,d3:1,w1:2,w2:3,w3:4};
+const FADE=3;
+const vol=()=>Math.max(0,Math.min(1,AUD.mvol??.6));
+const on=()=>AUD.bgmOn&&AUD.src93!=='file';
+// 처음 한 번: 내 음악 파일을 쓰고 있지 않으면 기본 음악을 켠다 (소리는 첫 클릭 뒤부터 난다)
+try{if(!AUD.bgm94){AUD.bgm94=1;delete AUD.gen93;if(!Object.keys(AUD.files||{}).length){AUD.src93='track';AUD.bgmOn=true}audSave()}}catch(e){}
+// 상황 → 곡
+function want(){try{if(document.querySelector('#app .title')||typeof G==='undefined'||!G)return 'lobby';
+  const w=Math.min(3,G.wnLv||0);if(w)return 'w'+w;const L=G.mLevel||0;return L>=7?'d3':L>=4?'d2':'d1'}catch(e){return 'lobby'}}
+// ---------- 재생기: 오디오 두 개를 번갈아 쓰며 3초 동안 서로 넘긴다 ----------
+const P={a:[new Audio(),new Audio()],i:0,key:null,fadeT:null};
+P.a.forEach(x=>{x.preload='auto';x.loop=false;x.volume=0});
+const curA=()=>P.a[P.i];
+function fadeTo(nextKey){const old=curA(),nx=P.a[1-P.i];P.i=1-P.i;P.key=nextKey;
+  try{if(!nx.src.endsWith(TRK[nextKey]))nx.src=TRK[nextKey];nx.currentTime=0}catch(e){}nx.volume=0;const pr=nx.play();if(pr&&pr.catch)pr.catch(()=>{});
+  const t0=performance.now(),v0=old.volume;clearInterval(P.fadeT);
+  P.fadeT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/(FADE*1000)),V=vol();nx.volume=V*k;old.volume=Math.max(0,v0*(1-k));
+    if(k>=1){clearInterval(P.fadeT);P.fadeT=null;try{old.pause()}catch(e){}}},50)}
+function stopAll(){clearInterval(P.fadeT);P.fadeT=null;const L=P.a.slice();const t0=performance.now(),v=L.map(x=>x.volume);
+  const id=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/600);L.forEach((x,i)=>x.volume=v[i]*(1-k));if(k>=1){clearInterval(id);L.forEach(x=>{try{x.pause()}catch(e){}})}},40);P.key=null}
+// 한 곡이 끝나 가면 같은 곡 처음으로 3초 동안 넘긴다 (끊기지 않는 반복)
+P.a.forEach(x=>x.addEventListener('timeupdate',()=>{if(x!==curA()||!on()||P.fadeT||!P.key)return;if(x.duration&&x.currentTime>x.duration-FADE-.8)fadeTo(P.key)}));
+P.a.forEach(x=>x.addEventListener('ended',()=>{if(x===curA()&&on()&&P.key)fadeTo(P.key)}));
+// 음량 조절이 바로 반영되게
+setInterval(()=>{if(!P.fadeT&&on()){const a=curA();if(!a.paused)a.volume=vol()}},500);
+let dn=null;
+function apply(force){if(!on())return;const k=want();if(k===P.key&&!force){if(dn){clearTimeout(dn);dn=null}const a=curA();if(a.paused&&!P.fadeT){const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{})}return}
+  // 경보가 내려갈 때는 3초 지켜본 뒤 바꾼다 (곡은 끄지 않는다)
+  if(P.key&&!force&&RANK[k]<RANK[P.key]&&k!=='lobby'){if(!dn)dn=setTimeout(()=>{dn=null;if(want()!==P.key)apply(true)},3000);return}
+  if(dn){clearTimeout(dn);dn=null}fadeTo(k)}
+// ---------- 소리 설정과 연결 ----------
+const P0=bgmPlay;
+bgmPlay=function(force){if(!on()){stopAll();return P0.apply(this,arguments)}
+  const box=document.getElementById('bgmBox');if(box){box.hidden=true;const f=box.querySelector('.bgm-f');if(f)f.innerHTML=''}BGMCUR='track94';apply(!!force||!P.key)};
+renderTop=(f=>function(){const r=f.apply(this,arguments);try{if(on()&&P.key)apply()}catch(e){}return r})(renderTop);
+renderTitle=(f=>function(){const r=f.apply(this,arguments);try{if(on()&&P.key)apply()}catch(e){}return r})(renderTitle);
+setInterval(()=>{try{if(on()&&P.key)apply()}catch(e){}},1000);
+// 브라우저는 클릭 전에는 소리를 막는다: 첫 조작 때 시작
+const kick0=()=>{try{if(on()&&(!P.key||curA().paused))bgmPlay(true)}catch(e){}};['pointerdown','keydown'].forEach(ev=>addEventListener(ev,kick0,{passive:true}));
+setTimeout(()=>{try{if(on())bgmPlay(true)}catch(e){}},300);
+// 왼쪽 아래 음악 창은 숨긴다 (조작은 위쪽 ♪ 소리 설정에서)
+const st=document.createElement('style');st.textContent=`#bgmBox{display:none!important}
+.aud93{display:grid;gap:6px;margin:8px 0 4px}.aud93 label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}.aud93 small{color:var(--fg2,#aaa)}`;document.head.appendChild(st);
+audioPop=(f=>function(){f();try{const b=POP&&POP.querySelector('.aud');if(!b)return;const lbl=[...b.querySelectorAll('.lbl')].find(l=>/음악|Music|音楽|BGM/i.test(l.textContent));
+  const tr=AUD.src93!=='file';const now=on()&&P.key?NAME[P.key]():'';
+  const html=`<div class="lbl" style="margin-top:10px">${T('배경 음악 출처','Music source','BGMの出どころ')}</div><div class="aud93" role="radiogroup">
+  <label><input type="radio" name="src93" value="track" ${tr?'checked':''}><span>${T('기본 음악','Default soundtrack','標準BGM')}${now?` <small>♪ ${now}</small>`:''}<br><small>${T('이 게임을 위해 만든 곡을 상황에 맞게 재생한다. 타이틀은 로비, 근무 중에는 일상 1~3(클리포트 폭주 단계에 따라), 경보가 울리면 경보 1~3이 나온다.','Music made for this game, matched to the situation: Lobby on the title screen, Daily 1–3 during work (by Qliphoth Meltdown level), and Warning 1–3 when an alert sounds.','このゲームのために作った曲を状況に合わせて再生する。タイトルはロビー、勤務中は日常1〜3(クリフォト暴走の段階に応じて)、警報が鳴ると警報1〜3が流れる。')}</small></span></label>
+  <label><input type="radio" name="src93" value="file" ${tr?'':'checked'}><span>${T('내 음악 파일','My music files','自分の音楽ファイル')}<br><small>${T('아래에서 고른 파일을 이 브라우저에서만 재생한다.','Plays the files you pick below, in this browser only.','下で選んだファイルをこのブラウザでのみ再生する。')}</small></span></label></div>`;
+  if(lbl)lbl.insertAdjacentHTML('beforebegin',html);else b.insertAdjacentHTML('beforeend',html);
+  b.querySelectorAll('input[name=src93]').forEach(r=>r.onchange=()=>{if(!r.checked)return;AUD.src93=r.value;if(r.value==='track')AUD.bgmOn=true;audSave();BGMCUR=null;P.key=null;bgmPlay(true)});
+  const pl=b.querySelector('#auPlay');if(pl){const o=pl.onclick;pl.onclick=()=>{if(AUD.src93!=='file'){AUD.bgmOn=true;audSave();P.key=null;bgmPlay(true);return closePop()}o&&o()}}}catch(e){}})(audioPop);
+window.BGM94={P,want,apply,TRK};
 })();
 </script>
 
