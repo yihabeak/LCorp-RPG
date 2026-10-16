@@ -7327,6 +7327,7 @@ let SILLAST=Date.now();setInterval(()=>{const now=Date.now(),dt=now-SILLAST;SILL
   a.d=['시곗바늘과 종을 품은 형체. 늘 무언가를 세고 있다. (구버전 환상체)','시간은 그 앞에서 고르게 흐르지 않는다. 남겨진 흔적들이 일한 사람의 몸짓을 그대로 따라 한다.','열세 번째 종이 울리기 전에 흔적을 모두 지워야 한다. 침묵을 택하면 시간은 멈추지만, 그 값은 몸으로 치른다.'];
   REC60.silence=['종이 열두 번 울리는 동안 아무도 그것을 건드릴 수 없었다.','흔적은 직원의 걸음과 손놀림을 한 박자 늦게 흉내 냈다.','열세 번째 종소리가 울린 뒤의 기록은 대부분 지워져 있다.'];
   CRT60.silence='결과 나쁨 -1 (기본 규칙). 카운터가 0이 되면 탈출한다.'})();
+var BGM_BASE='https://lcorp-rpg.pages.dev/';
 
 /* ================= v62 ================= */
 /* --- A. 침묵의 대가: 작업 기믹 (라이브러리 오브 루이나 접대를 바탕으로 추론) ---
@@ -10198,7 +10199,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.7.7.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.7.8.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10215,7 +10216,8 @@ setTimeout(put,0);
    곡이 바뀌거나 한 곡이 끝나 처음으로 돌아갈 때는 3초 동안 앞 곡을 줄이며 다음 곡을 올린다. */
 (function(){if(typeof bgmPlay!=='function'||typeof AUD==='undefined')return;
 const T=(ko,en,ja)=>i80(ko,en,ja);
-const BASE='';   // 음악 파일을 다른 곳(예: Cloudflare Pages)에 올리면 그 주소를 여기에 적는다. 예: 'https://lcorp-bgm.pages.dev/'
+// 음악 파일 위치: 호스팅판은 Cloudflare Pages(전송량 무제한)에서 받는다. 빌드가 BGM_BASE를 넣는다. 그 사이트 자신이나 아티팩트에서는 같은 곳에서 받는다.
+const BASE=(typeof BGM_BASE==='string'&&BGM_BASE&&!/\.pages\.dev$/.test(location.hostname))?BGM_BASE:'';
 const TRK={sup_welfare:'bgm/sup_welfare.mp3',sup_record:'bgm/sup_record.mp3',sup_extract:'bgm/sup_extract.mp3',sup_central:'bgm/sup_central.mp3',sup_disc:'bgm/sup_disc.mp3',pick:'bgm/pick.mp3',shift:'bgm/shift.mp3',codex:'bgm/codex.mp3',d50:'bgm/day50.mp3',bw1:'bgm/battle1.mp3',red:'bgm/redmist.mp3',arb:'bgm/arbiter.mp3',ending:'bgm/ending.mp3',lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
 const NAME={sup_welfare:()=>T('코어 억제 · 헤세드','Core Suppression · Chesed','コア抑制・ケセド'),sup_record:()=>T('코어 억제 · 호크마','Core Suppression · Hokma','コア抑制・ホクマー'),sup_extract:()=>T('코어 억제 · 비나','Core Suppression · Binah','コア抑制・ビナー'),sup_central:()=>T('코어 억제 · 티페리트','Core Suppression · Tiphereth','コア抑制・ティファレト'),sup_disc:()=>T('코어 억제 · 게부라','Core Suppression · Gebura','コア抑制・ゲブラー'),pick:()=>T('환상체 선택','Abnormality Selection','アブノーマリティ選択'),shift:()=>T('근무 시작 / 끝','Shift Start / End','勤務開始 / 終了'),codex:()=>T('도감 · E.G.O 장비 · 관리자','Codex · E.G.O Gear · Admin','図鑑・E.G.O装備・管理者'),d50:()=>T('50일차','Day 50','50日目'),bw1:()=>T('환상체전 · 첫 번째 경보','Abnormality Battle · First Warning','アブノーマリティ戦・第一警報'),red:()=>T('붉은 안개 전투','Red Mist Battle','赤い霧戦'),arb:()=>T('조율자 / 발톱 전투','Arbiter / Claw Battle','調律者 / 爪戦'),ending:()=>T('최종 엔딩','Final Ending','最終エンディング'),lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
 const RANK={lobby:0,shift:0,pick:0,codex:0,d1:1,d2:1,d3:1,d50:1,w1:2,w2:3,w3:4,bw1:5,sup_central:5,sup_disc:5,sup_extract:5,sup_record:5,sup_welfare:5,red:6,arb:6,ending:7};
