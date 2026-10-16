@@ -1404,7 +1404,7 @@ function renderTitle(){
   <div class="field"><span class="lbl">출신</span><div class="seg" id="org">${[['nest','둥지 출신','정돈된 교육. 지혜·절제가 높다.'],['back','뒷골목 출신','밤을 버텨낸 몸. 용기·정의가 높다.'],['out','외곽 출신','아무것도 믿지 않는 눈. 고르게 단단하다.']].map(([k,n,d])=>`<button data-k="${k}" aria-pressed="${sel.origin===k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div></div>
   <p class="note">배치 부서: 지휘팀 (1일차에 열려 있는 유일한 부서). 이후 열리는 부서로 옮길 수 있다.</p>
   <div class="row"><button class="btn" id="go">입사한다</button></div></div>
-  <p class="note fan-note">Project Moon의 Lobotomy Corporation을 바탕으로 한 비공식 팬메이드 게임.<br>원작 및 Project Moon과 직접적인 관련이 없으며, 비영리로 제작됨.</p></div>`;
+  <p class="note fan-note">Project Moon의 Lobotomy Corporation을 바탕으로 한 비공식 팬메이드 게임.<br>원작 및 Project Moon과 직접적인 관련이 없으며, 비영리로 제작됨.<br>모든 사운드는 AI를 이용하여 만들어졌습니다.</p></div>`;
   const seg=(id,key)=>$('#'+id).querySelectorAll('button').forEach(b=>b.onclick=()=>{sel[key]=b.dataset.k;$('#'+id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   seg('org','origin');
   if($('#cont'))$('#cont').onclick=()=>{G=sv;AB.forEach(a=>{if(!G.ab[a.id])G.ab[a.id]={cnt:a.cnt,pe:0,obs:0,works:0,melt:0,dept:null,day:0}});G.toolUse=G.toolUse||{};G.birdsToday=G.birdsToday||[];G.min=G.min??540;migrateInv();AID=G.agents.length+5;render();resumePhase()};
@@ -8840,6 +8840,7 @@ LOBOTOMY CORPORATION · 지부 입사 안내|LOBOTOMY CORPORATION · Branch Onbo
 첫날 열린 부서는 지휘팀 하나, 격리실에는 단악수선 하나. 날이 지날수록 부서가 열리고 환상체가 늘어난다. 당신은 관리자가 아니라, 관리자의 명령을 받아 격리실 문을 여는 한 사람이다. 동료들도 저마다 작업하고, 다치고, 쓰러진다. 할당량을 채워야 퇴근할 수 있고, 체력과 정신력 중 하나라도 바닥나면 그날이 마지막이다.|On day one, only the Control Team is open, and only One Sin waits in containment. Departments open and Abnormalities multiply as the days go by. You are not the Manager — you are one of the people who open the doors on the Manager's orders. Your colleagues work, get hurt, and fall, each in their own way. Meet the quota to clock out. If either your HP or your Sanity runs dry, that day is your last.|初日に開いている部門はコントロールチームだけ、収容室には「たった一つの罪」だけ。日が経つほど部門が開き、アブノーマリティが増える。あなたは管理人ではない。管理人の命令で収容室の扉を開ける、一人の人間だ。同僚たちもそれぞれ作業し、傷つき、倒れていく。ノルマを満たせば退勤できるが、体力か精神力のどちらかが尽きれば、その日が最後だ。
 Project Moon의 Lobotomy Corporation을 바탕으로 한 비공식 팬메이드 게임.|An unofficial fan-made game based on Project Moon's Lobotomy Corporation.|Project MoonのLobotomy Corporationを元にした非公式ファンメイドゲーム。
 원작 및 Project Moon과 직접적인 관련이 없으며, 비영리로 제작됨.|Not affiliated with the original or Project Moon. Made non-commercially.|原作およびProject Moonとは直接関係なく、非営利で制作。
+모든 사운드는 AI를 이용하여 만들어졌습니다.|All sounds were made using AI.|すべてのサウンドはAIを利用して作られました。
 PC 권장|PC recommended|PC推奨
 이 게임은 PC 화면에 맞춰 만들어졌다. 모바일에서도 할 수 있지만, 전투와 관리 화면은 넓은 PC 화면에서 훨씬 보기 편하다.|This game is designed for PC screens. It works on mobile, but combat and management are much easier to read on a wide PC display.|このゲームはPC画面向けに作られている。モバイルでも遊べるが、戦闘と管理画面は広いPC画面のほうがずっと見やすい。
 기록 불러오기|Load a record|記録を読み込む
@@ -10199,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.6.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.8.7.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
