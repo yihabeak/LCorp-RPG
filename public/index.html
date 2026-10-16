@@ -7327,7 +7327,6 @@ let SILLAST=Date.now();setInterval(()=>{const now=Date.now(),dt=now-SILLAST;SILL
   a.d=['시곗바늘과 종을 품은 형체. 늘 무언가를 세고 있다. (구버전 환상체)','시간은 그 앞에서 고르게 흐르지 않는다. 남겨진 흔적들이 일한 사람의 몸짓을 그대로 따라 한다.','열세 번째 종이 울리기 전에 흔적을 모두 지워야 한다. 침묵을 택하면 시간은 멈추지만, 그 값은 몸으로 치른다.'];
   REC60.silence=['종이 열두 번 울리는 동안 아무도 그것을 건드릴 수 없었다.','흔적은 직원의 걸음과 손놀림을 한 박자 늦게 흉내 냈다.','열세 번째 종소리가 울린 뒤의 기록은 대부분 지워져 있다.'];
   CRT60.silence='결과 나쁨 -1 (기본 규칙). 카운터가 0이 되면 탈출한다.'})();
-var BGM_BASE='https://lcorp-rpg.pages.dev/';
 
 /* ================= v62 ================= */
 /* --- A. 침묵의 대가: 작업 기믹 (라이브러리 오브 루이나 접대를 바탕으로 추론) ---
@@ -10063,7 +10062,7 @@ try{const TP=[6.5,8.5,10.5,12.5,14.5];const s84=window.scale84;
   const OG={dawn:1,noon:2,dusk:3,midnight:4};
   window.scale85=function(u){if(!u||u.ally||!Array.isArray(u.skills)||u.skills._sc85)return;const ord=B&&B.opt&&B.opt.ordeal;if(u.boss&&!ord)return;
     const abf=B&&B.opt&&(B.opt.ab||B.kind==='arcmix')&&!B.opt.boss;if(!ord&&!abf)return;u.skills._sc85=1;u.skills._sc84=1;
-    const g=ord?((B.opt.col==='white'&&(B.opt.tier==='noon'||B.opt.tier==='dusk'))?3:(OG[B.opt.tier]??(B.opt.grade||1))):Math.max(0,Math.min(4,u.lorG!=null?u.lorG:(u.g||0)));
+    const g=ord?(OG[B.opt.tier]??(B.opt.grade||1)):Math.max(0,Math.min(4,u.lorG!=null?u.lorG:(u.g||0)));
     const L=u.skills.filter(s=>s&&s.coins>0&&!s.noAtk&&!s.special&&!s.salv&&!s.judge&&!s.rise&&!s.execute);if(!L.length)return;
     const avg=L.reduce((a,s)=>a+midS(s),0)/L.length;let k=TP[g]/avg;k=Math.max(.6,Math.min(2,k));
     if(Math.abs(k-1)>=.08)L.forEach(s=>{s.base=Math.max(1,Math.round(s.base*k));s.cp=s.cp>0?Math.max(1,Math.round(s.cp*k)):0});
@@ -10199,7 +10198,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.1.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.7.6.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10216,11 +10215,10 @@ setTimeout(put,0);
    곡이 바뀌거나 한 곡이 끝나 처음으로 돌아갈 때는 3초 동안 앞 곡을 줄이며 다음 곡을 올린다. */
 (function(){if(typeof bgmPlay!=='function'||typeof AUD==='undefined')return;
 const T=(ko,en,ja)=>i80(ko,en,ja);
-// 음악 파일 위치: 호스팅판은 Cloudflare Pages(전송량 무제한)에서 받는다. 빌드가 BGM_BASE를 넣는다. 그 사이트 자신이나 아티팩트에서는 같은 곳에서 받는다.
-const BASE=(typeof BGM_BASE==='string'&&BGM_BASE&&!/\.pages\.dev$/.test(location.hostname))?BGM_BASE:'';
-const TRK={sup_welfare:'bgm/sup_welfare.mp3',sup_record:'bgm/sup_record.mp3',sup_extract:'bgm/sup_extract.mp3',sup_central:'bgm/sup_central.mp3',sup_disc:'bgm/sup_disc.mp3',pick:'bgm/pick.mp3',shift:'bgm/shift.mp3',codex:'bgm/codex.mp3',d50:'bgm/day50.mp3',bw1:'bgm/battle1.mp3',red:'bgm/redmist.mp3',arb:'bgm/arbiter.mp3',ending:'bgm/ending.mp3',lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
-const NAME={sup_welfare:()=>T('코어 억제 · 헤세드','Core Suppression · Chesed','コア抑制・ケセド'),sup_record:()=>T('코어 억제 · 호크마','Core Suppression · Hokma','コア抑制・ホクマー'),sup_extract:()=>T('코어 억제 · 비나','Core Suppression · Binah','コア抑制・ビナー'),sup_central:()=>T('코어 억제 · 티페리트','Core Suppression · Tiphereth','コア抑制・ティファレト'),sup_disc:()=>T('코어 억제 · 게부라','Core Suppression · Gebura','コア抑制・ゲブラー'),pick:()=>T('환상체 선택','Abnormality Selection','アブノーマリティ選択'),shift:()=>T('근무 시작 / 끝','Shift Start / End','勤務開始 / 終了'),codex:()=>T('도감 · E.G.O 장비 · 관리자','Codex · E.G.O Gear · Admin','図鑑・E.G.O装備・管理者'),d50:()=>T('50일차','Day 50','50日目'),bw1:()=>T('환상체전 · 첫 번째 경보','Abnormality Battle · First Warning','アブノーマリティ戦・第一警報'),red:()=>T('붉은 안개 전투','Red Mist Battle','赤い霧戦'),arb:()=>T('조율자 / 발톱 전투','Arbiter / Claw Battle','調律者 / 爪戦'),ending:()=>T('최종 엔딩','Final Ending','最終エンディング'),lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
-const RANK={lobby:0,shift:0,pick:0,codex:0,d1:1,d2:1,d3:1,d50:1,w1:2,w2:3,w3:4,bw1:5,sup_central:5,sup_disc:5,sup_extract:5,sup_record:5,sup_welfare:5,red:6,arb:6,ending:7};
+const BASE='';   // 음악 파일을 다른 곳(예: Cloudflare Pages)에 올리면 그 주소를 여기에 적는다. 예: 'https://lcorp-bgm.pages.dev/'
+const TRK={sup_record:'bgm/sup_record.mp3',sup_extract:'bgm/sup_extract.mp3',sup_central:'bgm/sup_central.mp3',sup_disc:'bgm/sup_disc.mp3',pick:'bgm/pick.mp3',shift:'bgm/shift.mp3',codex:'bgm/codex.mp3',d50:'bgm/day50.mp3',bw1:'bgm/battle1.mp3',red:'bgm/redmist.mp3',arb:'bgm/arbiter.mp3',ending:'bgm/ending.mp3',lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
+const NAME={sup_record:()=>T('코어 억제 · 호크마','Core Suppression · Hokma','コア抑制・ホクマー'),sup_extract:()=>T('코어 억제 · 비나','Core Suppression · Binah','コア抑制・ビナー'),sup_central:()=>T('코어 억제 · 티페리트','Core Suppression · Tiphereth','コア抑制・ティファレト'),sup_disc:()=>T('코어 억제 · 게부라','Core Suppression · Gebura','コア抑制・ゲブラー'),pick:()=>T('환상체 선택','Abnormality Selection','アブノーマリティ選択'),shift:()=>T('근무 시작 / 끝','Shift Start / End','勤務開始 / 終了'),codex:()=>T('도감 · E.G.O 장비 · 관리자','Codex · E.G.O Gear · Admin','図鑑・E.G.O装備・管理者'),d50:()=>T('50일차','Day 50','50日目'),bw1:()=>T('환상체전 · 첫 번째 경보','Abnormality Battle · First Warning','アブノーマリティ戦・第一警報'),red:()=>T('붉은 안개 전투','Red Mist Battle','赤い霧戦'),arb:()=>T('조율자 / 발톱 전투','Arbiter / Claw Battle','調律者 / 爪戦'),ending:()=>T('최종 엔딩','Final Ending','最終エンディング'),lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
+const RANK={lobby:0,shift:0,pick:0,codex:0,d1:1,d2:1,d3:1,d50:1,w1:2,w2:3,w3:4,bw1:5,sup_central:5,sup_disc:5,sup_extract:5,sup_record:5,red:6,arb:6,ending:7};
 const FADE=3;
 const vol=()=>Math.max(0,Math.min(1,AUD.mvol??.6));
 const on=()=>AUD.bgmOn&&AUD.src93!=='file';
@@ -10334,149 +10332,6 @@ let ro=null,watched=null,q=0;const redraw=()=>{if(q)return;q=requestAnimationFra
 function watch(){const s=document.getElementById('lbStage');if(s===watched)return;watched=s;if(ro)ro.disconnect();if(s&&window.ResizeObserver){ro=new ResizeObserver(redraw);ro.observe(s);s.querySelectorAll('.lb-side').forEach(x=>ro.observe(x))}}
 new MutationObserver(()=>watch()).observe(document.body,{childList:true,subtree:true});
 if(mq.addEventListener)mq.addEventListener('change',redraw);
-})();
-/* ============ v96: 백색 정오·어스름 해결사 각자 배회 · 전투 내성 표시 · E.G.O 변조 ============ */
-(function(){
-const T96=(ko,en,ja)=>i80(ko,en,ja);
-const GN96=['ZAYIN','TETH','HE','WAW','ALEPH'];
-const FXC96={red:'RED',white:'WHITE',black:'BLACK',pale:'PALE'};
-const TY96=['slash','pierce','blunt'];
-const tyN96=t=>t==='slash'?T96('참격','Slash','斬撃'):t==='pierce'?T96('관통','Pierce','貫通'):T96('타격','Blunt','打撃');
-const tyS96=t=>t==='slash'?T96('참','S','斬'):t==='pierce'?T96('관','P','貫'):T96('타','B','打');
-const nv96=v=>{v=+v;if(isNaN(v))return '?';return String(+v.toFixed(2)).replace(/^0\./,'.')};
-const cls96=v=>{v=+v;return v>=2?'w2':v>1?'w1':v<=.5?'r2':v<1?'r1':'n'};
-const isFx96=r=>r&&r.e&&r.e.type==='ordeal'&&r.e.fx&&FXC96[r.e.fx];
-
-/* ---------- 1) 백색 정오·어스름: 해결사마다 따로 싸우며 돌아다닌다 ---------- */
-// 위협도: WAW급(9) 이상 → 대응 인원 4명
-roamFromQ=(f=>function(){const r0=f.apply(this,arguments);try{(G.roam||[]).forEach(r=>{if(isFx96(r)&&(r.e.tk==='noon'||r.e.tk==='dusk')&&!r.t96){r.t96=1;r.thr=Math.max(r.thr||0,9)}})}catch(e){}return r0})(roamFromQ);
-let ROAM96=false,LAST96=null;
-agSuit=(f=>function(a){if(ROAM96)LAST96=a;return f.apply(this,arguments)})(agSuit);
-suitOf=(f=>function(id){const s=f.apply(this,arguments);try{if(ROAM96&&LAST96&&LAST96.task&&LAST96.task.k==='fight'){const r=(G.roam||[]).find(x=>x.uid===LAST96.task.r);
-  if(isFx96(r)&&s&&s.r){const c=FXC96[r.e.fx];return Object.assign({},s,{r:Object.assign({},s.r,{RED:s.r[c]??1})})}}}catch(e){}return s})(suitOf);
-function cellFree96(n){return n&&!n.startsWith('C:')}
-roamStep=(f=>function(m){if(!G||!G.roam||!G.roam.length)return f.apply(this,arguments);
-  // 이동 (교전 중에도 자리를 옮기며 싸운다 · 교전이 없으면 가장 가까운 직원을 찾아간다)
-  try{G.roam.filter(r=>isFx96(r)&&!r.dead&&!r.player).forEach(r=>{r.mv96=(r.mv96||0)+m;
-    while(r.mv96>=10){r.mv96-=10;
-      const F=G.agents.filter(a=>a.alive&&!a.panic&&a.task&&a.task.k==='fight'&&a.task.r===r.uid);
-      if(F.length){if(!chance(.45))continue;const nb=nbrs(r.node).filter(cellFree96);if(!nb.length)continue;const to=pick(nb);r.node=to;F.forEach(a=>a.loc=to);
-        if(chance(.35))log(T96(`${r.n}이(가) 싸우면서 ${nodeName(to)}(으)로 자리를 옮겼다.`,`${r.n} kept fighting and moved to ${nodeName(to)}.`,`${r.n}は戦いながら${nodeName(to)}へ移動した。`),'warn')}
-      else{const prey=G.agents.filter(a=>a.alive&&!a.out&&!(a.task&&a.task.k==='fight')).map(a=>({a,p:pathTo(r.node,agLoc(a))})).filter(x=>x.p.length>1).sort((x,y)=>x.p.length-y.p.length)[0];
-        if(prey&&cellFree96(prey.p[1]))r.node=prey.p[1]}}})}catch(e){}
-  // 교전 피해는 해결사 자신의 색으로 (WHITE·BLACK은 정신도 깎는다)
-  const sp0={};try{G.agents.forEach(a=>{if(a.task&&a.task.k==='fight'){const r=G.roam.find(x=>x.uid===a.task.r);if(isFx96(r)&&(r.e.fx==='white'||r.e.fx==='black'))sp0[a.id]=[a.hp,a.sp]}})}catch(e){}
-  ROAM96=true;let res;try{res=f.apply(this,arguments)}finally{ROAM96=false;LAST96=null}
-  try{G.agents.forEach(a=>{const v=sp0[a.id];if(!v||!a.alive)return;const dh=v[0]-a.hp,ds=v[1]-a.sp;if(dh>0&&ds<=0){a.sp-=Math.round(dh*.6);if(a.sp<=-45&&!a.panic){a.task=null;a.loc=null;startPanic(a)}}})}catch(e){}
-  return res})(roamStep);
-
-/* ---------- 2) E.G.O 변조 데이터 ---------- */
-const COST96=[2,4,6,8,10];
-const SPROF96={none:null};TY96.forEach(a=>TY96.forEach(b=>{if(a!==b)SPROF96[a+'-'+b]=[a,b]}));
-function egoM96(){if(!G.egoMod)G.egoMod={w:{},s:{}};G.egoMod.w=G.egoMod.w||{};G.egoMod.s=G.egoMod.s||{};return G.egoMod}
-function isEgo96(id){try{return id&&id!=='baton'&&id!=='fixer'&&id!=='basic'&&AB.concat(typeof AB_GONE!=='undefined'?AB_GONE:[]).some(a=>a.eq&&a.eq.id===id)}catch(e){return false}}
-window.tres96=function(sid){const out={slash:1,pierce:1,blunt:1};try{const k=G&&G.egoMod&&G.egoMod.s&&G.egoMod.s[sid];const p=k&&SPROF96[k];if(p){out[p[0]]=.75;out[p[1]]=1.25}}catch(e){}return out};
-const WC96=new WeakMap();
-weapOf=(f=>function(id){const w=f.apply(this,arguments);try{const t=G&&G.egoMod&&G.egoMod.w&&G.egoMod.w[id];if(!w||!t||!isEgo96(id))return w;
-  const c=WC96.get(w);if(c&&c.t===t&&c.v===JSON.stringify(w.skills.map(s=>[s.base,s.cp,s.coins])))return c.k;
-  const sk=s=>s?Object.assign({},s,{t}):s;const k=Object.assign({},w,{skills:w.skills.map(sk),t96:t});if(w.ego)k.ego=Object.assign({},w.ego,{s:sk(w.ego.s),cor:sk(w.ego.cor)});
-  WC96.set(w,{t,k,v:JSON.stringify(w.skills.map(s=>[s.base,s.cp,s.coins]))});return k}catch(e){return w}})(weapOf);
-// 아군 공격 유형 내성: 적의 공격이 맞을 때만
-let CUR_T96=null;
-attackFromEnemy=(f=>function(u,s){const p=CUR_T96;CUR_T96=s&&s.t||null;try{return f.apply(this,arguments)}finally{CUR_T96=p}})(attackFromEnemy);
-dmgAlly=(f=>function(a,amt,color,src,atkG){try{if(CUR_T96&&a&&!a.dead&&a.suit){const m=tres96(a.suit)[CUR_T96];if(m&&m!==1)amt=amt*m}}catch(e){}return f.call(this,a,amt,color,src,atkG)})(dmgAlly);
-
-/* ---------- 3) 전투: 적 내성 한 줄 · 아군 정보 ---------- */
-function chip96(lab,v,c,noise){return `<span class="r96 ${noise?'n':cls96(v)} ${c||''}"><i>${lab}</i>${noise?'?':'×'+nv96(v)}</span>`}
-function enemyRow96(u,noise){const r=u.res||{},c=u.cres||{};
-  return TY96.map(t=>chip96(tyS96(t),r[t]??1,'',noise)).join('')+'<b class="sep96"></b>'+['RED','WHITE','BLACK','PALE'].map(k=>chip96(k[0],c[k]??1,'d'+k,noise)).join('')}
-function allyRow96(a){try{const w=kit(a),su=suitOf(a.suit),cr=allySuitR(a),tr=tres96(a.suit);const t=(w.skills&&w.skills[0]&&w.skills[0].t)||'blunt';
-  return `<div class="ai96"><span class="w96">${ic?ic('sword'):''}<b>${w.n}</b> <em>${GN96[w.g||0]}</em> · ${tyN96(t)} · <span class="d${w.dc||'RED'}">${w.dc||'RED'}</span>${w.t96?` <small class="m96">${T96('변조','Modded','変造')}</small>`:''}</span>
-   <span class="w96">${ic?ic('shield'):''}<b>${su.n}</b> <em>${GN96[su.g||0]}</em></span>
-   <span class="rw96">${['RED','WHITE','BLACK','PALE'].map(k=>chip96(k[0],cr[k]??1,'d'+k)).join('')}<b class="sep96"></b>${TY96.map(x=>chip96(tyS96(x),tr[x])).join('')}</span></div>`}catch(e){return ''}}
-renderBattle=(f=>function(){const r0=f.apply(this,arguments);try{if(!B)return r0;const noise=typeof infoHidden==='function'&&infoHidden();
-  document.querySelectorAll('#panel .lb-fo[data-lbu]').forEach(fg=>{const u=B.units.find(x=>String(x.uid)===fg.dataset.lbu);if(!u||fg.querySelector('.rs96'))return;
-    const bars=fg.querySelectorAll(':scope>.lb-bar');const last=bars[bars.length-1];if(!last)return;last.insertAdjacentHTML('afterend',`<div class="rs96" title="${T96('공격 유형 · 피해 색 내성 (×배율)','Attack-type · damage-color resistance (×)','攻撃タイプ・ダメージ色耐性（×倍率）')}">${enemyRow96(u,noise)}</div>`)});
-  const dock=document.getElementById('lbDock');if(dock&&!B.done&&B.selA&&!dock.querySelector('.ai96')){const tb=dock.querySelector('.lb-tabs');const h=allyRow96(B.selA);if(tb)tb.insertAdjacentHTML('afterend',h);else dock.insertAdjacentHTML('afterbegin',h)}}catch(e){}return r0})(renderBattle);
-
-/* ---------- 4) 장비·인사: E.G.O 변조 ---------- */
-function modCard96(){const M=egoM96();const ws=[...new Set(G.ownW||[])].filter(isEgo96),ss=[...new Set(G.ownS||[])].filter(isEgo96);const dis=typeof B!=='undefined'&&B&&!B.done;
-  const wRow=id=>{const w=weapOf(id),g=w.g||0,c=COST96[g],cur=M.w[id]||'';const base=(WEAP[id]&&WEAP[id].skills[0]&&WEAP[id].skills[0].t)||'';const now=cur||base;
-    return `<div class="em96"><div class="h"><b>${ic('sword')} ${w.n}</b> <em>${GN96[g]}</em> · ${T96('현재','Now','現在')} <b>${tyN96(now)}</b>${cur?` <small class="m96">${T96('변조','Modded','変造')}</small>`:''}</div>
-     <div class="row">${TY96.map(t=>`<button class="btn ghost small" data-mw="${id}" data-t="${t===base?'':t}" ${dis||t===now||G.lob<c?'disabled':''}>${tyN96(t)}${t===base?` (${T96('원래','orig.','元')})`:''} · ${c} LOB</button>`).join('')}</div></div>`};
-  const sRow=id=>{const s=suitOf(id),g=s.g||0,c=COST96[g],cur=M.s[id]||'none';const tr=tres96(id);
-    const lab=k=>k==='none'?T96('균일','Even','均一'):`${tyN96(SPROF96[k][0])} ${T96('내성','resist','耐性')} · ${tyN96(SPROF96[k][1])} ${T96('취약','weak','弱点')}`;
-    return `<div class="em96"><div class="h"><b>${ic('shield')} ${s.n}</b> <em>${GN96[g]}</em> · ${TY96.map(x=>chip96(tyS96(x),tr[x])).join('')}</div>
-     <div class="row"><select class="em96s" data-ms="${id}" ${dis?'disabled':''}>${Object.keys(SPROF96).map(k=>`<option value="${k}" ${k===cur?'selected':''}>${lab(k)}</option>`).join('')}</select><button class="btn ghost small" data-msb="${id}" ${dis||G.lob<c?'disabled':''}>${T96('변조','Modify','変造')} · ${c} LOB</button></div></div>`};
-  return `<div class="card panel" id="egoMod96"><h3>${T96('E.G.O 변조','E.G.O Modification','E.G.O変造')}</h3>
-   <p class="sub">${T96(`LOB 포인트로 E.G.O의 공격 유형을 바꿀 수 있어요. 비용은 등급마다 다르고(ZAYIN 2 · TETH 4 · HE 6 · WAW 8 · ALEPH 10), 바꿀 때마다 들어요. 보유 LOB: ${G.lob}점`,`Spend LOB points to change an E.G.O's attack type. The cost depends on grade (ZAYIN 2 · TETH 4 · HE 6 · WAW 8 · ALEPH 10) and is paid on every change. LOB: ${G.lob}`,`LOBポイントでE.G.Oの攻撃タイプを変えられます。費用は等級ごとに異なり（ZAYIN 2・TETH 4・HE 6・WAW 8・ALEPH 10）、変えるたびにかかります。所持LOB：${G.lob}点`)}${dis?`<br><b style="color:var(--bad)">${T96('전투 중에는 변조할 수 없어요.','You cannot modify during battle.','戦闘中は変造できません。')}</b>`:''}</p>
-   <div class="lbl grouplbl">${T96('무기 — 모든 스킬의 공격 유형','Weapon — attack type of all skills','武器 — 全スキルの攻撃タイプ')}</div>${ws.length?ws.map(wRow).join(''):`<p class="note">${T96('보유한 E.G.O 무기가 없다.','No E.G.O weapons owned.','所持しているE.G.O武器はない。')}</p>`}
-   <div class="lbl grouplbl" style="margin-top:12px">${T96('슈트 — 공격 유형 내성 (내성 ×0.75 · 취약 ×1.25)','Suit — attack-type resistance (resist ×0.75 · weak ×1.25)','スーツ — 攻撃タイプ耐性（耐性×0.75・弱点×1.25）')}</div>${ss.length?ss.map(sRow).join(''):`<p class="note">${T96('보유한 E.G.O 슈트가 없다.','No E.G.O suits owned.','所持しているE.G.Oスーツはない。')}</p>`}</div>`}
-hrView=(f=>function(){let h=f.apply(this,arguments);try{h+=modCard96()}catch(e){}return h})(hrView);
-bindHr=(f=>function(){const r0=f.apply(this,arguments);try{const M=egoM96();
-  document.querySelectorAll('#tabview [data-mw]').forEach(b=>b.onclick=()=>{const id=b.dataset.mw,w=weapOf(id),c=COST96[w.g||0];if(G.lob<c||(typeof B!=='undefined'&&B&&!B.done))return;
-    G.lob-=c;const t=b.dataset.t;if(t)M.w[id]=t;else delete M.w[id];const w2=weapOf(id);const nt=(w2.skills[0]&&w2.skills[0].t)||'';
-    log(T96(`E.G.O 무기 「${w2.n}」의 공격 유형을 ${tyN96(nt)}(으)로 변조했다. (LOB −${c})`,`Modified E.G.O weapon "${w2.n}" to ${tyN96(nt)}. (LOB −${c})`,`E.G.O武器「${w2.n}」の攻撃タイプを${tyN96(nt)}に変造した。（LOB −${c}）`),'warn');save();render()});
-  document.querySelectorAll('#tabview [data-msb]').forEach(b=>b.onclick=()=>{const id=b.dataset.msb,s=suitOf(id),c=COST96[s.g||0];const sel=document.querySelector(`#tabview select[data-ms="${id}"]`);const k=sel&&sel.value;
-    if(!k||G.lob<c||(typeof B!=='undefined'&&B&&!B.done))return;if((M.s[id]||'none')===k){toast(T96('이미 그 내성이에요.','Already set to that.','すでにその耐性です。'),'hurt');return}
-    G.lob-=c;if(k==='none')delete M.s[id];else M.s[id]=k;const tr=tres96(id);
-    log(T96(`E.G.O 슈트 「${s.n}」의 공격 유형 내성을 변조했다 — 참격 ×${tr.slash} · 관통 ×${tr.pierce} · 타격 ×${tr.blunt}. (LOB −${c})`,`Modified E.G.O suit "${s.n}" — Slash ×${tr.slash} · Pierce ×${tr.pierce} · Blunt ×${tr.blunt}. (LOB −${c})`,`E.G.Oスーツ「${s.n}」の攻撃タイプ耐性を変造した — 斬撃×${tr.slash}・貫通×${tr.pierce}・打撃×${tr.blunt}。（LOB −${c}）`),'warn');save();render()})}catch(e){}return r0})(bindHr);
-
-/* ---------- 스타일 ---------- */
-const st=document.createElement('style');st.textContent=`
-.rs96{display:flex;flex-wrap:nowrap;gap:2px;justify-content:center;align-items:center;margin:3px auto 1px;font-size:10px;line-height:1;white-space:nowrap;max-width:100%}
-.rs96 .r96,.ai96 .r96{display:inline-flex;align-items:center;gap:1px;padding:2px 3px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--fg);font-variant-numeric:tabular-nums}
-.r96 i{font-style:normal;opacity:.75;margin-right:1px;font-weight:700}
-.r96.w2{background:rgba(255,80,70,.28);border-color:#ff7a6e;color:#ffd0ca}.r96.w1{background:rgba(255,120,90,.14);border-color:rgba(255,140,110,.6);color:#ffb3a6}
-.r96.r2{background:rgba(70,200,120,.26);border-color:#6fd59a;color:#c9f3d8}.r96.r1{background:rgba(90,190,130,.13);border-color:rgba(110,200,150,.55);color:#a9e6c0}
-.r96.dRED i{color:#ff6b5e}.r96.dWHITE i{color:#f2efe4}.r96.dBLACK i{color:#b58cff}.r96.dPALE i{color:#7fe0e6}
-.sep96{display:inline-block;width:1px;height:11px;background:rgba(255,255,255,.25);margin:0 2px}
-.ai96{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:12px;padding:5px 8px;margin:0 0 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(0,0,0,.18)}
-.ai96 .w96{display:inline-flex;align-items:center;gap:4px}.ai96 em,.em96 em{font-style:normal;opacity:.7;font-size:11px}.ai96 .rw96{display:inline-flex;gap:2px;align-items:center;flex-wrap:wrap}
-.ai96 svg{width:13px;height:13px}.m96{color:var(--accent);font-weight:700}
-.em96{padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}.em96 .h{margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}.em96 .row{gap:6px;flex-wrap:wrap}
-.em96s{background:var(--bg2,#1a1a1a);color:var(--fg);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 6px;font-size:13px;max-width:100%}
-@media (max-width:760px),(orientation:portrait) and (max-width:900px){.rs96{font-size:8.5px;gap:1px;flex-wrap:wrap;width:100%;row-gap:2px;margin:3px 0 1px}.rs96 .r96{padding:1px 1.5px;letter-spacing:-.2px}.rs96 .sep96{flex-basis:100%;width:auto;height:0;margin:0;background:none}}`;
-document.head.appendChild(st);
-})();
-/* ============ v97: 플레이어 아바타가 든 무기 형태 ============ */
-// 원작에서 형태가 확인된 E.G.O만 지정. 나머지는 현재 공격 유형으로: 참격=칼 · 관통=총 · 타격=망치
-(function(){
-const WF97={baton:'baton',fixer:'sword',redmist58:'great',
-  penitence:'mace',wingbeat:'mace',tough:'pistol',beak:'pistol',match:'cannon',fragments:'spear',lanternw:'mace',socute:'claw',
-  sanguine:'axe',bullet:'rifle',lament:'dual',lovehate:'wand',lamp:'mace',crimson:'cleaver',cobalt:'claw',justitia:'sword',
-  goldrush:'fist',spore:'spear',blackswan:'umbrella',ecstasy:'pistol',heavenw:'spear',tears:'rapier',diffraction:'sword',
-  mimicry:'great',dacapo:'scythe',smile:'mace',censoredw:'spear',adoration:'pistol',twilight:'great',
-  murdererw:'mace',armorw:'sword',bathw:'knife',teddyw:'fist',woodsmanw:'axe',snowqueenw:'spear',armyw:'rifle'};
-const FB97={slash:'sword',pierce:'pistol',blunt:'hammer'};
-window.wForm97=function(id){if(WF97[id])return WF97[id];let t='blunt';try{t=weapOf(id).skills[0].t||t}catch(e){}return FB97[t]||'hammer'};
-const M='#d9dde3',H='#3a2f25';
-function shape97(f,c){const s=`stroke="${c}" stroke-width="1.4" stroke-linejoin="round"`;
-  switch(f){
-  case 'sword':return `<rect x="-1.6" y="0" width="3.2" height="10" fill="${H}"/><rect x="-7" y="-2.5" width="14" height="3" rx="1" fill="${c}"/><path d="M-3 -3H3L2.2 -44L0 -50L-2.2 -44Z" fill="${M}" ${s}/>`;
-  case 'great':return `<rect x="-2" y="0" width="4" height="11" fill="${H}"/><rect x="-10" y="-3" width="20" height="4" rx="1" fill="${c}"/><path d="M-6 -4H6L5 -50L0 -56L-5 -50Z" fill="${M}" ${s}/><path d="M0 -6V-48" stroke="${c}" stroke-width="1.2" opacity=".6"/>`;
-  case 'rapier':return `<rect x="-1.4" y="0" width="2.8" height="9" fill="${H}"/><path d="M-6 -1a6 5 0 0 0 12 0Z" fill="${c}"/><path d="M-1 -2H1L0.4 -52L0 -55L-0.4 -52Z" fill="${M}" ${s}/>`;
-  case 'knife':return `<rect x="-1.6" y="0" width="3.2" height="9" fill="${H}"/><rect x="-4.5" y="-2" width="9" height="2.4" fill="${c}"/><path d="M-2.8 -2.5H2.8L0 -22Z" fill="${M}" ${s}/>`;
-  case 'cleaver':return `<rect x="-1.6" y="0" width="3.2" height="10" fill="${H}"/><path d="M-3 -2H9V-30L-3 -34Z" fill="${M}" ${s}/>`;
-  case 'axe':return `<path d="M0 10V-46" stroke="${H}" stroke-width="3" stroke-linecap="round"/><path d="M-1 -44C-14 -52 -19 -36 -14 -26L-1 -32Z" fill="${M}" ${s}/>`;
-  case 'scythe':return `<path d="M0 10V-50" stroke="${H}" stroke-width="3" stroke-linecap="round"/><path d="M0 -50C-18 -54 -30 -44 -33 -32C-24 -42 -12 -45 0 -43Z" fill="${M}" ${s}/>`;
-  case 'spear':return `<path d="M0 10V-44" stroke="${H}" stroke-width="2.6" stroke-linecap="round"/><path d="M0 -60L-4.5 -45L0 -42L4.5 -45Z" fill="${M}" ${s}/><path d="M-4 -42H4" stroke="${c}" stroke-width="2"/>`;
-  case 'mace':return `<path d="M0 10V-30" stroke="${H}" stroke-width="3" stroke-linecap="round"/><circle cy="-37" r="7.5" fill="${M}" ${s}/><path d="M0 -48V-44M-11 -37H-7M7 -37H11M-8 -45L-5.5 -42.5M8 -45L5.5 -42.5M-8 -29L-5.5 -31.5M8 -29L5.5 -31.5" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`;
-  case 'hammer':return `<path d="M0 10V-34" stroke="${H}" stroke-width="3" stroke-linecap="round"/><rect x="-12" y="-46" width="24" height="13" rx="2" fill="${M}" ${s}/><path d="M-12 -39.5H12" stroke="${c}" stroke-width="1" opacity=".6"/>`;
-  case 'baton':return `<rect x="-2" y="-38" width="4" height="46" rx="2" fill="#2b2f36" stroke="${c}" stroke-width="1"/><path d="M2 -6H9" stroke="#2b2f36" stroke-width="3" stroke-linecap="round"/>`;
-  case 'fist':return `<rect x="-8" y="-12" width="16" height="15" rx="4" fill="${M}" ${s}/><path d="M-4 -12V-8M0 -12V-8M4 -12V-8" stroke="${c}" stroke-width="1.4"/><rect x="-6" y="3" width="12" height="6" rx="2" fill="${c}"/>`;
-  case 'claw':return `<rect x="-7" y="-8" width="14" height="13" rx="4" fill="${M}" ${s}/><path d="M-5 -8L-8 -24M0 -8L0 -26M5 -8L8 -24" stroke="${M}" stroke-width="2.2" stroke-linecap="round"/><path d="M-5 -8L-8 -24M0 -8L0 -26M5 -8L8 -24" stroke="${c}" stroke-width=".8" stroke-linecap="round"/>`;
-  case 'pistol':return `<g transform="rotate(62)"><rect x="-2.5" y="-2" width="5" height="11" rx="1" fill="${H}"/><rect x="-3.5" y="-22" width="7" height="22" rx="1.5" fill="${M}" ${s}/><circle cy="-20" r="1.4" fill="${c}"/></g>`;
-  case 'dual':return shape97('pistol',c);
-  case 'rifle':return `<g transform="rotate(18)"><path d="M-3 12L3 12L3 0L-3 0Z" fill="${H}"/><rect x="-3" y="-34" width="6" height="34" rx="1" fill="${M}" ${s}/><rect x="-1.2" y="-46" width="2.4" height="12" fill="${c}"/><rect x="-2" y="-24" width="4" height="7" fill="${c}" opacity=".7"/></g>`;
-  case 'cannon':return `<g transform="rotate(12)"><rect x="-7" y="-34" width="14" height="38" rx="3" fill="${M}" ${s}/><ellipse cy="-34" rx="7" ry="2.6" fill="#111" stroke="${c}"/><rect x="-8.5" y="-12" width="17" height="4" fill="${c}"/></g>`;
-  case 'wand':return `<path d="M0 10V-40" stroke="${H}" stroke-width="2.4" stroke-linecap="round"/><path d="M0 -40C-7 -46 -10 -52 -5 -55C-2 -56 0 -53 0 -51C0 -53 2 -56 5 -55C10 -52 7 -46 0 -40Z" fill="${c}" stroke="${M}" stroke-width="1"/>`;
-  case 'umbrella':return `<path d="M0 10V-46" stroke="${H}" stroke-width="2.2" stroke-linecap="round"/><path d="M0 -50L-7 -16Q0 -12 7 -16Z" fill="#15151a" stroke="${c}" stroke-width="1.2"/><path d="M0 10a4 4 0 0 1 -6 2" stroke="${H}" stroke-width="2.2" fill="none"/>`;
-  default:return shape97(FB97.blunt,c)}}
-window.wSvg97=function(id,c){const f=wForm97(id);const one=`<g class="wp97 f-${f}" transform="translate(75 88) rotate(9)">${shape97(f,c)}</g>`;
-  return f==='dual'?one+`<g class="wp97" transform="translate(25 88) scale(-1 1) rotate(9)">${shape97('pistol',c)}</g>`:one};
-avatarSvg=(f=>function(){const h=f.apply(this,arguments);try{if(h.startsWith('<img'))return h;const w=weapOf(G.weapon);const c=(typeof DCOLV!=='undefined'&&DCOLV[w.dc])||'#e05040';
-  return h.replace(/<path d="M80 70l14-30"[^>]*\/>/,wSvg97(G.weapon,c))}catch(e){return h}})(avatarSvg);
 })();
 </script>
 
