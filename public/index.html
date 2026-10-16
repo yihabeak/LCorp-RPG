@@ -10198,7 +10198,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.7.0.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.7.7.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10215,23 +10215,38 @@ setTimeout(put,0);
    곡이 바뀌거나 한 곡이 끝나 처음으로 돌아갈 때는 3초 동안 앞 곡을 줄이며 다음 곡을 올린다. */
 (function(){if(typeof bgmPlay!=='function'||typeof AUD==='undefined')return;
 const T=(ko,en,ja)=>i80(ko,en,ja);
-const TRK={lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
-const NAME={lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
-const RANK={lobby:0,d1:1,d2:1,d3:1,w1:2,w2:3,w3:4};
+const BASE='';   // 음악 파일을 다른 곳(예: Cloudflare Pages)에 올리면 그 주소를 여기에 적는다. 예: 'https://lcorp-bgm.pages.dev/'
+const TRK={sup_welfare:'bgm/sup_welfare.mp3',sup_record:'bgm/sup_record.mp3',sup_extract:'bgm/sup_extract.mp3',sup_central:'bgm/sup_central.mp3',sup_disc:'bgm/sup_disc.mp3',pick:'bgm/pick.mp3',shift:'bgm/shift.mp3',codex:'bgm/codex.mp3',d50:'bgm/day50.mp3',bw1:'bgm/battle1.mp3',red:'bgm/redmist.mp3',arb:'bgm/arbiter.mp3',ending:'bgm/ending.mp3',lobby:'bgm/lobby.mp3',d1:'bgm/daily1.mp3',d2:'bgm/daily2.mp3',d3:'bgm/daily3.mp3',w1:'bgm/warn1.mp3',w2:'bgm/warn2.mp3',w3:'bgm/warn3.mp3'};
+const NAME={sup_welfare:()=>T('코어 억제 · 헤세드','Core Suppression · Chesed','コア抑制・ケセド'),sup_record:()=>T('코어 억제 · 호크마','Core Suppression · Hokma','コア抑制・ホクマー'),sup_extract:()=>T('코어 억제 · 비나','Core Suppression · Binah','コア抑制・ビナー'),sup_central:()=>T('코어 억제 · 티페리트','Core Suppression · Tiphereth','コア抑制・ティファレト'),sup_disc:()=>T('코어 억제 · 게부라','Core Suppression · Gebura','コア抑制・ゲブラー'),pick:()=>T('환상체 선택','Abnormality Selection','アブノーマリティ選択'),shift:()=>T('근무 시작 / 끝','Shift Start / End','勤務開始 / 終了'),codex:()=>T('도감 · E.G.O 장비 · 관리자','Codex · E.G.O Gear · Admin','図鑑・E.G.O装備・管理者'),d50:()=>T('50일차','Day 50','50日目'),bw1:()=>T('환상체전 · 첫 번째 경보','Abnormality Battle · First Warning','アブノーマリティ戦・第一警報'),red:()=>T('붉은 안개 전투','Red Mist Battle','赤い霧戦'),arb:()=>T('조율자 / 발톱 전투','Arbiter / Claw Battle','調律者 / 爪戦'),ending:()=>T('최종 엔딩','Final Ending','最終エンディング'),lobby:()=>T('로비','Lobby','ロビー'),d1:()=>T('일상 1','Daily 1','日常 1'),d2:()=>T('일상 2','Daily 2','日常 2'),d3:()=>T('일상 3','Daily 3','日常 3'),w1:()=>T('제1경보','First Warning','第一警報'),w2:()=>T('제2경보','Second Warning','第二警報'),w3:()=>T('제3경보','Third Warning','第三警報')};
+const RANK={lobby:0,shift:0,pick:0,codex:0,d1:1,d2:1,d3:1,d50:1,w1:2,w2:3,w3:4,bw1:5,sup_central:5,sup_disc:5,sup_extract:5,sup_record:5,sup_welfare:5,red:6,arb:6,ending:7};
 const FADE=3;
 const vol=()=>Math.max(0,Math.min(1,AUD.mvol??.6));
 const on=()=>AUD.bgmOn&&AUD.src93!=='file';
 // 처음 한 번: 내 음악 파일을 쓰고 있지 않으면 기본 음악을 켠다 (소리는 첫 클릭 뒤부터 난다)
 try{if(!AUD.bgm94){AUD.bgm94=1;delete AUD.gen93;if(!Object.keys(AUD.files||{}).length){AUD.src93='track';AUD.bgmOn=true}audSave()}}catch(e){}
-// 상황 → 곡
+// 상황 → 곡 (위에 있을수록 우선)
+let PICK=false;
+setPanel=(f=>function(title){PICK=/환상체 선택/.test(String(title||''));return f.apply(this,arguments)})(setPanel);
 function want(){try{if(document.querySelector('#app .title')||typeof G==='undefined'||!G)return 'lobby';
-  const w=Math.min(3,G.wnLv||0);if(w)return 'w'+w;const L=G.mLevel||0;return L>=7?'d3':L>=4?'d2':'d1'}catch(e){return 'lobby'}}
+  if(G.ended)return 'ending';
+  if(typeof B!=='undefined'&&B&&!B.done){const o=B.opt||{};
+    if(B.kind==='redmist')return 'red';
+    if(B.kind==='arbiter'||(B.units||[]).some(u=>u.n==='발톱'))return 'arb';
+    if(o.ab&&ABM[o.ab]&&ABM[o.ab].g<=1)return 'bw1'}
+  // 코어 억제가 진행 중인 근무 시간: 그 세피라의 억제 곡
+  if(G.sup&&!G.sup.done&&(G.phase==='work'||G.phase==='ordeal')&&TRK['sup_'+G.sup.key])return 'sup_'+G.sup.key;
+  if(PICK&&G.phase!=='work')return 'pick';
+  if(G.phase==='morning'||G.phase==='evening')return 'shift';
+  if(G.day===50)return 'd50';
+  const w=Math.min(3,G.wnLv||0);if(w)return 'w'+w;
+  if(typeof TAB!=='undefined'&&(TAB==='abno'||TAB==='hr'||TAB==='admin'))return 'codex';
+  const L=G.mLevel||0;return L>=7?'d3':L>=4?'d2':'d1'}catch(e){return 'lobby'}}
 // ---------- 재생기: 오디오 두 개를 번갈아 쓰며 3초 동안 서로 넘긴다 ----------
 const P={a:[new Audio(),new Audio()],i:0,key:null,fadeT:null};
 P.a.forEach(x=>{x.preload='auto';x.loop=false;x.volume=0});
 const curA=()=>P.a[P.i];
 function fadeTo(nextKey){const old=curA(),nx=P.a[1-P.i];P.i=1-P.i;P.key=nextKey;
-  try{if(!nx.src.endsWith(TRK[nextKey]))nx.src=TRK[nextKey];nx.currentTime=0}catch(e){}nx.volume=0;const pr=nx.play();if(pr&&pr.catch)pr.catch(()=>{});
+  try{if(!nx.src.endsWith(TRK[nextKey]))nx.src=BASE+TRK[nextKey];nx.currentTime=0}catch(e){}nx.volume=0;const pr=nx.play();if(pr&&pr.catch)pr.catch(()=>{});
   const t0=performance.now(),v0=old.volume;clearInterval(P.fadeT);
   P.fadeT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/(FADE*1000)),V=vol();nx.volume=V*k;old.volume=Math.max(0,v0*(1-k));
     if(k>=1){clearInterval(P.fadeT);P.fadeT=null;try{old.pause()}catch(e){}}},50)}
@@ -10245,13 +10260,14 @@ setInterval(()=>{if(!P.fadeT&&on()){const a=curA();if(!a.paused)a.volume=vol()}}
 let dn=null;
 function apply(force){if(!on())return;const k=want();if(k===P.key&&!force){if(dn){clearTimeout(dn);dn=null}const a=curA();if(a.paused&&!P.fadeT){const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{})}return}
   // 경보가 내려갈 때는 3초 지켜본 뒤 바꾼다 (곡은 끄지 않는다)
-  if(P.key&&!force&&RANK[k]<RANK[P.key]&&k!=='lobby'){if(!dn)dn=setTimeout(()=>{dn=null;if(want()!==P.key)apply(true)},3000);return}
+  if(P.key&&!force&&/^w\d$/.test(P.key)&&RANK[k]<RANK[P.key]&&!/^(lobby|ending|pick|shift)$/.test(k)){if(!dn)dn=setTimeout(()=>{dn=null;if(want()!==P.key)apply(true)},3000);return}
   if(dn){clearTimeout(dn);dn=null}fadeTo(k)}
 // ---------- 소리 설정과 연결 ----------
 const P0=bgmPlay;
 bgmPlay=function(force){if(!on()){stopAll();return P0.apply(this,arguments)}
   const box=document.getElementById('bgmBox');if(box){box.hidden=true;const f=box.querySelector('.bgm-f');if(f)f.innerHTML=''}BGMCUR='track94';apply(!!force||!P.key)};
 renderTop=(f=>function(){const r=f.apply(this,arguments);try{if(on()&&P.key)apply()}catch(e){}return r})(renderTop);
+renderTabs=(f=>function(){const r=f.apply(this,arguments);try{if(on()&&P.key)apply()}catch(e){}return r})(renderTabs);
 renderTitle=(f=>function(){const r=f.apply(this,arguments);try{if(on()&&P.key)apply()}catch(e){}return r})(renderTitle);
 setInterval(()=>{try{if(on()&&P.key)apply()}catch(e){}},1000);
 // 브라우저는 클릭 전에는 소리를 막는다: 첫 조작 때 시작
@@ -10263,12 +10279,59 @@ const st=document.createElement('style');st.textContent=`#bgmBox{display:none!im
 audioPop=(f=>function(){f();try{const b=POP&&POP.querySelector('.aud');if(!b)return;const lbl=[...b.querySelectorAll('.lbl')].find(l=>/음악|Music|音楽|BGM/i.test(l.textContent));
   const tr=AUD.src93!=='file';const now=on()&&P.key?NAME[P.key]():'';
   const html=`<div class="lbl" style="margin-top:10px">${T('배경 음악 출처','Music source','BGMの出どころ')}</div><div class="aud93" role="radiogroup">
-  <label><input type="radio" name="src93" value="track" ${tr?'checked':''}><span>${T('기본 음악','Default soundtrack','標準BGM')}${now?` <small>♪ ${now}</small>`:''}<br><small>${T('이 게임을 위해 만든 곡을 상황에 맞게 재생한다. 타이틀은 로비, 근무 중에는 일상 1~3(클리포트 폭주 단계에 따라), 경보가 울리면 경보 1~3이 나온다.','Music made for this game, matched to the situation: Lobby on the title screen, Daily 1–3 during work (by Qliphoth Meltdown level), and Warning 1–3 when an alert sounds.','このゲームのために作った曲を状況に合わせて再生する。タイトルはロビー、勤務中は日常1〜3(クリフォト暴走の段階に応じて)、警報が鳴ると警報1〜3が流れる。')}</small></span></label>
+  <label><input type="radio" name="src93" value="track" ${tr?'checked':''}><span>${T('기본 음악','Default soundtrack','標準BGM')}${now?` <small>♪ ${now}</small>`:''}<br><small>${T('이 게임을 위해 만든 곡을 상황에 맞게 재생한다. 타이틀은 로비, 근무 중에는 일상 1~3(클리포트 폭주 단계에 따라), 경보가 울리면 경보 1~3, 출근 전과 퇴근 후, 환상체 선택, 도감·장비·관리자 화면, 주요 전투, 50일차, 엔딩에는 각각의 곡이 나온다.','Music made for this game, matched to the situation: Lobby on the title screen, Daily 1–3 during work (by Qliphoth Meltdown level), Warning 1–3 when an alert sounds, and dedicated tracks for shift start/end, Abnormality selection, the Codex/gear/admin screens, major battles, Day 50 and the ending.','このゲームのために作った曲を状況に合わせて再生する。タイトルはロビー、勤務中は日常1〜3(クリフォト暴走の段階に応じて)、警報が鳴ると警報1〜3が流れ、出勤前と退勤後・アブノーマリティ選択・図鑑/装備/管理者画面・主要な戦闘・50日目・エンディングにはそれぞれの曲が流れる。')}</small></span></label>
   <label><input type="radio" name="src93" value="file" ${tr?'':'checked'}><span>${T('내 음악 파일','My music files','自分の音楽ファイル')}<br><small>${T('아래에서 고른 파일을 이 브라우저에서만 재생한다.','Plays the files you pick below, in this browser only.','下で選んだファイルをこのブラウザでのみ再生する。')}</small></span></label></div>`;
   if(lbl)lbl.insertAdjacentHTML('beforebegin',html);else b.insertAdjacentHTML('beforeend',html);
   b.querySelectorAll('input[name=src93]').forEach(r=>r.onchange=()=>{if(!r.checked)return;AUD.src93=r.value;if(r.value==='track')AUD.bgmOn=true;audSave();BGMCUR=null;P.key=null;bgmPlay(true)});
   const pl=b.querySelector('#auPlay');if(pl){const o=pl.onclick;pl.onclick=()=>{if(AUD.src93!=='file'){AUD.bgmOn=true;audSave();P.key=null;bgmPlay(true);return closePop()}o&&o()}}}catch(e){}})(audioPop);
 window.BGM94={P,want,apply,TRK};
+})();
+
+/* ================= v95: 세로 화면 전투 정렬 =================
+   세로 화면(폭 760px 이하, 또는 세로로 든 900px 이하 화면)에서는 적과 아군 모두 같은 폭(100px)의 칸에 바둑판처럼 줄 맞춰 놓는다.
+   체력바·정신력바는 모든 개체가 칸 폭의 72%로 같은 길이다.
+   스킬 방향 선: 세로 배치에서는 위아래로 잇는 곡선으로 그리고, 배치가 바뀔 때마다 다시 그린다. */
+(function(){
+const MQ='(max-width:760px),(orientation:portrait) and (max-width:900px)';
+const st=document.createElement('style');st.textContent=`
+@media ${MQ}{
+ .lb-stage{grid-template-columns:1fr!important}
+ .lb-stage .lb-mid{display:none!important}
+ .lb-stage .lb-side.r{order:-1}
+ .lb-stage .lb-side{display:grid!important;grid-template-columns:repeat(auto-fit,100px)!important;justify-content:center!important;justify-items:center;align-items:start;gap:14px 8px!important}
+ .lb-stage .lb-side .lb-fig,.lb-stage .lb-side .lb-fig.lb-fo,.lb-stage .lb-side .lb-fig.lb-main{width:100px!important;max-width:100px!important;min-width:0;flex:none;grid-column:auto}
+ .lb-stage .lb-side .lb-fig .lb-bar{width:72%!important;max-width:72%!important;justify-self:center}
+ .lb-stage .lb-side .lb-fig .lb-av,.lb-stage .lb-side .lb-fig .lb-ev{zoom:.82}
+ .lb-stage .lb-side .lb-fig .lb-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;width:100%}
+ .lb-stage .lb-side .lb-fig .lb-nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px!important}
+ .lb-stage .lb-side .lb-fig .lb-bar em{font-size:11px}
+}
+@media (max-width:340px){.lb-stage .lb-side{grid-template-columns:repeat(auto-fit,88px)!important}.lb-stage .lb-side .lb-fig{width:88px!important;max-width:88px!important}}`;
+document.head.appendChild(st);
+// --- 스킬 방향 선 ---
+const mq=window.matchMedia?matchMedia(MQ):{matches:false};
+if(typeof lbLines0==='function'){const L0=lbLines0;
+  lbLines0=function(){if(!mq.matches)return L0.apply(this,arguments);
+    const stg=$('#lbStage'),svg=$('#lbLines');if(!stg||!svg||typeof B==='undefined'||!B)return;const R0=stg.getBoundingClientRect();
+    svg.setAttribute('viewBox',`0 0 ${R0.width} ${R0.height}`);svg.setAttribute('width',R0.width);svg.setAttribute('height',R0.height);
+    const box=el=>el.getBoundingClientRect();
+    // 두 요소의 마주 보는 가장자리 가운데를 이어, 위아래로 흐르는 S자 곡선을 그린다
+    let h='';const line=(ea,eb,cls)=>{const a=box(ea),b=box(eb);if(!a.width||!b.width)return;
+      const down=b.top+b.height/2>a.top+a.height/2;
+      const ax=a.left+a.width/2-R0.left,ay=(down?a.bottom:a.top)-R0.top,bx=b.left+b.width/2-R0.left,by=(down?b.top:b.bottom)-R0.top;
+      const my=(ay+by)/2;h+=`<path class="${cls}" d="M${ax.toFixed(1)},${ay.toFixed(1)} C${ax.toFixed(1)},${my.toFixed(1)} ${bx.toFixed(1)},${my.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)}"/>`};
+    for(const sl of B.slots){if(!sl.tgt)continue;const se=stg.querySelector(`[data-lbs="${sl.id}"]`);if(!se)continue;
+      if(sl.tgt.k==='clash'||sl.tgt.k==='def'){const ie=stg.querySelector(`[data-lbi="${sl.tgt.it.id}"]`);if(!ie)continue;let cls='def';
+        if(sl.tgt.k==='clash'){const p=wc(sl,sl.ego?'ego':sl.pick,sl.tgt.it);cls=p>=.6?'hi':p>=.4?'mid':'lo'}line(se,ie,'ln '+cls)}
+      else if(sl.tgt.k==='atk'){const ue=stg.querySelector(`[data-lbu="${sl.tgt.u.uid}"] .lb-ev`);if(ue)line(se,ue,'ln atk')}}
+    for(const it of B.intents){if(it.u.hp<=0||ownerOf(it))continue;const ie=stg.querySelector(`[data-lbi="${it.id}"]`);const ae=stg.querySelector(`[data-lba="${B.allies.indexOf(it.tgt)}"] .lb-av`);if(ie&&ae)line(ie,ae,'ln open')}
+    svg.innerHTML=h};
+}
+// 배치가 바뀌면(크기 변화 · 화면 회전 · 글꼴 적용) 선을 다시 그린다
+let ro=null,watched=null,q=0;const redraw=()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;try{if(typeof B!=='undefined'&&B&&!B.done)lbLines()}catch(e){}})};
+function watch(){const s=document.getElementById('lbStage');if(s===watched)return;watched=s;if(ro)ro.disconnect();if(s&&window.ResizeObserver){ro=new ResizeObserver(redraw);ro.observe(s);s.querySelectorAll('.lb-side').forEach(x=>ro.observe(x))}}
+new MutationObserver(()=>watch()).observe(document.body,{childList:true,subtree:true});
+if(mq.addEventListener)mq.addEventListener('change',redraw);
 })();
 </script>
 
