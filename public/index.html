@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.14.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.8.15.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10579,6 +10579,27 @@ function yyFix98(){try{if(!G||!G.ab||!G.ab.yin||!G.ab.yang||!ABM.yang||!ABM.yin)
   log(out?T98(`${out.n}이(가) ${DEPT[k].n}에서 다른 시설로 옮겨졌다. 그 자리에 ${pn}의 짝, ${nm}이(가) 수용되었다.`,`${out.n} was transferred out of ${DEPT[k].n}. ${nm}, the other half of ${pn}, was contained in its place.`,`${out.n}は${DEPT[k].n}から別の施設へ移された。その場所に${pn}の対である${nm}が収容された。`)
     :T98(`${pn}의 짝, ${nm}이(가) ${DEPT[k].n}에 수용되었다.`,`${nm}, the other half of ${pn}, was contained in ${DEPT[k].n}.`,`${pn}の対である${nm}が${DEPT[k].n}に収容された。`),'warn');try{save()}catch(e){}}catch(e){}}
 render=(f=>function(){yyFix98();return f.apply(this,arguments)})(render);
+})();
+/* ============ v99: 클리포트 폭주 게이지 누적 완화 · 직원 작업 판단 개선 ============ */
+(function(){
+/* 1) 시간 경과(작업·대기)로 쌓이는 폭주 게이지를 60%로 줄인다 — 시련·과부하 등 다른 경로는 그대로 */
+const GK99=.6;let TK99=0;
+function hook99(){try{if(!G||G._g99)return;let v=+G.gauge||0;Object.defineProperty(G,'_g99',{value:1,enumerable:false,configurable:true});
+  Object.defineProperty(G,'gauge',{configurable:true,enumerable:true,get(){return v},set(x){x=+x||0;v=(TK99&&x>v)?v+(x-v)*GK99:x}})}catch(e){}}
+tick=(f=>function(){hook99();TK99=1;try{return f.apply(this,arguments)}finally{TK99=0}})(tick);
+/* 2) 직원 작업 판단 */
+// 아는 선호 작업이 있으면 항상 그중 가장 좋은 작업을 고른다
+agChooseWork=(f=>function(ag,a){const r=f.apply(this,arguments);try{if(r&&r.how!=='log'){const ban=(typeof SPSLOT!=='undefined'&&SPSLOT[a.id])||null;
+  const kn=WORKS.filter(w=>!(a.sp==='request'&&w.id==='att')&&w.id!==ban&&favKnown(a,w.id));if(kn.length)return {w:kn.sort((x,y)=>prefOf(a,y.id)-prefOf(a,x.id))[0],how:'log'}}}catch(e){}return r})(agChooseWork);
+// 예상 성공률: 알고 있는 작업 기준 (모르면 보수적으로 0.4)
+function exp99(ag,a){try{const r=agRank(ag);const kn=WORKS.filter(w=>favKnown(a,w.id));if(!kn.length)return .4;
+  return Math.max(...kn.map(w=>prefOf(a,w.id)+ag.st.T*.002+(ag.sp/45)*.1+(lv(ag.st[w.v])-(a.g+1))*.04-(r<a.g?.08*(a.g-r):0)))}catch(e){return .5}}
+// 카운터가 바닥 직전인데 잘 해낼 자신이 없는 환상체, 등급이 너무 높은 환상체는 건드리지 않는다 (폭주 중이면 예외)
+let AG99=null;
+agentStep=(f=>function(ag){AG99=ag;try{return f.apply(this,arguments)}finally{AG99=null}})(agentStep);
+deptAbs=(f=>function(k){const L=f.apply(this,arguments);try{if(!AG99||typeof AGSTEP==='undefined'||!AGSTEP)return L;const ag=AG99,r=agRank(ag);
+  return L.filter(a=>{if(a.tool)return true;const s=G.ab[a.id];if(!s||s.melt>0)return true;const e=exp99(ag,a);
+    if((a.cnt||0)>1&&s.cnt<=1&&e<.55)return false;if(a.g>r+1&&e<.6)return false;return true})}catch(e){return L}})(deptAbs);
 })();
 </script>
 
