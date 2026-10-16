@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.7.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.8.9.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10372,7 +10372,7 @@ roamStep=(f=>function(m){if(!G||!G.roam||!G.roam.length)return f.apply(this,argu
   return res})(roamStep);
 
 /* ---------- 2) E.G.O 변조 데이터 ---------- */
-const COST96=[2,4,6,8,10];
+const COST96=[1,2,3,4,5];
 const SPROF96={none:null};TY96.forEach(a=>TY96.forEach(b=>{if(a!==b)SPROF96[a+'-'+b]=[a,b]}));
 // 변조는 한 개씩: 변조한 사본은 「원래id~형태」라는 별도 장비가 된다 (예: lamp~slash, justitia~pierce-slash)
 const SEP96='~';
@@ -10408,7 +10408,9 @@ dmgAlly=(f=>function(a,amt,color,src,atkG){try{if(CUR_T96&&a&&!a.dead&&a.suit){c
 /* ---------- 3) 전투: 적 내성 한 줄 · 아군 정보 ---------- */
 function chip96(lab,v,c,noise){return `<span class="r96 ${noise?'n':cls96(v)} ${c||''}"><i>${lab}</i>${noise?'?':'×'+nv96(v)}</span>`}
 function enemyRow96(u,noise){const r=u.res||{},c=u.cres||{};
-  return TY96.map(t=>chip96(tyS96(t),r[t]??1,'',noise)).join('')+'<b class="sep96"></b>'+['RED','WHITE','BLACK','PALE'].map(k=>chip96(k[0],c[k]??1,'d'+k,noise)).join('')}
+  return '<div class="rr96">'+TY96.map(t=>chip96(tyS96(t),r[t]??1,'',noise)).join('')+'</div><div class="rr96">'+['RED','WHITE','BLACK','PALE'].map(k=>chip96(k[0],c[k]??1,'d'+k,noise)).join('')+'</div>'}
+function alw96(){try{const st=document.querySelector('#panel .lb-stage');if(!st)return;const b=st.querySelector('.lb-al .lb-bar.hp');const w=b&&b.getBoundingClientRect().width;if(w>20)st.style.setProperty('--alw96',Math.round(w)+'px')}catch(e){}}
+try{let t96;addEventListener('resize',()=>{clearTimeout(t96);t96=setTimeout(alw96,120)})}catch(e){}
 function allyRow96(a){try{const w=kit(a),su=suitOf(a.suit),cr=allySuitR(a),tr=tres96(a.suit);const t=(w.skills&&w.skills[0]&&w.skills[0].t)||'blunt';
   return `<div class="ai96"><span class="w96">${ic?ic('sword'):''}<b>${w.n}</b> <em>${GN96[w.g||0]}</em> · ${tyN96(t)} · <span class="d${w.dc||'RED'}">${w.dc||'RED'}</span>${w.t96?` <small class="m96">${T96('변조','Modded','変造')}</small>`:''}</span>
    <span class="w96">${ic?ic('shield'):''}<b>${su.n}</b> <em>${GN96[su.g||0]}</em></span>
@@ -10416,7 +10418,7 @@ function allyRow96(a){try{const w=kit(a),su=suitOf(a.suit),cr=allySuitR(a),tr=tr
 renderBattle=(f=>function(){const r0=f.apply(this,arguments);try{if(!B)return r0;const noise=typeof infoHidden==='function'&&infoHidden();
   document.querySelectorAll('#panel .lb-fo[data-lbu]').forEach(fg=>{const u=B.units.find(x=>String(x.uid)===fg.dataset.lbu);if(!u||fg.querySelector('.rs96'))return;
     const bars=fg.querySelectorAll(':scope>.lb-bar');const last=bars[bars.length-1];if(!last)return;last.insertAdjacentHTML('afterend',`<div class="rs96" title="${T96('공격 유형 · 피해 색 내성 (×배율)','Attack-type · damage-color resistance (×)','攻撃タイプ・ダメージ色耐性（×倍率）')}">${enemyRow96(u,noise)}</div>`)});
-  const dock=document.getElementById('lbDock');if(dock&&!B.done&&B.selA&&!dock.querySelector('.ai96')){const tb=dock.querySelector('.lb-tabs');const h=allyRow96(B.selA);if(tb)tb.insertAdjacentHTML('afterend',h);else dock.insertAdjacentHTML('afterbegin',h)}}catch(e){}return r0})(renderBattle);
+  alw96();const dock=document.getElementById('lbDock');if(dock&&!B.done&&B.selA&&!dock.querySelector('.ai96')){const tb=dock.querySelector('.lb-tabs');const h=allyRow96(B.selA);if(tb)tb.insertAdjacentHTML('afterend',h);else dock.insertAdjacentHTML('afterbegin',h)}}catch(e){}return r0})(renderBattle);
 
 /* ---------- 4) 장비·인사: 보유 E.G.O 목록 → 상세 → 변조 ---------- */
 function abOf96(id){const b=baseId96(id);try{return AB.concat(typeof AB_GONE!=='undefined'?AB_GONE:[]).find(a=>a.eq&&a.eq.id===b)}catch(e){return null}}
@@ -10489,7 +10491,8 @@ bindHr=(f=>function(){const r0=f.apply(this,arguments);try{
   const hb=document.getElementById('hE96');if(hb)hb.onclick=()=>{const box=document.getElementById('egoMod96');if(!box)return;box.open=true;OPEN96=true;try{localStorage.setItem('lcw_egomod_open2','1')}catch(e){}box.scrollIntoView({behavior:'smooth',block:'start'})}}catch(e){}return r0})(bindHr);
 /* ---------- 스타일 ---------- */
 const st=document.createElement('style');st.textContent=`
-.rs96{display:flex;flex-wrap:nowrap;gap:2px;justify-content:center;align-items:center;margin:3px auto 1px;font-size:10px;line-height:1;white-space:nowrap;max-width:100%}
+.rs96{display:grid;gap:2px;width:var(--alw96,116px);max-width:100%;margin:3px auto 1px;font-size:9.5px;line-height:1;white-space:nowrap}.rr96{display:flex;gap:2px}.rr96 .r96{flex:1 1 0;min-width:0;justify-content:center;overflow:hidden}
+#panel .lb-stage .lb-fo{align-content:start}#panel .lb-stage .lb-fo>.lb-bar{width:var(--alw96,116px)!important;max-width:100%;margin-left:auto!important;margin-right:auto!important}
 .rs96 .r96,.ai96 .r96,.em96 .r96{display:inline-flex;align-items:center;gap:1px;padding:2px 3px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--fg);font-variant-numeric:tabular-nums}
 .r96 i{font-style:normal;opacity:.75;margin-right:1px;font-weight:700}
 .r96.w2{background:rgba(255,80,70,.28);border-color:#ff7a6e;color:#ffd0ca}.r96.w1{background:rgba(255,120,90,.14);border-color:rgba(255,140,110,.6);color:#ffb3a6}
@@ -10507,7 +10510,7 @@ const st=document.createElement('style');st.textContent=`
 .flt96 select{background:var(--bg2,#1a1a1a);color:var(--fg);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:5px 6px;font-size:13px;max-width:100%}
 .flt96 label{display:inline-flex;align-items:center;gap:4px;font-size:13px;cursor:pointer}.em96[hidden],[data-sec][hidden]{display:none!important}
 .em96s{background:var(--bg2,#1a1a1a);color:var(--fg);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 6px;font-size:13px;max-width:100%}
-@media (max-width:760px),(orientation:portrait) and (max-width:900px){.rs96{font-size:8.5px;gap:1px;flex-wrap:wrap;width:100%;row-gap:2px;margin:3px 0 1px}.rs96 .r96{padding:1px 1.5px;letter-spacing:-.2px}.rs96 .sep96{flex-basis:100%;width:auto;height:0;margin:0;background:none}}`;
+@media (max-width:760px),(orientation:portrait) and (max-width:900px){.rs96{font-size:8px;gap:1px}.rr96{gap:1px}.rs96 .r96{padding:1px 0;letter-spacing:-.3px}}`;
 document.head.appendChild(st);
 })();
 /* ============ v97: 플레이어 아바타가 든 무기 형태 ============ */
