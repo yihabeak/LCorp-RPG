@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.8.15.261016';window.GAME_VER=V;
+(function(){const V='Ver. 3.8.16.261016';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10582,8 +10582,8 @@ render=(f=>function(){yyFix98();return f.apply(this,arguments)})(render);
 })();
 /* ============ v99: 클리포트 폭주 게이지 누적 완화 · 직원 작업 판단 개선 ============ */
 (function(){
-/* 1) 시간 경과(작업·대기)로 쌓이는 폭주 게이지를 60%로 줄인다 — 시련·과부하 등 다른 경로는 그대로 */
-const GK99=.6;let TK99=0;
+/* 1) 시간 경과(작업·대기)로 쌓이는 폭주 게이지를 30%로 줄인다 — 시련·과부하 등 다른 경로는 그대로 */
+const GK99=.3;let TK99=0;
 function hook99(){try{if(!G||G._g99)return;let v=+G.gauge||0;Object.defineProperty(G,'_g99',{value:1,enumerable:false,configurable:true});
   Object.defineProperty(G,'gauge',{configurable:true,enumerable:true,get(){return v},set(x){x=+x||0;v=(TK99&&x>v)?v+(x-v)*GK99:x}})}catch(e){}}
 tick=(f=>function(){hook99();TK99=1;try{return f.apply(this,arguments)}finally{TK99=0}})(tick);
