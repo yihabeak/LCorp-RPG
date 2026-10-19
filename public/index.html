@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.18.1.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.18.2.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10807,10 +10807,10 @@ renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!B||B.done||!
 counterZero=(f=>function(a,src){const r=f.apply(this,arguments);try{if(a&&a.id==='wolf'&&G.ab.redhood&&G.ab.redhood.dept&&!(G.breachQ||[]).some(e=>e.type==='ab'&&e.id==='redhood')&&!(G.roam||[]).some(x=>!x.dead&&x.e&&x.e.type==='ab'&&x.e.id==='redhood')){
     G.breachQ.push({type:'ab',id:'redhood'});G.ab.redhood.cnt=ABM.redhood.cnt;log(T('늑대의 울음을 들은 붉은 두건의 용병이 격리실 문을 박차고 나왔다. 사냥이 시작된다.','Hearing the wolf howl, the Little Red Riding Hooded Mercenary kicked open her cell. The hunt begins.','狼の遠吠えを聞いた赤ずきんの傭兵が収容室の扉を蹴破った。狩りが始まる。'),'warn')}}catch(e){}return r})(counterZero);
 
-/* ---------- 4) 5일마다 저장 · 죽으면 마지막 저장 지점으로 ---------- */
+/* ---------- 4) 1·6·11·16…일(5x+1) 아침 저장 · 죽으면 마지막 저장 지점으로 ---------- */
 const CK101=()=>saveKeyNow()+'_ck';
 function ckSave101(){try{if(typeof TUTSNAP!=='undefined'&&TUTSNAP)return;if(G.flags&&G.flags.tutSand)return;if(G.dead||G.ended)return;localStorage.setItem(CK101(),JSON.stringify(G))}catch(e){}}
-startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&(G.day===1||G.day%5===0)&&G.flags.ckDay!==G.day){G.flags.ckDay=G.day;ckSave101();log(T(`기록 보관 — ${G.day}일차 아침이 저장되었다. 죽으면 이 아침으로 돌아올 수 있다.`,`Archived — the morning of day ${G.day} was saved. If you die you can return to it.`,`記録保管 — ${G.day}日目の朝が保存された。死亡するとこの朝に戻れる。`),'sys')}}catch(e){}return r})(startDay);
+startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&(G.day%5===1)&&G.flags.ckDay!==G.day){G.flags.ckDay=G.day;ckSave101();log(T(`기록 보관 — ${G.day}일차 아침이 저장되었다. 죽으면 이 아침으로 돌아올 수 있다.`,`Archived — the morning of day ${G.day} was saved. If you die you can return to it.`,`記録保管 — ${G.day}日目の朝が保存された。死亡するとこの朝に戻れる。`),'sys')}}catch(e){}return r})(startDay);
 renderRecord=(f=>function(){const r=f.apply(this,arguments);try{if(!G||!G.dead)return r;const raw=localStorage.getItem(CK101());if(!raw)return r;const sv=JSON.parse(raw);if(!sv||!sv.day)return r;
     const host=document.querySelector('.rec .row')||document.querySelector('.rec');if(!host||document.getElementById('ck101'))return r;
     host.insertAdjacentHTML('afterbegin',`<button class="btn prim" id="ck101">${T(`${sv.day}일차 아침으로 돌아가기`,`Return to the morning of day ${sv.day}`,`${sv.day}日目の朝に戻る`)}</button>`);
