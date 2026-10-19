@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.12.0.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.15.0.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11049,6 +11049,126 @@ const EIN103=[[.1,'"모든 것은 이 순간을 위해 존재했다."','"Everyth
  [1,'"이것으로 충분하다. 고맙다, 관리자."','"This is enough. Thank you, Manager."','「これで十分だ。ありがとう、管理人。」']];
 tick=(f=>function(){const r=f.apply(this,arguments);try{if(G&&G.day===50&&!G.ended&&!G.arc){const fr=G.pe/Math.max(1,quota());G.ein50=G.ein50||0;
     while(G.ein50<EIN103.length&&fr>=EIN103[G.ein50][0]){const x=EIN103[G.ein50];G.ein50++;log(T(`아인: ${x[1]}`,`Ayin: ${x[2]}`,`アイン：${x[3]}`),'q');try{toast(T('아인의 목소리','Ayin\'s voice','アインの声'))}catch(e){}}}}catch(e){}return r})(tick);
+})();
+/* ============ v104: 원작 등장 배열 (일차별 문·등급 확률 · 금지 환상체) · 코어 억제 유지 선택 ============ */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+// Day Info V3.0 (Lobotomy Corporation 원작 데이터 정리 시트) — 일차별 3개 문(후보)의 ZAYIN·TETH·HE·WAW·ALEPH 확률
+const DAYT104={"1":{"t":0,"d":[[0,0,0,0,0],[100,0,0,0,0],[0,0,0,0,0]]},"2":{"t":0,"d":[[50,50,0,0,0],[40,60,0,0,0],[0,100,0,0,0]]},"3":{"t":0,"d":[[30,70,0,0,0],[20,80,0,0,0],[0,100,0,0,0]]},"4":{"t":1,"d":[[50,50,0,0,0],[50,50,0,0,0],[50,50,0,0,0]]},"5":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"6":{"t":0,"d":[[40,60,0,0,0],[30,70,0,0,0],[20,80,0,0,0]]},"7":{"t":0,"d":[[30,70,0,0,0],[20,80,0,0,0],[0,80,20,0,0]]},"8":{"t":0,"d":[[20,50,30,0,0],[0,60,40,0,0],[0,40,60,0,0]]},"9":{"t":1,"d":[[50,50,0,0,0],[0,50,50,0,0],[0,50,50,0,0]]},"10":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"11":{"t":0,"d":[[20,50,30,0,0],[20,50,30,0,0],[20,50,30,0,0]]},"12":{"t":0,"d":[[10,50,40,0,0],[0,60,40,0,0],[0,60,40,0,0]]},"13":{"t":0,"d":[[0,20,50,30,0],[0,20,30,50,0],[0,0,50,40,10]]},"14":{"t":1,"d":[[50,50,0,0,0],[30,30,40,0,0],[0,0,50,50,0]]},"15":{"t":0,"d":[[20,40,40,0,0],[20,40,40,0,0],[20,40,40,0,0]]},"16":{"t":0,"d":[[20,40,40,0,0],[10,40,50,0,0],[0,40,60,0,0]]},"17":{"t":0,"d":[[10,20,40,30,0],[0,20,50,30,0],[0,20,50,30,0]]},"18":{"t":0,"d":[[0,0,50,40,10],[0,0,30,50,20],[0,0,0,70,30]]},"19":{"t":1,"d":[[50,50,0,0,0],[30,30,40,0,0],[0,0,50,50,0]]},"20":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"21":{"t":0,"d":[[10,30,50,10,0],[10,30,50,10,0],[10,30,50,10,0]]},"22":{"t":0,"d":[[10,10,40,40,0],[10,10,40,40,0],[10,10,40,40,0]]},"23":{"t":0,"d":[[0,0,30,40,30],[0,0,30,30,40],[0,0,0,50,50]]},"24":{"t":1,"d":[[0,50,50,0,0],[0,30,30,40,0],[0,0,30,30,40]]},"25":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"26":{"t":0,"d":[[10,20,40,30,0],[10,20,40,30,0],[10,20,40,30,0]]},"27":{"t":0,"d":[[10,10,30,50,0],[10,10,30,50,0],[10,10,30,50,0]]},"28":{"t":0,"d":[[0,0,30,50,20],[0,0,30,50,20],[0,0,0,50,50]]},"29":{"t":1,"d":[[20,20,20,30,0],[20,20,20,20,20],[0,0,30,40,30]]},"30":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"31":{"t":0,"d":[[10,20,40,30,0],[10,20,40,30,0],[10,20,40,30,0]]},"32":{"t":0,"d":[[10,10,30,50,0],[10,10,30,50,0],[10,10,30,50,0]]},"33":{"t":0,"d":[[0,0,30,40,30],[0,0,30,40,30],[0,0,0,40,60]]},"34":{"t":1,"d":[[20,20,20,30,0],[20,20,20,20,20],[0,0,30,40,30]]},"35":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"36":{"t":0,"d":[[10,20,30,30,10],[0,10,30,40,20],[0,10,30,40,20]]},"37":{"t":0,"d":[[10,20,20,30,20],[0,10,30,40,20],[0,10,30,30,30]]},"38":{"t":0,"d":[[0,0,30,30,40],[0,0,20,30,50],[0,0,0,40,60]]},"39":{"t":1,"d":[[20,30,30,20,0],[0,20,40,20,20],[0,20,20,40,20]]},"40":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"41":{"t":0,"d":[[10,20,30,30,10],[0,10,30,40,20],[0,10,30,40,20]]},"42":{"t":0,"d":[[10,20,20,30,20],[0,10,30,40,20],[0,10,30,30,30]]},"43":{"t":0,"d":[[0,0,30,30,40],[0,0,0,40,60],[0,0,0,30,70]]},"44":{"t":1,"d":[[20,30,30,20,0],[0,20,40,20,20],[0,20,20,40,20]]},"45":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"46":{"t":0,"d":[[20,20,20,20,20],[20,20,20,20,20],[20,20,20,20,20]]},"47":{"t":0,"d":[[20,20,20,20,20],[20,20,20,20,20],[20,20,20,20,20]]},"48":{"t":0,"d":[[20,20,20,20,20],[20,20,20,20,20],[20,20,20,20,20]]},"49":{"t":0,"d":[[20,20,20,20,20],[20,20,20,20,20],[20,20,20,20,20]]},"50":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]},"51":{"t":0,"d":[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]}};
+// 롭갤 정리: 일차별 금지 환상체 · 검은 군단은 16일차부터 · 종말새는 언제나 제외
+const BAN104={2:['bald','dontouch','murderer','lantern','scorched','fragment','spider','wall','bath','armor','shy','cherry','void','plague','ppodae','army'],
+ 3:['bald','dontouch','spider','bath','apoc','cherry','void','plague','lantern','army'],
+ 6:['bald','dontouch','armor','spider','wall','bath','redshoes','butterfly','freischutz','current','plague','lantern','army'],
+ 7:['butterfly','redshoes','freischutz','plague','lantern','army'],8:['plague','army'],11:['bald','army'],12:['army'],13:['army']};
+const gOf=a=>a.id==='army'?0:a.g; // 검은 군단은 ZAYIN 확률을 따른다
+function wnSeen(){try{const x=cdxLoad();return !!x._wnSeen}catch(e){return false}}
+function banned(a,d){if(a.id==='apoc'||a.id==='onesin')return true;if((BAN104[d]||[]).includes(a.id))return true;if(a.id==='army'&&d<16)return true;if(a.id==='plague'&&d<11)return true;return false}
+function eligible(a,kind,d){const s=G.ab[a.id];if(!s||s.dept||s.gone)return false;if(banned(a,d))return false;
+  if(d>=46)return a.id==='whitenight'?false:true; // 46일부터: 회사에 없는 모든 환상체 (도구형·음·양 포함)
+  if(a.id==='whitenight')return false;if(a.nopick&&a.id!=='army'&&a.id!=='plague')return false;if(a.id==='plague'&&G.wnHere)return false;
+  return kind==='t'?!!a.tool:!a.tool}
+function rollG(p){const s=p.reduce((x,y)=>x+y,0);if(!s)return -1;let r=Math.random()*s;for(let i=0;i<5;i++){r-=p[i];if(r<0)return i}return 4}
+function build104(kind,d){const D=DAYT104[d];if(!D)return null;const L=AB.filter(a=>eligible(a,kind,d));if(!L.length)return null;const out=[];
+  for(let i=0;i<3;i++){const p=D.d[i]||D.d[0];let g=rollG(p);let pool=L.filter(a=>!out.includes(a)&&(g<0||gOf(a)===g));
+    if(!pool.length){const order=[0,1,2,3,4].filter(x=>p[x]>0).sort((x,y)=>Math.abs(x-g)-Math.abs(y-g));for(const x of order){pool=L.filter(a=>!out.includes(a)&&gOf(a)===x);if(pool.length)break}}
+    if(!pool.length)pool=L.filter(a=>!out.includes(a));if(!pool.length)break;let a=pick(pool);
+    // 백야: 역병의사 자리에 — 한 번이라도 강림을 본 회사라면 역병의사 대신 백야
+    if(a.id==='plague'&&wnSeen()&&G.ab.whitenight&&!G.ab.whitenight.dept&&!G.wnHere)a=ABM.whitenight;
+    out.push(a)}return out}
+yyHook=(f=>function(cand,kind,n,plan){try{const d=G.day;const nc=build104(kind,d);if(nc&&nc.length){cand.length=0;nc.forEach(a=>cand.push(a));if(d>=46)return cand}}catch(e){}return f.apply(this,arguments)})(yyHook);
+// 백야를 본 적이 있는지 기록 (회차를 넘어 유지)
+render=(f=>function(){try{if(G&&(G.wnHere||(G.ab&&G.ab.whitenight&&G.ab.whitenight.dept))){const x=cdxLoad();if(!x._wnSeen){x._wnSeen=1;localStorage.setItem(cdxKeyNow(),JSON.stringify(x))}}}catch(e){}return f.apply(this,arguments)})(render);
+
+/* ---------- 코어 억제 유지 선택: 지난 회차에 끝낸 억제는 기본으로 건너뛰고, 원하면 다시 한다 ---------- */
+function supMeta(){try{return cdxLoad()._sup||{}}catch(e){return {}}}
+function supMetaAdd(k){try{const x=cdxLoad();x._sup=x._sup||{};if(!x._sup[k]){x._sup[k]=1;localStorage.setItem(cdxKeyNow(),JSON.stringify(x))}}catch(e){}}
+supClear=(f=>function(next){try{if(G&&G.sup&&G.sup.key&&G.sup.key!=='arch')supMetaAdd(G.sup.key)}catch(e){}return f.apply(this,arguments)})(supClear);
+startDay=(f=>function(first){try{if(G&&G.day===1&&!G.flags.supKeep&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){const M=supMeta();const ks=Object.keys(M).filter(k=>SEPH[k]);
+    if(ks.length){G.flags.supKeep=1;G.seen=G.seen||{};G.seen.core=1;const sel={};const html=`<p class="sub">${T('지난 회차에서 끝낸 코어 억제는 이번 회차에서 다시 하지 않아도 돼요. 다시 하고 싶은 세피라만 고르세요. 고르지 않은 세피라는 코어 미션과 억제가 완료된 상태로 시작하고 보상도 바로 적용돼요.','Core suppressions you finished in earlier runs need not be repeated. Pick only the Sephirot you want to redo. The rest start with their core missions and suppression complete, rewards included.','前の周回で終えたコア抑制は、今回はやり直さなくて大丈夫です。もう一度やりたいセフィラだけ選んでください。選ばなかったセフィラはコアミッションと抑制が完了した状態で始まり、報酬もすぐに適用されます。')}</p>
+      <div class="choices">${ks.map(k=>`<label class="ch sk104"><input type="checkbox" data-k="${k}"> <b>${SEPH[k].n}</b><small>${DEPT[k]?DEPT[k].n:''} · ${T('다시 한다','Redo','やり直す')}</small></label>`).join('')}</div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="sk104ok">${T('이대로 시작','Start like this','この内容で始める')}</button></div>`;
+      const apply=()=>{ks.forEach(k=>{if(sel[k])return;G.supDone[k]=true;G.cm=G.cm||{};G.cm[k]={s:3,p:0,intro:true}});save();
+        const redo=ks.filter(k=>sel[k]);log(T(`지난 회차의 코어 억제 ${ks.length-redo.length}개를 이어받았다.${redo.length?` 다시 할 억제: ${redo.map(k=>SEPH[k].n).join(', ')}.`:''}`,`Carried over ${ks.length-redo.length} core suppressions from earlier runs.${redo.length?` Redoing: ${redo.map(k=>SEPH[k].n).join(', ')}.`:''}`,`前の周回のコア抑制を${ks.length-redo.length}件引き継いだ。${redo.length?`やり直す抑制：${redo.map(k=>SEPH[k].n).join('、')}。`:''}`),'sys')};
+      setTimeout(()=>{try{popup(T('코어 억제 이어받기','Carry over core suppression','コア抑制の引き継ぎ'),html,el=>{el.querySelectorAll('input[data-k]').forEach(x=>x.onchange=()=>{sel[x.dataset.k]=x.checked});el.querySelector('#sk104ok').onclick=()=>{apply();closePop();render()}});
+        const iv=setInterval(()=>{if(typeof POP==='undefined'||!POP){clearInterval(iv);if(!G.flags.supKeepDone){G.flags.supKeepDone=1;apply()}}},400);
+        const ok=document.getElementById('sk104ok');if(ok)ok.addEventListener('click',()=>{G.flags.supKeepDone=1})}catch(e){}},600)}}}catch(e){}return f.apply(this,arguments)})(startDay);
+// 지난 회차에서 직접 끝낸 세피라이므로 이 창에서는 이름을 가리지 않는다
+censorDom=(f=>function(el){try{if(el&&el.querySelector&&el.querySelector('.sk104'))return}catch(e){}return f.apply(this,arguments)})(censorDom);
+const st=document.createElement('style');st.textContent=`.sk104{display:flex;align-items:center;gap:8px;cursor:pointer}.sk104 input{width:18px;height:18px;accent-color:var(--accent)}`;document.head.appendChild(st);
+})();
+/* ============ v105: 움직임 정리 (impeccable · taste · Emil Kowalski · awesome-design-md 기준) ============
+   원칙: 자주 보는 것은 움직이지 않는다 · 들어올 때보다 나갈 때 빠르게 · 키보드로 닫으면 즉시 · 하루에 한 번 오는 순간에만 연출 · 움직임 줄이기 설정에서는 이동을 빼고 투명도만 남긴다 */
+(function(){
+const RM=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+/* 1) 팝업 닫힘: 마우스·터치로 닫으면 120ms 동안 빠지고, Esc나 다음 팝업으로 바뀔 때는 즉시 */
+let INST105=0;
+function purge105(){document.querySelectorAll('.pop105out').forEach(x=>x.remove())}
+closePop=(f=>function(){if(!POP)return f.apply(this,arguments);if(INST105||RM())return f.apply(this,arguments);
+  const el=POP;try{const ghost=el;POP=null;document.removeEventListener('keydown',popKey);
+    ghost.className='pop105out';ghost.removeAttribute('role');ghost.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));
+    ghost.querySelectorAll('[class*="pop-"]').forEach(x=>{if(!x.classList.contains('pop-card'))x.className=''});
+    setTimeout(()=>ghost.remove(),130)}catch(e){try{el.remove()}catch(_){}}})(closePop);
+popup=(f=>function(){purge105();INST105=1;try{return f.apply(this,arguments)}finally{INST105=0}})(popup);
+popKey=(f=>function(e){if(e&&e.key==='Escape'){INST105=1;try{return f.apply(this,arguments)}finally{INST105=0}}return f.apply(this,arguments)})(popKey);
+
+/* 2) 출근: 하루에 한 번 오는 순간 — 날짜가 떠올랐다가 사라진다 (조작은 막지 않는다) */
+startDay=(f=>function(first){const fresh=G&&!G.flags['init'+G.day]&&!(G.flags&&G.flags.tutSand);const r=f.apply(this,arguments);
+  if(fresh){try{const o=document.createElement('div');o.id='day105';o.setAttribute('aria-hidden','true');
+    o.innerHTML=`<span>${i80('출근','Clock-in','出勤')}</span><b>${i80(`${G.day}일차`,`Day ${G.day}`,`${G.day}日目`)}</b>`;
+    document.getElementById('day105')?.remove();document.body.appendChild(o);setTimeout(()=>o.remove(),RM()?700:1500)}catch(e){}}return r})(startDay);
+
+const st=document.createElement('style');st.textContent=`
+:root{--ease-out105:cubic-bezier(.23,1,.32,1)}
+/* 팝업: 배경은 짧게 페이드, 카드는 기존 등장(스케일 .97 + 투명도) 유지 */
+.pop{animation:bg105 .15s ease-out}
+@keyframes bg105{from{background-color:rgba(9,13,14,0)}}
+.pop105out{position:fixed;inset:0;z-index:39;display:grid;place-items:center;padding:16px;background:rgba(9,13,14,.66);pointer-events:none;animation:bgout105 .12s ease-out forwards}
+.pop105out .pop-card{animation:cardout105 .12s ease-out forwards!important}
+@keyframes bgout105{to{background-color:rgba(9,13,14,0)}}
+@keyframes cardout105{to{opacity:0;transform:scale(.98)}}
+/* 토스트: 나갈 때가 더 빠르게 */
+.toast.out{transition:opacity .18s ease-out,transform .18s ease-out!important}
+/* 기록 줄: 1분에도 여러 번 생긴다 — 이동 없이 짧게 */
+.log p.new{animation:fi .15s ease-out!important}
+/* 출근 */
+#day105{position:fixed;inset:0;z-index:60;display:grid;place-content:center;justify-items:center;gap:6px;pointer-events:none;background:rgba(5,6,7,.82);color:var(--fg);animation:day105 1.5s var(--ease-out105) forwards}
+#day105 span{font-size:13px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
+#day105 b{font-size:clamp(34px,7vw,64px);font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums;animation:day105t .5s var(--ease-out105)}
+@keyframes day105{0%{opacity:0}18%{opacity:1}62%{opacity:1}100%{opacity:0}}
+@keyframes day105t{from{opacity:0;transform:translateY(10px)}}
+/* 마우스가 있는 기기에서만 hover 반응 — 터치에서 눌린 채 남지 않게 */
+@media (hover:none){.tap:hover,.lb-int:hover,.lb-card:hover{transform:none!important;box-shadow:none}}
+/* 움직임 줄이기: 이동은 빼고 의미 있는 투명도 변화만 짧게 남긴다 */
+@media (prefers-reduced-motion:reduce){
+ .pop-card,.toast,.log p.new{animation:op105 .15s linear!important}
+ .pop{animation:none!important}
+ #day105{animation:day105r .7s linear forwards!important}#day105 b{animation:none!important}
+ @keyframes op105{from{opacity:0}}
+ @keyframes day105r{0%{opacity:1}60%{opacity:1}100%{opacity:0}}
+}`;document.head.appendChild(st);
+})();
+/* ============ v106: 격리실 도감 ↔ 영구 도감 연결 — 해금한 정보는 같은 저장소 안에서 사망·엔딩 뒤에도 남는다 ============ */
+(function(){
+const off=()=>!G||!G.ab||(G.flags&&G.flags.tutSand)||(typeof TUTSNAP!=='undefined'&&TUTSNAP);
+function store(){const c=cdxLoad();c._info=c._info||{};return c}
+function fromObs(o,tool){return {b:o>=1?1:0,f:o>=2||tool?{ins:1,insi:1,att:1,rep:1}:{ins:0,insi:0,att:0,rep:0},m:o>=3?[1,1]:[0,0],e:o>=4||tool?1:0}}
+// 저장소에 있는 기록을 이번 회차의 도감에 합친다 (이미 아는 것은 그대로, 모르는 것만 채움)
+function pull(c,a){const s=G.ab[a.id];if(!s)return;let r=c._info[a.id];if(!r&&c[a.id]&&c[a.id].o>0)r=fromObs(c[a.id].o,a.tool);if(!r)return;
+  const i=infoOf(a);if(r.b)i.b=1;for(const k in (r.f||{}))if(r.f[k])i.f[k]=1;(r.m||[]).forEach((v,j)=>{if(v)i.m[j]=1});if(r.e)i.e=1;
+  const o=obsLv(a);if(o>(s.obs||0))s.obs=o}
+function pullAll(){if(off())return;try{const c=store();AB.forEach(a=>pull(c,a))}catch(e){}}
+// 이번 회차에서 새로 안 것을 저장소에 더한다
+function push(ids){if(off())return;try{const c=store();(ids||AB.map(a=>a.id)).forEach(id=>{const s=G.ab[id];if(!s||!s.info)return;const i=s.info,r=c._info[id]||{b:0,f:{},m:[0,0],e:0};
+    if(i.b)r.b=1;for(const k in i.f)if(i.f[k])r.f[k]=1;i.m.forEach((v,j)=>{if(v)r.m[j]=1});if(i.e)r.e=1;c._info[id]=r;
+    const o=c[id]||{o:0,n:0};o.o=Math.max(o.o||0,s.obs||0);o.m=1;c[id]=o});localStorage.setItem(cdxKeyNow(),JSON.stringify(c))}catch(e){}}
+window.cdxPull106=pullAll;
+unlockInfo=(f=>function(a){const r=f.apply(this,arguments);if(r)push([a.id]);return r})(unlockInfo);
+obsGain=(f=>function(a){const r=f.apply(this,arguments);push([a.id]);return r})(obsGain);
+cdxSave=(f=>function(){const r=f.apply(this,arguments);push();return r})(cdxSave);
+startDay=(f=>function(){pullAll();return f.apply(this,arguments)})(startDay);
+abnoView=(f=>function(){pullAll();return f.apply(this,arguments)})(abnoView);
+// 이어하기로 불러온 직후에도 한 번 맞춘다
+let LG106=null;render=(f=>function(){try{if(G&&G!==LG106&&!off()){LG106=G;pullAll()}}catch(e){}return f.apply(this,arguments)})(render);
 })();
 </script>
 
