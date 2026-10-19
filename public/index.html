@@ -3476,7 +3476,7 @@ function playReplay(list){
       const live=(el)=>[...el.querySelectorAll('.coin:not(.gone)')];
       await wait(350);
       for(let r=0;r<R.rounds.length&&!st.dead;r++){
-        const Rd=R.rounds[r];msg.textContent=`${r+1}합`;msg.className='rp-msg';
+        const Rd=R.rounds[r];if(typeof rpRound127==='function'){msg.innerHTML=rpRound127(R,r,A,E);msg.className='rp-msg r127'}else{msg.textContent=`${r+1}합`;msg.className='rp-msg'}
         const ac=live(A),ec=live(E);
         [...ac,...ec].forEach(x=>{x.className='coin spin';x.textContent=''});
         A.querySelector('.rp-pow').textContent=R.A.b0;E.querySelector('.rp-pow').textContent=R.E.b0;A.querySelector('.rp-eq').textContent=`기본 ${R.A.b0}`;E.querySelector('.rp-eq').textContent=`기본 ${R.E.b0}`;
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.28.3.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.29.5.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -12690,6 +12690,249 @@ html body .rp-card.shake{animation:y6shk .3s!important}@keyframes y6shk{25%{tran
 @media (prefers-reduced-motion:reduce){html body *{transition:none!important}html body .rp .rp-card,html body .pop-card{transform:none}}
 `;
 try{const s=document.createElement('style');s.id='css126';s.textContent=css;document.head.appendChild(s)}catch(e){}
+})();
+/* ============ v127: 전투 화면 손질 — 섬세한 아바타 · 자체 디자인 적 · 합 정보 표기 ============
+   ① 플레이어·직원: 머리 모양·피부·눈썹·눈·입·셔츠·넥타이·완장·슈트 색·무기까지 그린 사람 아바타
+      (얼굴은 이름으로 고정 생성, 부서 색 넥타이·완장, E.G.O 슈트면 등급 색 테두리)
+   ② 적: 원작 외형을 옮기지 않은 자체 디자인. 사람형 적은 같은 사람 아바타(붉은 테),
+      환상체·시련은 피해 유형 색과 등급(눈 개수)으로 만드는 6가지 실루엣 중 하나.
+   ③ 슬롯과 합 연출: 「합」 글자 대신 코인 수 · 최소~최대 위력 · 승률(%) */
+(function(){
+const H=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619)>>>0;return h};
+const pickH=(h,arr,k=0)=>arr[(h>>>k)%arr.length];
+const SKIN=['#f1d9c2','#e8c6a5','#d9ab83','#b9825c','#8d5a3b','#f4e2d2'];
+const HAIR=['#1d1a17','#3a2a1f','#5a3a22','#8a6236','#c9a76a','#d9d4c8','#6a1f24','#2b3a52','#3d3d3d'];
+const DC={RED:'#e8433a',WHITE:'#ece6d0',BLACK:'#8c5bd0',PALE:'#5ed7d7'};
+const GC=['#f2e6a0','#7fc8a9','#e0a040','#a070e0','#e05040'];
+
+/* ---------- 사람 아바타 ---------- */
+function humanOld(o){const h=H(o.seed||'x');const sk=o.skin||pickH(h,SKIN,1),hc=o.hair||pickH(h,HAIR,5),hs=(h>>>9)%6;
+ const suit=o.suit||'#23262d',rim=o.rim||'none',tie=o.tie||'#c33',arm=o.arm||tie,eyeC=o.eye||'#1a1612';
+ const BACK=[ '', `<path d="M31 30q-2 22 6 30h26q8-8 6-30z" fill="${hc}"/>`, `<path d="M32 32q-4 26 4 40h28q8-14 4-40z" fill="${hc}"/>`, '', `<path d="M66 28q14 8 6 30q-4-12-8-16z" fill="${hc}"/>`, '' ][hs];
+ const FRONT=[
+  `<path d="M33 31q1-15 17-16t17 13q-8-6-17-6t-17 9z" fill="${hc}"/>`,
+  `<path d="M32 33q0-18 18-18t18 16q-6-8-12-8q-4 6-14 7q-6 1-10 3z" fill="${hc}"/>`,
+  `<path d="M32 36q0-21 18-21t18 21q-3-10-9-12q-5 4-12 4t-12 3z" fill="${hc}"/>`,
+  `<path d="M34 28q2-12 16-12t16 12q-4-3-16-3t-16 3z" fill="${hc}" opacity=".85"/>`,
+  `<path d="M32 33q2-17 18-17t17 10q-10-2-16 2q-8 4-19 5z" fill="${hc}"/>`,
+  `<path d="M33 30q2-14 17-14t17 14l-4-3-4 3-4-4-5 4-5-4-4 4-4-3z" fill="${hc}"/>`][hs];
+ // 표정: 정신력 단계 (calm ≥20 · ok ≥0 · worry ≥-24 · stress ≥-44 · panic)
+ const md=o.mood||'ok',ink='#3a1c14';
+ const browN=(h>>>13)%2?`<path d="M42 30h5M53 30h5" stroke="${hc}" stroke-width="1.6" stroke-linecap="round"/>`:`<path d="M42 31l5-1.2M58 31l-5-1.2" stroke="${hc}" stroke-width="1.6" stroke-linecap="round"/>`;
+ const BROW={calm:`<path d="M42 30.5q2.5-1.6 5 0M53 30.5q2.5-1.6 5 0" stroke="${hc}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,ok:browN,
+  worry:`<path d="M42 30.6l5-1.6M58 30.6l-5-1.6" stroke="${hc}" stroke-width="1.6" stroke-linecap="round"/>`,
+  stress:`<path d="M42 31.4l5.4-3M58 31.4l-5.4-3" stroke="${hc}" stroke-width="1.8" stroke-linecap="round"/>`,
+  panic:`<path d="M42 27.6q2.5-1.8 5 0M53 27.6q2.5-1.8 5 0" stroke="${hc}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`};
+ const sclera=(rx,ry)=>`<ellipse cx="45" cy="35" rx="${rx}" ry="${ry}" fill="#fbf8f2"/><ellipse cx="55" cy="35" rx="${rx}" ry="${ry}" fill="#fbf8f2"/>`;
+ const pup=(r,dy=0)=>`<circle cx="45" cy="${35+dy}" r="${r}" fill="${eyeC}"/><circle cx="55" cy="${35+dy}" r="${r}" fill="${eyeC}"/>`;
+ const EYES={calm:`<path d="M42.5 35.6q2.5-2 5 0M52.5 35.6q2.5-2 5 0" stroke="${eyeC}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+  ok:sclera(2.8,2.2)+`<ellipse cx="45" cy="35" rx="1.6" ry="2.1" fill="${eyeC}"/><ellipse cx="55" cy="35" rx="1.6" ry="2.1" fill="${eyeC}"/><circle cx="45.6" cy="34.3" r=".5" fill="#fff"/><circle cx="55.6" cy="34.3" r=".5" fill="#fff"/>`,
+  worry:sclera(2.8,2.3)+pup(1.5,.3)+`<circle cx="45.5" cy="34.6" r=".45" fill="#fff"/><circle cx="55.5" cy="34.6" r=".45" fill="#fff"/>`,
+  stress:sclera(3,2.6)+pup(1,0)+`<path d="M42 38.4q3 1 6 0M52 38.4q3 1 6 0" stroke="rgba(60,30,60,.35)" stroke-width="1"/>`,
+  panic:sclera(3.3,3.1)+pup(.75,0)+`<path d="M41.5 39q3.5 1.6 7 0M51.5 39q3.5 1.6 7 0" stroke="rgba(60,20,60,.5)" stroke-width="1.2"/>`};
+ const mN=(h>>>15)%3===0?`<path d="M47 42q3 2 6 0" stroke="${ink}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`:(h>>>15)%3===1?`<path d="M47.5 42.5h5" stroke="${ink}" stroke-width="1.3" stroke-linecap="round"/>`:`<path d="M47 43q3-1.6 6 0" stroke="${ink}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+ const MOUTH={calm:`<path d="M45.5 41.6q4.5 4 9 0" stroke="${ink}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`,ok:mN,
+  worry:`<path d="M47 43.4q3-2 6 0" stroke="${ink}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`,
+  stress:`<path d="M45.6 43.4l1.5-1.2 1.5 1.2 1.5-1.2 1.5 1.2 1.5-1.2 1.4 1.2" stroke="${ink}" stroke-width="1.2" fill="none" stroke-linejoin="round"/>`,
+  panic:`<ellipse cx="50" cy="44" rx="3" ry="3.6" fill="#2a0f0c"/><ellipse cx="50" cy="45.4" rx="1.8" ry="1.2" fill="#a8423a"/>`};
+ const EXTRA={calm:`<ellipse cx="40.5" cy="40" rx="2.4" ry="1.3" fill="#ff8a8a" opacity=".25"/><ellipse cx="59.5" cy="40" rx="2.4" ry="1.3" fill="#ff8a8a" opacity=".25"/>`,ok:'',worry:'',
+  stress:`<path d="M64 27q2 3.4 0 5.2q-2-1.8 0-5.2z" fill="#9fd8ff" stroke="#5a9ccc" stroke-width=".5"/>`,
+  panic:`<path d="M63.5 26q2.4 4 0 6.2q-2.4-2.2 0-6.2zM35.8 30q1.8 3 0 4.6q-1.8-1.6 0-4.6z" fill="#9fd8ff" stroke="#5a9ccc" stroke-width=".5"/><path d="M37 26l3 2M63 22l-2.6 2.4" stroke="#c9c2ff" stroke-width="1" opacity=".7"/>`};
+ const brow=BROW[md]||browN,eyes=EYES[md]||EYES.ok,mouth=MOUTH[md]||mN,extra=EXTRA[md]||'';
+ const dy=11; // 머리를 몸에 붙인다
+ return `<svg viewBox="0 0 100 120" width="100%" height="100%" aria-hidden="true">${o.under||''}<g transform="translate(0 ${dy})">${BACK}</g>
+ <path d="M43.5 54h13v24h-13z" fill="${sk}"/><path d="M43.5 62q6.5 4 13 0v4q-6.5 4-13 0z" fill="rgba(0,0,0,.16)"/>
+ <path d="M14 120c0-24 8-38 22-43l14-3 14 3c14 5 22 19 22 43z" fill="${suit}" stroke="${rim}" stroke-width="2"/>
+ <path d="M36 77q-3 10-4 22M64 77q3 10 4 22" stroke="rgba(0,0,0,.28)" stroke-width="1.2" fill="none"/>
+ <path d="M41 74l9 13 9-13" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/>
+ <path d="M42 72.5l8 9 8-9-3-2.4-5 6-5-6z" fill="#efeadf"/>
+ <path d="M48.5 80h3l1.5 3-3 22-3-22z" fill="${tie}"/><path d="M48.6 80h2.8l-1.4 2.4z" fill="rgba(0,0,0,.25)"/>
+ <path d="M38 76l-7 16 6 2 7-14z M62 76l7 16-6 2-7-14z" fill="rgba(0,0,0,.18)"/>
+ <rect x="19" y="95" width="11" height="6" transform="rotate(-14 24 98)" fill="${arm}"/>
+ <g transform="translate(0 ${dy})">
+ <circle cx="33.5" cy="36" r="3" fill="${sk}"/><circle cx="66.5" cy="36" r="3" fill="${sk}"/>
+ <ellipse cx="50" cy="35" rx="16.5" ry="18" fill="${sk}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>
+ <path d="M37 41q13 12 26 0q-4 10-13 10t-13-10z" fill="rgba(0,0,0,.06)"/>
+ ${FRONT}${brow}${eyes}<path d="M50 37l-1.2 4h2.2" stroke="rgba(0,0,0,.25)" stroke-width="1" fill="none"/>${mouth}${extra}${o.overHead||''}</g>
+ ${o.weapon||''}${o.over||''}</svg>`}
+const moodOf=(sp,panic)=>panic||sp<=-45?'panic':sp<=-25?'stress':sp<0?'worry':sp>=20?'calm':'ok';
+window.mood127=moodOf;
+
+/* ---------- 각진 평면 아바타 (전신) — 다각형 조각을 틈을 두고 이어 붙인다 ---------- */
+function shade(hex,k){const n=parseInt(String(hex).replace('#','').slice(0,6),16);if(isNaN(n))return hex;let r=n>>16,g=(n>>8)&255,b=n&255;r=Math.max(0,Math.min(255,Math.round(r*k)));g=Math.max(0,Math.min(255,Math.round(g*k)));b=Math.max(0,Math.min(255,Math.round(b*k)));return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+function humanFlat(o){const h=H(o.seed||'x');const sk=o.skin||pickH(h,SKIN,1),hc=o.hair||pickH(h,HAIR,5),hs=(h>>>9)%6;
+ const sc=/^#/.test(o.body||'')?o.body:'#c8302c',sd=shade(sc,.72),sl=shade(sc,1.12),md=o.mood||'ok',eyeC=o.eye||'#141010',ink='#2a1410';
+ const P=(pts,f,x='')=>`<polygon points="${pts}" fill="${f}" ${x}/>`;
+ // 머리카락 (뒤)
+ const HB=['', P('35,12 50,6 65,12 67,34 62,40 38,40 33,34',hc), P('34,12 50,5 66,12 70,46 60,44 40,44 30,46',hc), '', P('60,10 72,18 70,40 64,30',hc), P('36,14 50,7 64,14 63,36 37,36',hc)][hs];
+ // 머리카락 (앞)
+ const HF=[P('36,18 42,9 50,7 58,9 64,18 58,15 50,16 42,15',hc), P('36,22 40,10 50,6 60,10 64,20 56,14 48,17 40,19',hc), P('35,24 38,11 50,6 62,11 65,24 60,16 50,15 40,16',hc), P('38,15 44,10 50,9 56,10 62,15 50,13',hc,'opacity=".9"'), P('36,20 41,9 51,6 62,11 64,17 54,14 44,19',hc), P('36,17 39,10 44,13 47,7 51,12 55,7 58,12 62,9 64,17 50,14',hc)][hs];
+ // 얼굴: 각진 육각
+ const face=P('37,15 50,10 63,15 64,30 57,39 43,39 36,30',sk)+P('50,10 63,15 64,30 57,39 50,39',shade(sk,.93));
+ const ex=(l,r)=>l+r;
+ const EY={calm:`<polyline points="41.5,25 44,23 46.5,25" stroke="${eyeC}" stroke-width="1.6" fill="none"/><polyline points="53.5,25 56,23 58.5,25" stroke="${eyeC}" stroke-width="1.6" fill="none"/>`,
+  ok:P('42.6,22.4 45.4,22.4 45.4,26.4 42.6,26.4',eyeC)+P('54.6,22.4 57.4,22.4 57.4,26.4 54.6,26.4',eyeC),
+  worry:P('42.6,23 45.4,23 45.4,26.6 42.6,26.6',eyeC)+P('54.6,23 57.4,23 57.4,26.6 54.6,26.6',eyeC),
+  stress:P('43.2,23.6 45,23.6 45,25.6 43.2,25.6',eyeC)+P('55,23.6 56.8,23.6 56.8,25.6 55,25.6',eyeC)+`<path d="M41.5 28h5M53.5 28h5" stroke="rgba(70,30,70,.35)" stroke-width="1"/>`,
+  panic:`<rect x="41.6" y="21.6" width="4.6" height="5.4" fill="#fbf8f2" stroke="${eyeC}" stroke-width=".9"/><rect x="53.8" y="21.6" width="4.6" height="5.4" fill="#fbf8f2" stroke="${eyeC}" stroke-width=".9"/><rect x="43.4" y="23.8" width="1" height="1" fill="${eyeC}"/><rect x="55.6" y="23.8" width="1" height="1" fill="${eyeC}"/>`};
+ const BR={calm:`<path d="M41.5 20.4l5-.8M53.5 19.6l5 .8" stroke="${hc}" stroke-width="1.6"/>`,ok:`<path d="M41.5 20.2h5M53.5 20.2h5" stroke="${hc}" stroke-width="1.6"/>`,
+  worry:`<path d="M41.5 20.8l5-1.8M58.5 20.8l-5-1.8" stroke="${hc}" stroke-width="1.6"/>`,stress:`<path d="M41.5 21.6l5.4-3.2M58.5 21.6l-5.4-3.2" stroke="${hc}" stroke-width="1.8"/>`,
+  panic:`<path d="M41.5 18.4l5-1M53.5 17.4l5 1" stroke="${hc}" stroke-width="1.6"/>`};
+ const MO={calm:`<polyline points="46,31.5 50,34 54,31.5" stroke="${ink}" stroke-width="1.4" fill="none"/>`,ok:`<path d="M47 32.6h6" stroke="${ink}" stroke-width="1.4"/>`,
+  worry:`<polyline points="46.5,33.6 50,31.8 53.5,33.6" stroke="${ink}" stroke-width="1.4" fill="none"/>`,stress:`<polyline points="45.5,33 47.3,31.8 49.1,33 50.9,31.8 52.7,33 54.5,31.8" stroke="${ink}" stroke-width="1.2" fill="none"/>`,
+  panic:P('47,31 53,31 54,35.4 50,36.6 46,35.4','#2a0f0c')};
+ const XT={calm:P('38.6,28 41.6,28 41.6,29.4 38.6,29.4','#ff8a8a','opacity=".35"')+P('58.4,28 61.4,28 61.4,29.4 58.4,29.4','#ff8a8a','opacity=".35"'),ok:'',worry:'',
+  stress:P('63,17 65,21 63,23 61,21','#9fd8ff'),panic:P('63,15 65.4,20 63,22.6 60.6,20','#9fd8ff')+P('37,20 39,24 37,26 35,24','#9fd8ff')};
+ const head=`${HB}<rect x="46" y="37" width="8" height="7" fill="${shade(sk,.85)}"/>${face}${HF}${BR[md]||BR.ok}${EY[md]||EY.ok}${MO[md]||MO.ok}${XT[md]||''}`;
+ // 몸: 재킷 조각 · 셔츠 · 넥타이 · 팔 · 다리 · 신발 (조각 사이 틈)
+ const body=
+  P('31,44 47.6,44 47.6,84 29,84 27,56',sc)+P('52.4,44 69,44 73,56 71,84 52.4,84',sd)+
+  P('44,44 56,44 50,60','#f4f1ea')+P('48.7,46 51.3,46 52,58 50,62 48,58',o.tie||'#1b1b1b')+
+  P('42,44 47.4,44 47.4,58',sl)+P('58,44 52.6,44 52.6,58',shade(sc,.6))+
+  P('25.6,45.6 29.8,47 30.6,60 25,79 20.6,77.6',sc)+P('70.2,47 74.4,45.6 79.4,77.6 75,79 69.4,60',sd)+
+  P('20.4,79 25.4,80.2 24.6,85 20,84',sk)+P('74.6,80.2 79.6,79 80,84 75.4,85',shade(sk,.9))+
+  (o.arm?P('22.4,64 28.6,66 27.6,70 21.2,68',o.arm):'')+
+  P('30,86 48.6,86 46.8,121 37.4,121',sd)+P('51.4,86 70,86 62.6,121 53.2,121',shade(sc,.6))+
+  P('35.6,122.6 47,122.6 47,127 33,127','#121212')+P('53,122.6 64.4,122.6 67,127 53,127','#121212');
+ const rim=o.rim&&o.rim!=='none'?`<ellipse cx="50" cy="127.5" rx="24" ry="2.6" fill="${o.rim}" opacity=".75"/><polygon points="46,1 54,1 50,6" fill="${o.rim}"/>`:'';
+ const wpn=o.weapon?`<g transform="translate(4 -6)">${o.weapon}</g>`:'';
+ const HG=o.overHead?`<g transform="translate(50 25) scale(.82) translate(-50 -36)">${o.overHead}</g>`:'';
+ const BG=o.over?`<g transform="translate(0 -30)">${o.over}</g>`:'';
+ const UG=o.under?`<g transform="translate(0 -30)">${o.under}</g>`:'';
+ return `<svg viewBox="0 0 100 130" width="100%" height="100%" aria-hidden="true">${UG}${rim}${body}${head}${HG}${BG}${wpn}</svg>`}
+
+/* ---------- 픽토그램 아바타 (2.5등신): 큰 팔각 머리 · 짧은 몸 · 단색 크림 + 검은 윤곽 · 자세와 기호로 정신력 ---------- */
+function human(o){const C=o.pcol||'#f4ee9a',K='#000',md=o.mood||'ok',st=`stroke="${K}" stroke-width="3" stroke-linejoin="round"`;
+ const oct=(cx,cy,r)=>{const a=Math.PI/8;return Array.from({length:8},(_,i)=>{const t=a+i*Math.PI/4;return `${(cx+Math.cos(t)*r).toFixed(1)},${(cy+Math.sin(t)*r).toFixed(1)}`}).join(' ')};
+ const P=(pts,f=C,x='')=>`<polygon points="${pts}" fill="${f}" ${st} ${x}/>`;
+ const L=(d,w=2.6)=>`<path d="${d}" stroke="${K}" stroke-width="${w}" fill="none" stroke-linecap="square" stroke-linejoin="round"/>`;
+ const D=(x,y,r=4)=>`<polygon points="${x},${y-r} ${x+r*.75},${y} ${x},${y+r*.9} ${x-r*.75},${y}" fill="${C}" stroke="${K}" stroke-width="1.6"/>`;
+ // 몸통 (짧고 넓게) · 넥타이 · 옷깃 · 완장
+ const torso=(y0)=>`${P(`34,${y0} 66,${y0} 68,${y0+34} 32,${y0+34}`)}${L(`M43 ${y0}l7 12 7-12`)}${P(`47.8,${y0+3} 52.2,${y0+3} 53.2,${y0+17} 50,${y0+22} 46.8,${y0+17}`,o.tieAttr||'#000','stroke-width="1.4"')}${L(`M50 ${y0+22}v12`,1.6)}`;
+ const band=(x,y)=>o.arm?`<polygon points="${x},${y} ${x+8},${y} ${x+8},${y+5} ${x},${y+5}" fill="${o.arm}" stroke="${K}" stroke-width="1.8"/>`:'';
+ let parts="",hx=50,hy=38,ht=0;
+ if(md==='panic'){
+  parts=`<g transform="rotate(12 50 90)">
+   ${P('38,96 49,96 42,112 36,124 27,121 33,110')}${P('52,96 63,96 74,106 82,111 77,118 64,110')}
+   ${torso(62)}
+   ${P('34,64 24,70 16,64 12,69 23,78 34,72')}${band(17,66)}${P('66,64 77,68 84,58 89,62 80,76 66,72')}
+   ${P(oct(50,39,23.5))}</g>
+   ${L('M18 14q-7-7 0-13M84 12q8-5 3-12',2)}${D(80,30)}${D(20,36)}`}
+ else{const sl=md==='stress'?3:0;ht=md==='worry'?-9:md==='stress'?11:0;hy=38+sl;
+  parts=`${P(`37,${96+sl} 49,${96+sl} 49,122 36,122`)}${P(`51,${96+sl} 63,${96+sl} 64,122 51,122`)}${L('M38 122h10M52 122h11',3.4)}
+   ${torso(62+sl)}
+   ${P(`34,${64+sl} 25,${68+sl} 23,${90+sl} 31,${91+sl} 34,${76+sl}`)}${band(24,74+sl)}${P(`66,${64+sl} 75,${68+sl} 77,${90+sl} 69,${91+sl} 66,${76+sl}`)}
+   <g transform="rotate(${ht} 50 ${58+sl})">${P(oct(50,hy,24.5))}</g>`;
+  if(md==='calm')parts+=`<polygon points="84,8 86.4,14 92,16 86.4,18 84,24 81.6,18 76,16 81.6,14" fill="${C}" stroke="${K}" stroke-width="1.6"/>`;
+  if(md==='worry')parts+=`<g fill="${C}" stroke="${K}" stroke-width="1.4"><rect x="76" y="6" width="4.4" height="4.4"/><rect x="83" y="6" width="4.4" height="4.4"/><rect x="90" y="6" width="4.4" height="4.4"/></g>`;
+  if(md==='stress')parts+=`${D(82,14)}${D(89,26,3.4)}${L('M14 10l5 5M10 22l6 1',2)}`}
+ const mark=o.rim&&o.rim!=='none'?`<polygon points="43,0 57,0 50,6" fill="${o.rim}" stroke="${K}" stroke-width="1.4"/>`:'';
+ const wpn=o.weapon&&md!=='panic'?`<g transform="translate(70 92) scale(.62) translate(-75 -88)">${o.weapon}</g>`:'';
+ const HG=o.overHead?`<g transform="rotate(${ht} 50 58) translate(50 ${hy}) scale(1.35) translate(-50 -36)">${o.overHead}</g>`:'';
+ const BG=o.over?`<g transform="translate(50 76) scale(.7) translate(-50 -86)">${o.over}</g>`:'';
+ const UG=o.under?`<g transform="translate(50 70) scale(.75) translate(-50 -86)">${o.under}</g>`:'';
+ return `<svg viewBox="0 0 100 128" width="100%" height="100%" aria-hidden="true">${UG}${mark}${parts}${HG}${BG}${wpn}</svg>`}
+
+/* 슈트 속성: 그 슈트를 낳은 환상체의 피해 유형 (없으면 가장 강한 내성) */
+function suitAttr(id){if(!id||id==='basic')return null;const b=String(id).split('~')[0];
+ try{const a=AB.concat(typeof AB_GONE!=='undefined'?AB_GONE:[]).find(x=>x.eq&&x.eq.id===b);if(a&&a.dt&&DC[a.dt])return a.dt}catch(e){}
+ try{const r=suitOf(id).r;return ['RED','WHITE','BLACK','PALE'].sort((x,y)=>(r[x]??1)-(r[y]??1))[0]}catch(e){return null}}
+const tieOf=id=>{const k=suitAttr(id);return k?({RED:'#e8433a',WHITE:'#ffffff',BLACK:'#8c5bd0',PALE:'#5ed7d7'})[k]:null};
+window.suitAttr127=suitAttr;
+window.human127=human;
+const wsvg=(id,dc)=>{try{return typeof wSvg97==='function'?wSvg97(id,DC[dc]||'#e05040'):''}catch(e){return ''}};
+function agentFig(ag,enemy,sp){let suit='#23262d',rim=enemy?'#e8433a':'none',tie='#b33',arm='#b33',wid='baton',dc='RED';
+ try{const D=DEPT[ag.dept];if(D){tie=D.col;arm=D.col}}catch(e){}
+ try{const sid=agSuit(ag);if(sid&&sid!=='basic'){const su=suitOf(sid);suit='#1d2026';if(!enemy)rim=GC[su.g||0]}}catch(e){}
+ try{wid=agWeap(ag)||'baton';dc=weapOf(wid).dc}catch(e){}
+ let bodyC=tie;try{const sid=agSuit(ag);if(sid&&sid!=='basic')bodyC=GC[(suitOf(sid).g)||0]}catch(e){}
+ let tA=null;try{tA=tieOf(agSuit(ag))}catch(e){}
+ return human({seed:ag.id+':'+ag.n,tieAttr:tA,pcol:enemy?'#ff8f80':'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,suit,rim:enemy?'#e8433a':'none',weapon:wsvg(wid,dc),mood:moodOf(sp!=null?sp:(ag.sp||0),!!ag.panic)})}
+
+/* 플레이어 */
+avatarSvg=(f=>function(){const h0=f.apply(this,arguments);try{if(!h0.startsWith('<svg')||!G)return h0;
+ let suit='#2b2f36',rim='none',dc='RED';try{if(G.suit&&G.suit!=='basic'){const su=SUIT[G.suit]||suitOf(G.suit);suit='#1d2026';rim=GC[su.g||0]}}catch(e){}
+ try{dc=weapOf(G.weapon).dc}catch(e){}
+ let F='',FH='',Bk='';const HEADS=new Set(['cheek','mouth','eye','head','hat']);try{if(G.gifts&&window.giftArt125)['back','neck','brooch','hand','cheek','mouth','eye','head','hat'].forEach(sl=>{const id=G.gifts[sl];if(!id)return;const r=giftArt125(sl,id);if(HEADS.has(sl))FH+=r[0];else F+=r[0];Bk+=r[1]})}catch(e){}
+ let sp=G.sp||0;try{if(B&&!B.done&&B.allies&&B.allies[0])sp=typeof allySpV==='function'?allySpV(B.allies[0]):B.allies[0].sp}catch(e){}
+ let tie='#b33';try{tie=DEPT[G.dept].col}catch(e){}
+ let bodyC=tie;try{if(G.suit&&G.suit!=='basic')bodyC=GC[((SUIT[G.suit]||suitOf(G.suit)).g)||0]}catch(e){}
+ return human({seed:'P:'+(G.name||'')+(G.origin||''),suit,rim:'none',tieAttr:tieOf(G.suit),pcol:'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,weapon:wsvg(G.weapon,dc),mood:moodOf(sp,false),overHead:FH?`<g class="gf125">${FH}</g>`:'',under:Bk?`<g class="gf125">${Bk}</g>`:'',over:F?`<g class="gf125">${F}</g>`:''})}catch(e){return h0}})(avatarSvg);
+/* 직원 */
+lbAllyFig=(f=>function(a){try{if(a&&a.key==='ag'&&a.ag)return `<div class="lb-av av127">${agentFig(a.ag,false,typeof allySpV==='function'?allySpV(a):a.sp)}</div>`}catch(e){}return f.apply(this,arguments)})(lbAllyFig);
+
+/* ---------- 적: 자체 디자인 실루엣 ---------- */
+function creature(seed,dc,g){const h=H(seed),c=DC[dc]||'#e8433a',t=(h>>>3)%6,eyesN=Math.max(1,Math.min(5,(g|0)+1)),cr='#f4ee9a';
+ const ey=(cx,cy,r,n)=>Array.from({length:n},(_,i)=>{const x=cx+(i-(n-1)/2)*r*2.6;return `<circle cx="${x}" cy="${cy}" r="${r}" fill="${cr}"/><circle cx="${x}" cy="${cy}" r="${r*.45}" fill="#000"/>`}).join('');
+ let body='';
+ if(t===0){const pts=Array.from({length:14},(_,i)=>{const a=i/14*Math.PI*2,rr=30+((h>>>(i%16))&7);return `${50+Math.cos(a)*rr},${54+Math.sin(a)*rr*.9}`}).join(' ');body=`<polygon points="${pts}" fill="#0b0b0b" stroke="${c}" stroke-width="3" stroke-linejoin="round"/>${ey(50,50,4,eyesN)}`}
+ else if(t===1){body=`<path d="M50 6l14 40-6 0 10 44H32l10-44-6 0z" fill="#0b0b0b" stroke="${c}" stroke-width="3" stroke-linejoin="round"/><path d="M38 90l-8 6M62 90l8 6" stroke="${c}" stroke-width="3"/>${ey(50,40,3.4,Math.min(eyesN,3))}`}
+ else if(t===2){body=`<path d="M50 8q20 22 12 36q16-4 14 18q-2 26-26 30q-24-4-26-30q-2-22 14-18q-8-14 12-36z" fill="#0b0b0b" stroke="${c}" stroke-width="3"/>${ey(50,62,3.6,eyesN)}`}
+ else if(t===3){body=`<rect x="24" y="18" width="52" height="66" fill="#0b0b0b" stroke="${c}" stroke-width="3"/><path d="M24 40h52M24 62h52" stroke="${c}" stroke-width="1.2" opacity=".5"/><rect x="34" y="84" width="8" height="10" fill="${c}"/><rect x="58" y="84" width="8" height="10" fill="${c}"/>${ey(50,30,3.6,eyesN)}`}
+ else if(t===4){const o=Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2+(h&3);return `<circle cx="${50+Math.cos(a)*22}" cy="${52+Math.sin(a)*20}" r="${10+((h>>>i)&3)}" fill="#0b0b0b" stroke="${c}" stroke-width="2.4"/>`}).join('');body=`${o}<circle cx="50" cy="52" r="15" fill="#0b0b0b" stroke="${c}" stroke-width="3"/>${ey(50,52,3.4,Math.min(eyesN,3))}`}
+ else {const teeth=Array.from({length:9},(_,i)=>`${30+i*5},${i%2?60:66}`).join(' ');body=`<circle cx="50" cy="52" r="34" fill="#0b0b0b" stroke="${c}" stroke-width="3"/><path d="M28 58q22 16 44 0" fill="#000" stroke="${c}" stroke-width="2"/><polyline points="${teeth}" fill="none" stroke="${cr}" stroke-width="1.6"/>${ey(50,38,3.6,eyesN)}`}
+ // 덧붙임: 촉수·팔·무늬 (실루엣마다 다르게)
+ const tend=n=>Array.from({length:n},(_,i)=>{const x=34+i*(32/(n-1||1)),w=((h>>>(i*3))&7)-3;return `<path d="M${x} 80q${w*2} 8 ${w} 16" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`}).join('');
+ const ex=[tend(4),`<path d="M40 52l-16 10-4 14M60 52l16 10 4 14" stroke="${c}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,tend(3),`<path d="M24 30h-8v28h8M76 30h8v28h-8" stroke="${c}" stroke-width="2" fill="none"/><circle cx="50" cy="73" r="3" fill="none" stroke="${c}" stroke-width="1.6"/>`,'',`<path d="M20 52l-8-6M80 52l8-6M22 64l-10 2M78 64l10 2" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`][t];
+ const glow=`<radialGradient id="g127${h%997}" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="${c}" stop-opacity=".32"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`;
+ const tex=`<g opacity=".22" stroke="${c}" stroke-width="1">${Array.from({length:4},(_,i)=>`<path d="M${30+i*12} ${30+((h>>>i)&7)}q4 10 0 ${18+((h>>>(i+4))&7)}"/>`).join('')}</g>`;
+ return `<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><defs>${glow}</defs><circle cx="50" cy="50" r="46" fill="url(#g127${h%997})"/><ellipse cx="50" cy="96" rx="28" ry="3.5" fill="rgba(0,0,0,.6)"/>${ex}${body}${t===4?'':tex}</svg>`}
+window.creature127=creature;
+lbEnemyFig=(f=>function(u){try{
+ const agById=id=>(G.agents||[]).find(a=>a.id===id);
+ if(u.spar124){const ag=agById(u.spar124);if(ag)return `<div class="lb-ev ev127 hum">${agentFig(ag,true,u.sp||0)}</div>`}
+ if(u.p122&&B&&B.opt&&B.opt.ag)return `<div class="lb-ev ev127 hum">${agentFig(B.opt.ag,true,-45)}</div>`;
+ if(u.human){const col=u.fx?({'붉은':'#a82626','하얀':'#d8d4c8','검은':'#1b1b1f','창백':'#2f6f78'}[Object.keys({'붉은':1,'하얀':1,'검은':1,'창백':1}).find(k=>String(u.n).includes(k))]||'#3a2a2a'):'#3a2a2a';
+  return `<div class="lb-ev ev127 hum">${human({seed:'E:'+u.n,pcol:'#ff8f80',body:col,suit:col,rim:'#e8433a',tie:'#e8433a',arm:col,eye:'#c22',mood:moodOf(u.sp||0,!!u.panicked)})}</div>`}
+ const id=B&&B.opt&&B.opt.ab&&B.units.length===1?B.opt.ab:null;
+ if(id&&ABM[id]){if(typeof userImg==='function'&&userImg(id))return f.apply(this,arguments);const a=ABM[id];let dc='RED';try{dc=a.dt||(a.eq&&weapOf(a.eq.id).dc)||'RED'}catch(e){}
+  return `<div class="lb-ev ev127">${creature(id,abHidden&&abHidden(a)?'WHITE':dc,a.g)}</div>`}
+ let dc='RED';try{dc=(u.skills&&u.skills[0]&&u.skills[0].c)||'RED'}catch(e){}
+ return `<div class="lb-ev ev127">${creature('U:'+u.n,dc,u.g||0)}</div>`}catch(e){return f.apply(this,arguments)}})(lbEnemyFig);
+
+/* ---------- 슬롯: 코인 · 최소~최대 · 승률 ---------- */
+lbSlotBox=(f=>function(sl){try{const s=sl.tgt?slotSkill(sl):null;const k=sl.tgt?sl.tgt.k:null;if(!s||sl.corr||(k!=='clash'&&k!=='atk'))return f.apply(this,arguments);
+ const t=k==='clash'?sl.tgt.it.u:sl.tgt.u;const lo=powOf(sl.a,s,0,t),hi=powOf(sl.a,s,s.coins,t);
+ let p='';if(k==='clash'){try{p=Math.round(wc(sl,sl.ego?'ego':sl.pick,sl.tgt.it)*100)+'%'}catch(e){}}
+ const sin=s.sin?`--sc:var(--s-${s.sin})`:'';
+ return `<button type="button" class="lb-slot s79 s127 ${k}" data-lbs="${sl.id}" style="${sin}" aria-label="${sl.a.n} 슬롯 · 속도 ${sl.a.speed} · 코인 ${s.coins} · 위력 ${lo}~${hi}${p?' · 승률 '+p:''}"><b>${sl.a.speed}</b><em><i class="c127">${s.coins}</i>${lo}~${hi}</em>${p?`<small class="p127">${p}</small>`:`<small class="p127 one">${i80('일방','One-sided','一方')}</small>`}</button>`}catch(e){return f.apply(this,arguments)}})(lbSlotBox);
+
+/* ---------- 합 연출 가운데: 코인 · 최소~최대 · 승률 ---------- */
+function binom(n,p){const r=[];for(let k=0;k<=n;k++){let c=1;for(let i=0;i<k;i++)c=c*(n-i)/(i+1);r.push(c*Math.pow(p,k)*Math.pow(1-p,n-k))}return r}
+function winP(A,na,E,ne){const pa=Math.max(.01,Math.min(.99,(+A.hp||50)/100)),pe=Math.max(.01,Math.min(.99,(+E.hp||50)/100));const memo={};
+ const rnd=(x,y)=>{const da=binom(x,pa),de=binom(y,pe);let w=0,l=0;da.forEach((qa,i)=>de.forEach((qe,j)=>{const va=A.b0+A.cp*i,ve=E.b0+E.cp*j;if(va>ve)w+=qa*qe;else if(va<ve)l+=qa*qe}));const s=w+l||1;return [w/s,l/s]};
+ const W=(x,y)=>{if(y<=0)return 1;if(x<=0)return 0;const k=x+':'+y;if(memo[k]!=null)return memo[k];const [w,l]=rnd(x,y);return memo[k]=w*W(x,y-1)+l*W(x-1,y)};
+ return W(na,ne)}
+window.rpRound127=function(R,r,A,E){const live=el=>el?el.querySelectorAll('.coin:not(.gone)').length:0;const na=live(A)||R.A.coins,ne=live(E)||R.E.coins;
+ let p=50;try{p=Math.round(winP(R.A,na,R.E,ne)*100)}catch(e){}
+ const rng=(S,n)=>`${S.b0}~${S.b0+S.cp*n}`;
+ return `<span class="r127s a"><i class="c127">${na}</i>${rng(R.A,na)}</span><b class="r127p ${p>=60?'hi':p<=40?'lo':''}">${p}<small>%</small></b><span class="r127s e"><i class="c127">${ne}</i>${rng(R.E,ne)}</span><small class="r127l">${i80('승률','Win odds','勝率')}</small>`};
+
+/* ---------- 모양 ---------- */
+const css=`
+html body .lb-av.av127{width:62px;height:82px;margin:0;border-radius:0;border:0;background:none}
+html body .lb-ev.ev127{width:76px;height:76px;transform:none!important;border:0!important;background:none!important}
+html body .lb-ev.ev127.hum{width:62px;height:82px}
+html body .lb-slot.s127{min-height:56px;padding:3px 2px;gap:1px;align-content:center}
+html body .lb-slot.s127>b{font-size:17px!important;line-height:1}
+html body .lb-slot.s127>em{display:flex;align-items:center;justify-content:center;gap:3px;font-family:var(--y-f,inherit);font-weight:600;font-size:11.5px!important;line-height:1.1;font-style:normal}
+html body .lb-slot.s127 .p127{font-family:var(--y-f,inherit);font-weight:700;font-size:12px;line-height:1;color:var(--y-cr,#fff)}
+html body .lb-slot.s127 .p127.one{font-weight:500;font-size:10.5px;opacity:.8}
+html body .lb-slot.clash.s127 .p127{color:#000}
+.c127{display:inline-grid;place-items:center;width:15px;height:15px;font-style:normal;font-size:9.5px;font-weight:700;background:var(--y-cr,#f4ee9a);color:#000;clip-path:polygon(50% 0,89% 19%,98% 61%,72% 95%,28% 95%,2% 61%,11% 19%);padding-top:1px}
+html body .lb-slot.clash.s127 .c127{background:#000;color:var(--y-cr,#f4ee9a)}
+/* 합 연출 가운데 */
+html body .rp-msg.r127{display:grid!important;grid-template-columns:1fr;gap:3px;justify-items:center;background:#000!important;border:3px solid var(--y-cr,#f4ee9a);padding:6px 8px!important;transform:rotate(-2deg);font-size:14px!important;color:var(--y-cr,#f4ee9a)!important}
+html body .rp-msg.r127 .r127s{display:flex;align-items:center;gap:4px;font-family:var(--y-f,inherit);font-weight:600;font-size:13px;letter-spacing:.02em}
+html body .rp-msg.r127 .r127s.e{color:#ff9b91}
+html body .rp-msg.r127 .r127p{font-family:var(--y-f,inherit);font-weight:700;font-size:30px;line-height:1;color:var(--y-cr,#f4ee9a)}
+html body .rp-msg.r127 .r127p small{font-size:14px;margin-left:1px}
+html body .rp-msg.r127 .r127p.hi{color:#7ff0c0}html body .rp-msg.r127 .r127p.lo{color:#ff8a7c}
+html body .rp-msg.r127 .r127l{font-size:10.5px;letter-spacing:.14em;color:var(--y-mu,#999);order:-1}
+html body .rp-msg.r127 .c127{width:17px;height:17px;font-size:10px}
+@media (max-width:480px){html body .rp-msg.r127 .r127p{font-size:24px}html body .rp-msg.r127 .r127s{font-size:11.5px}}
+`;
+try{const s=document.createElement('style');s.id='css127';s.textContent=css;document.head.appendChild(s)}catch(e){}
 })();
 </script>
 
