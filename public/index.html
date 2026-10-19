@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.30.3.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.30.4.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11444,7 +11444,7 @@ function pickScene(t){const v=relOf(t),sv=seen(t),who=t.co||arch(t.a);
   G.vnCtx=G.vnCtx||{};const ctx=S.filter(s=>s.who==='any'&&ok(s)&&G.vnCtx[s.id]!==G.day);
   if(ctx.length&&chance(.6))return ctx[0];
   const own=S.filter(s=>s.who===who&&ok(s)).sort((x,y)=>x.min-y.min);return own[0]||null}
-function nm(t){return t.co?CO[t.co].n:t.a.n}
+function nm(t){return (typeof nameL==='function'?nameL:(x=>x))(t.co?CO[t.co].n:t.a.n)}
 function fill(s,t){return String(s).replace(/\{n\}/g,nm(t)).replace(/\{me\}/g,(G.name||T('나','me','私')))}
 function hearts(v){const k=tierOf(v);return '♥'.repeat(k)+'♡'.repeat(4-k)}
 function head(t){const v=relOf(t);return `<div class="vn112h"><b>${nm(t)}</b><span class="vn112t">${tx(TIERS[tierOf(v)])}</span><span class="vn112hp" aria-label="${T('관계','Relationship','関係')} ${v}">${hearts(v)}</span><small>${T('유대','Bond','絆')} ${v}</small></div>`}
@@ -11617,7 +11617,7 @@ const STAGEN=[['신입','Rookie','新人'],['중견','Mid-career','中堅'],['�
 // 호칭: 플레이어가 가장 먼저 입사했다 — 모두에게 선배. 말투는 가장 높은 가치관을 따른다
 const ADDR={F:['선배','boss','先輩'],P:['{me} 선배','{me}','{me}先輩'],T:['선배님','senior','先輩'],J:['{me} 선배님','Senior {me}','{me}先輩']};
 const meN=()=>G.name||T('관리직','manager','管理職');
-function fill(s,a,x){return String(s).replace(/\{addr\}/g,tx(ADDR[archOf(a)]||ADDR.T).replace('{me}',meN())).replace(/\{n\}/g,a.n).replace(/\{me\}/g,meN()).replace(/\{(\w+)\}/g,(m,k)=>x&&x[k]!=null?x[k]:m)}
+function fill(s,a,x){return String(s).replace(/\{addr\}/g,tx(ADDR[archOf(a)]||ADDR.T).replace('{me}',meN())).replace(/\{n\}/g,(typeof nameL==='function'?nameL:(x=>x))(a.n)).replace(/\{me\}/g,meN()).replace(/\{(\w+)\}/g,(m,k)=>x&&x[k]!=null?x[k]:m)}
 
 /* ---------- 상황 읽기 ---------- */
 function ctxOf(a){const c={};
@@ -11673,8 +11673,8 @@ const CLOSE=[['"…그럼 이만. 일하러 가 볼게요."','"…Well then. Bac
 
 /* ---------- 효과 ---------- */
 function effect(k,a,c){const out=[];
-  if(k==='care'||k==='cheer'){a.sp=Math.min(45,a.sp+(k==='cheer'?14:6));a.hp=Math.min(agMax(a),a.hp+Math.round(agMax(a)*.05));out.push(T(`${a.n} 정신력 +${k==='cheer'?14:6}`,`${a.n} Sanity +${k==='cheer'?14:6}`,`${a.n} 精神力 +${k==='cheer'?14:6}`))}
-  if(k==='tip'&&c.tipAb){a.tip117={d:G.day,ab:c.tipAb.id};out.push(T(`${a.n}: 오늘 ${c.tipAb.n} 작업 성공률 +10%`,`${a.n}: +10% success on ${c.tipAb.n} today`,`${a.n}：今日の${c.tipAb.n}作業成功率 +10%`))}
+  if(k==='care'||k==='cheer'){a.sp=Math.min(45,a.sp+(k==='cheer'?14:6));a.hp=Math.min(agMax(a),a.hp+Math.round(agMax(a)*.05));out.push(T(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} 정신력 +${k==='cheer'?14:6}`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} Sanity +${k==='cheer'?14:6}`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} 精神力 +${k==='cheer'?14:6}`))}
+  if(k==='tip'&&c.tipAb){a.tip117={d:G.day,ab:c.tipAb.id};out.push(T(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}: 오늘 ${c.tipAb.n} 작업 성공률 +10%`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}: +10% success on ${c.tipAb.n} today`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}：今日の${c.tipAb.n}作業成功率 +10%`))}
   if(k==='team'){G.buff.team117=a.id;out.push(T('다음 직접 작업 성공률 +6%','Next direct work success +6%','次の直接作業の成功率 +6%'))}
   if(k==='ask'){const s=archOf(a);try{gainStat(s,1)}catch(e){}out.push(T(`${tx(ARCHN[s])} +1`,`${tx(ARCHN[s])} +1`,`${tx(ARCHN[s])} +1`))}
   if(k==='joke'||k==='gear'){try{addSp(3)}catch(e){}out.push(T('내 정신력 +3','My Sanity +3','自分の精神力 +3'))}
@@ -11688,26 +11688,26 @@ try{const _sr=succRate;succRate=function(){const v=_sr.apply(this,arguments);ret
 
 /* ---------- 대화 창 ---------- */
 function hearts(v){const k=tierOf(v);return '♥'.repeat(k)+'♡'.repeat(4-k)}
-function head(a){const v=relV(a);return `<div class="vn112h"><b>${a.n}</b><span class="vn112t">${tx(TIERS[tierOf(v)])}</span><span class="vn112hp">${hearts(v)}</span><small>${T('유대','Bond','絆')} ${v}</small></div>
+function head(a){const v=relV(a);return `<div class="vn112h"><b>${(typeof nameL==='function'?nameL:(x=>x))(a.n)}</b><span class="vn112t">${tx(TIERS[tierOf(v)])}</span><span class="vn112hp">${hearts(v)}</span><small>${T('유대','Bond','絆')} ${v}</small></div>
   <p class="note" style="margin:-4px 0 10px">${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])} ${ROMAN[vLv(a)]} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · HP ${Math.round(a.hp)}/${agMax(a)} · SP ${a.sp}</p>`}
 function talk(a){const c=ctxOf(a);const arch=archOf(a);const v0=relV(a);const x={gear:c.gearN,dw:c.dw,pe:c.pe,sup:c.sup,ab:c.tipAb?c.tipAb.n:'',w:c.tipW?c.tipW.n:''};
   const ok=k=>!TOP[k].need||TOP[k].need(c,a);
   let keys=Object.keys(TOP).filter(ok);const must=keys.filter(k=>k==='cheer'||k==='tip');const rest=shuffle(keys.filter(k=>!must.includes(k)));keys=must.concat(rest).slice(0,4);
   const open=fill(tx(OPEN[openKey(c)][arch]),a,x);
-  popup(T(`${a.n}와(과)의 대화`,`Talking with ${a.n}`,`${a.n}との会話`),`${head(a)}<div class="vn112b"><div class="vn112l sp"><em>${a.n}</em><p>${open}</p></div></div><div class="vn112f"><div class="choices one">${keys.map(k=>`<button class="ch" data-k="${k}"><b>${tx(TOP[k].l)}</b></button>`).join('')}</div></div>`,el=>{el.classList.add('vn112');
+  popup(T(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}와(과)의 대화`,`Talking with ${(typeof nameL==='function'?nameL:(x=>x))(a.n)}`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}との会話`),`${head(a)}<div class="vn112b"><div class="vn112l sp"><em>${(typeof nameL==='function'?nameL:(x=>x))(a.n)}</em><p>${open}</p></div></div><div class="vn112f"><div class="choices one">${keys.map(k=>`<button class="ch" data-k="${k}"><b>${tx(TOP[k].l)}</b></button>`).join('')}</div></div>`,el=>{el.classList.add('vn112');
     el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const t=TOP[k];const liked=t.like.includes(arch),dis=t.dis.includes(arch)||(k==='line'&&arch!=='J');
       el.querySelectorAll('[data-k]').forEach(x=>x.disabled=true);
       const STAT={care:'T',joke:'F',tip:'P',gear:'F',rec:'J',team:'J',ask:'P',cheer:'T',line:'J'}[k];
       const go=res=>{let d=res?({crit:12,ok:liked?9:6,part:2,fail:-2,fumble:-5})[res.r]:(liked?8:dis?-3:3);if(res&&c.lowSp&&d>0)d=Math.round(d*1.5);if(!res&&k==='line'&&arch!=='J')d=-4;const good=!res||res.r==='crit'||res.r==='ok'||res.r==='part';
 addR(a,d);const fx=good?effect(k,a,c):[];const v1=relV(a);const box=el.querySelector('.vn112b');
-      box.insertAdjacentHTML('beforeend',`<div class="vn112l me"><em>${meN()}</em><p>${tx(t.l)}</p></div><div class="vn112l sp"><em>${a.n}</em><p>${fill(tx(good?R[k][arch]:FAILR[arch]),a,x)}</p></div><div class="vn112l sp"><em>${a.n}</em><p>${fill(tx(CLOSE[tierOf(v1)]),a,x)}</p></div>`);box.scrollTop=box.scrollHeight;
+      box.insertAdjacentHTML('beforeend',`<div class="vn112l me"><em>${meN()}</em><p>${tx(t.l)}</p></div><div class="vn112l sp"><em>${(typeof nameL==='function'?nameL:(x=>x))(a.n)}</em><p>${fill(tx(good?R[k][arch]:FAILR[arch]),a,x)}</p></div><div class="vn112l sp"><em>${(typeof nameL==='function'?nameL:(x=>x))(a.n)}</em><p>${fill(tx(CLOSE[tierOf(v1)]),a,x)}</p></div>`);box.scrollTop=box.scrollHeight;
       el.querySelector('.vn112h').parentElement&&(el.querySelector('.vn112h').outerHTML=head(a).split('</div>')[0]+'</div>');
       const up=tierOf(v1)>tierOf(v0);
       el.querySelector('.vn112f').innerHTML=`<p class="note">${T(`유대 ${v1-v0>=0?'+':''}${v1-v0}`,`Bond ${v1-v0>=0?'+':''}${v1-v0}`,`絆 ${v1-v0>=0?'+':''}${v1-v0}`)}${up?` · <b>${T(`관계가 「${tx(TIERS[tierOf(v1)])}」(으)로 깊어졌다`,`Relationship deepened to "${tx(TIERS[tierOf(v1)])}"`,`関係が「${tx(TIERS[tierOf(v1)])}」に深まった`)}</b>`:''}${fx.length?' · '+fx.join(' · '):''}</p><button class="btn" data-end>${T('업무로 돌아간다','Back to work','業務に戻る')}</button>`;
-      el.querySelector('[data-end]').onclick=()=>{closePop();log(T(`${a.n}와(과) 잠시 이야기를 나눴다.`,`You talked with ${a.n} for a while.`,`${a.n}と少し話をした。`),'q');act(null,workMenu,15)}};
+      el.querySelector('[data-end]').onclick=()=>{closePop();log(T(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}와(과) 잠시 이야기를 나눴다.`,`You talked with ${(typeof nameL==='function'?nameL:(x=>x))(a.n)} for a while.`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}と少し話をした。`),'q');act(null,workMenu,15)}};
       if(window.D119){const box=el.querySelector('.vn112f');window.D119.run(box,{stat:STAT,dc:12+(liked?-3:dis?3:0)+(c.lowSp?2:0),a,soothe:k==='care'||k==='cheer',label:tx(t.l)},go)}else go(null)})},{wide:true})}
 function talkMenu(){const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic).sort((x,y)=>((y.dept===G.dept)-(x.dept===G.dept))||relV(y)-relV(x));G.talk117=G.talk117&&G.talk117.d===G.day?G.talk117:{d:G.day,ids:[]};
-  popup(T('누구와 이야기할까','Who will you talk to?','誰と話そうか'),`<p class="sub">${T('한 사람과는 하루 한 번 · 15분. 가장 높은 가치관에 따라 말투와 좋아하는 화제가 달라요.','Once a day per person · 15 min. Tone and favourite topics follow their highest virtue.','一人につき一日一回・15分。一番高い価値観によって口調と好きな話題が違います。')}</p><div class="choices one">${L.map(a=>{const done=G.talk117.ids.includes(a.id);const v=relV(a);return `<button class="ch" data-a="${a.id}" ${done?'disabled':''}><b>${a.n} <small style="color:var(--c-red,#d6453a)">${hearts(v)}</small></b><small>${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])}·${tx(STAGEN[stageOf(a)])} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · ${tx(TIERS[tierOf(v)])} ${v}${done?' · '+T('오늘 이야기함','talked today','今日は話した'):''}${a.sp<=-10?' · <b style="color:var(--bad)">'+T('지쳐 보인다','looks worn out','疲れて見える')+'</b>':''}</small></button>`}).join('')||`<p class="note">${T('이야기할 수 있는 직원이 없어요.','No one is available to talk.','話せる職員がいません。')}</p>`}</div>`,el=>el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=G.agents.find(x=>x.id===b.dataset.a);if(!a)return;G.talk117.ids.push(a.id);closePop();talk(a)}),{wide:true})}
+  popup(T('누구와 이야기할까','Who will you talk to?','誰と話そうか'),`<p class="sub">${T('한 사람과는 하루 한 번 · 15분. 가장 높은 가치관에 따라 말투와 좋아하는 화제가 달라요.','Once a day per person · 15 min. Tone and favourite topics follow their highest virtue.','一人につき一日一回・15分。一番高い価値観によって口調と好きな話題が違います。')}</p><div class="choices one">${L.map(a=>{const done=G.talk117.ids.includes(a.id);const v=relV(a);return `<button class="ch" data-a="${a.id}" ${done?'disabled':''}><b>${(typeof nameL==='function'?nameL:(x=>x))(a.n)} <small style="color:var(--c-red,#d6453a)">${hearts(v)}</small></b><small>${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])}·${tx(STAGEN[stageOf(a)])} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · ${tx(TIERS[tierOf(v)])} ${v}${done?' · '+T('오늘 이야기함','talked today','今日は話した'):''}${a.sp<=-10?' · <b style="color:var(--bad)">'+T('지쳐 보인다','looks worn out','疲れて見える')+'</b>':''}</small></button>`}).join('')||`<p class="note">${T('이야기할 수 있는 직원이 없어요.','No one is available to talk.','話せる職員がいません。')}</p>`}</div>`,el=>el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=G.agents.find(x=>x.id===b.dataset.a);if(!a)return;G.talk117.ids.push(a.id);closePop();talk(a)}),{wide:true})}
 window.talkMenu117=talkMenu;
 
 /* ---------- 행동 메뉴 정리: 네 갈래로 묶는다 ---------- */
@@ -11803,26 +11803,26 @@ function good(r){return r==='ok'||r==='crit'}
 const EV=[
 /* ── 큰 사건 ── */
 {id:'frozen',big:1,cond(){const a=pickAg(x=>agRank(x)<=2&&!x.panic&&deptAb(x,2).length);if(!a)return null;return {a,ab:pick(deptAb(a,2))}},
- t:c=>T(`${c.a.n}이(가) ${c.ab.n} 격리실 앞에서 굳어 있다. 작업 지시서를 쥔 손이 떨린다. "저… 못 들어가겠어요."`,`${c.a.n} is frozen in front of ${c.ab.n}'s unit, the work order shaking in their hand. "I… I can't go in."`,`${c.a.n}が${c.ab.n}の収容室の前で固まっている。作業指示書を握る手が震えている。「私…入れません」`),
+ t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)} 격리실 앞에서 굳어 있다. 작업 지시서를 쥔 손이 떨린다. "저… 못 들어가겠어요."`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} is frozen in front of ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}'s unit, the work order shaking in their hand. "I… I can't go in."`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}の収容室の前で固まっている。作業指示書を握る手が震えている。「私…入れません」`),
  opts:c=>[O(['다독이며 설득한다','Talk them through it','なだめて説得する'],'T',13,0,{soothe:1}),O(['짧고 단호하게 지시한다','Give a short, firm order','短く断固と指示する'],'J',14),O(['"같이 들어가자."','"Let\'s go in together."','「一緒に入ろう」'],'F',12,0,{next:'frozen2'})],
  res(c,r,o){const a=c.a;if(good(r)){try{const w=npcWork(a,c.ab);}catch(e){}addR(a,r==='crit'?12:8);if(r==='crit'){try{const k=topSt(a.st);a.st[k]+=3}catch(e){}}
      return T(`${a.n}이(가) 숨을 고르고 격리실로 들어갔다. 작업을 마치고 나온 얼굴이 조금 단단해졌다.${r==='crit'?' (그 직원의 가치관 +3)':''}`,`${a.n} steadied their breath and went in. They came out after the work with a slightly firmer face.${r==='crit'?' (their top virtue +3)':''}`,`${a.n}は息を整えて収容室に入った。作業を終えて出てきた顔は少したくましくなっていた。${r==='crit'?'（その職員の価値観 +3）':''}`)}
    if(r==='part'){try{npcWork(a,c.ab)}catch(e){}a.sp=Math.max(-45,a.sp-10);addR(a,3);return T(`${a.n}은(는) 결국 들어갔지만, 나온 뒤 한참 벽에 기대 있었다. (그 직원 정신력 -10)`,`${a.n} went in eventually, but leaned on the wall for a long time after. (their Sanity -10)`,`${a.n}は結局入ったが、出てきた後しばらく壁にもたれていた。（その職員の精神力 -10）`)}
    const s=G.ab[c.ab.id];if(s&&s.cnt>0)s.cnt--;a.sp=Math.max(-45,a.sp-(r==='fumble'?30:15));addR(a,r==='fumble'?-5:-2);
-   return T(`${a.n}은(는) 끝내 뒷걸음질쳤다. 작업이 비어 ${c.ab.n}의 카운터가 1 줄었다.${r==='fumble'?' 그 직원은 무너지기 직전이다.':''}`,`${a.n} backed away in the end. The skipped work cost ${c.ab.n} 1 counter.${r==='fumble'?' They are on the verge of breaking.':''}`,`${a.n}は結局後ずさった。作業が空いて${c.ab.n}のカウンターが1減った。${r==='fumble'?'その職員は崩れる寸前だ。':''}`)}},
-{id:'frozen2',sub:1,t:c=>T(`격리실 안. ${c.ab.n}이(가) 두 사람을 동시에 바라본다. ${c.a.n}의 숨소리가 거칠다.`,`Inside the unit. ${c.ab.n} watches you both at once. ${c.a.n} is breathing hard.`,`収容室の中。${c.ab.n}が二人を同時に見つめる。${c.a.n}の息が荒い。`),
+   return T(`${a.n}은(는) 끝내 뒷걸음질쳤다. 작업이 비어 ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}의 카운터가 1 줄었다.${r==='fumble'?' 그 직원은 무너지기 직전이다.':''}`,`${a.n} backed away in the end. The skipped work cost ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)} 1 counter.${r==='fumble'?' They are on the verge of breaking.':''}`,`${a.n}は結局後ずさった。作業が空いて${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}のカウンターが1減った。${r==='fumble'?'その職員は崩れる寸前だ。':''}`)}},
+{id:'frozen2',sub:1,t:c=>T(`격리실 안. ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}이(가) 두 사람을 동시에 바라본다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}의 숨소리가 거칠다.`,`Inside the unit. ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)} watches you both at once. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} is breathing hard.`,`収容室の中。${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}が二人を同時に見つめる。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}の息が荒い。`),
  opts:c=>[O(['앞에 서서 시선을 끈다','Step forward and draw its gaze','前に立って視線を引きつける'],'F',13),O(['작업 순서를 낮게 읊어 준다','Murmur the work steps for them','作業手順を低く唱えてあげる'],'P',12)],
  res(c,r){const a=c.a;if(good(r)){try{npcWork(a,c.ab)}catch(e){}addR(a,r==='crit'?14:10);if(r==='crit')try{gainStat('F',1)}catch(e){}return T(`둘이서 작업을 끝냈다. 나오는 길에 ${a.n}이(가) 작게 "고마워요"라고 했다.${r==='crit'?' (용기 +1)':''}`,`You finished the work together. On the way out, ${a.n} murmured "thank you."${r==='crit'?' (Fortitude +1)':''}`,`二人で作業を終えた。出る時、${a.n}が小さく「ありがとう」と言った。${r==='crit'?'（勇気 +1）':''}`)}
    if(r==='part'){try{npcWork(a,c.ab)}catch(e){}try{addHp(-Math.round(maxHp()*.1),T('엄호하다','Covering them,','かばって'))}catch(e){}addR(a,6);return T('작업은 끝냈지만, 엄호하다 상처를 입었다.','The work got done, but you were hurt covering them.','作業は終えたが、かばって傷を負った。')}
-   try{addHp(-Math.round(maxHp()*.18),T('격리실 안에서','Inside the unit,','収容室の中で'))}catch(e){}a.sp=Math.max(-45,a.sp-12);const s=G.ab[c.ab.id];if(s&&s.cnt>0)s.cnt--;return T(`둘 다 허둥지둥 빠져나왔다. ${c.ab.n}의 카운터 -1.`,`You both scrambled out. ${c.ab.n} counter -1.`,`二人とも慌てて抜け出した。${c.ab.n}のカウンター -1。`)}},
+   try{addHp(-Math.round(maxHp()*.18),T('격리실 안에서','Inside the unit,','収容室の中で'))}catch(e){}a.sp=Math.max(-45,a.sp-12);const s=G.ab[c.ab.id];if(s&&s.cnt>0)s.cnt--;return T(`둘 다 허둥지둥 빠져나왔다. ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}의 카운터 -1.`,`You both scrambled out. ${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)} counter -1.`,`二人とも慌てて抜け出した。${(typeof nameL==='function'?nameL:(x=>x))(c.ab.n)}のカウンター -1。`)}},
 {id:'desert',big:1,cond(){const a=pickAg(x=>x.sp<=-25&&!x.panic&&!x.co);return a?{a}:null},
- t:c=>T(`${c.a.n}이(가) 봉쇄된 화물 출입구 앞에 서 있다. 사원증을 바닥에 떨어뜨린 채, 잠긴 문을 계속 두드린다. "여기서 나가게 해 줘요…"`,`${c.a.n} stands at the sealed cargo exit, ID badge dropped on the floor, pounding on the locked door. "Let me out of here…"`,`${c.a.n}が封鎖された貨物出入口の前に立っている。社員証を床に落としたまま、鍵のかかった扉を叩き続けている。「ここから出して…」`),
+ t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 봉쇄된 화물 출입구 앞에 서 있다. 사원증을 바닥에 떨어뜨린 채, 잠긴 문을 계속 두드린다. "여기서 나가게 해 줘요…"`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} stands at the sealed cargo exit, ID badge dropped on the floor, pounding on the locked door. "Let me out of here…"`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が封鎖された貨物出入口の前に立っている。社員証を床に落としたまま、鍵のかかった扉を叩き続けている。「ここから出して…」`),
  opts:c=>[O(['뒤쫓아 붙잡는다','Chase and catch them','追いかけて捕まえる'],'F',13,0,{next:'desert2'}),O(['멀리서 이유를 묻는다','Call out and ask why','遠くから理由を尋ねる'],'T',15,0,{soothe:1}),O(['계약 조항을 상기시킨다','Remind them of the contract','契約条項を思い出させる'],'J',14)],
  res(c,r,o){return endDesert(c,r)}},
-{id:'desert2',sub:1,t:c=>T(`문을 비틀려는 팔을 붙잡았다. ${c.a.n}이(가) 뿌리친다. "놔요! 여기 있다간 다 죽어요!"`,`You catch the arm wrenching at the door. ${c.a.n} shakes you off. "Let go! If I stay here, I'll die like the rest!"`,`扉をこじ開けようとする腕をつかんだ。${c.a.n}が振り払う。「放して！ここにいたらみんな死ぬんです！」`),
+{id:'desert2',sub:1,t:c=>T(`문을 비틀려는 팔을 붙잡았다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 뿌리친다. "놔요! 여기 있다간 다 죽어요!"`,`You catch the arm wrenching at the door. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} shakes you off. "Let go! If I stay here, I'll die like the rest!"`,`扉をこじ開けようとする腕をつかんだ。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が振り払う。「放して！ここにいたらみんな死ぬんです！」`),
  opts:c=>[O(['진심으로 말한다','Speak from the heart','本心で話す'],'T',13,0,{soothe:1}),O(['함께 숨을 고르자고 한다','Ask them to breathe with you','一緒に息を整えようと言う'],'P',12)],res(c,r){return endDesert(c,r)}},
 {id:'contra',big:1,cond(){if(G.day<5)return null;const a=pickAg(x=>!x.panic);return a?{a}:null},
- t:c=>T(`${c.a.n}의 사물함 틈으로 희미한 빛이 새어 나온다. 반출 금지된 E.G.O 파편이다. ${c.a.n}이(가) 당신을 보고 얼어붙었다.`,`A faint light leaks from ${c.a.n}'s locker: a forbidden E.G.O fragment. ${c.a.n} sees you and freezes.`,`${c.a.n}のロッカーの隙間からかすかな光が漏れている。持ち出し禁止のE.G.O片だ。${c.a.n}はあなたを見て凍りついた。`),
+ t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}의 사물함 틈으로 희미한 빛이 새어 나온다. 반출 금지된 E.G.O 파편이다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 당신을 보고 얼어붙었다.`,`A faint light leaks from ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}'s locker: a forbidden E.G.O fragment. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} sees you and freezes.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}のロッカーの隙間からかすかな光が漏れている。持ち出し禁止のE.G.O片だ。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}はあなたを見て凍りついた。`),
  opts:c=>[O(['규정대로 보고한다','Report it by the book','規定通りに報告する'],'J',11,0,{k:'rep'}),O(['못 본 척 덮어 준다','Cover for them','見なかったことにする'],'T',12,0,{k:'cover'}),O(['같이 몰래 조사해 본다','Secretly study it together','一緒にこっそり調べる'],'P',14,0,{k:'study'})],
  res(c,r,o){const a=c.a;
    if(o.k==='rep'){if(good(r)){G.lob=(G.lob||0)+(r==='crit'?5:3);addR(a,r==='crit'?0:-4);return T(`보고는 깔끔하게 처리됐다. ${a.n}은(는) 경고만 받았다. LOB +${r==='crit'?5:3}.${r==='crit'?' 당신이 감싸 준 걸 그도 안다.':''}`,`The report went through cleanly; ${a.n} got only a warning. LOB +${r==='crit'?5:3}.${r==='crit'?' They know you shielded them.':''}`,`報告はきれいに処理された。${a.n}は警告だけで済んだ。LOB +${r==='crit'?5:3}。${r==='crit'?'かばってくれたことを本人も知っている。':''}`)}
@@ -11834,7 +11834,7 @@ const EV=[
    if(r==='part'){addR(a,4);return T('알아낸 건 없지만, 둘만의 비밀이 생겼다.','You learned nothing, but now you share a secret.','分かったことはないが、二人だけの秘密ができた。')}
    try{addHp(-Math.round(maxHp()*.15),T('파편이 터져','The fragment burst —','欠片が弾けて'))}catch(e){}a.hp=Math.max(1,a.hp-Math.round(agMax(a)*.15));return T('파편이 갑자기 깨지며 둘 다 다쳤다.','The fragment suddenly shattered, hurting you both.','欠片が突然割れ、二人とも負傷した。')}},
 {id:'panicR',big:1,prio:1,cond(){const a=pickAg(x=>x.panic);return a?{a}:null},
- t:c=>T(`${c.a.n}이(가) 패닉에 빠졌다. 복도 구석에서 무언가를 중얼거리며 손톱으로 벽을 긁고 있다.`,`${c.a.n} has panicked, muttering in a corner of the corridor and clawing at the wall.`,`${c.a.n}がパニックに陥った。廊下の隅で何かを呟きながら爪で壁を引っかいている。`),
+ t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 패닉에 빠졌다. 복도 구석에서 무언가를 중얼거리며 손톱으로 벽을 긁고 있다.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} has panicked, muttering in a corner of the corridor and clawing at the wall.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}がパニックに陥った。廊下の隅で何かを呟きながら爪で壁を引っかいている。`),
  opts:c=>[O(['천천히 다가가 이름을 부른다','Approach slowly and call their name','ゆっくり近づいて名前を呼ぶ'],'T',15,0,{soothe:1}),O(['붙잡아 제압한다','Grab and restrain them','つかんで制圧する'],'F',14),O(['원인을 찾아 치운다','Find and remove the cause','原因を見つけて取り除く'],'P',15)],
  res(c,r){const a=c.a;if(good(r)||r==='part'){calm(a);addR(a,r==='crit'?14:good(r)?10:5);if(r==='part'){try{addHp(-Math.round(maxHp()*.1),T('발버둥에 맞아','Hit by their thrashing,','もがく手に当たって'))}catch(e){}}
      return T(`${a.n}의 눈에 초점이 돌아왔다. "…{me}?" 그대로 주저앉아 울기 시작했다.`.replace('{me}',G.name||''),`Focus returned to ${a.n}'s eyes. "…${G.name||''}?" They sank down and began to cry.`,`${a.n}の目に焦点が戻った。「…${G.name||''}？」そのまま座り込んで泣き出した。`)}
@@ -11850,22 +11850,22 @@ const EV=[
    if(r==='fumble'){G.q=Math.round(q*1.05);return T(`괜히 건드렸다. 할당량이 5% 늘었다. (${q} → ${G.q})`,`You poked the wrong nerve. Quota up 5%. (${q} → ${G.q})`,`余計なことをした。ノルマが5%増えた。（${q} → ${G.q}）`)}
    try{hum(-1)}catch(e){}return T('도장은 그대로 찍혔다. 할당량 변화 없음.','The stamp came down as usual. No change.','判はそのまま押された。ノルマ変化なし。')}},
 /* ── 작은 사건 ── */
-{id:'coffee',cond(){const a=pickAg(x=>!x.panic);return a?{a}:null},t:c=>T(`${c.a.n}이(가) 자판기 앞에서 동전을 흔든다. "커피 내기 할래요? 지는 사람이 다음 거 사기."`,`${c.a.n} jingles coins at the vending machine. "Bet you a coffee? Loser buys the next one."`,`${c.a.n}が自販機の前で硬貨を鳴らす。「コーヒー賭けます？負けた方が次の奢り」`),
+{id:'coffee',cond(){const a=pickAg(x=>!x.panic);return a?{a}:null},t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 자판기 앞에서 동전을 흔든다. "커피 내기 할래요? 지는 사람이 다음 거 사기."`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} jingles coins at the vending machine. "Bet you a coffee? Loser buys the next one."`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が自販機の前で硬貨を鳴らす。「コーヒー賭けます？負けた方が次の奢り」`),
  opts:()=>[O(['팔씨름으로 붙는다','Arm-wrestle for it','腕相撲で勝負する'],'F',11),O(['동전 던지기 확률을 계산한다','Calculate the coin-toss odds','コイントスの確率を計算する'],'P',12)],
- res(c,r){if(good(r)){addR(c.a,5);try{addSp(4)}catch(e){}return T(`이겼다. ${c.a.n}이(가) 투덜대며 커피를 건넸다. (정신력 +4)`,`You won. ${c.a.n} grumbled and handed over a coffee. (Sanity +4)`,`勝った。${c.a.n}がぶつぶつ言いながらコーヒーを渡した。（精神力 +4）`)}addR(c.a,r==='fumble'?0:2);return T('졌다. 그래도 둘 다 웃었다.','You lost. You both laughed anyway.','負けた。それでも二人とも笑った。')}},
-{id:'card',cond(){const a=pickAg(x=>!x.panic);return a?{a}:null},t:c=>T(`${c.a.n}이(가) 사원증을 잃어버렸다며 바닥을 뒤지고 있다. 이대로면 격리실 출입이 막힌다.`,`${c.a.n} is searching the floor for their lost ID badge. Without it they can't enter the units.`,`${c.a.n}が社員証をなくしたと床を探している。このままでは収容室に入れない。`),
+ res(c,r){if(good(r)){addR(c.a,5);try{addSp(4)}catch(e){}return T(`이겼다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 투덜대며 커피를 건넸다. (정신력 +4)`,`You won. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} grumbled and handed over a coffee. (Sanity +4)`,`勝った。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}がぶつぶつ言いながらコーヒーを渡した。（精神力 +4）`)}addR(c.a,r==='fumble'?0:2);return T('졌다. 그래도 둘 다 웃었다.','You lost. You both laughed anyway.','負けた。それでも二人とも笑った。')}},
+{id:'card',cond(){const a=pickAg(x=>!x.panic);return a?{a}:null},t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 사원증을 잃어버렸다며 바닥을 뒤지고 있다. 이대로면 격리실 출입이 막힌다.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} is searching the floor for their lost ID badge. Without it they can't enter the units.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が社員証をなくしたと床を探している。このままでは収容室に入れない。`),
  opts:()=>[O(['동선을 되짚어 본다','Retrace their steps','動線をたどり直す'],'P',12),O(['관리팀에 정식으로 재발급을 요청한다','File a formal reissue request','管理チームに正式に再発行を依頼する'],'J',12)],
- res(c,r){if(good(r)){addR(c.a,6);try{hum(2)}catch(e){}return T(`찾았다. 휴게실 소파 틈에 끼어 있었다. ${c.a.n}이(가) 연신 고개를 숙였다.`,`Found it, wedged in the break-room sofa. ${c.a.n} kept bowing.`,`見つかった。休憩室のソファの隙間に挟まっていた。${c.a.n}は何度も頭を下げた。`)}c.a.task={k:'rest',until:G.min+40};addR(c.a,1);return T(`찾지 못했다. ${c.a.n}은(는) 재발급을 기다리며 40분 동안 손을 놓았다.`,`Not found. ${c.a.n} is idle for 40 min waiting for a reissue.`,`見つからなかった。${c.a.n}は再発行を待って40分手が止まった。`)}},
-{id:'bday',cond(){const a=pickAg(x=>!x.panic);return a&&chance(.5)?{a}:null},t:c=>T(`오늘이 ${c.a.n}의 생일이라는 걸 우연히 알았다. 본인은 아무에게도 말하지 않았다.`,`You happen to learn today is ${c.a.n}'s birthday. They haven't told anyone.`,`今日が${c.a.n}の誕生日だと偶然知った。本人は誰にも言っていない。`),
+ res(c,r){if(good(r)){addR(c.a,6);try{hum(2)}catch(e){}return T(`찾았다. 휴게실 소파 틈에 끼어 있었다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 연신 고개를 숙였다.`,`Found it, wedged in the break-room sofa. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} kept bowing.`,`見つかった。休憩室のソファの隙間に挟まっていた。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}は何度も頭を下げた。`)}c.a.task={k:'rest',until:G.min+40};addR(c.a,1);return T(`찾지 못했다. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}은(는) 재발급을 기다리며 40분 동안 손을 놓았다.`,`Not found. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} is idle for 40 min waiting for a reissue.`,`見つからなかった。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}は再発行を待って40分手が止まった。`)}},
+{id:'bday',cond(){const a=pickAg(x=>!x.panic);return a&&chance(.5)?{a}:null},t:c=>T(`오늘이 ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}의 생일이라는 걸 우연히 알았다. 본인은 아무에게도 말하지 않았다.`,`You happen to learn today is ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}'s birthday. They haven't told anyone.`,`今日が${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}の誕生日だと偶然知った。本人は誰にも言っていない。`),
  opts:()=>[O(['조용히 작은 선물을 건넨다','Quietly hand over a small gift','そっと小さな贈り物を渡す'],'T',11,0,{soothe:1}),O(['부서 사람들을 모아 깜짝 축하한다','Gather the team for a surprise','部署のみんなを集めてサプライズ'],'F',13)],
- res(c,r){if(good(r)){addR(c.a,8);c.a.sp=Math.min(45,c.a.sp+10);try{hum(3)}catch(e){}return T(`${c.a.n}의 얼굴이 빨개졌다. "…이런 거 처음이에요." (그 직원 정신력 +10)`,`${c.a.n} turned red. "…No one's ever done this." (their Sanity +10)`,`${c.a.n}の顔が赤くなった。「…こんなの初めてです」（その職員の精神力 +10）`)}addR(c.a,r==='fumble'?-2:2);return T('타이밍이 어긋나 어색하게 끝났다. 그래도 마음은 전해진 듯하다.','The timing was off and it ended awkwardly. Still, the thought seemed to land.','タイミングがずれて気まずく終わった。それでも気持ちは伝わったようだ。')}},
-{id:'roster',cond(){const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic);if(L.length<2)return null;const s=shuffle(L.slice());return {a:s[0],b:s[1]}},t:c=>T(`${c.a.n}와(과) ${c.b.n}이(가) 근무표 앞에서 언성을 높인다. 위험한 배정을 서로 떠넘기고 있다.`,`${c.a.n} and ${c.b.n} are raising their voices at the roster, pushing a dangerous assignment onto each other.`,`${c.a.n}と${c.b.n}が勤務表の前で声を荒げている。危険な配置を押し付け合っている。`),
+ res(c,r){if(good(r)){addR(c.a,8);c.a.sp=Math.min(45,c.a.sp+10);try{hum(3)}catch(e){}return T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}의 얼굴이 빨개졌다. "…이런 거 처음이에요." (그 직원 정신력 +10)`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} turned red. "…No one's ever done this." (their Sanity +10)`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}の顔が赤くなった。「…こんなの初めてです」（その職員の精神力 +10）`)}addR(c.a,r==='fumble'?-2:2);return T('타이밍이 어긋나 어색하게 끝났다. 그래도 마음은 전해진 듯하다.','The timing was off and it ended awkwardly. Still, the thought seemed to land.','タイミングがずれて気まずく終わった。それでも気持ちは伝わったようだ。')}},
+{id:'roster',cond(){const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic);if(L.length<2)return null;const s=shuffle(L.slice());return {a:s[0],b:s[1]}},t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}와(과) ${(typeof nameL==='function'?nameL:(x=>x))(c.b.n)}이(가) 근무표 앞에서 언성을 높인다. 위험한 배정을 서로 떠넘기고 있다.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} and ${(typeof nameL==='function'?nameL:(x=>x))(c.b.n)} are raising their voices at the roster, pushing a dangerous assignment onto each other.`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}と${(typeof nameL==='function'?nameL:(x=>x))(c.b.n)}が勤務表の前で声を荒げている。危険な配置を押し付け合っている。`),
  opts:()=>[O(['공정한 순번을 정해 준다','Set a fair rotation','公平な順番を決める'],'J',13),O(['둘의 이야기를 차례로 들어 준다','Hear each of them out','二人の話を順に聞く'],'T',12,0,{soothe:1})],
  res(c,r){if(good(r)){addR(c.a,5);addR(c.b,5);c.a.sp=Math.min(45,c.a.sp+5);c.b.sp=Math.min(45,c.b.sp+5);return T('둘 다 수긍했다. 근무표에 새 순번이 적혔다.','Both agreed. A new rotation went up on the roster.','二人とも納得した。勤務表に新しい順番が書かれた。')}addR(c.a,-2);addR(c.b,-2);return T('말다툼은 더 커졌다. 둘 다 당신 탓을 한다.','The argument got worse. Now they both blame you.','口論はさらに大きくなった。二人ともあなたのせいにしている。')}},
-{id:'spar',cond(){const a=pickAg(x=>!x.panic&&x.hp>agMax(x)*.6);return a?{a}:null},t:c=>T(`훈련실. ${c.a.n}이(가) 목검을 던져 준다. "한 판 해요. 봐주지 마시고."`,`The training room. ${c.a.n} tosses you a wooden sword. "One round. Don't go easy."`,`訓練室。${c.a.n}が木刀を投げてよこす。「一本やりましょう。手加減なしで」`),
+{id:'spar',cond(){const a=pickAg(x=>!x.panic&&x.hp>agMax(x)*.6);return a?{a}:null},t:c=>T(`훈련실. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 목검을 던져 준다. "한 판 해요. 봐주지 마시고."`,`The training room. ${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} tosses you a wooden sword. "One round. Don't go easy."`,`訓練室。${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が木刀を投げてよこす。「一本やりましょう。手加減なしで」`),
  opts:()=>[O(['정면으로 부딪친다','Meet them head-on','正面からぶつかる'],'F',13),O(['빈틈을 읽는다','Read their openings','隙を読む'],'P',14)],
  res(c,r,o){if(good(r)){try{gainStat(o.stat,1)}catch(e){}addR(c.a,4);return T(`한 판을 따냈다. (${tx(SN[o.stat])} +1)`,`You took the round. (${tx(SN[o.stat])} +1)`,`一本取った。（${tx(SN[o.stat])} +1）`)}try{addHp(-Math.round(maxHp()*.08),T('대련 중','Sparring,','手合わせで'))}catch(e){}addR(c.a,2);return T('호되게 졌다. 그래도 좋은 땀이었다.','You lost badly. Good sweat, though.','こっぴどく負けた。それでもいい汗だった。')}},
-{id:'memo',cond(){const a=pickAg(x=>!x.panic);return a&&contained().some(x=>!x.tool)?{a}:null},t:c=>T(`${c.a.n}이(가) 손때 묻은 관찰 수첩을 내민다. "제 메모랑 {me} 선배 기록, 바꿔 볼래요?"`.replace('{me}',G.name||''),`${c.a.n} holds out a worn observation notebook. "Want to swap my notes for your records?"`,`${c.a.n}が手垢のついた観察手帳を差し出す。「私のメモと記録、交換してみます？」`),
+{id:'memo',cond(){const a=pickAg(x=>!x.panic);return a&&contained().some(x=>!x.tool)?{a}:null},t:c=>T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}이(가) 손때 묻은 관찰 수첩을 내민다. "제 메모랑 {me} 선배 기록, 바꿔 볼래요?"`.replace('{me}',G.name||''),`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} holds out a worn observation notebook. "Want to swap my notes for your records?"`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)}が手垢のついた観察手帳を差し出す。「私のメモと記録、交換してみます？」`),
  opts:()=>[O(['꼼꼼히 대조한다','Cross-check carefully','丁寧に照合する'],'P',13),O(['서로 빠진 칸을 채워 준다','Fill in each other\'s gaps','お互いの抜けを埋め合う'],'J',12)],
  res(c,r){if(good(r)){try{obsGain(pick(contained().filter(x=>!x.tool)),r==='crit'?1:.6)}catch(e){}addR(c.a,4);return T('메모 덕분에 관찰이 진전됐다.','The notes advanced your observation.','メモのおかげで観察が進んだ。')}addR(c.a,1);return T('글씨를 알아볼 수가 없었다.','You couldn\'t read the handwriting.','字が読めなかった。')}}];
 window.EV119=EV;
@@ -11927,7 +11927,7 @@ function ctx(d){const c={d};if(d.seph&&!(G.depts&&G.depts[d.seph]))return null;
   for(const n of d.need||[]){if(NEED[n]&&!NEED[n]())return null}
   if(d.who==='ag'||d.who==='ag2'){const L=shuffle(G.agents.filter(agOk));if(!L.length||(d.who==='ag2'&&L.length<2))return null;c.a=L[0];c.b=L[1]}
   const ab=contained().filter(a=>!a.tool);c.ab=ab.length?pick(ab):null;return c}
-function fill(s,c){return String(s).replace(/\{n\}/g,c.a?c.a.n:'').replace(/\{n2\}/g,c.b?c.b.n:'').replace(/\{s\}/g,c.d.seph&&SEPH[c.d.seph]?SEPH[c.d.seph].n:'').replace(/\{ab\}/g,c.ab?c.ab.n:T('환상체','an Abnormality','アブノーマリティ')).replace(/\{me\}/g,G.name||T('관리직','manager','管理職')).replace(/\{A\}/g,typeof ANGELA!=='undefined'?ANGELA:T('엔젤라','Angela','アンジェラ'))}
+function fill(s,c){return String(s).replace(/\{n\}/g,c.a?(typeof nameL==='function'?nameL:(x=>x))(c.a.n):'').replace(/\{n2\}/g,c.b?(typeof nameL==='function'?nameL:(x=>x))(c.b.n):'').replace(/\{s\}/g,c.d.seph&&SEPH[c.d.seph]?(typeof nameL==='function'?nameL:(x=>x))(SEPH[c.d.seph].n):'').replace(/\{ab\}/g,c.ab?(typeof nameL==='function'?nameL:(x=>x))(c.ab.n):T('환상체','an Abnormality','アブノーマリティ')).replace(/\{me\}/g,G.name||T('관리직','manager','管理職')).replace(/\{A\}/g,typeof ANGELA!=='undefined'?(typeof nameL==='function'?nameL:(x=>x))(ANGELA):T('엔젤라','Angela','アンジェラ'))}
 const SN={F:['용기','Fortitude','勇気'],P:['지혜','Prudence','慎重'],T:['절제','Temperance','自制'],J:['정의','Justice','正義']};
 function apply(fx,c,r){if(!fx)return '';const k=r==='crit'?1.5:r==='part'?.5:r==='fumble'?1.5:1;const sc=v=>Math.round(v*(v>0?(r==='fumble'?1:k):(r==='crit'||r==='part'?1:k)));const N=[];
   if(fx.rel&&c.a){const v=sc(fx.rel);addR(c.a,v);if(c.b&&fx.both)addR(c.b,v);N.push(T(`유대 ${v>=0?'+':''}${v}`,`Bond ${v>=0?'+':''}${v}`,`絆 ${v>=0?'+':''}${v}`))}
@@ -11939,10 +11939,10 @@ function apply(fx,c,r){if(!fx)return '';const k=r==='crit'?1.5:r==='part'?.5:r==
   if(fx.pe){const v=Math.round(quota()*sc(fx.pe)/100);G.pe=Math.max(0,G.pe+v);N.push(T(`에너지 ${v>=0?'+':''}${v}`,`Energy ${v>=0?'+':''}${v}`,`エネルギー ${v>=0?'+':''}${v}`))}
   if(fx.q){const q0=quota();G.q=Math.max(1,Math.round(q0*fx.q));N.push(T(`할당량 ${q0}→${G.q}`,`Quota ${q0}→${G.q}`,`ノルマ ${q0}→${G.q}`))}
   if(fx.st)for(const s in fx.st){try{gainStat(s,fx.st[s])}catch(e){}N.push(`${tx(SN[s])} +${fx.st[s]}`)}
-  if(fx.agsp&&c.a){const v=sc(fx.agsp);c.a.sp=Math.max(-45,Math.min(45,(c.a.sp||0)+v));if(c.b&&fx.both)c.b.sp=Math.max(-45,Math.min(45,(c.b.sp||0)+v));N.push(T(`${c.a.n} 정신력 ${v>=0?'+':''}${v}`,`${c.a.n} Sanity ${v>=0?'+':''}${v}`,`${c.a.n} 精神力 ${v>=0?'+':''}${v}`))}
+  if(fx.agsp&&c.a){const v=sc(fx.agsp);c.a.sp=Math.max(-45,Math.min(45,(c.a.sp||0)+v));if(c.b&&fx.both)c.b.sp=Math.max(-45,Math.min(45,(c.b.sp||0)+v));N.push(T(`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} 정신력 ${v>=0?'+':''}${v}`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} Sanity ${v>=0?'+':''}${v}`,`${(typeof nameL==='function'?nameL:(x=>x))(c.a.n)} 精神力 ${v>=0?'+':''}${v}`))}
   if(fx.aghp&&c.a){const v=Math.round(agMax(c.a)*fx.aghp/100);c.a.hp=Math.max(1,Math.min(agMax(c.a),c.a.hp+v))}
   if(fx.obs){const L=contained().filter(a=>!a.tool);for(let i=0;i<fx.obs&&L.length;i++){try{obsGain(pick(L),1)}catch(e){}}N.push(T(`관찰 진행 ${fx.obs}`,`Observation +${fx.obs}`,`観察進展 ${fx.obs}`))}
-  if(fx.cnt){const L=contained().filter(a=>!a.tool&&G.ab[a.id].cnt>0);if(L.length){const a=pick(L);G.ab[a.id].cnt=Math.max(0,G.ab[a.id].cnt+fx.cnt);N.push(T(`${a.n} 카운터 ${fx.cnt}`,`${a.n} counter ${fx.cnt}`,`${a.n} カウンター ${fx.cnt}`))}}
+  if(fx.cnt){const L=contained().filter(a=>!a.tool&&G.ab[a.id].cnt>0);if(L.length){const a=pick(L);G.ab[a.id].cnt=Math.max(0,G.ab[a.id].cnt+fx.cnt);N.push(T(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} 카운터 ${fx.cnt}`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} counter ${fx.cnt}`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} カウンター ${fx.cnt}`))}}
   if(fx.melt){const L=shuffle(contained().filter(a=>!a.tool&&!G.ab[a.id].melt)).slice(0,fx.melt);L.forEach(a=>G.ab[a.id].melt=120);if(L.length)N.push(T(`폭주 ${L.map(a=>a.n).join(', ')}`,`Meltdown: ${L.map(a=>a.n).join(', ')}`,`暴走：${L.map(a=>a.n).join('、')}`))}
   if(fx.gauge){try{G.gauge+=Math.round(gaugeNeed()*fx.gauge/100)}catch(e){}}
   return N.length?`<br><small class="note">${N.join(' · ')}</small>`:''}
@@ -12377,7 +12377,7 @@ hitUnit=(f=>function(u,amt,src){
  if(dc!=='WHITE'){const r=f.apply(this,arguments);u.sp=u.psp;return r}
  const d=Math.max(1,Math.round(amt*((u.cres&&u.cres.WHITE)??1)*(u.stag>0?2:1)));
  u.psp=Math.min(0,u.psp+45*d/Math.max(1,NEED*u.max));u.sp=Math.round(u.psp);
- blog(i80(`${u.n} 정신력 ${u.sp}`,`${u.n} SP ${u.sp}`,`${u.n} 精神力 ${u.sp}`),'b');
+ blog(i80(`${(typeof nameL==='function'?nameL:(x=>x))(u.n)} 정신력 ${u.sp}`,`${(typeof nameL==='function'?nameL:(x=>x))(u.n)} SP ${u.sp}`,`${(typeof nameL==='function'?nameL:(x=>x))(u.n)} 精神力 ${u.sp}`),'b');
  if(u.psp>=0){u.psp=0;u.sp=0;u.calm122=1;const ag=B.opt.ag;if(ag)ag._calm122=1;u.hp=0;onKill(u,src)}
  return d})(hitUnit);
 /* 다른 경로로 정신력이 바뀌지 않게 */
@@ -12395,15 +12395,15 @@ battleFlee=(f=>function(){if(!(B&&B.panic122&&canFlee()))return f.apply(this,arg
  const ag=B.opt.ag;const u=B.units.find(isP);if(ag&&u)ag._psp122=Math.min(-1,Math.round(u.psp));
  B.done=true;syncAllies();G.lastBattleTurns=B.turn;B=null;LBSEL=null;
  addSp(-8,i80('등을 보인 대가로','for turning your back','背を向けた代償で'));
- if(ag)log(i80(`진압에서 물러났다. ${ag.n}은(는) 아직 패닉 상태다.`,`You pulled back from the suppression. ${ag.n} is still panicking.`,`鎮圧から退いた。${ag.n}はまだパニック状態だ。`),'warn');
+ if(ag)log(i80(`진압에서 물러났다. ${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}은(는) 아직 패닉 상태다.`,`You pulled back from the suppression. ${(typeof nameL==='function'?nameL:(x=>x))(ag.n)} is still panicking.`,`鎮圧から退いた。${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}はまだパニック状態だ。`),'warn');
  try{save()}catch(e){}tick(null,10);return workMenu()})(battleFlee);
 /* 진압 전 화면: 결과를 알려 주지 않는다 */
 panicFight=function(ag){
- setPanel(`${ag.n} 진압`,`${PANT[ag.panic]} 패닉 · ${DEPT[ag.dept].n} · HP ${ag.hp}/${agMax(ag)}`,[
+ setPanel(`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)} 진압`,`${PANT[ag.panic]} 패닉 · ${DEPT[ag.dept].n} · HP ${ag.hp}/${agMax(ag)}`,[
   {l:`${ic('sword')} 제압한다`,s:i80('전투로 진압한다','Suppress them in battle','戦闘で鎮圧する')+(ag._psp122!=null?i80(` · 지난 진압의 정신력 ${ag._psp122}`,` · SP from last attempt ${ag._psp122}`,` · 前回の精神力 ${ag._psp122}`):''),cls:'melt',
-   f:()=>startBattle('panicAgent',{grade:Math.max(0,agRank(ag)-1),title:`진압 · ${ag.n} (패닉)`,ag,mates:battleMates({type:'x'}).filter(x=>x!==ag).slice(0,1),after:()=>panicFightEnd(ag)})},
+   f:()=>startBattle('panicAgent',{grade:Math.max(0,agRank(ag)-1),title:`진압 · ${(typeof nameL==='function'?nameL:(x=>x))(ag.n)} (패닉)`,ag,mates:battleMates({type:'x'}).filter(x=>x!==ag).slice(0,1),after:()=>panicFightEnd(ag)})},
   {l:'장비를 바꾸러 간다',s:'장비 · 인사 탭',f:()=>{TAB='hr';renderTabs()}},
-  {l:'돌아간다',f:workMenu}],'',{t:{murder:`${ag.n}이(가) 무기를 휘두르며 동료들을 노리고 있다.`,suicide:`${ag.n}이(가) 벽에 머리를 기댄 채 아무 말도 하지 않는다. 시간이 많지 않다.`,wander:`${ag.n}이(가) 알 수 없는 말을 중얼거리며 복도를 떠돈다.`,release:`${ag.n}이(가) 격리실 제어판을 하나씩 만지고 있다.`}[ag.panic]});
+  {l:'돌아간다',f:workMenu}],'',{t:{murder:`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}이(가) 무기를 휘두르며 동료들을 노리고 있다.`,suicide:`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}이(가) 벽에 머리를 기댄 채 아무 말도 하지 않는다. 시간이 많지 않다.`,wander:`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}이(가) 알 수 없는 말을 중얼거리며 복도를 떠돈다.`,release:`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}이(가) 격리실 제어판을 하나씩 만지고 있다.`}[ag.panic]});
 };
 /* 전투 안의 설명 */
 ENEMY.panicAgent=(f=>function(o){const r=f.apply(this,arguments);try{r.forEach(u=>{if(u.lcPass)u.lcPass=u.lcPass.filter(p=>p[0]!=='진압')})}catch(e){}return r})(ENEMY.panicAgent);
@@ -12436,7 +12436,7 @@ function lockWhy(){if(G.arc||G.day>50)return TX('지금은 할 수 없다','Not 
 /* 적 유닛: 직원의 무기·슈트·등급 그대로 */
 ENEMY.spar124=o=>(o.foes||[]).map(ag=>{const k=weapOf(agWeap(ag)),rk=Math.max(1,agRank(ag)),sb=Math.floor(ag.st.J/30),su=suitOf(agSuit(ag));
  const hp=Math.round(agMax(ag)*[1.3,1.6,2,2.4,2.8][rk-1]);
- const u=U({n:`${ag.n}`,boss:1,human:true,sp:0,g:rk-1,hp,stg:[.5],spd:[2+sb+(rk>=4?1:0),5+sb+(rk>=4?1:0)],acts:[1,1,2,2,3][rk-1],
+ const u=U({n:`${(typeof nameL==='function'?nameL:(x=>x))(ag.n)}`,boss:1,human:true,sp:0,g:rk-1,hp,stg:[.5],spd:[2+sb+(rk>=4?1:0),5+sb+(rk>=4?1:0)],acts:[1,1,2,2,3][rk-1],
   cres:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),
   skills:k.skills.map(s=>S(s.n,s.base+rk,s.cp+(rk>=4?1:0),s.coins,s.t,k.dc,s.sin,s.on))});
  u.lcPass=[[TX('모의 전투','Mock battle','模擬戦'),TX('훈련용 대련이다. 체력이 바닥나면 물러날 뿐, 아무도 죽지 않는다.','A training bout. Whoever runs out of HP just steps back. No one dies.','訓練用の手合わせだ。体力が尽きたら退くだけで、誰も死なない。')]];
@@ -12448,8 +12448,8 @@ startBattle=(f=>function(kind,opt){const r=f.apply(this,arguments);
 /* 아무도 죽지 않는다 */
 allyDown=(f=>function(a){if(!(B&&B.spar124))return f.apply(this,arguments);
  a.dead=true;a.hp=0;if(a.key==='player'){G.hp=1;return}
- blog(TX(`${a.n}이(가) 손을 들고 물러났다.`,`${a.n} raises a hand and steps back.`,`${a.n}が手を挙げて退いた。`),'bh')})(allyDown);
-onKill=(f=>function(u,src){if(B&&B.spar124&&u&&u.spar124){if(u.killed)return;u.killed=true;blog(TX(`${u.n}이(가) 무릎을 꿇었다. “…졌어요.”`,`${u.n} drops to one knee. “…You got me.”`,`${u.n}が膝をついた。「…参りました」`),'b');return}return f.apply(this,arguments)})(onKill);
+ blog(TX(`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}이(가) 손을 들고 물러났다.`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)} raises a hand and steps back.`,`${(typeof nameL==='function'?nameL:(x=>x))(a.n)}が手を挙げて退いた。`),'bh')})(allyDown);
+onKill=(f=>function(u,src){if(B&&B.spar124&&u&&u.spar124){if(u.killed)return;u.killed=true;blog(TX(`${(typeof nameL==='function'?nameL:(x=>x))(u.n)}이(가) 무릎을 꿇었다. “…졌어요.”`,`${(typeof nameL==='function'?nameL:(x=>x))(u.n)} drops to one knee. “…You got me.”`,`${(typeof nameL==='function'?nameL:(x=>x))(u.n)}が膝をついた。「…参りました」`),'b');return}return f.apply(this,arguments)})(onKill);
 
 /* 끝 */
 function end(win,forfeit){const o=B.opt,turns=B.turn;B.done=true;
@@ -12461,10 +12461,10 @@ function end(win,forfeit){const o=B.opt,turns=B.turn;B.done=true;
  G.spar124=G.day;
  const k=pick(['F','P','T','J']);const add=gainStat(k,win?1.1:forfeit?.3:.6);
  [...foes,...mates].forEach(a=>{agRel(a,win?5:forfeit?1:4);if(a.st){const kk=pick(['F','P','T','J']);a.st[kk]=(a.st[kk]||0)+1}});
- const names=foes.map(a=>a.n).join(', ');
- if(win)log(TX(`모의 전투 승리. ${names}이(가) 웃으며 손을 내밀었다. ${VIRT[k]} +${add}`,`Mock battle won. ${names} offered a hand with a grin. ${VIRT[k]} +${add}`,`模擬戦に勝利。${names}が笑って手を差し出した。${VIRT[k]} +${add}`),'good');
- else if(forfeit)log(TX(`모의 전투를 기권했다. ${VIRT[k]} +${add}`,`You forfeited the mock battle. ${VIRT[k]} +${add}`,`模擬戦を棄権した。${VIRT[k]} +${add}`),'warn');
- else log(TX(`모의 전투 패배. ${names}이(가) 어디가 빈틈이었는지 하나하나 짚어 주었다. ${VIRT[k]} +${add}`,`Mock battle lost. ${names} walked you through every opening you left. ${VIRT[k]} +${add}`,`模擬戦に敗北。${names}が隙のあった所を一つずつ教えてくれた。${VIRT[k]} +${add}`),'q');
+ const names=foes.map(a=>(typeof nameL==='function'?nameL:(x=>x))(a.n)).join(', ');
+ if(win)log(TX(`모의 전투 승리. ${names}이(가) 웃으며 손을 내밀었다. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`Mock battle won. ${names} offered a hand with a grin. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`模擬戦に勝利。${names}が笑って手を差し出した。${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`),'good');
+ else if(forfeit)log(TX(`모의 전투를 기권했다. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`You forfeited the mock battle. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`模擬戦を棄権した。${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`),'warn');
+ else log(TX(`모의 전투 패배. ${names}이(가) 어디가 빈틈이었는지 하나하나 짚어 주었다. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`Mock battle lost. ${names} walked you through every opening you left. ${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`,`模擬戦に敗北。${names}が隙のあった所を一つずつ教えてくれた。${typeof tr80==='function'?tr80(VIRT[k]):VIRT[k]} +${add}`),'q');
  tick(null,20+5*turns);try{save()}catch(e){}render();workMenu()}
 battleWin=(f=>function(){if(B&&B.spar124&&!B.done)return end(true);return f.apply(this,arguments)})(battleWin);
 battleLose=(f=>function(){if(B&&B.spar124&&!B.done)return end(false);return f.apply(this,arguments)})(battleLose);
@@ -13113,6 +13113,56 @@ const SL={
 const sl=(k,key,fb)=>{const r=SL[k]&&SL[k][key];return r?`"${i80(r[0],r[1],r[2])}"`:fb};
 window.SL128=sl;
 window.SLM128=(k,n)=>{const r=SL[k]&&SL[k].morn;if(!r)return `${n}은(는) 잠시 말이 없었다. "그런 질문은… 처음 받아봐요."`;return i80(`${n}은(는) 잠시 말이 없었다. "${r[0]}"`,`${n} was quiet for a moment. "${r[1]}"`,`${n}はしばらく黙っていた。「${r[2]}」`)};
+})();
+/* ============ v129: 이름 옮기기 · 영어 표 넘침 ============
+   ① 사전에 없는 직원 이름은 한글을 로마자(영어) · 가타카나(일본어)로 자동 변환한다.
+      사건·대화·전투 기록처럼 문장 안에 끼워 넣는 이름도 옮긴다.
+   ② 영어처럼 낱말이 긴 언어에서 옆 칸·옆 카드로 글자가 넘치지 않게 한다. */
+(function(){
+const SB=0xAC00;
+const RI=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+const RV=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const RF=['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t'];
+function roman(s){let o='';for(const ch of s){const c=ch.charCodeAt(0)-SB;if(c<0||c>11171){o+=ch;continue}const i=Math.floor(c/588),v=Math.floor(c%588/28),f=c%28;let ini=RI[i];if(o===''&&ini==='r')ini='r';o+=ini+RV[v]+RF[f]}return o.charAt(0).toUpperCase()+o.slice(1)}
+// 가타카나: 자음 줄 × 모음
+const KV={a:0,i:1,u:2,e:3,o:4};
+const ROW={k:'カキクケコ',s:'サシスセソ',t:'タチトゥテト',n:'ナニヌネノ',h:'ハヒフヘホ',m:'マミムメモ',r:'ラリルレロ',p:'パピプペポ',b:'バビブベボ',g:'ガギグゲゴ',j:'ジャジジュジェジョ',ch:'チャチチュチェチョ','':'アイウエオ'};
+const ROW2={j:['ジャ','ジ','ジュ','ジェ','ジョ'],ch:['チャ','チ','チュ','チェ','チョ'],t:['タ','ティ','トゥ','テ','ト'],d:['ダ','ディ','ドゥ','デ','ド']};
+const YO={k:'キ',s:'シ',t:'ティ',n:'ニ',h:'ヒ',m:'ミ',r:'リ',p:'ピ',b:'ビ',g:'ギ',j:'ジ',ch:'チ','':''};
+const IK=['k','k','n','t','t','r','m','p','p','s','s','','j','j','ch','k','t','p','h'];
+const VK=['a','e','ya','ye','o','e','yo','ye','o','wa','we','e','yo','u','wo','we','wi','yu','u','ui','i'];
+const FK=['','ク','ク','ク','ン','ン','ン','ッ','ル','ク','ム','ル','ル','ル','プ','ル','ム','プ','プ','ッ','ッ','ン','ッ','ッ','ク','ッ','プ','ッ'];
+function kana1(c,v){const r=ROW2[c]||(ROW[c]?[...ROW[c]]:null);
+ const base=(vv)=>{if(ROW2[c])return ROW2[c][KV[vv]];const R=ROW[c]||ROW[''];return R[KV[vv]]};
+ if(KV[v]!=null)return base(v);
+ if(v[0]==='y'){const sm={ya:'ャ',yu:'ュ',yo:'ョ',ye:'ェ'}[v];if(c==='')return {ya:'ヤ',yu:'ユ',yo:'ヨ',ye:'イェ'}[v];return (YO[c]||base('i'))+sm}
+ if(v[0]==='w'){if(c==='')return {wa:'ワ',wo:'ウォ',we:'ウェ',wi:'ウィ'}[v];return base('u')+{wa:'ァ',wo:'ォ',we:'ェ',wi:'ィ'}[v]}
+ if(v==='ui')return c===''?'ウィ':base('u')+'ィ';return base('a')}
+function kana(s){let o='';for(const ch of s){const c=ch.charCodeAt(0)-SB;if(c<0||c>11171){o+=ch;continue}const i=Math.floor(c/588),v=Math.floor(c%588/28),f=c%28;o+=kana1(IK[i],VK[v])+FK[f]}return o}
+const hasKo=s=>/[가-힣]/.test(s||'');
+window.nameL=function(n){if(typeof L80==='undefined'||L80==='ko'||!hasKo(n))return n;
+ try{const d=I80D&&I80D.ui&&I80D.ui[n];if(d){const v=d[L80==='en'?0:1];if(v&&!hasKo(v))return v}}catch(e){}
+ try{const t=tr80(n);if(t&&!hasKo(t))return t}catch(e){}
+ // 괄호 · 공백이 섞인 이름은 낱말마다
+ return String(n).replace(/[가-힣]+/g,w=>L80==='en'?roman(w):kana(w))};
+window.roman129=roman;window.kana129=kana;
+// 화면 낱말 번역의 마지막 수단: 사람 이름 그대로면 옮긴다
+try{if(typeof L80!=='undefined'&&L80!=='ko'&&typeof tr80==='function'){const NM=()=>{const S=new Set(typeof NAMES!=='undefined'?NAMES:[]);try{(G&&G.agents||[]).forEach(a=>S.add(a.n))}catch(e){}return S};
+ const t0=tr80;tr80=function(raw){const out=t0(raw);if(!out||!hasKo(out))return out;const k=String(raw).trim();if(k.length<=12&&NM().has(k))return nameL(k);return out}}}catch(e){}
+
+/* ② 영어 넘침 */
+const css=`
+html[lang="en"] body .pcard,html[lang="en"] body .pcard *{min-width:0}
+html[lang="en"] body .pcard .ps b,html[lang="en"] body .pcard .ps em{white-space:nowrap}
+html[lang="en"] body #side .card{overflow:hidden}
+html[lang="en"] body #side .card>*{max-width:100%}
+html[lang="en"] body .pcard .pn{font-size:11.5px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[lang="en"] body .hud-cell{min-width:0}html[lang="en"] body .hud-cell .hl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+html[lang="en"] body button.cat b,html[lang="en"] body .ch b{overflow-wrap:anywhere}
+html[lang="en"] body table{table-layout:fixed;width:100%}html[lang="en"] body td,html[lang="en"] body th{overflow-wrap:anywhere;word-break:break-word}
+html[lang="en"] body .grid>*,html[lang="en"] body .agrid>*,html[lang="en"] body .acard{min-width:0;overflow-wrap:anywhere}
+`;
+try{const st=document.createElement('style');st.id='css129';st.textContent=css;document.head.appendChild(st)}catch(e){}
 })();
 </script>
 
