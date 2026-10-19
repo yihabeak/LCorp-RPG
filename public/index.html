@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.30.4.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.30.5.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13163,6 +13163,109 @@ html[lang="en"] body table{table-layout:fixed;width:100%}html[lang="en"] body td
 html[lang="en"] body .grid>*,html[lang="en"] body .agrid>*,html[lang="en"] body .acard{min-width:0;overflow-wrap:anywhere}
 `;
 try{const st=document.createElement('style');st.id='css129';st.textContent=css;document.head.appendChild(st)}catch(e){}
+})();
+/* ============ v130: 일방 수비 ============
+   수비 카드는 이제 어디에나 댈 수 있다.
+   · 나를 노리는 공격 → 지금처럼 수비(합 없이 막는다)
+   · 동료를 노리는 공격 + 내 속도가 더 빠름 → 감싸기: 그 공격을 내가 대신 받아 수비한다
+   · 그 밖(적에게 슬롯이 없음 · 적 몸에 댐 · 속도가 낮아 합 불가) → 일방 수비:
+     이번 턴 아무도 막지 않은 채 나를 노리는 공격을 수비로 받는다(가드는 가장 빠른 한 번, 회피는 전부). */
+(function(){
+const T3=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const who=a=>a&&a.key==='player'?T3('나','Me','私'):NL(a&&a.n||'');
+const isOD=sl=>sl&&sl.tgt&&sl.tgt.k==='odef';
+const canCover=(sl,it)=>it&&it.tgt!==sl.a&&canClash(sl,it);
+const ONE=()=>T3('일방 수비','One-sided defense','一方防御');
+const COV=()=>T3('감싸기','Cover','かばう');
+
+/* 1) 수비 카드를 댈 수 있는 곳: 살아 있는 적의 모든 공격 · 모든 적 몸 */
+lbValid=(f=>function(sl,j){const out=f.apply(this,arguments);if(j!=='def'||!B)return out;
+ B.intents.forEach(it=>{if(it.u.hp>0)out.it.add(it.id)});B.units.forEach(u=>{if(u.hp>0)out.u.add(u.uid)});return out})(lbValid);
+lbMark=(f=>function(sl,j){const r=f.apply(this,arguments);if(j!=='def'||!B)return r;try{const P=$('#panel');
+ P.querySelectorAll('[data-lbi]').forEach(e=>{const it=B.intents.find(i=>i.id===+e.dataset.lbi);const ad=e.querySelector('.lb-adv');if(!it||!ad||it.u.hp<=0)return;
+  if(it.tgt===sl.a){ad.className='lb-adv def';ad.textContent=T3('수비','Defend','守備')}else if(canCover(sl,it)){ad.className='lb-adv def';ad.textContent=COV()}else{ad.className='lb-adv one';ad.textContent=ONE()}})}catch(e){}return r})(lbMark);
+
+/* 2) 내려놓기 */
+function settle(sl,j,tEl){
+ try{if(B&&B.slots.filter(s=>s.a===sl.a).every(s=>s.corr||s.tgt)){const nx=B.slots.find(s=>!s.corr&&!s.tgt);if(nx)B.selA=nx.a}}catch(e){}
+ try{const src=document.querySelector(`.lb-card[data-lbc="${sl.id}"][data-j="${j}"]`);const from=(GHR&&Date.now()-GHT<250)?GHR:src&&src.getBoundingClientRect();if(src&&tEl&&typeof flyCard==='function'){const s=src;setTimeout(()=>flyCard(s,from,tEl,'def'),0)}}catch(e){}
+ try{DROPT=Date.now();if(HOLD&&HOLD.carry){if(HOLD.g&&!HOLD.touch){GHR=HOLD.g.getBoundingClientRect();GHT=Date.now()}holdEnd(true)}}catch(e){}
+ return true}
+lbDrop=(f=>function(sl,j,el){
+ if(j!=='def'||!el||!B||sl.corr)return f.apply(this,arguments);
+ const ie=el.closest&&el.closest('[data-lbi]'),ue=el.closest&&el.closest('[data-lbu]');
+ if(ie){const it=B.intents.find(i=>i.id===+ie.dataset.lbi);if(!it||it.tgt===sl.a)return f.apply(this,arguments);
+  if(canCover(sl,it)){assign(sl,{k:'def',it});toast(T3(`${who(sl.a)}이(가) ${who(it.tgt)}을(를) 감싼다 (속도 ${sl.a.speed} > ${it.spd})`,`${who(sl.a)} covers ${who(it.tgt)} (Speed ${sl.a.speed} > ${it.spd})`,`${who(sl.a)}が${who(it.tgt)}をかばう(速度 ${sl.a.speed} > ${it.spd})`));return settle(sl,j,ie)}
+  sl.tgt={k:'odef',u:it.u};toast(T3(`합 불가 (속도 ${sl.a.speed} ≤ ${it.spd}) · 일방 수비`,`No clash (Speed ${sl.a.speed} ≤ ${it.spd}) · One-sided defense`,`マッチ不可(速度 ${sl.a.speed} ≤ ${it.spd})・一方防御`));return settle(sl,j,ie)}
+ if(ue){const u=B.units.find(x=>x.uid===+ue.dataset.lbu);if(!u||u.hp<=0)return f.apply(this,arguments);
+  sl.tgt={k:'odef',u};toast(T3('일방 수비 · 이번 턴 나를 노리는 공격을 막는다','One-sided defense · blocks attacks aimed at me this turn','一方防御・このターン自分を狙う攻撃を防ぐ'));return settle(sl,j,ue)}
+ return f.apply(this,arguments)})(lbDrop);
+
+/* 3) 해결 */
+resolveCore=(f=>function(){try{if(B&&!B.done){const od=[];
+ B.slots.forEach(sl=>{const t=sl.tgt;if(!t)return;
+  if(t.k==='odef'){od.push(sl);sl.tgt=null;return}
+  if(t.k==='def'&&t.it&&t.it.tgt!==sl.a&&!sl.a.dead&&B.intents.includes(t.it)){const was=t.it.tgt;t.it.tgt=sl.a;t.it.cover130=1;blog(T3(`${who(sl.a)}이(가) ${who(was)} 앞을 막아선다.`,`${who(sl.a)} steps in front of ${who(was)}.`,`${who(sl.a)}が${who(was)}の前に立ちはだかる。`),'b')}});
+ od.forEach(sl=>{if(sl.a.dead)return;const d=kit(sl.a).def;
+  const its=B.intents.filter(it=>it.tgt===sl.a&&it.u.hp>0&&!it.def&&!B.slots.some(s=>s.tgt&&s.tgt.it===it)).sort((x,y)=>y.spd-x.spd);
+  if(!its.length)return;(d.type==='guard'?its.slice(0,1):its).forEach(it=>it.def=d);
+  blog(T3(`${who(sl.a)}: 일방 수비 자세`,`${who(sl.a)}: one-sided defense stance`,`${who(sl.a)}：一方防御の構え`),'b')})}}catch(e){}
+ return f.apply(this,arguments)})(resolveCore);
+
+/* 4) 화면 */
+lbSlotBox=(f=>function(sl){if(!isOD(sl))return f.apply(this,arguments);
+ return `<button type="button" class="lb-slot s79 def" data-lbs="${sl.id}" aria-label="${esc(sl.a.n)} · ${sl.a.speed} · ${ONE()}"><b>${sl.a.speed}</b><em>${ic('shield')} ${ONE()}</em></button>`})(lbSlotBox);
+lbIntentBox=(f=>function(it){let h=f.apply(this,arguments);try{const o=ownerOf(it);if(o&&o.tgt.k==='def'&&o.a!==it.tgt)h=h.replace(/<small class="tg">[^<]*<\/small>/,`<small class="tg">→ ${who(o.a)} · ${COV()}</small>`)}catch(e){}return h})(lbIntentBox);
+lbCard=(f=>function(sl,j,s,kind){let h=f.apply(this,arguments);if(kind!=='def')return h;
+ return h.replace(/<small>[^<]*나를 노리는 공격에만<\/small>/,`<small>${s.type==='guard'?T3('가드','Guard','ガード'):T3('회피','Evade','回避')} · ${T3('합 불가면 일방 수비','one-sided if no clash','マッチ不可なら一方防御')}</small>`)})(lbCard);
+rows77=(f=>function(){if(!B)return f.apply(this,arguments);const od=B.slots.filter(isOD),keep=od.map(sl=>sl.tgt);od.forEach(sl=>sl.tgt=null);let R;
+ try{R=f.apply(this,arguments)}finally{od.forEach((sl,i)=>sl.tgt=keep[i])}
+ od.forEach(sl=>{const a=sl.a,d=kit(a).def;R.push({spd:a.speed,cls:'def',sa:a.speed,html:`<div class="cb-side a"><b>${who(a)}</b><span>${ic('shield')} ${d.n}</span><small>${d.type==='guard'?T3('보호막을 얻고 맞는다','Gains a shield, then takes the hit','バリアを得て受ける'):T3('코인마다 회피','Evade per coin','コインごとに回避')}</small></div><div class="cb-vs def"><em>${ONE()}</em><b>${T3('막는다','Block','防ぐ')}</b><small>${T3('합 없음','No clash','マッチなし')}</small></div><div class="cb-side e"><span class="mut">${T3('나를 노리는 공격','Attacks aimed at me','自分を狙う攻撃')}</span><small>&nbsp;</small></div>`})});
+ return R})(rows77);
+ins79Html=(f=>function(){try{if(B&&!B.done&&INS79&&INS79.k==='s'){const sl=B.slots[INS79.id];if(isOD(sl)){const a=sl.a;
+ const head=`<span class="i79-spd">${a.speed}</span><b>${who(a)}</b><span class="i79-st def">${ONE()}</span>`;
+ const body=`${def79(a)}<div class="i79-vs def"><b>${ONE()}</b></div><div class="i79-sk e"><span class="i79-who">${T3('대상','Target','対象')}</span><b>${T3('나를 노리는 공격','Attacks aimed at me','自分を狙う攻撃')}</b></div>`;
+ return `<div class="i79-h">${head}<button type="button" class="i79-x" aria-label="${T3('닫기','Close','閉じる')}">✕</button></div><div class="i79-b">${body}</div><div class="i79-a"><button class="btn ghost small" data-i79="free">${T3('수비 풀기','Release','守備を解く')}</button></div>`}}}catch(e){}
+ return f.apply(this,arguments)})(ins79Html);
+
+/* 5) 카드 고르기 창(누르는 방식)에도 감싸기 · 일방 수비 줄을 넣는다 */
+let LAST=null;
+document.addEventListener('click',e=>{try{if(!B||B.done)return;const t=e.target;const s=t.closest&&t.closest('[data-i79="sheet"]');
+ if(s&&INS79){if(INS79.k==='i')LAST={it:B.intents.find(i=>i.id===INS79.id)};else{const sl=B.slots[INS79.id];LAST={it:sl&&sl.tgt&&sl.tgt.it}}return}
+ const ie=t.closest&&t.closest('[data-lbi]');if(ie){LAST={it:B.intents.find(i=>i.id===+ie.dataset.lbi)};return}
+ const ue=t.closest&&t.closest('[data-lbu]');if(ue)LAST={u:B.units.find(x=>x.uid===+ue.dataset.lbu)}}catch(e){}},true);
+popup=(f=>function(title,html,cb,opt){if(!(B&&!B.done&&typeof html==='string'&&html.indexOf('class="as-list"')>=0&&LAST&&(LAST.it||LAST.u)))return f.apply(this,arguments);
+ const it=LAST.it||null,u=it?null:LAST.u;LAST=null;
+ const cb2=function(b){const r=cb?cb.apply(this,arguments):undefined;try{const list=b.querySelector('.as-list');if(!list)return r;const P=$('#panel');
+  B.slots.forEach(sl=>{if(sl.corr)return;if(it&&it.tgt===sl.a)return;const d=kit(sl.a).def;const cov=it&&canCover(sl,it);
+   const cur=it?(cov?(sl.tgt&&sl.tgt.k==='def'&&sl.tgt.it===it):false):(isOD(sl)&&sl.tgt.u===u);
+   const row=document.createElement('button');row.className='as-row'+(cur?' cur':'');row.dataset.sl=sl.id;row.dataset.j='def';
+   row.innerHTML=`<span class="who">${who(sl.a)} · ${T3('속도','Speed','速度')} ${sl.a.speed}</span><b>🛡 ${d.n}</b><small>${d.type==='guard'?T3('보호막을 얻고 맞는다','Gains a shield, then takes the hit','バリアを得て受ける'):T3('코인마다 회피','Evade per coin','コインごとに回避')}</small><em class="${cov?'def':'one'}">${cur?T3('현재 배정 · ','Assigned · ','配置中・'):''}${cov?COV():ONE()}</em>`;
+   row.onclick=()=>{const tEl=it?P.querySelector(`[data-lbi="${it.id}"]`):P.querySelector(`[data-lbu="${u.uid}"]`);closePop();if(tEl&&lbDrop(sl,'def',tEl))renderBattle()};
+   const note=list.querySelector('p.note');if(note&&!list.querySelector('.as-row'))note.remove();list.appendChild(row)})}catch(e){}return r};
+ return f.call(this,title,html,cb2,opt)})(popup);
+
+/* 6) 규칙 · 튜토리얼 문구 (3개 언어) */
+const RX=[
+ [/나를 노리는 공격에만 쓸 수 있는 가드·회피 카드/g,'가드·회피 카드. 동료를 노리는 공격도 나보다 느리면 대신 막고(감싸기), 합이 안 되거나 적 몸에 대면 일방 수비가 되는 카드'],
+ [/수비 카드는 나를 노리는 공격에만 쓰며,/g,'수비 카드는 나를 노리는 공격이나 나보다 느린 공격(감싸기)에 대고, 합이 안 되거나 적 몸에 대면 일방 수비가 되며,'],
+ [/나를 노리는 공격에만 쓸 수 있다\./g,'나를 노리는 공격은 그대로 막고, 동료를 노리는 공격은 나보다 느릴 때 대신 막는다. 합이 안 되거나 적 몸에 대면 일방 수비가 된다.'],
+ [/^이 있을 때만 생긴다\./,'은 그대로 막고, 그 밖에는 일방 수비가 된다.'],[/^이 있을 때만 생겨요\./,'은 그대로 막고, 그 밖에는 일방 수비가 돼요.'],
+ [/usable only against attacks aimed at you/g,'usable on any attack (cover allies from slower attacks; one-sided defense when no clash is possible)'],
+ [/Defense cards work only against attacks aimed at you;/g,'Defense cards block attacks aimed at you, cover allies from slower attacks, and become one-sided defense when no clash is possible;'],
+ [/Only usable against attacks aimed at you\./g,'Blocks attacks aimed at you, or covers an ally from a slower attack. When no clash is possible, it becomes one-sided defense.'],
+ [/^Appears only when an attack /,'Always available. Blocks an attack that '],
+ [/自分を狙う攻撃にだけ使えるガード・回避カード/g,'ガード・回避カード。味方を狙う攻撃も自分より遅ければ代わりに防ぎ(かばう)、マッチできないときや敵の体に置くと一方防御になるカード'],
+ [/守備カードは自分を狙う攻撃にだけ使え、/g,'守備カードは自分を狙う攻撃か自分より遅い攻撃(かばう)に使え、マッチできないときは一方防御になり、'],
+ [/自分を狙う攻撃にしか使えない。/g,'自分を狙う攻撃はそのまま防ぎ、味方を狙う攻撃は自分より遅ければ代わりに防ぐ。マッチできないときは一方防御になる。'],
+ [/^があるときだけ出る。/,'はそのまま防ぎ、それ以外は一方防御になる。'],[/^があるときだけ出ます。/,'はそのまま防ぎ、それ以外は一方防御になります。']];
+const KEY=/노리는 공격에만|때만 생|aimed at you|Appears only when an attack|自分を狙う攻撃に|ときだけ出/;
+function scrub(root){try{if(!root||(root.nodeType===1&&/^(SCRIPT|STYLE|TEXTAREA)$/.test(root.tagName)))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;return p&&/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)?2:1}});let n;while(n=w.nextNode()){if(!KEY.test(n.nodeValue))continue;let v=n.nodeValue;RX.forEach(r=>v=v.replace(r[0],r[1]));if(v!==n.nodeValue)n.nodeValue=v}}catch(e){}}
+try{const Q=new Set();let pend=0;
+ const run=()=>{pend=0;const L=[...Q];Q.clear();for(const x of L){if(!x.isConnected)continue;const t=x.nodeType===3?x.nodeValue:x.textContent;if(t&&KEY.test(t))scrub(x.nodeType===3?x.parentNode:x)}};
+ const mo=new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(x=>{if(x.nodeType===1||x.nodeType===3)Q.add(x)});if(!pend&&Q.size){pend=1;(window.requestAnimationFrame||setTimeout)(run)}});
+ const go=()=>{scrub(document.body);mo.observe(document.body,{childList:true,subtree:true})};if(document.body)go();else addEventListener('DOMContentLoaded',go)}catch(e){}
 })();
 </script>
 
