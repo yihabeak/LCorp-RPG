@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>패치노트 작성</title>
+<style>
+:root{--bg:#12181a;--pn:#1a2326;--ln:#2c3a3e;--tx:#dfe7e4;--mu:#8fa19c;--ac:#e8b04a;--ok:#5fc48a;--bad:#ff5a4f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.6 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 2px}h2{font-size:15px;margin:24px 0 8px;color:var(--ac)}
+.mu{color:var(--mu);font-size:12.5px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+input,textarea,button{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:8px 10px}
+input:focus,textarea:focus{outline:none;border-color:var(--ac)}
+button{cursor:pointer;background:#2a3a3f;transition:border-color .15s ease,transform .12s ease}button:hover{border-color:var(--ac)}button:active{transform:scale(.97)}
+button.pri{background:var(--ac);color:#12181a;border-color:var(--ac);font-weight:700}button.del{color:var(--bad)}
+#key{flex:1 1 220px}
+.ed{display:grid;gap:8px;background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:12px}
+#t{width:100%;font-size:16px;font-weight:600}#x{width:100%;min-height:240px;resize:vertical;line-height:1.6}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row .sp{flex:1}
+.it{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.it h3{margin:0;font-size:15px}.it pre{white-space:pre-wrap;font:inherit;margin:6px 0 8px;color:var(--tx)}
+.ok{color:var(--ok)}.err{color:var(--bad)}[hidden]{display:none!important}
+</style></head><body><main>
+<h1>패치노트 작성</h1>
+<div class="mu">관리자 키가 있는 사람만 쓰고 고치고 지울 수 있어요. 쓴 글은 게임 타이틀 화면의 「패치노트」에 바로 나타나요.</div>
+<div class="bar">
+  <input id="key" type="password" placeholder="관리자 키 (ADMIN_KEY, 없으면 STATS_KEY)" autocomplete="current-password">
+  <label class="mu"><input id="keep" type="checkbox" style="min-width:0"> 이 기기에 기억</label>
+  <button id="load">확인</button>
+</div>
+<div id="msg" class="mu" role="status"></div>
+<section id="tool" hidden>
+  <h2 id="mode">새 패치노트</h2>
+  <div class="ed">
+    <input id="t" maxlength="120" placeholder="제목 (예: Ver. 3.17.0 — 코어 억제 경고음 정리)">
+    <textarea id="x" maxlength="20000" placeholder="내용 — 줄바꿈은 그대로 표시돼요"></textarea>
+    <div class="row"><span class="sp mu" id="cnt">0 / 20000</span><button id="cancel" hidden>고치기 취소</button><button id="save" class="pri">올리기</button></div>
+  </div>
+  <h2>올린 글</h2>
+  <div id="list"></div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+const ss={g:k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}}};
+let KEY=ls.g('pn_key')||ss.g('pn_key')||'',EDIT=null,NOTES=[];
+$('#key').value=KEY;$('#keep').checked=!!ls.g('pn_key');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const when=t=>new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'});
+const say=(m,c)=>{$('#msg').className=c||'mu';$('#msg').textContent=m};
+const ERR={auth:'관리자 키가 맞지 않아요.',nokey:'Vercel 환경 변수 ADMIN_KEY(또는 STATS_KEY)를 8자 이상으로 넣고 다시 배포해 주세요.',nodb:'저장소(Upstash)가 연결되지 않았어요.','too-many':'시도가 너무 많아요. 15분 뒤 다시 해 주세요.',empty:'제목을 입력해 주세요.',none:'이미 지워진 글이에요.'};
+async function api(method,data){const r=await fetch('/api/notes',{method,headers:{'Content-Type':'application/json','x-admin-key':KEY},body:data?JSON.stringify(data):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(ERR[j.code]||('오류 '+r.status));return j}
+async function refresh(){const j=await api('GET');NOTES=j.notes||[];
+  $('#list').innerHTML=NOTES.length?NOTES.map(n=>`<div class="it"><h3>${esc(n.t)}</h3><div class="mu">${when(n.at)}${n.up?` · 고침 ${when(n.up)}`:''}</div><pre>${esc(n.x)}</pre><div class="row"><button data-e="${n.id}">고치기</button><button class="del" data-d="${n.id}">지우기</button></div></div>`).join(''):'<div class="mu">아직 올린 글이 없어요.</div>';
+  $('#list').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const n=NOTES.find(x=>x.id===b.dataset.e);EDIT=n.id;$('#t').value=n.t;$('#x').value=n.x;$('#mode').textContent='패치노트 고치기';$('#save').textContent='고친 내용 저장';$('#cancel').hidden=false;count();$('#t').focus();scrollTo({top:0,behavior:'smooth'})});
+  $('#list').querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(!confirm('이 글을 지울까요? 되돌릴 수 없어요.'))return;try{await api('DELETE',{id:b.dataset.d});say('지웠어요.','ok');if(EDIT===b.dataset.d)reset();refresh()}catch(e){say(e.message,'err')}})}
+function reset(){EDIT=null;$('#t').value='';$('#x').value='';$('#mode').textContent='새 패치노트';$('#save').textContent='올리기';$('#cancel').hidden=true;count()}
+function count(){$('#cnt').textContent=$('#x').value.length+' / 20000'}
+$('#x').oninput=count;$('#cancel').onclick=reset;
+$('#load').onclick=async()=>{KEY=$('#key').value.trim();if($('#keep').checked){ls.s('pn_key',KEY)}else{ls.s('pn_key',null);ss.s('pn_key',KEY)}
+  // 키 확인: 존재하지 않는 글을 지우려 해 본다 (맞으면 404, 틀리면 401)
+  try{await api('DELETE',{id:'-'})}catch(e){if(!/지워진/.test(e.message)){$('#tool').hidden=true;return say(e.message,'err')}}
+  say('확인됐어요.','ok');$('#tool').hidden=false;refresh().catch(e=>say(e.message,'err'))};
+$('#key').onkeydown=e=>{if(e.key==='Enter')$('#load').click()};
+$('#save').onclick=async()=>{const t=$('#t').value.trim(),x=$('#x').value;if(!t)return say('제목을 입력해 주세요.','err');$('#save').disabled=true;
+  try{if(EDIT){await api('PUT',{id:EDIT,t,x});say('고친 내용을 저장했어요.','ok')}else{await api('POST',{t,x});say('올렸어요.','ok')}reset();refresh()}catch(e){say(e.message,'err')}finally{$('#save').disabled=false}};
+if(KEY)$('#load').click();
+</script>
+</body></html>

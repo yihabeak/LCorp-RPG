@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.15.0.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.18.0.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11169,6 +11169,78 @@ startDay=(f=>function(){pullAll();return f.apply(this,arguments)})(startDay);
 abnoView=(f=>function(){pullAll();return f.apply(this,arguments)})(abnoView);
 // 이어하기로 불러온 직후에도 한 번 맞춘다
 let LG106=null;render=(f=>function(){try{if(G&&G!==LG106&&!off()){LG106=G;pullAll()}}catch(e){}return f.apply(this,arguments)})(render);
+})();
+/* ============ v107: 도감은 한 번 열리면 상시 공개 — 회차·사망·되돌아가기와 무관하게 저장소의 최종 기록을 따른다 ============ */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+let CK=null,CC={};
+function cc(){try{const k=cdxKeyNow();if(k!==CK){CK=k;CC=cdxLoad()}}catch(e){}return CC}
+cdxLoad=(f=>function(){const r=f.apply(this,arguments);try{if(cdxKeyNow()===CK||CK===null){CK=cdxKeyNow();CC=r}}catch(e){}return r})(cdxLoad);
+const tut=()=>(G&&G.flags&&G.flags.tutSand)||(typeof TUTSNAP!=='undefined'&&TUTSNAP);
+// 1) 이름: 어느 회차에서든 한 번 마주쳤거나 정보를 연 환상체는 가리지 않는다
+abHidden=(f=>function(a){try{if(!tut()){const c=cc();if(c[a.id]||(c._info&&c._info[a.id]&&c._info[a.id].b))return false}}catch(e){}return f.apply(this,arguments)})(abHidden);
+// 2) 이야기 단어(백야·종말새·시련 등)·코어 억제 용어: 한 번 본 것은 계속 공개
+function syncSeen(){if(!G||tut())return;try{G.seen=G.seen||{};const c=cdxLoad();const s=c._seenW||{};let ch=0;
+  for(const w in G.seen)if(G.seen[w]&&!s[w]){s[w]=1;ch=1}
+  if(G.ab)AB.forEach(a=>{const x=G.ab[a.id];if(x&&(x.met||x.dept||(x.works||0)>0)&&!c[a.id]){c[a.id]={o:x.obs||0,n:x.works||0,m:1};ch=1}});
+  for(const w in s)if(!G.seen[w])G.seen[w]=1;
+  if(ch){c._seenW=s;localStorage.setItem(cdxKeyNow(),JSON.stringify(c));CC=c;CK=cdxKeyNow()}}catch(e){}}
+save=(f=>function(){const r=f.apply(this,arguments);syncSeen();return r})(save);
+let LG=null;render=(f=>function(){try{if(G&&G!==LG&&!tut()){LG=G;syncSeen();if(window.cdxPull106)cdxPull106()}}catch(e){}return f.apply(this,arguments)})(render);
+// 3) 격리실 도감: 이번 회차에 없는 환상체도 지난 기록 그대로 펼쳐 둔다 (읽기 전용)
+function pastCard(a,r,o){const ob=Math.min(4,(r?((r.b?1:0)+(['ins','insi','att','rep'].every(k=>r.f&&r.f[k])?1:0)+((r.m||[]).every(Boolean)?1:0)+(r.e?1:0)):0)||o.o||0);
+  const fk=w=>r&&r.f&&r.f[w];
+  return `<div class="ab past107">${emblem(a,true)}<div class="body"><header><h4>${a.n} <span class="gr g${a.g}">${GR[a.g]}</span>${a.tool?` <span class="chip">${T('도구형','Tool','ツール型')}</span>`:''}</h4><span class="code">${a.code} · ${dmgIc(a.dt)} <span class="dt d${a.dt}">${a.dt}</span> · ${T('관찰','Obs.','観察')} ${ROMAN[ob]||'0'}</span></header>
+  <p>${a.d.slice(0,Math.min(ob+1,3)).join(' ')}</p>
+  ${!a.tool&&WORKS.some(w=>fk(w.id))?`<div class="pref">${WORKS.map(w=>`<span>${ic(w.id)} ${w.n} · ${fk(w.id)?(a.sp==='request'&&w.id==='att'?T('의뢰','Request','依頼'):prefWord(prefOf(a,w.id))):'?'}</span>`).join('')}</div>`:''}
+  ${!a.tool&&ob>=2?`<div class="note">${T('기프트','Gift','ギフト')} ${SLOTN[a.slot]}: ${a.gift.d}${r&&r.e?` · ${a.breach?T('탈출 가능','Can escape','脱走あり'):T('탈출하지 않음','Does not escape','脱走しない')}`:''}</div>`:''}</div></div>`}
+abnoView=(f=>function(){let h=f.apply(this,arguments);try{if(tut())return h;const c=cdxLoad();const inRun=new Set(G.order||[]);
+  const L=AB.filter(a=>!inRun.has(a.id)&&(c[a.id]||(c._info&&c._info[a.id]))&&!(typeof CODEX_EX!=='undefined'&&CODEX_EX.includes(a.id)));if(!L.length)return h;
+  h+=`<details class="card fold past107w"><summary class="lbl">${T(`지난 기록 · 이번 회차에 수용하지 않은 환상체 ${L.length}`,`Past records · ${L.length} abnormalities not contained this run`,`過去の記録・今回収容していない幻想体 ${L.length}`)}</summary><p class="note">${T('다른 회차에서 연 정보는 그대로 남아 있어요. 다시 수용하면 이 정보를 가진 채로 시작해요.','Information opened in other runs stays here. Contain it again and it starts with this information.','別の周回で開いた情報はそのまま残っています。再び収容すると、この情報を持った状態で始まります。')}</p><div class="abl">${L.sort((x,y)=>x.g-y.g).map(a=>pastCard(a,c._info&&c._info[a.id],c[a.id]||{})).join('')}</div></details>`}catch(e){}return h})(abnoView);
+const st=document.createElement('style');st.textContent=`.past107w{margin-top:12px}.past107w>summary{cursor:pointer;padding:4px 0}.past107{opacity:.88}`;document.head.appendChild(st);
+})();
+/* ============ v108: 코어 억제 경고음 — 억제를 고르는 화면에서만 울리고, 시작하면 즉시 멈춘다 · 울리는 동안 배경 음악은 잠시 내린다 ============ */
+(function(){if(!window.BGM94||typeof AUD==='undefined')return;
+const BASE=(typeof BGM_BASE==='string'&&BGM_BASE&&!/\.pages\.dev$/.test(location.hostname))?BGM_BASE:'';
+const on=()=>AUD.bgmOn&&AUD.src93!=='file';
+const vol=()=>Math.max(0,Math.min(1,AUD.mvol??.6));
+/* 1) 배경 음악 두 채널에 '덕킹' 배율을 건다: 기존 코드가 정하는 음량(논리값)은 그대로 두고 실제 출력만 곱한다 */
+const D=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'volume');let DUCK=1,duckT=null;
+BGM94.P.a.forEach(x=>{x._lv=D.get.call(x);Object.defineProperty(x,'volume',{configurable:true,get(){return x._lv},set(v){x._lv=Math.max(0,Math.min(1,+v||0));D.set.call(x,x._lv*DUCK)}})});
+function duckTo(t,ms){clearInterval(duckT);const d0=DUCK,t0=performance.now();duckT=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);DUCK=d0+(t-d0)*k;BGM94.P.a.forEach(x=>D.set.call(x,x._lv*DUCK));if(k>=1){clearInterval(duckT);duckT=null}},30)}
+/* 2) 경고음 */
+const W=new Audio();W.preload='none';let W_ON=false;
+function warnStart(){if(W_ON)return;W_ON=true;if(!on()||document.hidden)return;try{W.src=BASE+'bgm/sup_warn.mp3';W.currentTime=0;W.volume=Math.min(1,vol()*1.2);const p=W.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}duckTo(0,250)}
+function warnStop(now){if(!W_ON)return;W_ON=false;try{if(now){W.pause();W.currentTime=0}else{const v0=W.volume,t0=performance.now();const id=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/250);W.volume=v0*(1-k);if(k>=1){clearInterval(id);W.pause()}},30)}}catch(e){}duckTo(1,now?150:400)}
+W.addEventListener('ended',()=>{if(W_ON){W_ON=false;duckTo(1,600)}});
+window.warnStop108=warnStop;
+// 억제를 고르는 화면(아침 '코어 억제' · 근무 중 '코어 억제 시작')에서만 울린다
+const SUPT=/^코어 억제( 시작)?$/;
+setPanel=(f=>function(title){try{if(SUPT.test(String(title||'')))warnStart();else warnStop(false)}catch(e){}return f.apply(this,arguments)})(setPanel);
+// 억제를 골라 시작하면 바로 끈다
+supBegin=(f=>function(k,next){warnStop(true);try{G._sw=G.day+':'+k}catch(e){}const r=f.apply(this,arguments);try{if(G.sup)G._sw=G.day+':'+G.sup.key}catch(e){}try{BGM94.apply(true)}catch(e){}return r})(supBegin);
+// 기존(v93) '억제가 시작되면 경고음' 은 끈다: 이미 울린 것으로 표시
+setInterval(()=>{try{if(G&&G.sup&&!G.sup.done)G._sw=G.day+':'+G.sup.key}catch(e){}},100);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&W_ON){try{W.pause()}catch(e){}W_ON=false;DUCK=1;BGM94.P.a.forEach(x=>D.set.call(x,x._lv))}});
+// 소리를 끄면 경고음도 끈다
+setInterval(()=>{if(W_ON&&!on())warnStop(true)},500);
+})();
+/* ============ v109: 타이틀 화면 「패치노트」 — 관리자가 notes-admin.html 에서 쓴 글을 읽는다 ============ */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+let NOTES=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function get(){try{const r=await fetch('/api/notes',{cache:'no-store'});if(!r.ok)return null;const j=await r.json();return Array.isArray(j.notes)?j.notes:null}catch(e){return null}}
+function show(){const L=NOTES||[];const d=t=>{try{return new Date(t).toLocaleDateString(LANG80==='ja'?'ja-JP':LANG80==='en'?'en-US':'ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'short',day:'numeric'})}catch(e){return ''}};
+  popup(T('패치노트','Patch notes','パッチノート'),L.length?`<div class="pn109">${L.map((n,i)=>`<details ${i===0?'open':''}><summary><b>${esc(n.t)}</b><small>${d(n.at)}</small></summary><div class="pn109x">${esc(n.x)}</div></details>`).join('')}</div>`:`<p class="sub">${T('아직 올라온 패치노트가 없어요.','No patch notes yet.','まだパッチノートはありません。')}</p>`,null,{wide:true})}
+function btn(){try{const w=document.getElementById('lnk100');if(!w||document.getElementById('pn109b')||!NOTES)return;
+  w.insertAdjacentHTML('afterbegin',`<a href="#" id="pn109b" role="button">${T('패치노트','Patch notes','パッチノート')}</a>`);
+  document.getElementById('pn109b').onclick=async e=>{e.preventDefault();NOTES=(await get())||NOTES;show()}}catch(e){}}
+// 서버가 있는 곳(호스팅판)에서만 버튼을 보인다
+get().then(n=>{if(n){NOTES=n;btn();setInterval(btn,1500)}});
+const st=document.createElement('style');st.textContent=`.pn109{display:grid;gap:8px}.pn109 details{border:1px solid var(--line);border-radius:var(--r,6px);background:var(--panel2)}
+.pn109 summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:10px 12px}.pn109 summary small{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pn109x{white-space:pre-wrap;padding:0 12px 12px;line-height:1.65;color:var(--fg2,var(--fg))}`;document.head.appendChild(st);
 })();
 </script>
 
