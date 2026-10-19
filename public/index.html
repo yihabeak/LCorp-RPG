@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.27.3.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.28.3.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -12546,6 +12546,150 @@ avatarSvg=(f=>function(){const h=f.apply(this,arguments);try{if(!h.startsWith('<
  ord.forEach(sl=>{const id=G.gifts[sl];if(!id)return;const r=art(sl,id);F+=r[0];Bk+=r[1]});
  if(!F&&!Bk)return h;const i=h.indexOf('>')+1,j=h.lastIndexOf('</svg>');
  return h.slice(0,i)+`<g class="gf125">${Bk}</g>`+h.slice(i,j)+`<g class="gf125">${F}</g>`+h.slice(j)}catch(e){return h}})(avatarSvg);
+})();
+/* ============ v126: 관리 단말 UI — 검정 바탕 · 레몬 크림 굵은 선 · 비틀린 판 ============
+   검정과 레몬 크림(+청록·적색 보조)의 두 색 대비, 굵은 테두리, 살짝 기운 판과 한쪽이 꺾여 들어간 모서리,
+   경고 줄무늬, 회로 같은 배경선, 좁고 굵은 글꼴. 로고·그림은 쓰지 않고 색·선·면의 결만 가져온다.
+   코인은 칠각형. 카드 끌기 판정을 위해 전투 무대가 들어 있는 패널은 회전시키지 않는다. */
+(function(){
+try{if(!document.querySelector('link[data-f126]')){const l=document.createElement('link');l.rel='stylesheet';l.dataset.f126=1;l.href='https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Oswald:wght@500;600;700&display=swap';document.head.appendChild(l)}}catch(e){}
+// 한쪽 아래 모서리가 꺾여 들어간 판
+const NOTCH=(n=26)=>`polygon(0 0,100% 0,100% calc(100% - ${n}px),calc(100% - ${n*1.6}px) 100%,0 100%)`;
+const NOTCH2=(n=18)=>`polygon(0 0,calc(100% - ${n}px) 0,100% ${n}px,100% 100%,${n*1.4}px 100%,0 calc(100% - ${n*.8}px))`;
+const HEPT='polygon(50% 0,89% 19%,98% 61%,72% 95%,28% 95%,2% 61%,11% 19%)';
+const css=`
+:root{--y-bk:#070707;--y-p:#0e0e0c;--y-p2:#151511;--y-cr:#f4ee9a;--y-cr2:#cfc777;--y-dm:#5d592f;--y-tl:#1d8a75;--y-tl2:#33c3a3;--y-rd:#e8433a;--y-or:#ff8a1a;--y-mu:#9a9566;
+ --y-f:'Oswald','Black Han Sans',var(--f-num,system-ui),sans-serif;--y-k:'Black Han Sans','Oswald',sans-serif}
+/* 바탕: 검정 + 희미한 회로선 */
+html body{background:
+ linear-gradient(90deg,transparent 0 calc(100% - 1px),rgba(244,238,154,.035) 0) 0 0/64px 64px,
+ linear-gradient(0deg,transparent 0 calc(100% - 1px),rgba(244,238,154,.035) 0) 0 0/64px 64px,
+ var(--y-bk)!important;color:#ecebd9}
+/* ── 머리 · 탭 · 상태 칸 ── */
+html body .top1{border-bottom:3px solid var(--y-cr)!important;background:var(--y-bk)!important}
+html body .brand{font-family:var(--y-k);font-weight:400;letter-spacing:.02em;color:var(--y-cr)}
+html body .tabs button{font-family:var(--y-k)!important;font-weight:400!important;font-size:16px!important;border:2px solid var(--y-cr2)!important;border-radius:0!important;background:var(--y-bk)!important;color:var(--y-cr)!important;clip-path:none!important;padding:5px 16px!important}
+html body .tabs button[aria-selected="true"],html body .tabs button.on{background:var(--y-cr)!important;color:#000!important;border-color:var(--y-cr)!important;transform:rotate(-2deg)}
+html body .hud-cell{border:2px solid var(--y-cr2)!important;border-radius:0!important;background:var(--y-bk)!important;clip-path:none;box-shadow:none}
+html body .hud-cell .hl,html body .hud-cell>span:first-child{color:var(--y-cr2)}
+html body .hud-cell b,html body .daybox b{font-family:var(--y-f);font-weight:700;letter-spacing:.02em;color:var(--y-cr)}
+/* ── 패널: 굵은 크림 선 + 꺾인 모서리 + 기운 머리띠 ── */
+html body #panel,html body #side>.card{background:var(--y-p)!important;border:3px solid var(--y-cr)!important;border-radius:0!important;box-shadow:none!important;clip-path:${NOTCH(28)}}
+html body #side>.card{border-color:var(--y-cr2)!important;clip-path:${NOTCH(18)}}
+html body #panel::before{content:'';display:block;height:10px;margin:-18px -18px 14px;background:repeating-linear-gradient(-45deg,var(--y-cr) 0 10px,#000 10px 20px)}
+html body #panel>h3,html body .panel h3{display:inline-block;font-family:var(--y-k)!important;font-weight:400!important;font-size:22px!important;letter-spacing:.02em;color:#000!important;background:var(--y-cr)!important;padding:6px 22px 5px 14px!important;margin:0 0 14px -6px!important;border:0!important;transform:rotate(-1.6deg);transform-origin:left center;line-height:1.2;box-shadow:4px 4px 0 #000}
+html body .lbl{letter-spacing:.05em;color:var(--y-cr2)}
+/* 패널 안 상자들 */
+html body .todo,html body details.strip,html body section.card:not(#panel){background:#000!important;border:2px solid var(--y-dm)!important;border-radius:0!important;box-shadow:none!important}
+html body .todo li.warn{background:#0d0d09!important;border-left:4px solid var(--y-cr)!important}
+html body button.cat{background:#000!important;border:2px solid var(--y-cr2)!important;border-radius:0!important;box-shadow:none!important}
+html body button.cat b{font-family:var(--y-k);font-weight:400;font-size:19px;color:var(--y-cr)}
+html body button.cat.on{background:var(--y-cr)!important;transform:rotate(-1.5deg)}html body button.cat.on *{color:#000!important}
+html body button.cat:hover:not(.on){border-color:var(--y-cr)!important}
+/* 선택지 칸: 검정 판 + 크림 선, 누르면 반전 */
+html body .ch{clip-path:${NOTCH(14)};border-radius:0!important;background:var(--y-bk)!important;border:2px solid var(--y-cr2)!important;transition:background .1s,color .1s,transform .1s}
+html body .ch b{font-family:var(--y-k);font-weight:400;font-size:17px;letter-spacing:.01em;color:var(--y-cr)}
+html body .ch:hover:not([disabled]){background:var(--y-cr)!important;border-color:var(--y-cr)!important;transform:rotate(-.8deg)}
+html body .ch:hover:not([disabled]),html body .ch:hover:not([disabled]) *{color:#000!important}
+/* 버튼: 크림 채움 / 크림 외곽선 */
+html body .btn{border-radius:0!important;clip-path:none;font-family:var(--y-k)!important;font-weight:400!important;font-size:15.5px!important;letter-spacing:.03em;background:var(--y-cr)!important;color:#000!important;border:2px solid var(--y-cr)!important;box-shadow:3px 3px 0 var(--y-dm)}
+html body .btn:hover{transform:rotate(-1.5deg)}
+html body .btn.ghost{background:var(--y-bk)!important;color:var(--y-cr)!important;border-color:var(--y-cr2)!important;box-shadow:none}
+/* 팝업: 살짝 기운 크림 카드 */
+html body .pop-card{background:var(--y-bk)!important;border:4px solid var(--y-cr)!important;border-radius:0!important;box-shadow:8px 8px 0 rgba(244,238,154,.18)!important;transform:rotate(-1.2deg);clip-path:none}
+html body .pop-h{background:var(--y-cr)!important;border-bottom:0!important;transform:skewY(-1.5deg);margin:6px 8px 4px}
+html body .pop-h,html body .pop-h *{color:#000!important}
+html body .pop-h h2,html body .pop-h b,html body .pop-h h3{font-family:var(--y-k);font-weight:400;font-size:20px}
+html body .pop-x{border-radius:0!important;background:#000!important;color:var(--y-cr)!important;border:0!important}
+/* 타이틀 화면: 크림 쐐기 */
+html body .title{position:relative}
+html body .title::before{content:'';position:fixed;left:0;right:0;bottom:0;height:46vh;background:var(--y-cr);clip-path:polygon(0 22%,62% 52%,100% 30%,100% 100%,0 100%);opacity:.08;pointer-events:none;z-index:-1}
+html body .title h1{font-family:var(--y-k);font-weight:400;letter-spacing:.01em;line-height:1.15;color:var(--y-cr);transform:rotate(-1.5deg);transform-origin:left}
+html body .title>.lbl{font-family:var(--y-f);font-weight:600;color:var(--y-rd);letter-spacing:.12em}
+html body .title .card{background:var(--y-bk)!important;border:3px solid var(--y-cr)!important;clip-path:${NOTCH(24)}}
+html body .seg button{border-radius:0!important;border:2px solid var(--y-cr2)!important;background:var(--y-bk)!important}
+html body .seg button[aria-pressed="true"]{background:var(--y-cr)!important;transform:rotate(-1.2deg)}html body .seg button[aria-pressed="true"] *{color:#000!important}
+html body .title input{border-radius:0!important;border:2px solid var(--y-cr2)!important;background:#000!important;color:var(--y-cr)!important;font-family:var(--y-k);font-size:18px}
+
+/* ── 전투 무대 (회전 없음) ── */
+html body #panel:has(.lb)>h3{background:var(--y-rd)!important;color:#fff!important}
+html body #panel:has(.lb){clip-path:none}
+html body .lb .lb-stage{background:linear-gradient(90deg,transparent 0 calc(100% - 1px),rgba(244,238,154,.05) 0) 0 0/40px 40px,linear-gradient(0deg,transparent 0 calc(100% - 1px),rgba(244,238,154,.05) 0) 0 0/40px 40px,#090908!important;border:3px solid var(--y-cr)!important;border-radius:0!important;clip-path:${NOTCH2(22)}}
+html body .lb-nm{font-family:var(--y-k);font-weight:400;font-size:15px;color:var(--y-cr);letter-spacing:.02em}
+html body .lb-nm small{color:var(--y-or)}
+html body .lb-bar{border-radius:0!important;border:2px solid #000!important;background:#2b1210!important;height:12px;outline:1px solid var(--y-dm)}
+html body .lb-bar.hp>i{background:var(--y-rd)!important;border-radius:0!important}
+html body .lb-bar.sp{background:#0c1a17!important;height:8px}
+html body .lb-bar>em{font-family:var(--y-f);font-weight:700;font-style:normal;color:var(--y-cr);text-shadow:1px 1px 0 #000,-1px -1px 0 #000}
+html body .lb-slot{border-radius:0!important;background:#000!important;border:2px solid var(--y-cr2)!important}
+html body .lb-slot>b{font-family:var(--y-f);font-weight:700;font-size:20px;color:var(--y-cr)}
+html body .lb-slot>em{font-style:normal;color:var(--y-mu)}
+html body .lb-slot.clash{background:var(--y-cr)!important;border-color:var(--y-cr)!important;transform:rotate(-3deg)}html body .lb-slot.clash>*{color:#000!important}
+html body .lb-slot.atk{border-color:var(--y-rd)!important}html body .lb-slot.atk>em{color:var(--y-rd)}
+html body .lb-slot.def{border-color:var(--y-tl2)!important}
+html body .lb-int{border-radius:0!important;background:#000!important;border:2px solid var(--y-rd)!important;border-top:5px solid var(--sc,var(--y-rd))!important}
+html body .lb-int>b{font-family:var(--y-f);font-weight:700;font-size:20px;color:#ff9b91}
+html body .lb-tab{border-radius:0!important;background:#000!important;border:2px solid var(--y-cr2)!important}
+html body .lb-tab b,html body .lb-tab>:first-child{font-family:var(--y-k);font-weight:400;color:var(--y-cr)}
+html body .lb-tab.on{background:var(--y-cr)!important;border-color:var(--y-cr)!important}html body .lb-tab.on,html body .lb-tab.on *{color:#000!important}
+html body .ai96,html body details.cb77{border-radius:0!important;background:#000!important;border:2px solid var(--y-dm)!important}
+html body details.cb77>summary h4,html body .lb-gh{font-family:var(--y-k);font-weight:400;letter-spacing:.02em;color:var(--y-cr)}
+/* 스킬 카드: 크림 머리 + 검정 몸, 한쪽 꺾임 */
+html body .lb-card{clip-path:${NOTCH(16)};border-radius:0!important;background:#000!important;border:3px solid var(--y-cr2)!important;padding:0 0 26px!important;gap:0!important;transition:transform .12s}
+html body .lb-card .who{display:block;font-family:var(--y-k);font-size:13px!important;letter-spacing:.02em;color:#000!important;background:var(--y-cr);padding:5px 8px 3px;border-bottom:4px solid var(--sc,var(--y-cr2))}
+html body .lb-card>b{display:block;font-family:var(--y-k);font-weight:400;font-size:17px!important;color:var(--y-cr);padding:8px 9px 2px}
+html body .lb-card>small{display:block;padding:1px 9px;color:#c4bf8f!important}
+html body .lb-card:hover{transform:translateY(-5px) rotate(-1deg)}
+html body .lb-card.on{border-color:var(--y-cr)!important}
+html body .lb-card.sel{transform:translateY(-10px) rotate(-1.5deg)!important;border-color:var(--y-or)!important}
+html body .lb-card.def .who{background:#9fe3d3}html body .lb-card.ego .who{background:var(--y-or)}html body .lb-card.lock{opacity:.5}
+html body .lb-foot .btn:last-child{background:var(--y-rd)!important;border-color:var(--y-rd)!important;color:#fff!important;font-size:18px!important;padding-left:26px;padding-right:26px}
+
+/* ── 합 연출: 기운 크림 판 ── */
+html body .rp{background:rgba(0,0,0,.88)!important}
+html body .rp .rp-card{width:min(640px,100%)!important;transform:rotate(-1.4deg);background:#000!important;border:4px solid var(--y-cr)!important;border-radius:0!important;box-shadow:10px 10px 0 rgba(244,238,154,.14)!important;padding:0 14px 18px!important;clip-path:none;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;grid-template-areas:"top top top" "a vs e";align-items:center;column-gap:8px!important}
+html body .rp-top{grid-area:top;background:var(--y-cr);margin:0 -14px 6px;padding:6px 10px}
+html body .rp-top .lbl{font-family:var(--y-f);font-weight:700;color:#000!important;font-size:16px;letter-spacing:.06em}
+html body .rp-top .btn{background:#000!important;color:var(--y-cr)!important;border-color:#000!important;box-shadow:none}
+html body .rp-side{background:none!important;border:0!important;padding:4px 0!important;display:grid!important;grid-template-columns:1fr!important;grid-template-areas:"pow" "coins" "who" "eq"!important;justify-items:center;text-align:center;gap:8px!important}
+html body .rp-side.a{grid-area:a}html body .rp-side.e{grid-area:e}
+html body .rp-who{justify-items:center}
+html body .rp-who b{font-family:var(--y-k);font-weight:400;font-size:18px!important;color:var(--y-cr)}
+html body .rp-who span{display:inline-flex;align-items:center;gap:6px;background:var(--y-tl);color:#fff!important;font-family:var(--y-k);font-size:14px!important;padding:3px 12px;margin:3px 0;transform:rotate(-2deg)}
+html body .rp-side.e .rp-who span{background:var(--y-rd)}
+html body .rp-who small{color:var(--y-mu)!important;font-size:12px!important}
+/* 위력: 기운 크림 숫자판 */
+html body .rp-pow{width:92px;height:70px;min-width:0!important;display:grid;place-items:center;text-align:center!important;font-family:var(--y-f)!important;font-weight:700!important;font-size:44px!important;color:var(--y-cr)!important;background:#000;border:3px solid var(--y-cr);transform:rotate(-3deg);transition:transform .15s,background .15s}
+html body .rp-side.e .rp-pow{border-color:var(--y-rd);color:#ff9b91!important;transform:rotate(3deg)}
+html body .rp-pow.bump{animation:y6pop .2s ease-out}@keyframes y6pop{0%{scale:1.15}100%{scale:1}}
+html body .rp-side.win .rp-pow{background:var(--y-cr);color:#000!important;scale:1.08}
+html body .rp-side.e.win .rp-pow{background:var(--y-rd);color:#fff!important}
+html body .rp-side.lose{opacity:.4!important;filter:grayscale(.8)}
+/* 코인: 칠각형 */
+html body .rp-coins{justify-content:center;gap:5px!important}
+html body .rp .coin,html body .coin{border-radius:0!important;clip-path:${HEPT}}
+html body .rp .coin{width:28px!important;height:28px!important;border:0!important;background:#3b3a24!important;color:var(--y-mu)!important;font-family:var(--y-f);font-weight:700;font-size:12px;padding-top:2px}
+html body .rp .coin.spin{background:#6a6638!important}
+html body .rp .coin.h{background:var(--y-cr)!important;color:#000!important}
+html body .rp .coin.t{background:#22211a!important;color:#6d6a4f!important}
+html body .rp .coin.broken{background:var(--y-rd)!important}
+html body .rp .coin.gone{height:28px!important;opacity:.12}
+html body .lb-det .coins span{border-radius:0!important;clip-path:${HEPT};border:0!important;background:#3b3a24;color:var(--y-cr)!important;min-width:22px;text-align:center;padding:2px 4px 0}
+html body .rp-eq{font-family:var(--y-f);font-weight:500;color:#aaa57a!important;font-size:12px!important;letter-spacing:.02em}
+/* 가운데: 「N합」 크림 띠 */
+html body .rp-vs{grid-area:vs;flex-direction:column;gap:4px!important;min-width:76px;max-width:124px}
+html body .rp-vs span{font-family:var(--y-f)!important;font-weight:700!important;color:var(--y-mu)!important;font-size:15px!important;letter-spacing:.18em}
+html body .rp-msg{font-family:var(--y-k);font-weight:400!important;font-size:28px!important;line-height:1.1;color:#000;background:var(--y-cr);padding:3px 14px 2px;transform:rotate(-4deg);word-break:keep-all}
+html body .rp-msg:empty{display:none}
+html body .rp-msg.tie,html body .rp-msg.crack,html body .rp-msg.good,html body .rp-msg.bad{font-size:14.5px!important;transform:rotate(-2deg)}
+html body .rp-msg.tie{background:var(--y-or)}html body .rp-msg.crack{background:var(--y-rd);color:#fff!important}html body .rp-msg.good{background:var(--y-tl2)}html body .rp-msg.bad{background:var(--y-rd);color:#fff!important}
+html body .rp-card.shake{animation:y6shk .3s!important}@keyframes y6shk{25%{translate:-6px 0}50%{translate:6px 0}75%{translate:-3px 0}}
+@media (max-width:480px){html body .rp .rp-card{padding:0 8px 14px!important;column-gap:4px!important}html body .rp-top{margin:0 -8px 6px}html body .rp-pow{width:72px;height:56px;font-size:34px!important}html body .rp-msg{font-size:22px!important}html body .rp-vs{min-width:58px;max-width:96px}html body .rp-who small{display:none}html body .rp .coin{width:22px!important;height:22px!important;font-size:10px}
+ html body #panel>h3{font-size:18px!important}}
+@media (prefers-reduced-motion:reduce){html body *{transition:none!important}html body .rp .rp-card,html body .pop-card{transform:none}}
+`;
+try{const s=document.createElement('style');s.id='css126';s.textContent=css;document.head.appendChild(s)}catch(e){}
 })();
 </script>
 
