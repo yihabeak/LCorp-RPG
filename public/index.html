@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.29.6.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.30.1.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -12901,8 +12901,85 @@ function blobInner(seed,g,hidden){const h=H(seed),C='#f4ee9a',K='#0b0b0b';g=g|0;
   `<path d="M40 ${mt}q10 7 20 0" fill="none" stroke="${K}" stroke-width="2.8"/>`,''][mT];
  const pips=Array.from({length:g+1},(_,i)=>`<rect x="${50-(g+1)*3+i*6}" y="${bot-10}" width="3.4" height="3.4" fill="${K}" opacity=".55"/>`).join('');
  return `${EARS}${body}${EYES}${MOUTH}${pips}`}
-function creature(seed,dc,g,hidden){return `<svg viewBox="0 -12 100 122" width="100%" height="100%" aria-hidden="true">${blobInner(seed,g,hidden)}</svg>`}
-window.blob128=blobInner;
+
+/* ---------- 식별 코드 기반 실루엣 ----------
+   코드 「근원-유형-번호」: 유형(01 인간형 · 02 동물형 · 03 이계형 · 04 사물형 · 05 변화형 · 06 무형 · 07 합성형 · 09 도구형)이 큰 틀,
+   근원(F 동화 · T 트라우마 · O 기원불명 · D 후원 · M 신화)이 장식, 등급이 크기, 피해 유형이 몸의 무늬,
+   가장 선호하는 작업이 눈, 카운터가 입을 정한다. 원작 외형은 따르지 않는다. */
+function codeOf(a){const m=/^([A-Z])-0?(\d+)/.exec(a&&a.code||'');return m?{o:m[1],t:+m[2]}:null}
+function angGen(seed,g,hidden){const C='#f4ee9a',K='#0b0b0b',h=H(seed);g=g|0;const v=h%3,j=k=>(((h>>>k)&7)-3.5);
+ const P=(pts,f=C,x='')=>`<polygon points="${pts}" fill="${f}" ${x}/>`;
+ const body=[P(`50,${8+j(2)} ${64+j(3)},30 ${70},${70+j(4)} ${62},106 ${38},106 ${30},${70+j(5)} ${36+j(6)},30`),
+  P(`40,10 60,6 72,40 66,106 34,106 28,40`)+P(`28,44 12,${60+j(3)} 16,64 30,54`)+P(`72,44 88,${60+j(4)} 84,64 70,54`),
+  P(`50,4 58,24 76,30 64,46 70,106 30,106 36,46 24,30 42,24`)][v];
+ const sl=Array.from({length:2+(h%2)},(_,i)=>P(`${44+i*6},${60+i*4} ${46+i*6},${52+i*4} ${47.6+i*6},${60+i*4}`,K)).join('');
+ const q=hidden?`<text x="50" y="66" text-anchor="middle" font-family="Black Han Sans,sans-serif" font-size="22" fill="${K}">?</text>`:'';
+ const pips=Array.from({length:g+1},(_,i)=>`<rect x="${50-(g+1)*3+i*6}" y="110" width="3.4" height="3.4" fill="${C}" opacity=".7"/>`).join('');
+ const sc=.84+g*.045;return `<g transform="translate(50 106) scale(${sc.toFixed(3)}) translate(-50 -106)">${body}${hidden?'':sl}${q}</g>${pips}`}
+function abnInner(id,g,hidden){const a=(typeof ABM!=='undefined')&&ABM[id];if(!a)return angGen(id,g,hidden);
+ // 표정 없음 · 각진 다각형 · 길쭉하고 비틀린 비례 (공포감)
+ const C='#f4ee9a',K='#0b0b0b',h=H(id);g=a.g|0;
+ if(id==='bald')return `<circle cx="50" cy="62" r="34" fill="${C}"/>`;
+ const cd=codeOf(a)||{o:'O',t:0},v=h%3,j=k=>(((h>>>k)&7)-3.5)*.8;
+ const P=(pts,f=C,x='')=>`<polygon points="${pts}" fill="${f}" ${x}/>`;
+ // 선호 작업 → 머리 위 돌기
+ let pk='ins';try{const pr=a.pref||{};pk=Object.keys(pr).sort((x,y)=>(pr[y]||0)-(pr[x]||0))[0]||'ins'}catch(e){}
+ const crown=(x,y,k=1)=>pk==='ins'?P(`${x-8*k},${y} ${x-6*k},${y-11*k} ${x-3*k},${y} ${x},${y-15*k} ${x+3*k},${y} ${x+6*k},${y-11*k} ${x+8*k},${y}`)
+  :pk==='insi'?P(`${x-2*k},${y} ${x},${y-24*k} ${x+2*k},${y}`)
+  :pk==='att'?P(`${x-6*k},${y} ${x-12*k},${y+10*k} ${x-10*k},${y+22*k} ${x-4*k},${y+4*k}`)+P(`${x+6*k},${y} ${x+12*k},${y+10*k} ${x+10*k},${y+22*k} ${x+4*k},${y+4*k}`)
+  :P(`${x-10*k},${y-1} ${x+10*k},${y-1} ${x+8*k},${y-6*k} ${x-8*k},${y-6*k}`);
+ // 카운터 → 몸의 검은 틈 (낮을수록 많다)
+ const c=a.cnt|0,ns=hidden?0:c<=1?3:c<=3?2:1;
+ const slits=(x,y,k=1)=>Array.from({length:ns},(_,i)=>P(`${x-6*k+i*5*k},${y+i*3*k} ${x-4*k+i*5*k},${y-7*k+i*3*k} ${x-2.6*k+i*5*k},${y+i*3*k}`,K)).join('');
+ // 피해 유형 → 무늬
+ const pat=(x,y,k=1)=>{const d=a.dt;if(hidden)return '';
+  if(d==='RED')return P(`${x-9*k},${y-5*k} ${x-7*k},${y-6*k} ${x-1*k},${y+5*k} ${x-3*k},${y+6*k}`,K,'opacity=".5"')+P(`${x+1*k},${y-5*k} ${x+3*k},${y-6*k} ${x+9*k},${y+5*k} ${x+7*k},${y+6*k}`,K,'opacity=".5"');
+  if(d==='WHITE')return [-7,0,7].map(dx=>P(`${x+dx*k},${y-2*k} ${x+(dx+2)*k},${y} ${x+dx*k},${y+2*k} ${x+(dx-2)*k},${y}`,K,'opacity=".5"')).join('');
+  if(d==='BLACK')return `<polyline points="${x-9*k},${y-4*k} ${x},${y+4*k} ${x+9*k},${y-4*k}" fill="none" stroke="${K}" stroke-width="${2.4*k}" opacity=".5"/>`;
+  if(d==='PALE')return `<polygon points="${x},${y-7*k} ${x+7*k},${y} ${x},${y+7*k} ${x-7*k},${y}" fill="none" stroke="${K}" stroke-width="${1.8*k}" opacity=".5"/>`;return ''};
+ const q=hidden?`<text x="50" y="66" text-anchor="middle" font-family="Black Han Sans,sans-serif" font-size="22" fill="${K}">?</text>`:'';
+ let B='';
+ switch(cd.t){
+  case 1:{const hx=50+j(3);B=crown(hx,14)+P(`${hx-7},16 ${hx+7},16 ${hx+8},27 ${hx+3},34 ${hx-3},34 ${hx-8},27`)
+   +P(`${hx-2},33 ${hx+2},33 ${hx+3},40 ${hx-3},40`)
+   +P(`38,40 62,40 66,48 60,${78+v*2} 54,82 46,82 40,${78+v*2} 34,48`)
+   +P(`35,44 30,48 22,${86+v*3} 18,${100+v*2} 22,${101+v*2} 27,${88+v*3} 37,56`)+P(`65,44 70,48 79,${84+v*3} 83,${98+v*2} 79,${99+v*2} 73,${86+v*3} 63,56`)
+   +P(`44,80 49,81 46,106 41,106`)+P(`51,81 56,80 59,106 54,106`)
+   +slits(50,62)+pat(50,72);break}
+  case 2:B=P(`22,${52+v} 30,46 40,48 56,44 72,46 84,52 86,62 80,70 64,72 46,72 32,70 24,64`)
+   +P(`28,50 18,40 10,42 6,48 16,52 26,58`)+crown(14,40,.6)
+   +P(`32,68 36,68 34,106 30,106`)+P(`44,70 48,70 47,106 43,106`)+P(`62,70 66,70 68,106 64,106`)+P(`76,68 80,66 84,106 80,106`)
+   +P(`84,54 96,${40+v*4} 98,${44+v*4} 88,60`)
+   +Array.from({length:5},(_,i)=>P(`${36+i*9},46 ${39+i*9},${36-((h>>>i)&3)*2} ${42+i*9},46`)).join('')
+   +slits(56,58)+pat(50,62);break;
+  case 3:B=`<polygon points="34,6 40,2 50,1 60,2 66,6 62,8 56,5 50,4.6 44,5 38,8" fill="${C}"/>`
+   +P(`50,12 64,38 60,76 50,96 40,76 36,38`)
+   +P(`38,32 10,${22+v*4} 4,30 26,42`)+P(`37,46 6,${50+v*3} 12,58 34,56`)+P(`62,32 90,${22+v*4} 96,30 74,42`)+P(`63,46 94,${50+v*3} 88,58 66,56`)
+   +crown(50,12,.8)+P(`42,104 58,104 54,107 46,107`,C,'opacity=".3"')
+   +slits(50,50)+pat(50,70);break;
+  case 4:B=P(`28,106 72,106 66,96 34,96`)+P(`38,96 62,96 60,90 40,90`)
+   +[P(`34,90 34,30 44,22 66,22 66,90`),P(`40,90 30,70 34,48 42,40 42,30 58,30 58,40 66,48 70,70 60,90`),P(`50,30 74,56 64,86 36,86 26,56`)][v]
+   +`<polyline points="${46+j(5)},34 ${52+j(6)},46 ${46+j(7)},56 ${54},66" fill="none" stroke="${K}" stroke-width="2"/>`+crown(50,v===0?22:30,.8)+slits(50,72)+pat(50,80,.8);break;
+  case 5:B=P(`24,106 26,52 34,30 48,24 48,${44+v*4} 44,${58+v*2} 48,${72+v*2} 46,106`)+`<g transform="translate(${3+v} ${-6-v*2})">${P(`54,106 52,${70+v*2} 56,${56+v*2} 52,${42+v*4} 54,26 68,32 76,52 76,106`)}</g>`
+   +crown(36,30,.7)+slits(36,70)+pat(64,70);break;
+  case 6:B=`<polygon points="50,8 76,22 82,56 74,96 66,88 60,104 52,90 44,106 38,88 28,98 20,56 26,22" fill="${C}" fill-opacity=".14" stroke="${C}" stroke-width="2.6" stroke-dasharray="7 5" stroke-linejoin="miter"/>`
+   +Array.from({length:4},(_,i)=>`<polyline points="${34+i*10},${80+((h>>>i)&3)*3} ${33+i*10},${98+((h>>>(i+3))&3)*3}" stroke="${C}" stroke-width="1.6" opacity=".6"/>`).join('')
+   +crown(50,8,.8);break;
+  case 7:B=P(`20,104 22,52 40,48 40,40 48,34 54,40 54,48 80,52 82,104`)+P(`46,40 54,8 74,14 70,32 58,44`,C,'opacity=".85"')+slits(50,74)+pat(50,90,.8);break;
+  case 9:B=P(`24,106 76,106 68,94 32,94`)+P(`47,94 53,94 52,66 48,66`)
+   +[P(`34,66 34,36 40,30 66,30 66,66`),P(`50,30 66,44 62,62 38,62 34,44`),P(`50,22 70,64 30,64`)][v]+crown(50,v===2?22:30,.7)+slits(50,52,.8)+pat(50,100,.6);break;
+  default: return angGen(id,g,hidden)}
+ const O={F:P('12,10 14,16 20,18 14,20 12,26 10,20 4,18 10,16')+P('88,30 89.6,34 94,35.4 89.6,37 88,41 86.4,37 82,35.4 86.4,34'),
+  T:`<polyline points="60,30 54,40 60,46 52,58 56,64" stroke="${K}" stroke-width="2.4" fill="none"/>`,
+  O:`<polyline points="10,110 16,106 22,110 28,106 34,110" stroke="${C}" stroke-width="1.8" fill="none" opacity=".6"/><polyline points="66,110 72,106 78,110 84,106 90,110" stroke="${C}" stroke-width="1.8" fill="none" opacity=".6"/>`,
+  D:P('86,4 88.6,11 96,11 90,15.4 92.4,22.4 86,18 79.6,22.4 82,15.4 76,11 83.4,11'),
+  M:`<polygon points="31,10 69,10 96,37 96,79 69,106 31,106 4,79 4,37" fill="none" stroke="${C}" stroke-width="1.4" stroke-dasharray="3 6" opacity=".7"/>`}[cd.o]||'';
+ const pips=Array.from({length:g+1},(_,i)=>`<rect x="${50-(g+1)*3+i*6}" y="110" width="3.4" height="3.4" fill="${C}" opacity=".7"/>`).join('');
+ const sc=.84+g*.045;
+ return `<g transform="translate(50 106) scale(${sc.toFixed(3)}) translate(-50 -106)">${cd.o==='M'?O:''}${B}${q}</g>${cd.o!=='M'?O:''}${pips}`}
+function creature(seed,dc,g,hidden){return `<svg viewBox="0 -12 100 128" width="100%" height="100%" aria-hidden="true">${abnInner(seed,g,hidden)}</svg>`}
+window.blob128=abnInner;
+
 window.creature127=creature;
 lbEnemyFig=(f=>function(u){try{
  const agById=id=>(G.agents||[]).find(a=>a.id===id);
