@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.32.1.261020';window.GAME_VER=V;
+(function(){const V='Ver. 3.33.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13654,6 +13654,191 @@ bkPrompt=(f=>function(){const lock=typeof BKLOCK!=='undefined'&&BKLOCK;const r=f
   if(first){const L=[...document.querySelectorAll('.pop.bkpop .ch')];L.slice(0,-1).forEach(b=>{const s=b.querySelector('small');if(s)s.textContent=T('처음 겪는 상황 · 결과는 해 봐야 알아요','A first encounter · you will only know by trying','初めての状況・結果はやってみないと分かりません')})}}}catch(e){}
  return r})(bkPrompt);
 })();
+/* ============ v136: 아인·소프·오르 — 거울 세계의 비동기 PvP · 친선전(베타) ============
+   거울 세계의 당신과 마주하여 가능성을 구원하라.
+   · 덱 = 나(관리직) + 직원 최대 2명. 각자 E.G.O 무기·슈트를 고른다 (보유 수량 · 등급 제한 안에서).
+   · 수비 덱은 서버에 올려 두고, 다른 관리직이 공격 덱으로 도전한다. 상대 쪽은 AI가 싸운다.
+   · 친선전(베타): 방 코드로 둘이 모여, 서로의 수비 덱에 동시에 도전한 뒤 결과를 비교한다.
+   · 거울 세계의 일: 아무도 죽지 않고, 체력·정신력·시간·장비는 전투 뒤 그대로 돌아온다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const TRN=n=>(typeof tr80==='function'?tr80(n):n);
+const NAME=()=>T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル');
+const DESC=()=>T('거울 세계의 당신과 마주하여 가능성을 구원하라','Face yourself in the Mirror World and redeem possibility','鏡の世界のあなたと向き合い、可能性を救済せよ');
+const online=()=>typeof api74==='function';
+const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
+const api=(path,opt)=>api74('/mirror'+path,opt);
+const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),nodb:T('서버 저장소가 연결되지 않았어요.','The server storage is not connected.','サーバー保存先が接続されていません。'),daily:T('오늘 도전 횟수를 다 썼어요.','No challenges left today.','今日の挑戦回数を使い切りました。'),noroom:T('그 방을 찾을 수 없어요.','Room not found.','その部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員の部屋です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),slow:T('잠시 뒤 다시 시도해 주세요.','Please try again shortly.','少し後でもう一度お試しください。'),gone:T('상대의 수비 덱이 사라졌어요.','That defense deck is gone.','相手の守備デッキが消えました。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),noapi:T('사이트에서만 쓸 수 있어요.','Only available on the site.','サイトでのみ利用できます。')};
+const errMsg=e=>ERR[e&&e.code]||T('문제가 생겼어요: ','Something went wrong: ','問題が発生しました：')+((e&&e.code)||'?');
+
+/* ---------- 덱 ---------- */
+const ags=()=>G.agents.filter(a=>a.alive&&!a.out&&!a.panic);
+const agById=id=>G.agents.find(a=>a.id===id);
+function rkOf(id){return id==='player'?rank():(agById(id)?agRank(agById(id)):1)}
+function defW(id){return id==='player'?G.weapon:agWeap(agById(id))}
+function defS(id){return id==='player'?G.suit:agSuit(agById(id))}
+function decks(){G.mir136=G.mir136||{};['atk','def'].forEach(k=>{let d=G.mir136[k];if(!Array.isArray(d)||!d.length||d[0].id!=='player')d=[{id:'player',w:G.weapon,s:G.suit}];
+  G.mir136[k]=d.filter((m,i)=>i===0||(agById(m.id)&&agById(m.id).alive)).slice(0,3)});return G.mir136}
+const wOK=(id,rk)=>{try{return weapOf(id).g<=Math.max(0,rk-1)}catch(e){return false}};
+const sOK=(id,rk)=>{try{return suitOf(id).g<=Math.max(0,rk-1)}catch(e){return false}};
+function ownList(kind){const L=(kind==='w'?G.ownW:G.ownS).slice();const base=kind==='w'?'baton':'basic';if(!L.includes(base))L.unshift(base);return L}
+function countOK(d){const use={};for(const m of d){if(m.w!=='baton')use['w:'+m.w]=(use['w:'+m.w]||0)+1;if(m.s!=='basic')use['s:'+m.s]=(use['s:'+m.s]||0)+1}
+ for(const k in use){if(use[k]>Math.max(1,(G.inv&&G.inv[k])||0))return k}return null}
+function fix(d){d.forEach(m=>{const rk=rkOf(m.id);if(!ownList('w').includes(m.w)||!wOK(m.w,rk))m.w=wOK(defW(m.id),rk)?defW(m.id):'baton';if(!ownList('s').includes(m.s)||!sOK(m.s,rk))m.s=sOK(defS(m.id),rk)?defS(m.id):'basic'});return d}
+function snap(d){return fix(d).map(m=>{if(m.id==='player')return {pl:1,n:G.name,rk:rank(),hp:maxHp(),st:{F:stE('F'),P:stE('P'),T:stE('T'),J:stE('J')},w:m.w,s:m.s};
+ const a=agById(m.id);return {pl:0,n:a.n,rk:agRank(a),hp:agMax(a),st:Object.assign({},a.st),w:m.w,s:m.s}})}
+const wN=id=>{try{return TRN(weapOf(id).n)}catch(e){return id}},sN=id=>{try{return TRN(suitOf(id).n)}catch(e){return id}};
+const gr=g=>typeof GR!=='undefined'&&GR[g]?GR[g]:'';
+
+/* ---------- 적: 상대 덱 ---------- */
+ENEMY.mir136=o=>(o.foes||[]).map((m,i)=>{const rk=Math.max(1,Math.min(5,m.rk||1));let k,su;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
+ const sb=Math.floor(((m.st||{}).J||0)/30);const hp=Math.round((m.hp||80)*[1.3,1.6,2,2.4,2.8][rk-1]);
+ const u=U({n:`${T('거울','Mirror','鏡')} · ${esc(NL(m.n))}`,boss:1,human:true,sp:0,g:rk-1,hp,stg:[.5],spd:[2+sb+(rk>=4?1:0),5+sb+(rk>=4?1:0)],acts:[1,1,2,2,3][rk-1],
+  cres:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),skills:k.skills.map(s=>S(s.n,s.base+rk,s.cp+(rk>=4?1:0),s.coins,s.t,k.dc,s.sin,s.on))});
+ u.lcPass=[[NAME(),T('거울 세계의 전투. 쓰러져도 죽지 않는다.','A battle in the Mirror World. No one dies here.','鏡の世界の戦い。倒れても死なない。')]];
+ u.mir136={n:m.n,w:m.w,s:m.s,i};return u});
+/* 적 그림: 그 관리직의 장비를 그대로 입힌다 */
+agWeap=(f=>function(a){if(a&&a._mir136)return a._mw;return f.apply(this,arguments)})(agWeap);
+agSuit=(f=>function(a){if(a&&a._mir136)return a._ms;return f.apply(this,arguments)})(agSuit);
+lbEnemyFig=(f=>function(u){if(!u||!u.mir136)return f.apply(this,arguments);const fake={id:'mir136_'+u.uid,n:u.mir136.n,dept:'',sp:u.sp||0,alive:true,st:{F:0,P:0,T:0,J:0},_mir136:1,_mw:u.mir136.w,_ms:u.mir136.s};
+ const keep=u.spar124;G.agents.push(fake);u.spar124=fake.id;try{return f.apply(this,arguments)}finally{u.spar124=keep;const i=G.agents.indexOf(fake);if(i>=0)G.agents.splice(i,1)}})(lbEnemyFig);
+
+/* ---------- 내 쪽: 공격 덱의 장비로, 가득 찬 상태로 ---------- */
+let MIRD=null;
+mkPlayer=(f=>function(){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id==='player');if(m){a.w=m.w;a.suit=m.s}a.hp=a.max}return a})(mkPlayer);
+mkAgentAlly=(f=>function(ag){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id===ag.id);if(m){a.w=m.w;a.suit=m.s}a.hp=a.max;a.sp=0}return a})(mkAgentAlly);
+let REST=null;
+function fight(foes,meta){if(B&&!B.done)return toast(T('전투 중에는 할 수 없어요.','Not during a battle.','戦闘中はできません。'));
+ const d=fix(decks().atk.slice());const mates=d.slice(1).map(m=>agById(m.id)).filter(a=>a&&a.alive&&!a.panic);
+ REST={hp:G.hp,sp:G.sp,phase:G.phase,ags:mates.map(a=>[a,a.hp,a.sp,a.st?Object.assign({},a.st):null])};
+ G.hp=maxHp();G.sp=0;mates.forEach(a=>{a.sp=0});closePop();MIRD=d;
+ try{startBattle('mir136',{grade:Math.max(0,Math.max(...foes.map(m=>m.rk||1))-1),title:`${NAME()} · ${esc(NL(meta.n||'?'))}`,foes,mates,mir:meta,after:()=>{}})}finally{MIRD=null}}
+startBattle=(f=>function(kind,opt){if(kind==='mir136')MIRD=MIRD||fix(decks().atk.slice());const r=f.apply(this,arguments);
+ try{if(B&&kind==='mir136'){B.mir136=opt.mir||{};B.allies=B.allies.filter(a=>a.key!=='queen');if(B.opt)B.opt.queenJoined=false;renderBattle()}}catch(e){}return r})(startBattle);
+allyDown=(f=>function(a){if(!(B&&B.mir136))return f.apply(this,arguments);a.dead=true;a.hp=0;if(a.key==='player'){G.hp=1;return}
+ blog(T(`${NL(a.n)}의 모습이 거울 조각처럼 흩어졌다.`,`${NL(a.n)} scatters like shards of a mirror.`,`${NL(a.n)}の姿が鏡の破片のように散った。`),'bh')})(allyDown);
+onKill=(f=>function(u){if(B&&B.mir136&&u&&u.mir136){if(u.killed)return;u.killed=true;blog(T(`${NL(u.mir136.n)}의 거울상이 금 가며 무너졌다.`,`${NL(u.mir136.n)}'s reflection cracks and falls.`,`${NL(u.mir136.n)}の鏡像がひび割れて崩れた。`),'b');return}return f.apply(this,arguments)})(onKill);
+function end(win,forfeit){const meta=B.mir136,turns=B.turn;B.done=true;
+ const al=B.allies;const hp=Math.round(100*al.reduce((s,a)=>s+Math.max(0,a.dead?0:a.hp),0)/Math.max(1,al.reduce((s,a)=>s+a.max,0)));
+ B=null;try{LBSEL=null}catch(e){}
+ if(REST){G.hp=REST.hp;G.sp=REST.sp;REST.ags.forEach(([a,h,s,st])=>{a.hp=h;a.sp=s;if(st)a.st=st});G.phase=REST.phase||'work';REST=null}
+ try{save()}catch(e){}render();try{workMenu()}catch(e){}
+ const sc={win:win?1:0,hp:win?hp:0,t:turns};
+ if(meta.mode==='rank')report(meta,win,forfeit);else if(meta.mode==='room')roomScore(meta.code,sc);}
+battleWin=(f=>function(){if(B&&B.mir136&&!B.done)return end(true);return f.apply(this,arguments)})(battleWin);
+battleLose=(f=>function(){if(B&&B.mir136&&!B.done)return end(false);return f.apply(this,arguments)})(battleLose);
+canFlee=(f=>function(){if(B&&!B.done&&B.mir136)return true;return f.apply(this,arguments)})(canFlee);
+battleFlee=(f=>function(){if(B&&B.mir136&&!B.done)return end(false,true);return f.apply(this,arguments)})(battleFlee);
+/* 저장 중에 창을 닫았어도 다음에 불러오면 원래대로 */
+render=(f=>function(){try{if(G&&REST&&!(B&&!B.done&&B.kind==='mir136')){G.hp=REST.hp;G.sp=REST.sp;REST.ags.forEach(([a,h,s,st])=>{a.hp=h;a.sp=s;if(st)a.st=st});REST=null}}catch(e){}return f.apply(this,arguments)})(render);
+
+/* ---------- 결과 보고 ---------- */
+async function report(meta,win,forfeit){let msg='';
+ try{const r=await api('',{method:'POST',body:{op:'fight',k:meta.k,win}});msg=T(`점수 ${r.gain>0?'+':''}${r.gain} → ${r.pts} · 오늘 남은 도전 ${r.left}`,`Points ${r.gain>0?'+':''}${r.gain} → ${r.pts} · challenges left today ${r.left}`,`ポイント ${r.gain>0?'+':''}${r.gain} → ${r.pts}・本日の残り挑戦 ${r.left}`)+(r.gain===0?T(' (같은 상대는 하루 한 번만 점수에 반영돼요)',' (the same opponent counts once a day)',' (同じ相手は一日一回だけ反映されます)'):'')}catch(e){msg=errMsg(e)}
+ log(win?T(`${NAME()} · ${NL(meta.n)}의 거울상을 넘어섰다.`,`${NAME()} · You overcame ${NL(meta.n)}'s reflection.`,`${NAME()}・${NL(meta.n)}の鏡像を越えた。`):T(`${NAME()} · ${NL(meta.n)}의 거울상에 가로막혔다.`,`${NAME()} · ${NL(meta.n)}'s reflection held you back.`,`${NAME()}・${NL(meta.n)}の鏡像に阻まれた。`),win?'good':'warn');
+ popup(NAME(),`<div class="m136"><p class="m136-v ${win?'w':'l'}">${win?T('승리','Victory','勝利'):forfeit?T('기권','Forfeit','棄権'):T('패배','Defeat','敗北')}</p><p class="note">${msg}</p><div class="row"><button class="btn" type="button" id="m136again">${T('다른 상대 찾기','Find another opponent','別の相手を探す')}</button></div></div>`,b=>{b.querySelector('#m136again').onclick=()=>open('find')})}
+
+/* ---------- 화면 ---------- */
+let TAB='deck',ROOM=null,POLL=0;
+function head(){return `<p class="note">${DESC()}</p><div class="m136-tabs">${[['deck',T('덱 편성','Decks','デッキ編成')],['find',T('도전','Challenge','挑戦')],['rank',T('순위','Ranking','ランキング')],['room',T('친선전 (베타)','Friendly (Beta)','親善戦(ベータ)')]].map(([k,l])=>`<button type="button" class="btn small ${TAB===k?'':'ghost'}" data-m136t="${k}">${l}</button>`).join('')}</div>`}
+function memLine(m){return `<b>${esc(NL(m.n))}</b> <small>${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,m.rk)-1]} · HP ${m.hp} · ${esc(wN(m.w))} / ${esc(sN(m.s))}</small>`}
+function deckEd(kind){const d=decks()[kind];const used=d.map(m=>m.id);
+ const row=(m,i)=>{const rk=rkOf(m.id);const who=i===0?`<b>${T('나','Me','私')} · ${esc(NL(G.name))}</b>`:`<select data-m136a="${kind}:${i}">${ags().filter(a=>a.id===m.id||!used.includes(a.id)).map(a=>`<option value="${a.id}" ${a.id===m.id?'selected':''}>${esc(NL(a.n))} (${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,agRank(a))-1]})</option>`).join('')}</select>`;
+  const ws=ownList('w').filter(id=>wOK(id,rk)),ss=ownList('s').filter(id=>sOK(id,rk));
+  return `<div class="m136-row">${who}<select data-m136w="${kind}:${i}">${ws.map(id=>`<option value="${id}" ${id===m.w?'selected':''}>${esc(wN(id))} ${gr(weapOf(id).g)}</option>`).join('')}</select><select data-m136s="${kind}:${i}">${ss.map(id=>`<option value="${id}" ${id===m.s?'selected':''}>${esc(sN(id))} ${gr(suitOf(id).g)}</option>`).join('')}</select>${i>0?`<button type="button" class="btn ghost small" data-m136x="${kind}:${i}">${T('빼기','Remove','外す')}</button>`:''}</div>`};
+ fix(d);const free=ags().filter(a=>!used.includes(a.id));
+ return `<div class="m136-deck"><h4>${kind==='atk'?T('공격 덱','Attack deck','攻撃デッキ'):T('수비 덱','Defense deck','守備デッキ')}</h4><p class="note">${kind==='atk'?T('내가 다른 관리직의 수비 덱에 도전할 때 쓰는 팀이에요.','The team you use to challenge other managers\' defense decks.','他の管理職の守備デッキに挑むときのチームです。'):T('다른 관리직이 도전해 오는 팀이에요. 저장하면 서버에 올라가요.','The team others challenge. Saving uploads it to the server.','他の管理職が挑んでくるチームです。保存するとサーバーに登録されます。')}</p>${d.map(row).join('')}
+  ${d.length<3&&free.length?`<button type="button" class="btn ghost small" data-m136add="${kind}">+ ${T('직원 추가','Add staff','職員を追加')}</button>`:''}</div>`}
+async function body(){if(TAB==='deck'){const u=user();return `${deckEd('atk')}${deckEd('def')}<div class="row"><button type="button" class="btn" id="m136save">${T('덱 저장 · 수비 덱 등록','Save decks · register defense','デッキ保存・守備デッキ登録')}</button></div>${u?'':`<p class="note">${ERR.auth}</p>`}`}
+ if(!online())return `<p class="note">${ERR.noapi}</p>`;if(!user())return `<p class="note">${ERR.auth}</p>`;
+ if(TAB==='find'){let me=null,L=[];try{me=await api('?op=me')}catch(e){return `<p class="note">${errMsg(e)}</p>`}
+  if(!me.def)return `<p class="note">${T('먼저 [덱 편성]에서 수비 덱을 등록해 주세요. 수비 덱을 올린 관리직만 도전할 수 있어요.','Register a defense deck in [Decks] first. Only managers with a defense deck can challenge.','先に[デッキ編成]で守備デッキを登録してください。守備デッキを登録した管理職だけが挑戦できます。')}</p>`;
+  try{L=(await api('?op=find')).list||[]}catch(e){return `<p class="note">${errMsg(e)}</p>`}
+  window.__m136L=L;
+  return `<p class="note">${T(`내 점수 ${me.st.pts||0}${me.rank?` · ${me.rank}위`:''} · 공격 ${me.st.w}승 ${me.st.l}패 · 수비 ${me.st.dw}승 ${me.st.dl}패`,`My points ${me.st.pts||0}${me.rank?` · #${me.rank}`:''} · attack ${me.st.w}W ${me.st.l}L · defense ${me.st.dw}W ${me.st.dl}L`,`ポイント ${me.st.pts||0}${me.rank?`・${me.rank}位`:''}・攻撃 ${me.st.w}勝${me.st.l}敗・守備 ${me.st.dw}勝${me.st.dl}敗`)}</p>`+
+   (L.length?L.map((r,i)=>`<div class="m136-foe"><div><b>${esc(NL(r.n))}</b> <small>${T('전력','Power','戦力')} ${r.pw} · ${T('점수','Pts','ポイント')} ${r.pts}</small><div class="m136-mem">${r.deck.map(memLine).join('<br>')}</div></div><button type="button" class="btn" data-m136f="${i}">${T('도전','Challenge','挑戦')}</button></div>`).join('')+`<div class="row"><button type="button" class="btn ghost small" id="m136re">${T('다른 상대 보기','Show others','他の相手を見る')}</button></div>`
+    :`<p class="note">${T('아직 도전할 수 있는 수비 덱이 없어요. 다른 관리직이 등록하면 나타나요.','No defense decks to challenge yet. They will appear as other managers register.','まだ挑戦できる守備デッキがありません。他の管理職が登録すると現れます。')}</p>`)}
+ if(TAB==='rank'){let L=[];try{L=(await api('?op=rank')).list||[]}catch(e){return `<p class="note">${errMsg(e)}</p>`}
+  return L.length?`<ol class="m136-rank">${L.map(r=>`<li class="${r.me?'me':''}"><b>${esc(NL(r.n))}</b><span>${r.pts}</span></li>`).join('')}</ol>`:`<p class="note">${T('아직 기록이 없어요.','No records yet.','まだ記録がありません。')}</p>`}
+ if(TAB==='room')return roomHtml()}
+async function open(tab){if(tab)TAB=tab;stopPoll();
+ popup(NAME(),`${head()}<div id="m136b"><p class="note">${T('불러오는 중…','Loading…','読み込み中…')}</p></div>`,b=>bindHead(b),{wide:1});
+ const h=await body();const box=document.getElementById('m136b');if(!box)return;box.innerHTML=h;bind(box);if(TAB==='room'&&ROOM)poll()}
+function bindHead(b){b.querySelectorAll('[data-m136t]').forEach(x=>x.onclick=()=>open(x.dataset.m136t))}
+function bind(box){
+ const at=s=>{const [k,i]=s.split(':');return [decks()[k],+i,k]};
+ box.querySelectorAll('[data-m136a]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136a);d[i]={id:x.value,w:defW(x.value),s:defS(x.value)};open('deck')});
+ box.querySelectorAll('[data-m136w]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136w);d[i].w=x.value});
+ box.querySelectorAll('[data-m136s]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136s);d[i].s=x.value});
+ box.querySelectorAll('[data-m136x]').forEach(x=>x.onclick=()=>{const [d,i]=at(x.dataset.m136x);d.splice(i,1);open('deck')});
+ box.querySelectorAll('[data-m136add]').forEach(x=>x.onclick=()=>{const d=decks()[x.dataset.m136add];const used=d.map(m=>m.id);const a=ags().find(a=>!used.includes(a.id));if(a)d.push({id:a.id,w:defW(a.id),s:defS(a.id)});open('deck')});
+ const sv=box.querySelector('#m136save');if(sv)sv.onclick=async()=>{const D=decks();for(const k of ['atk','def']){const bad=countOK(fix(D[k]));if(bad){const [t,id]=bad.split(':');return toast(T(`보유 수량보다 많이 넣었어요: ${t==='w'?wN(id):sN(id)}`,`More than you own: ${t==='w'?wN(id):sN(id)}`,`所持数より多く入れています：${t==='w'?wN(id):sN(id)}`))}}
+  try{save()}catch(e){}
+  if(!online()||!user()){toast(T('덱을 저장했어요. 수비 덱 등록은 로그인 뒤에 할 수 있어요.','Decks saved. Log in to register the defense deck.','デッキを保存しました。守備デッキの登録はログイン後にできます。'));return}
+  try{const r=await api('',{method:'PUT',body:{op:'def',name:G.name,deck:snap(D.def)}});toast(T(`수비 덱을 등록했어요 · 전력 ${r.pw}`,`Defense deck registered · power ${r.pw}`,`守備デッキを登録しました・戦力 ${r.pw}`),'good')}catch(e){toast(errMsg(e))}};
+ box.querySelectorAll('[data-m136f]').forEach(x=>x.onclick=()=>{const r=(window.__m136L||[])[+x.dataset.m136f];if(!r)return;if(countOK(fix(decks().atk)))return toast(T('공격 덱의 장비 수량을 확인해 주세요.','Check your attack deck gear counts.','攻撃デッキの装備数を確認してください。'));fight(r.deck,{mode:'rank',k:r.k,n:r.n})});
+ const re=box.querySelector('#m136re');if(re)re.onclick=()=>open('find');
+ bindRoom(box)}
+
+/* ---------- 친선전 (베타) ---------- */
+function roomHtml(){if(!ROOM)return `<p class="note">${T('방을 만들어 코드를 친구에게 알려 주거나, 친구의 코드를 입력하세요. 두 사람은 각자의 공격 덱으로 상대의 수비 덱에 동시에 도전하고, 더 잘 싸운 쪽이 이겨요. (승리 → 남은 체력 → 적은 턴 순)','Create a room and share its code, or enter a friend\'s code. Each of you challenges the other\'s defense deck with your attack deck at the same time; whoever fights better wins. (Victory → remaining HP → fewer turns)','部屋を作ってコードを友だちに伝えるか、友だちのコードを入力してください。二人はそれぞれの攻撃デッキで相手の守備デッキに同時に挑み、よりうまく戦った方が勝ちます。(勝利 → 残り体力 → 少ないターン)')}</p>
+  <div class="row"><button type="button" class="btn" id="m136new">${T('방 만들기','Create room','部屋を作る')}</button></div>
+  <div class="row"><input id="m136code" maxlength="6" placeholder="${T('방 코드','Room code','部屋コード')}" style="text-transform:uppercase;width:9em"><button type="button" class="btn ghost" id="m136join">${T('참가','Join','参加')}</button></div>`;
+ const r=ROOM.r||{};const me=ROOM.side,op=me==='h'?'g':'h';const myS=r[me+'s'],opS=r[op+'s'];
+ let st='';
+ if(!r.gn)st=T('상대를 기다리는 중이에요…','Waiting for an opponent…','相手を待っています…');
+ else if(!myS)st=T('상대가 들어왔어요. 도전을 시작하세요.','Your opponent is here. Start your challenge.','相手が来ました。挑戦を始めてください。');
+ else if(!opS)st=T('상대의 전투가 끝나기를 기다리는 중이에요…','Waiting for your opponent to finish…','相手の戦闘が終わるのを待っています…');
+ else{const c=cmp(myS,opS);st=c>0?T('친선전 승리!','Friendly match won!','親善戦勝利!'):c<0?T('친선전 패배','Friendly match lost','親善戦敗北'):T('무승부','Draw','引き分け')}
+ const sc=s=>s?`${s.win?T('승리','Win','勝利'):T('패배','Loss','敗北')} · HP ${s.hp}% · ${s.t}${T('턴','T','T')}`:'—';
+ return `<div class="m136-room"><p>${T('방 코드','Room code','部屋コード')} <b class="m136-code">${ROOM.code}</b></p>
+  <p>${esc(NL(r.hn||'?'))} vs ${esc(NL(r.gn||'…'))}</p><p class="note">${st}</p>
+  <p><small>${T('나','Me','私')}: ${sc(myS)} · ${T('상대','Opponent','相手')}: ${sc(opS)}</small></p>
+  <div class="row">${r.gn&&!myS?`<button type="button" class="btn" id="m136go">${T('도전 시작','Start challenge','挑戦開始')}</button>`:''}<button type="button" class="btn ghost small" id="m136leave">${T('방 나가기','Leave room','部屋を出る')}</button></div></div>`}
+function cmp(a,b){return (a.win-b.win)||(a.hp-b.hp)||(b.t-a.t)}
+function bindRoom(box){
+ const nw=box.querySelector('#m136new');if(nw)nw.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'room_new',name:G.name,deck:snap(decks().def)}});ROOM={code:r.code,side:'h',r:{hn:G.name}};open('room')}catch(e){toast(errMsg(e))}};
+ const jn=box.querySelector('#m136join');if(jn)jn.onclick=async()=>{const c=(box.querySelector('#m136code').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));
+  try{await api('',{method:'POST',body:{op:'room_join',code:c,name:G.name,deck:snap(decks().def)}});ROOM={code:c,side:'g',r:{}};open('room')}catch(e){toast(errMsg(e))}};
+ const go=box.querySelector('#m136go');if(go)go.onclick=()=>{const r=ROOM.r;const foe=ROOM.side==='h'?r.gd:r.hd;const nm=ROOM.side==='h'?r.gn:r.hn;if(!foe)return;stopPoll();fight(foe,{mode:'room',code:ROOM.code,n:nm})};
+ const lv=box.querySelector('#m136leave');if(lv)lv.onclick=()=>{ROOM=null;stopPoll();open('room')}}
+function stopPoll(){clearTimeout(POLL);POLL=0}
+async function poll(n){n=n||0;stopPoll();if(!ROOM||n>200)return;
+ try{const r=await api(`?op=room&code=${ROOM.code}`);ROOM.side=r.room.side;const prev=JSON.stringify(ROOM.r);ROOM.r=r.room;
+  const box=document.getElementById('m136b');if(!box||TAB!=='room')return;if(JSON.stringify(r.room)!==prev){box.innerHTML=roomHtml();bind(box)}
+  const done=r.room.hs&&r.room.gs;if(done)return}
+ catch(e){if(e&&e.code==='noroom'){ROOM=null;const box=document.getElementById('m136b');if(box){box.innerHTML=roomHtml();bind(box)}return}}
+ if(document.getElementById('m136b'))POLL=setTimeout(()=>poll(n+1),3000)}
+async function roomScore(code,sc){try{await api('',{method:'POST',body:{op:'room_score',code,score:sc}})}catch(e){toast(errMsg(e))}
+ if(ROOM&&ROOM.code===code){TAB='room';open('room')}}
+
+/* ---------- 메뉴 ---------- */
+window.mirror136=open;
+function lockWhy(){if(G.arc||G.day>50)return T('지금은 들어갈 수 없어요','Not available now','今は入れません');if((G.roam||[]).some(r=>!r.dead)||(G.breachQ||[]).length)return T('경보 중에는 들어갈 수 없어요','Not during an alert','警報中は入れません');return ''}
+panelPre=(f=>function(title,sub,choices){
+ try{if(typeof title==='string'&&(title.startsWith('업무 시간')||title==='퇴근 후')&&Array.isArray(choices)&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){
+  const why=lockWhy();const grp=title==='퇴근 후'?'행정':undefined;
+  choices=choices.concat([Object.assign({l:`${ic('sword')} ${NAME()}`,s:why||DESC(),dis:!!why,f:()=>open('deck')},grp?{grp}:{})])}}catch(e){}
+ return f.call(this,title,sub,choices)})(panelPre);
+
+const css=`
+.m136-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.m136-deck{margin:0 0 14px;padding:10px 12px;border:1px solid rgba(244,238,154,.22)}
+.m136-deck h4{margin:0 0 4px;font-size:15px;color:#f4ee9a}
+.m136-row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center;margin:6px 0}
+.m136-row select,#m136code{background:#111;color:#f4ee9a;border:1px solid rgba(244,238,154,.35);padding:5px 6px;font:inherit;font-size:13px;min-width:0}
+@media (max-width:640px){.m136-row{grid-template-columns:1fr 1fr}.m136-row>b,.m136-row>select:first-child{grid-column:1/-1}}
+.m136-foe{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border:1px solid rgba(244,238,154,.22);margin:0 0 8px}
+.m136-mem{font-size:13px;margin-top:4px;line-height:1.6}
+.m136-rank{margin:0;padding-left:1.6em}.m136-rank li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(244,238,154,.12)}.m136-rank li.me b{color:#ffd27a}
+.m136-v{font-size:28px;font-weight:700;margin:4px 0}.m136-v.w{color:#7fd69a}.m136-v.l{color:#ff8f80}
+.m136-code{font-size:22px;letter-spacing:.18em;color:#ffd27a}
+`;
+try{const st=document.createElement('style');st.id='css136';st.textContent=css;document.head.appendChild(st)}catch(e){}
+})();
+/* 팝업 닫기 ✕가 어두운 칸에 묻히지 않게 */
+(function(){try{const st=document.createElement('style');st.textContent='html body .pop .pop-x{color:#f4ee9a!important;font-weight:700}html body .pop .pop-x:hover{color:#111!important;background:#f4ee9a!important}';document.head.appendChild(st)}catch(e){}})();
 </script>
 
 </body></html>

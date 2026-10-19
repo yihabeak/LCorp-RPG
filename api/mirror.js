@@ -1,0 +1,141 @@
+// 아인·소프·오르 — 거울 세계의 비동기 PvP · 친선전(베타)
+// 모든 요청은 로그인(사원증) 필요. 계산은 각자의 브라우저에서 하고, 서버는 덱·전적·방만 보관한다.
+//
+// GET  /api/mirror?op=me                    → { def, st:{pts,w,l,dw,dl}, rank }
+// PUT  /api/mirror { op:'def', name, deck } → 수비 덱 등록
+// GET  /api/mirror?op=find                  → { list:[{k,n,pw,deck,pts}] }   도전 상대 최대 3
+// POST /api/mirror { op:'fight', k, win }   → { pts, gain, left }            도전 결과 (하루 10회 · 같은 상대는 하루 1회만 점수)
+// GET  /api/mirror?op=rank                  → { list:[{n,pts}] }             상위 20
+// POST /api/mirror { op:'room_new', name, deck }          → { code }
+// POST /api/mirror { op:'room_join', code, name, deck }   → { ok }
+// GET  /api/mirror?op=room&code=XXXXXX                    → { room }
+// POST /api/mirror { op:'room_score', code, score }       → { ok }
+import crypto from 'node:crypto';
+import { hasDb, redis, pipe, sessionUser, send, body, kday, limited } from './_lib.js';
+
+const DAY_MAX = 10;
+const ROOM_TTL = 1800;
+const ID = /^[A-Za-z0-9_]{1,32}$/;
+const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
+const txt = (v, n) => String(v || '').replace(/[<>&"']/g, '').slice(0, n);
+
+function cleanDeck(d) {
+  if (!Array.isArray(d) || d.length < 1 || d.length > 3) return null;
+  const out = [];
+  for (const m of d) {
+    if (!m || typeof m !== 'object') return null;
+    const w = String(m.w || 'baton'), s = String(m.s || 'basic');
+    if (!ID.test(w) || !ID.test(s)) return null;
+    const st = m.st || {};
+    out.push({
+      pl: m.pl ? 1 : 0, n: txt(m.n, 20) || '?', rk: num(m.rk, 1, 5), hp: num(m.hp, 1, 999),
+      st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) }, w, s
+    });
+  }
+  return out;
+}
+const power = d => d.reduce((a, m) => a + m.rk * 10 + Math.round(m.hp / 10), 0);
+const code6 = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const b = crypto.randomBytes(6); let s = ''; for (const x of b) s += A[x % A.length]; return s; };
+const q = (req, k) => req.query?.[k] ?? new URL(req.url, 'http://x').searchParams.get(k);
+const stOf = h => { const o = { pts: 0, w: 0, l: 0, dw: 0, dl: 0 }; if (Array.isArray(h)) for (let i = 0; i < h.length; i += 2) o[h[i]] = Number(h[i + 1]) || 0; return o; };
+
+export default async function handler(req, res) {
+  try {
+    if (!hasDb) return send(res, 503, { code: 'nodb' });
+    const id = await sessionUser(req);
+    if (!id) return send(res, 401, { code: 'auth' });
+    const b = req.method === 'GET' ? {} : body(req);
+    const op = req.method === 'GET' ? q(req, 'op') : b.op;
+
+    if (op === 'me') {
+      const [def, h, rk] = await pipe([['GET', `m:def:${id}`], ['HGETALL', `m:st:${id}`], ['ZREVRANK', 'm:rank', id]]);
+      return send(res, 200, { def: def ? JSON.parse(def) : null, st: stOf(h), rank: rk == null ? null : rk + 1 });
+    }
+    if (op === 'def' && (req.method === 'PUT' || req.method === 'POST')) {
+      if (await limited(req, 'mdef', 30)) return send(res, 429, { code: 'slow' });
+      const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
+      const rec = { n: txt(b.name, 20) || id, deck, pw: power(deck), at: Date.now() };
+      await pipe([['SET', `m:def:${id}`, JSON.stringify(rec)], ['SADD', 'm:pool', id], ['ZADD', 'm:rank', 'NX', 0, id]]);
+      return send(res, 200, { ok: true, pw: rec.pw });
+    }
+    if (op === 'find') {
+      if (await limited(req, 'mfind', 60)) return send(res, 429, { code: 'slow' });
+      const ids = (await redis('SRANDMEMBER', 'm:pool', 12) || []).filter(x => x !== id).slice(0, 8);
+      if (!ids.length) return send(res, 200, { list: [] });
+      const raw = await redis('MGET', ...ids.map(x => `m:def:${x}`));
+      const sc = await pipe(ids.map(x => ['ZSCORE', 'm:rank', x]));
+      const list = ids.map((k, i) => raw[i] ? Object.assign(JSON.parse(raw[i]), { k, pts: Number(sc[i]) || 0 }) : null).filter(Boolean);
+      const mine = await redis('GET', `m:def:${id}`); const myPw = mine ? JSON.parse(mine).pw : 0;
+      list.sort((x, y) => Math.abs(x.pw - myPw) - Math.abs(y.pw - myPw));
+      return send(res, 200, { list: list.slice(0, 3).map(r => ({ k: r.k, n: r.n, pw: r.pw, pts: r.pts, deck: r.deck })) });
+    }
+    if (op === 'fight' && req.method === 'POST') {
+      const k = String(b.k || ''); if (!k || k === id || k.length > 40) return send(res, 400, { code: 'bad' });
+      const exists = await redis('EXISTS', `m:def:${k}`); if (!exists) return send(res, 404, { code: 'gone' });
+      const dk = `m:day:${id}:${kday()}`;
+      const [n, added] = await pipe([['INCR', dk + ':n'], ['SADD', dk, k], ['EXPIRE', dk + ':n', 172800], ['EXPIRE', dk, 172800]]);
+      if (n > DAY_MAX) return send(res, 429, { code: 'daily', left: 0 });
+      const win = !!b.win; const fresh = added === 1;
+      const gain = fresh ? (win ? 20 : -8) : 0, dgain = fresh ? (win ? -5 : 5) : 0;
+      const cmds = [['HINCRBY', `m:st:${id}`, win ? 'w' : 'l', 1], ['HINCRBY', `m:st:${k}`, win ? 'dl' : 'dw', 1]];
+      if (gain) cmds.push(['ZINCRBY', 'm:rank', gain, id]);
+      if (dgain) cmds.push(['ZINCRBY', 'm:rank', dgain, k]);
+      await pipe(cmds);
+      // 점수는 0 아래로 내려가지 않는다
+      const [p1, p2] = await pipe([['ZSCORE', 'm:rank', id], ['ZSCORE', 'm:rank', k]]);
+      const fix = []; if (Number(p1) < 0) fix.push(['ZADD', 'm:rank', 0, id]); if (Number(p2) < 0) fix.push(['ZADD', 'm:rank', 0, k]);
+      if (fix.length) await pipe(fix);
+      await redis('HSET', `m:st:${id}`, 'pts', Math.max(0, Number(p1) || 0));
+      return send(res, 200, { pts: Math.max(0, Number(p1) || 0), gain, left: Math.max(0, DAY_MAX - n) });
+    }
+    if (op === 'rank') {
+      const r = await redis('ZREVRANGE', 'm:rank', 0, 19, 'WITHSCORES') || [];
+      const ids = []; for (let i = 0; i < r.length; i += 2) ids.push([r[i], Number(r[i + 1]) || 0]);
+      if (!ids.length) return send(res, 200, { list: [] });
+      const raw = await redis('MGET', ...ids.map(x => `m:def:${x[0]}`));
+      return send(res, 200, { list: ids.map((x, i) => ({ n: raw[i] ? JSON.parse(raw[i]).n : '?', pts: x[1], me: x[0] === id })) });
+    }
+    // ---- 친선전 (베타) ----
+    if (op === 'room_new' && req.method === 'POST') {
+      if (await limited(req, 'mroom', 20)) return send(res, 429, { code: 'slow' });
+      const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
+      let code = code6();
+      for (let i = 0; i < 4 && await redis('EXISTS', `m:room:${code}`); i++) code = code6();
+      const room = { h: id, hn: txt(b.name, 20) || id, hd: deck, g: null, gn: null, gd: null, hs: null, gs: null, at: Date.now() };
+      await redis('SET', `m:room:${code}`, JSON.stringify(room), 'EX', ROOM_TTL);
+      return send(res, 200, { code });
+    }
+    const code = String((req.method === 'GET' ? q(req, 'code') : b.code) || '').toUpperCase();
+    if (op && op.startsWith('room') && !/^[A-Z0-9]{6}$/.test(code)) return send(res, 400, { code: 'bad' });
+    const rkey = `m:room:${code}`;
+    if (op === 'room_join' && req.method === 'POST') {
+      const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
+      const raw = await redis('GET', rkey); if (!raw) return send(res, 404, { code: 'noroom' });
+      const room = JSON.parse(raw);
+      if (room.h === id) return send(res, 400, { code: 'self' });
+      if (room.g && room.g !== id) return send(res, 409, { code: 'full' });
+      Object.assign(room, { g: id, gn: txt(b.name, 20) || id, gd: deck });
+      await redis('SET', rkey, JSON.stringify(room), 'EX', ROOM_TTL);
+      return send(res, 200, { ok: true });
+    }
+    if (op === 'room') {
+      const raw = await redis('GET', rkey); if (!raw) return send(res, 404, { code: 'noroom' });
+      const r = JSON.parse(raw); const side = r.h === id ? 'h' : r.g === id ? 'g' : null;
+      if (!side) return send(res, 403, { code: 'notin' });
+      return send(res, 200, { room: { side, hn: r.hn, gn: r.gn, hd: r.hd, gd: r.gd, hs: r.hs, gs: r.gs } });
+    }
+    if (op === 'room_score' && req.method === 'POST') {
+      const raw = await redis('GET', rkey); if (!raw) return send(res, 404, { code: 'noroom' });
+      const r = JSON.parse(raw); const side = r.h === id ? 'h' : r.g === id ? 'g' : null;
+      if (!side) return send(res, 403, { code: 'notin' });
+      const s = b.score || {};
+      r[side + 's'] = { win: s.win ? 1 : 0, hp: num(s.hp, 0, 100), t: num(s.t, 0, 999) };
+      await redis('SET', rkey, JSON.stringify(r), 'EX', ROOM_TTL);
+      return send(res, 200, { ok: true });
+    }
+    return send(res, 400, { code: 'bad' });
+  } catch (e) {
+    console.error(e);
+    return send(res, 500, { code: 'server' });
+  }
+}
