@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.19.0.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.21.2.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10611,7 +10611,7 @@ deptAbs=(f=>function(k){const L=f.apply(this,arguments);try{if(!AG99||typeof AGS
   return L.filter(a=>{if(a.tool)return true;const s=G.ab[a.id];if(!s)return true;if(a.id==='oldlady'&&s.cnt<=0)return false;if(s.melt>0)return true;const e=exp99(ag,a);
     if((a.cnt||0)>1&&s.cnt<=1&&e<.55)return false;if(a.g>r+1&&e<.6)return false;return true})}catch(e){return L}})(deptAbs);
 /* 3) 직원의 환상체 처리 능력 중간폭 감소: 작업 성공률 -7%p · 배회 환상체 진압 속도 ×0.4 */
-const AGW99=.07,AGS99=.4;
+const AGW99=.2,AGS99=.4;
 npcWork=(f=>function(ag,a){const _nr=nwkRate,_pf=prefOf;
   nwkRate=function(x,wid,r){const v=_nr(x,wid,r);return (x===a&&v!=null)?Math.max(0,v-AGW99):v};
   prefOf=function(x,wid){const v=_pf(x,wid);return x===a?v-AGW99:v};
@@ -11282,6 +11282,240 @@ try{const r=DEPT.disc.res.find(x=>x[0]==='exec');if(r){r[1]=T('처분 탄환','E
 startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){const u=B.units.find(x=>x&&x.lcBoss==='조율자'&&!x.finalArb&&x.hp>0);
   if(u&&u.shockUsed!==B.turn&&B.intents.some(i=>i.u===u&&i.s&&i.s.shock)){B.intents=B.intents.filter(i=>!(i.u===u&&i.s&&i.s.shock));renderBattle()}}}catch(e){}return r})(startBattle);
 const st=document.createElement('style');st.textContent=`.esc110{margin-left:6px;font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--c-red,#d6453a);color:var(--c-red,#d6453a);white-space:nowrap}`;document.head.appendChild(st);
+})();
+/* ============ v111: 조율자 억제 정리 · 스페이스바 일시정지 · 백색 시련·발톱 상향 · 라오루 개체 위력(림버스 기준) · 직원 작업·전투 하향 ============ */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+const isAR=u=>u&&u.lcBoss==='조율자'&&!u.finalArb;
+const live=()=>B.allies.filter(a=>!a.dead);
+/* ---------- 1) 조율자(비나 억제): 옛 전투 안 특수 폭주(v58)·3턴 충격파(v59)를 끄고, 충격파는 한 턴에 하나만 ---------- */
+arbShock=(f=>function(u){if(isAR(u))return;return f.apply(this,arguments)})(arbShock);
+function tidy111(){if(!B||B.done)return false;let ch=false;const u=B.units.find(x=>isAR(x)&&x.hp>0);if(!u)return false;
+  const n0=B.units.length;B.units=B.units.filter(x=>!x.gim);if(B.units.length!==n0)ch=true;
+  const sh=B.intents.filter(i=>i.u===u&&i.s&&i.s.shock);
+  if(u.shockUsed===B.turn){if(sh.length>1){const keep=sh[0];B.intents=B.intents.filter(i=>!(i.u===u&&i.s&&i.s.shock)||i===keep);ch=true}}
+  else if(sh.length){B.intents=B.intents.filter(i=>!(i.u===u&&i.s&&i.s.shock));ch=true}
+  if(u.fog111){u.cres={RED:2,WHITE:2,BLACK:2,PALE:2}}
+  return ch}
+newTurn=(f=>function(){const r=f.apply(this,arguments);try{if(tidy111()){B.wc={};try{autoAssign()}catch(e){}renderBattle()}}catch(e){}return r})(newTurn);
+startBattle=(f=>function(){const r=f.apply(this,arguments);try{const u=B&&B.units.find(isAR);if(u){
+    // 검은 안개 폭주를 모두 관리했다면 이번 교전 내내 모든 내성 2.0
+    if(u.arbMode==='weak'||(u.cres&&u.cres.RED===1.5)){u.fog111=1;u.arbMode='weak';u.cres={RED:2,WHITE:2,BLACK:2,PALE:2};blog(T('검은 안개가 걷혔다 — 이번 교전 동안 조율자의 모든 내성 2.0.','The black fog has lifted — the Arbiter\'s resistances are 2.0 for this engagement.','黒い霧が晴れた — この交戦の間、調律者の全耐性2.0。'),'bh')}
+    u.lcPass=[[T('봉인','Seal','封印'),T('평소 모든 내성 0.1','All resistances 0.1 normally','通常は全耐性0.1')],[T('충격파','Shockwave','衝撃波'),T('페이즈 시작과 5턴마다 한 번 — 모두를 덮치고, 그 턴이 끝나면 전투 밖으로 밀려난다. 시설에 특수 폭주가 생긴다','Once at each phase start and every 5 turns — hits everyone, and you are thrown out when the turn ends. Special meltdowns appear in the facility','フェーズ開始時と5ターンごとに1回 — 全員を襲い、そのターンの終わりに戦闘外へ弾き出される。施設に特殊暴走が起きる')],
+      [T('특수 폭주 (시설)','Special meltdowns (facility)','特殊暴走（施設）'),T('황금: 다음 조우 첫 턴 행동 없음 · 검은 안개: 내성 2.0 · 파도(2페이즈~): 못 막으면 검은 파도 · 기둥(3페이즈): 못 막으면 8기둥','Gold: no action on the next first turn · Black Fog: resistances 2.0 · Wave (phase 2+): Black Wave if missed · Pillar (phase 3): Eight Pillars if missed','黄金：次の遭遇の最初のターン行動なし・黒い霧：耐性2.0・波（2フェーズ〜）：防げなければ黒い波・柱（3フェーズ）：防げなければ八柱')]];
+    tidy111();renderBattle()}}catch(e){}return r})(startBattle);
+doClash=(f=>function(sl,it){const r=f.apply(this,arguments);try{const u=it&&it.u;if(isAR(u)&&u.fog111)u.cres={RED:2,WHITE:2,BLACK:2,PALE:2}}catch(e){}return r})(doClash);
+battleFlee=(f=>function(){try{const u=B&&B.units.find(isAR);if(u&&u.fog111){u.fog111=0;u.arbMode='seal';u.cres={RED:.1,WHITE:.1,BLACK:.1,PALE:.1}}}catch(e){}return f.apply(this,arguments)})(battleFlee);
+// 충격파는 하나의 광역기: 노린 대상 말고 나머지에게도 같은 피해를 준 뒤 밀려난다
+endTurn=(f=>function(){try{if(B&&!B.done){const u=B.units.find(x=>isAR(x)&&x.hp>0);const it=u&&B.intents.find(i=>i.u===u&&i.s&&i.s.shock);
+    if(it&&!it.aoe111){it.aoe111=1;const dmg=Math.round((it.s.base||14)+(it.s.cp||3)*(it.s.coins||5)/2);live().filter(a=>a!==it.tgt).forEach(a=>{dmgAlly(a,dmg,'BLACK',T('충격파','Shockwave','衝撃波'),4);try{addStatus(a,'paralysis',2,1)}catch(e){}});
+      blog(T(`충격파가 모두를 덮쳤다 — 나머지 아군에게 BLACK ${dmg} · 마비 2.`,`The shockwave engulfs everyone — ${dmg} BLACK and Paralysis 2 to the other allies.`,`衝撃波が全員を襲った — 残りの味方にBLACK ${dmg}・麻痺2。`),'bh')}}}catch(e){}return f.apply(this,arguments)})(endTurn);
+// 조율자가 나오는 코어 억제(비나) 중에는 억제를 마친 부서의 격리실도 폭주한다
+levelUp=(f=>function(){if(G&&G.sup&&!G.sup.done&&G.sup.key==='extract'){const sd=G.supDone;G.supDone={};try{return f.apply(this,arguments)}finally{G.supDone=sd}}return f.apply(this,arguments)})(levelUp);
+
+/* ---------- 2) 스페이스바: 실시간 일시정지 / 재개 (버튼에 초점이 있어도 동작) ---------- */
+let SP111=false;
+function spOk(e){const t=e.target;if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable))return false;if(typeof POP!=='undefined'&&POP)return false;if(typeof B!=='undefined'&&B&&!B.done)return false;return !!document.querySelector('.rt-hud')}
+window.addEventListener('keydown',e=>{if(e.code!=='Space'&&e.key!==' ')return;if(!spOk(e))return;e.preventDefault();e.stopImmediatePropagation();if(e.repeat)return;SP111=true;try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(_){}const b=document.querySelector('.rt-hud');if(b)b.click()},true);
+window.addEventListener('keyup',e=>{if((e.code==='Space'||e.key===' ')&&SP111){SP111=false;e.preventDefault();e.stopImmediatePropagation()}},true);
+
+/* ---------- 3) 백색 시련(해결사)·발톱 상향 ---------- */
+function rescale(u,k){(u.skills||[]).forEach(s=>{if(!s||!(s.coins>0))return;s.base=Math.max(1,Math.round(s.base*k));if(s.cp>0)s.cp=Math.max(1,Math.round(s.cp*k))})}
+startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){const o=B.opt||{};B.units.forEach(u=>{if(u.ally||u._b111)return;
+    if(o.ordeal&&o.col==='white'&&o.tier!=='midnight'&&(u.fx||u.o62)){u._b111=1;rescale(u,1.15);u.max=Math.round(u.max*1.35);u.hp=u.max}
+    else if(u.claw){u._b111=1;rescale(u,1.2);u.max=Math.round(u.max*1.5);u.hp=u.max}});renderBattle()}}catch(e){}return r})(startBattle);
+
+/* ---------- 4) 라오루 책장으로 만든 개체: 형태가 바뀔 때마다 림버스 기준 위력으로 맞춘다 (같은 등급 E.G.O 평균: 8·10·12·14·15.7) ---------- */
+const LT111=[8,10,12,14,15.7];const midS=s=>s.base+(s.cp||0)*(s.coins||0)/2;
+lform=(f=>function(u,fm){const r=f.apply(this,arguments);try{if(u&&u.lor&&!u.boss&&!u.lcBoss){const g=Math.max(0,Math.min(4,u.lorG||0));const L=(u.skills||[]).filter(s=>s&&s.coins>0&&!s.special);if(L.length){const avg=L.reduce((x,s)=>x+midS(s),0)/L.length;const k=LT111[g]/avg;if(Math.abs(k-1)>=.04){L.forEach(s=>{s.base=Math.max(1,Math.round(s.base*k));if(s.cp>0)s.cp=Math.max(1,Math.round(s.cp*k))});(u.lorSk||[]).forEach(s=>{if(s&&s.coins>0){s.base=Math.max(1,Math.round(s.base*k));if(s.cp>0)s.cp=Math.max(1,Math.round(s.cp*k))}})}}}}catch(e){}return r})(lform);
+
+/* ---------- 5) 직원 전투 능력 대폭 하향: 위력 -2 · 주는 피해 60% (체력·생존은 그대로) ---------- */
+mkAgentAlly=(f=>function(ag){const a=f.apply(this,arguments);try{a.pow=(a.pow||0)-2}catch(e){}return a})(mkAgentAlly);
+let AGHIT=0;
+attackFromAlly=(f=>function(a){const p=AGHIT;AGHIT=(a&&a.key==='ag')?1:0;try{return f.apply(this,arguments)}finally{AGHIT=p}})(attackFromAlly);
+hitUnit=(f=>function(u,amt,src){if(AGHIT&&amt>0)amt=amt*.6;return f.call(this,u,amt,src)})(hitUnit);
+})();
+/* ============ v112: 동료와의 대화 — 장면·선택지·관계 단계 (퇴근 후 「동료를 찾아간다」) ============
+   관계(유대) 0~100 · 단계: 낯섦 <20 · 동료 20~ · 친구 40~ · 신뢰 60~ · 각별 80~
+   이름 있는 동료(해원·도윤·미라)는 자기 이야기를, 다른 직원은 가장 높은 가치관(용기·지혜·절제·정의)에 따른 성격으로 이야기한다.
+   본 장면은 다시 나오지 않는다. 볼 장면이 없으면 짧은 일상 대화가 나온다. */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+const L=(s,ko,en,ja)=>({s,t:[ko,en,ja]});            // s: 'n' 상대 · 'me' 나 · null 서술
+const C=(l,d,rep,fx)=>({l,d,rep:rep||[],fx:fx||{}});    // l:[ko,en,ja] · d: 유대 변화
+const tx=a=>T(a[0],a[1],a[2]);
+const TIERS=[['낯섦','Stranger','他人'],['동료','Coworker','同僚'],['친구','Friend','友人'],['신뢰','Trusted','信頼'],['각별','Close','特別']];
+const tierOf=v=>v>=80?4:v>=60?3:v>=40?2:v>=20?1:0;
+function relOf(t){return t.co?(G.rel[t.co]??0):(t.a.rel??10)}
+function addRel(t,n){if(t.co)rel(t.co,n);else t.a.rel=Math.max(0,Math.min(100,(t.a.rel??10)+n))}
+function arch(a){try{return topSt(a.st)}catch(e){return 'T'}}
+const diedToday=()=>(G.log||[]).some(x=>x.d===G.day&&/사망 —/.test(x.t||''));
+
+/* ---------------- 장면 ---------------- */
+const S=[
+// ── 해원 (해결사 출신 신입) ──
+{id:'hw1',who:'haewon',min:0,lines:[L(null,'옥상 문 앞. {n}이(가) 막대사탕을 문 채 난간에 기대 있다.','By the rooftop door, {n} leans on the railing with a lollipop.','屋上の扉の前。{n}が棒付きキャンディをくわえて手すりにもたれている。'),L('n','"…또 너야? 여긴 내 자리인데."','"…You again? This is my spot."','「…またお前？ここは私の場所なんだけど」'),L('n','"해결사 시절엔 일 끝나면 늘 높은 데 올라갔어. 아래를 보면 오늘도 살았구나 싶거든."','"Back as a Fixer I always went somewhere high after a job. Looking down tells you you lived another day."','「フィクサーだった頃は、仕事が終わるといつも高い所に上ってた。下を見ると、今日も生きてたって思えるから」')],
+ ch:[C(['"나도 같이 봐도 돼?"','"Mind if I look too?"','「一緒に見てもいい？」'],8,[L('n','"…마음대로 해. 대신 사탕은 안 나눠 준다."','"…Suit yourself. I\'m not sharing the candy, though."','「…勝手にすれば。飴は分けないけど」')]),
+     C(['"해결사 일은 왜 그만뒀어?"','"Why did you quit fixing?"','「どうしてフィクサーを辞めたの？」'],4,[L('n','"그만둔 게 아니라 망한 거야. 사무소째로." 사탕이 우드득 부서졌다.','"I didn\'t quit. The office went under, all of it." The candy cracked between her teeth.','「辞めたんじゃない。事務所ごと潰れたの」飴がばりっと砕けた。')]),
+     C(['"여기 위험해. 내려가자."','"It\'s dangerous here. Let\'s go down."','「ここ危ないよ。降りよう」'],-2,[L('n','"위험? 여기 아래층에 뭐가 사는지 알고 하는 말이야?"','"Dangerous? You know what lives on the floors below us, right?"','「危ない？この下の階に何が住んでるか分かって言ってる？」')])]},
+{id:'hw2',who:'haewon',min:20,lines:[L(null,'{n}이(가) 훈련실 샌드백 앞에서 숨을 고른다. 주먹에 감은 붕대가 붉다.','{n} is catching her breath at the training-room sandbag. The tape on her fists is red.','{n}が訓練室のサンドバッグの前で息を整えている。拳に巻いたテープが赤い。'),L('n','"오늘 격리실에서 손이 떨렸어. 해결사였을 땐 이런 적 없었는데."','"My hands shook in the unit today. That never happened when I was a Fixer."','「今日、収容室で手が震えた。フィクサーの頃はこんなことなかったのに」'),L('n','"사람은 칼을 맞으면 쓰러져. 저것들은… 규칙대로 안 움직여."','"People go down when you cut them. Those things… don\'t follow the rules."','「人は斬れば倒れる。あいつらは…ルール通りに動かない」')],
+ ch:[C(['"떨리는 게 당연해. 나도 그래."','"Shaking is normal. Me too."','「震えて当然だよ。私もそう」'],8,[L('n','"…너도? 하, 그럼 좀 낫네."','"…You too? Huh. That helps a little."','「…お前も？はは、なら少しマシか」')],{sp:3}),
+     C(['같이 붕대를 다시 감아 준다','Re-wrap her tape together','一緒にテープを巻き直してあげる'],10,[L(null,'{n}은(는) 아무 말 없이 손을 내밀었다. 붕대를 다 감을 때까지 둘 다 조용했다.','{n} held out her hands without a word. Neither of you spoke until the tape was done.','{n}は黙って手を差し出した。巻き終えるまで二人とも静かだった。')],{hum:3}),
+     C(['"그럼 규칙을 우리가 배우면 돼."','"Then we learn their rules."','「なら私たちがルールを覚えればいい」'],6,[L('n','"관찰 메모 말이지. …좋아, 내일부터 같이 정리하자."','"The observation notes, right? …Fine, let\'s sort them out together from tomorrow."','「観察メモのことか。…いいよ、明日から一緒にまとめよう」')],{st:{P:1}})]},
+{id:'hw3',who:'haewon',min:40,lines:[L(null,'휴게실 자판기 앞. {n}이(가) 동전 두 개를 쥐고 고민하고 있다.','At the break-room vending machine, {n} is weighing two coins in her hand.','休憩室の自販機の前。{n}が硬貨を二枚握って悩んでいる。'),L('n','"하나는 내 거, 하나는 네 거. 뭐 마실래? 오늘은 내가 산다."','"One for me, one for you. What\'ll you have? My treat today."','「一枚は私の、一枚はお前の。何飲む？今日は奢る」'),L('n','"…사무소 동료들이랑 이런 거 자주 했거든. 다 없어졌지만."','"…I used to do this with the folks at the office. They\'re all gone now."','「…事務所の仲間とよくこうしてたんだ。みんないなくなったけど」')],
+ ch:[C(['"네가 고르는 걸로."','"Whatever you pick."','「お前が選んだやつで」'],8,[L('n','"그럼 제일 단 거. 해결사는 당이 생명이야." 캔 두 개가 굴러 나왔다.','"Then the sweetest one. Sugar keeps Fixers alive." Two cans rolled out.','「じゃあ一番甘いの。フィクサーは糖分が命」缶が二本転がり出た。')],{sp:4}),
+     C(['"그 사람들 이야기, 들려줄래?"','"Will you tell me about them?"','「その人たちの話、聞かせてくれる？」'],10,[L('n','"…말이 많은 녀석이 하나 있었어. 너처럼 쓸데없이 다정했지." {n}은(는) 처음으로 길게 웃었다.','"…There was one who never shut up. Uselessly kind, like you." {n} laughed for a long time, the first time you\'d seen it.','「…お喋りなやつが一人いた。お前みたいに無駄に優しかった」{n}は初めて長く笑った。')],{hum:4}),
+     C(['"내가 살게. 다음엔 네가 사."','"I\'ll pay. You get the next one."','「私が払うよ。次はお前ね」'],6,[L('n','"다음이라. 좋네, 그 말."','"\'Next time.\' I like the sound of that."','「次、か。いいね、その言葉」')])]},
+{id:'hw4',who:'haewon',min:60,lines:[L(null,'밤의 옥상. {n}이(가) 해결사 자격증을 손가락으로 돌리고 있다.','The rooftop at night. {n} spins her Fixer license between her fingers.','夜の屋上。{n}がフィクサー免許を指で回している。'),L('n','"이거, 버릴까 계속 생각했어. 여기선 아무 쓸모도 없으니까."','"I keep thinking I should toss this. It\'s useless in here."','「これ、捨てようかずっと考えてた。ここじゃ何の役にも立たないし」'),L('n','"근데 네가 등 뒤에 있으면, 아직 그때처럼 싸울 수 있을 것 같아."','"But with you at my back, I feel like I can still fight the way I used to."','「でもお前が背中にいると、まだあの頃みたいに戦える気がする」')],
+ ch:[C(['"버리지 마. 그것도 너야."','"Don\'t toss it. That\'s you, too."','「捨てないで。それもお前だよ」'],10,[L('n','"…알았어. 대신 네가 맡아 줘. 내가 도망치면 이걸로 때려서라도 데려와."','"…Fine. Then you hold it. If I ever run, hit me with it and drag me back."','「…分かった。じゃあお前が持ってて。私が逃げたら、これで殴ってでも連れ戻して」')],{hum:4,sp:4}),
+     C(['"등은 내가 맡을게."','"I\'ve got your back."','「背中は任せて」'],8,[L('n','"말했다? 취소 없어."','"You said it. No take-backs."','「言ったな？取り消しなしだから」')],{st:{J:1}})]},
+{id:'hw5',who:'haewon',min:80,lines:[L(null,'퇴근길 복도. {n}이(가) 당신 옆에 나란히 걷는다. 발소리가 맞는다.','The corridor after work. {n} walks beside you, your steps in rhythm.','退勤の廊下。{n}があなたの隣を歩く。足音が揃う。'),L('n','"있잖아. 이 회사에서 살아 나가면 사무소 하나 차릴까 해. 이번엔 안 망하는 걸로."','"Hey. If we get out of this company alive, I\'m thinking of opening an office. One that doesn\'t go under this time."','「あのさ。この会社から生きて出られたら、事務所を作ろうと思う。今度は潰れないやつ」'),L('n','"첫 직원 자리는 비워 둘게. 누구 자리인지는 말 안 해도 알지?"','"I\'ll keep the first desk open. You know whose it is, right?"','「最初の席は空けておく。誰の席か、言わなくても分かるよね？」')],
+ ch:[C(['"월급은 사탕으로 줘."','"Pay me in candy."','「給料は飴でいいよ」'],10,[L('n','"…진짜 이상한 녀석이야, 너." {n}이(가) 주머니의 사탕을 전부 당신 손에 쏟았다.','"…You\'re a real weirdo." {n} emptied every candy in her pocket into your hand.','「…ほんと変なやつ」{n}はポケットの飴を全部あなたの手にあけた。')],{hum:5,sp:6}),
+     C(['"그 약속, 꼭 지키자. 둘 다 살아서."','"Let\'s keep that promise. Both of us, alive."','「その約束、必ず守ろう。二人とも生きて」'],10,[L('n','"응. 둘 다."','"Yeah. Both of us."','「うん。二人とも」')],{hum:5,sp:6})]},
+// ── 도윤 (같은 날 입사한 동기) ──
+{id:'dy1',who:'doyun',min:0,lines:[L(null,'식당 구석. {n}이(가) 수첩에 숫자를 빼곡히 적고 있다.','A corner of the cafeteria. {n} is filling a notebook with numbers.','食堂の隅。{n}が手帳に数字をびっしり書いている。'),L('n','"아, 이거? 둥지 입주 비용 계산이야. 동생이랑 엄마를 데려오려면 아직 한참 남았어."','"Oh, this? Moving costs for the Nest. Still a long way off before I can bring my mom and sister."','「あ、これ？巣への入居費用の計算。妹と母さんを呼ぶには、まだ全然足りなくて」')],
+ ch:[C(['"같이 계산해 볼까?"','"Want me to check it with you?"','「一緒に計算しようか？」'],8,[L('n','"정말? 고마워! …어, 여기 하나 틀렸네. 넌 숫자에 강하구나."','"Really? Thanks! …Oh, I got one wrong here. You\'re good with numbers."','「ほんと？ありがとう！…あ、ここ一つ間違ってた。数字に強いんだね」')],{st:{P:1}}),
+     C(['"가족 이야기 해 줘."','"Tell me about your family."','「家族の話をして」'],8,[L('n','"동생은 그림을 잘 그려. 내가 여기서 뭘 하는지는… 아직 말 못 했어."','"My sister draws really well. What I do here… I haven\'t told her yet."','「妹は絵がうまいんだ。俺がここで何をしてるかは…まだ言えてない」')]),
+     C(['"그 돈, 살아야 쓸 수 있어."','"You have to live to spend it."','「そのお金、生きてないと使えないよ」'],2,[L('n','"…알아. 그래서 무서워."','"…I know. That\'s why I\'m scared."','「…分かってる。だから怖いんだ」')])]},
+{id:'dy2',who:'doyun',min:20,lines:[L(null,'{n}이(가) 편지지를 앞에 두고 펜을 굴린다. 첫 줄이 한참째 비어 있다.','{n} rolls a pen over a sheet of letter paper. The first line has been empty for a while.','{n}が便箋を前にペンを転がしている。一行目がずっと空のままだ。'),L('n','"동생한테 답장을 써야 하는데, 회사 얘긴 쓸 수가 없잖아. 뭘 써야 할지 모르겠어."','"I need to write back to my sister, but I can\'t write about work. I don\'t know what to say."','「妹に返事を書かなきゃいけないのに、会社の話は書けないだろ。何を書けばいいか分からない」')],
+ ch:[C(['"식당 수프가 얼마나 맛없는지 써."','"Write about how awful the cafeteria soup is."','「食堂のスープがどれだけまずいか書きなよ」'],8,[L('n','"푸핫, 그거 좋다. 회색인 데다 맛도 회색이라고 써야지."','"Pfft, that\'s good. Gray color, gray taste. I\'m writing that."','「ぷはっ、それいいね。灰色で味も灰色だって書こう」')],{sp:4,hum:2}),
+     C(['"동료 이야기를 써. 나도 넣어 줘."','"Write about your coworkers. Put me in."','「同僚の話を書きなよ。私も入れて」'],10,[L('n','"좋아. \'같은 날 들어온 사람이 있는데, 꽤 믿음직하다.\' …이 정도면 됐지?"','"Okay. \'Someone joined the same day as me, and they\'re pretty reliable.\' …That work?"','「よし。『同じ日に入った人がいて、けっこう頼りになる』…これでいい？」')],{hum:3})]},
+{id:'dy3',who:'doyun',min:40,lines:[L(null,'{n}이(가) 당신에게 작은 종이를 건넨다. 서툰 크레용 그림이다. 두 사람이 손을 잡고 있다.','{n} hands you a small sheet. A clumsy crayon drawing of two people holding hands.','{n}が小さな紙を差し出す。下手なクレヨンの絵だ。二人が手をつないでいる。'),L('n','"동생이 보냈어. 편지에 네 얘길 썼더니, 너 그려 줬대."','"My sister sent it. I wrote about you, so she drew you."','「妹が送ってきた。手紙にお前のことを書いたら、描いてくれたって」')],
+ ch:[C(['"사물함에 붙여 둘게."','"I\'ll tape it in my locker."','「ロッカーに貼っておくね」'],10,[L('n','"진짜? …동생한테 꼭 말해 줄게. 엄청 좋아할 거야."','"Really? …I\'ll tell her. She\'ll be thrilled."','「ほんと？…妹に絶対伝える。すごく喜ぶよ」')],{sp:6,hum:4}),
+     C(['"나도 답장 그림을 그려도 돼?"','"Can I draw one back?"','「私も返事の絵を描いていい？」'],10,[L(null,'둘이서 펜 하나로 낙서 같은 그림을 완성했다. {n}은(는) 그것을 조심스럽게 접었다.','The two of you finished a scribble of a drawing with one pen. {n} folded it carefully.','二人でペン一本で落書きのような絵を完成させた。{n}はそれを丁寧に畳んだ。')],{hum:5})]},
+{id:'dy4',who:'doyun',min:60,lines:[L(null,'늦은 밤, {n}의 목소리가 떨린다.','Late at night, {n}\'s voice is shaking.','夜遅く、{n}の声が震えている。'),L('n','"계산해 봤는데… 이대로면 3년이야. 3년을 여기서 버틸 수 있을까. 아니, 버텨도 되는 걸까."','"I did the math… three more years like this. Can I last three years here? No — should I even?"','「計算してみたら…このままだと3年。3年もここで耐えられるかな。いや、耐えていいのかな」')],
+ ch:[C(['"혼자 버티지 마. 같이 버티자."','"Don\'t hold on alone. Hold on with me."','「一人で耐えないで。一緒に耐えよう」'],10,[L('n','"…응. 같이라면, 할 수 있을 것 같아."','"…Yeah. If it\'s together, I think I can."','「…うん。一緒なら、できる気がする」')],{hum:4}),
+     C(['"네가 무너지면 동생이 슬퍼해. 쉬어도 돼."','"If you break, your sister will grieve. It\'s okay to rest."','「お前が壊れたら妹が悲しむ。休んでもいいんだよ」'],8,[L('n','"쉬어도 된다는 말, 여기 와서 처음 들었어."','"That\'s the first time anyone here told me I could rest."','「休んでいいって言葉、ここに来て初めて聞いた」')],{sp:5})]},
+{id:'dy5',who:'doyun',min:80,lines:[L(null,'{n}이(가) 수첩의 마지막 장을 보여 준다. 숫자 맨 아래에 이름 하나가 더 적혀 있다. 당신의 이름이다.','{n} shows you the last page of the notebook. Under the numbers there is one more name. Yours.','{n}が手帳の最後のページを見せる。数字の一番下に、名前がもう一つ書いてある。あなたの名前だ。'),L('n','"둥지 집, 방 하나 더 있는 걸로 계산했어. 놀러 오라는 거야. …매주."','"I budgeted for a place in the Nest with one extra room. That\'s an invitation. …Every week."','「巣の家、部屋が一つ多いので計算した。遊びに来いってこと。…毎週」')],
+ ch:[C(['"매주는 부족해. 매일 갈게."','"Every week isn\'t enough. I\'ll come every day."','「毎週じゃ足りない。毎日行く」'],10,[L('n','"하하, 그럼 계산 다시 해야겠네!"','"Haha, then I\'ve got to redo the math!"','「ははっ、じゃあ計算し直さなきゃ！」')],{hum:6,sp:6}),
+     C(['"그 집에 도착할 때까지, 내가 지킬게."','"I\'ll keep you safe until you reach that house."','「その家に着くまで、私が守るよ」'],10,[L('n','"나도. 서로 지키는 거야. 약속."','"Me too. We keep each other safe. Promise."','「俺も。お互いに守るんだ。約束」')],{hum:6,sp:6})]},
+// ── 미라 (지휘팀 사무직) ──
+{id:'mr1',who:'mira',min:0,lines:[L(null,'안내 데스크. {n}이(가) 서류 더미 사이로 고개를 내민다.','The front desk. {n} pokes her head out from between stacks of paperwork.','受付デスク。{n}が書類の山の間から顔を出す。'),L('n','"관리직 분이 사무직 자리에 오는 건 드문데. 혹시 서류 잘못 냈어요?"','"Managers rarely come to the clerks\' desk. Did you file something wrong?"','「管理職の方が事務の席に来るなんて珍しい。書類、間違えて出しました？」')],
+ ch:[C(['"그냥 얼굴 보러 왔어요."','"Just came to see you."','「顔を見に来ただけです」'],8,[L('n','"…그런 이유는 서식에 없는데." 미라가 볼을 긁었다. "그래도, 좋네요."','"…There\'s no form for that reason." She scratched her cheek. "Still, that\'s nice."','「…そんな理由は書式にないんですけど」頬をかいた。「でも、いいですね」')]),
+     C(['서류 정리를 돕는다','Help sort the paperwork','書類の整理を手伝う'],8,[L('n','"어머, 빠르시네요! 관리직 그만두면 사무직으로 오세요. 농담 아니에요."','"Oh, you\'re quick! If you ever quit managing, come be a clerk. Not joking."','「わ、速いですね！管理職を辞めたら事務に来てください。冗談じゃないですよ」')],{st:{T:1}})]},
+{id:'mr2',who:'mira',min:20,lines:[L(null,'{n}이(가) 종이봉투를 내민다. 버터 냄새가 난다.','{n} holds out a paper bag. It smells of butter.','{n}が紙袋を差し出す。バターの匂いがする。'),L('n','"퇴근길 빵집 크루아상이에요. 겹이 몇 장인지 세어 봤는데, 스물일곱 장. 오늘은 운이 좋은 날이래요."','"A croissant from the bakery on my way home. I counted the layers — twenty-seven. They say that means a lucky day."','「帰り道のパン屋のクロワッサンです。層を数えたら二十七枚。今日は運がいい日なんですって」')],
+ ch:[C(['반을 나눠 같이 먹는다','Split it and eat together','半分こして一緒に食べる'],10,[L('n','"반으로 나누면 행운도 반씩이에요. 그래도 둘 다 사는 쪽이 낫죠."','"Half each means half the luck each. Still better than only one of us making it."','「半分こしたら運も半分ずつ。それでも二人とも生き残るほうがいいですよね」')],{sp:5,hp:5}),
+     C(['"그 미신, 누가 정했어요?"','"Who made up that superstition?"','「そのジンクス、誰が決めたんですか？」'],6,[L('n','"제가요. 방금." 미라가 웃었다. "여기선 믿을 걸 직접 만들어야 해요."','"Me. Just now." She laughed. "In here you have to make your own things to believe in."','「私です。今」笑った。「ここでは信じるものを自分で作らなきゃ」')],{hum:3})]},
+{id:'mr3',who:'mira',min:40,lines:[L(null,'퇴근 시간이 한참 지났다. {n}이(가) 서랍 속 권총을 내려다보고 있다.','Long after closing time, {n} is staring at the pistol in her drawer.','退勤時間をとうに過ぎた。{n}が引き出しの拳銃を見下ろしている。'),L('n','"사무직 매뉴얼엔 이걸 언제 쓰는지 안 적혀 있어요. \'그 상황이 오면 알게 된다\'래요."','"The clerk manual doesn\'t say when to use this. Just \'you\'ll know when the time comes.\'"','「事務のマニュアルには、これをいつ使うか書いてないんです。『その時が来れば分かる』って」'),L('n','"그 상황이 안 오게 해 줄 수 있어요?"','"Can you make sure that time never comes?"','「その時が来ないようにしてくれますか？」')],
+ ch:[C(['"약속해요. 격리실은 우리가 막을게요."','"I promise. We\'ll hold the units."','「約束します。収容室は私たちが止めます」'],10,[L('n','"관리직 분들은 다 그렇게 말해요. …근데 당신 말은 왠지 믿고 싶네요."','"Managers all say that. …But somehow I want to believe you."','「管理職の方はみんなそう言うんです。…でもあなたの言葉は、なぜか信じたい」')],{hum:4}),
+     C(['서랍을 같이 닫는다','Close the drawer together','一緒に引き出しを閉める'],8,[L(null,'서랍이 닫히는 소리가 생각보다 작았다. {n}은(는) 한숨 대신 웃음을 골랐다.','The drawer closed more quietly than you expected. {n} chose a smile instead of a sigh.','引き出しが閉まる音は思ったより小さかった。{n}はため息の代わりに笑みを選んだ。')],{sp:4})]},
+{id:'mr4',who:'mira',min:60,lines:[L(null,'{n}이(가) 손바닥만 한 수첩을 건넨다. 직원들의 이름과 생일이 적혀 있다.','{n} hands you a palm-sized notebook. Employee names and birthdays.','{n}が手のひらほどの手帳を渡す。職員の名前と誕生日が書いてある。'),L('n','"죽은 사람 기록은 회사가 남겨요. 저는 산 사람 기록을 남겨요. 당신 생일도 있어요."','"The company keeps records of the dead. I keep records of the living. Your birthday\'s in there too."','「亡くなった人の記録は会社が残します。私は生きてる人の記録を残すんです。あなたの誕生日もありますよ」')],
+ ch:[C(['"제 생일엔 크루아상 부탁해요."','"A croissant on my birthday, please."','「誕生日にはクロワッサンをお願いします」'],10,[L('n','"스물일곱 겹짜리로 찾아 둘게요. 그날까지 살아 있어야 받을 수 있어요."','"I\'ll find one with twenty-seven layers. You have to be alive that day to get it."','「二十七層のを探しておきます。その日まで生きていないと受け取れませんよ」')],{hum:5,sp:5}),
+     C(['"미라 씨 생일은요? 제가 적어 둘게요."','"And yours, Mira? I\'ll write it down."','「ミラさんの誕生日は？私が書いておきます」'],10,[L('n','"…아무도 안 물어봤어요, 그거." 그녀는 한참 있다가 날짜를 말했다.','"…No one\'s ever asked me that." After a long pause, she told you the date.','「…誰にも聞かれたことないです、それ」しばらくして、彼女は日付を言った。')],{hum:6})]},
+{id:'mr5',who:'mira',min:80,lines:[L(null,'안내 데스크 위에 꽃 한 송이가 꽂혀 있다. 시설 어디에서도 꽃은 자라지 않는다.','A single flower stands on the front desk. Nothing grows anywhere in this facility.','受付デスクに花が一輪挿してある。施設のどこにも花は咲かない。'),L('n','"둥지 꽃집에서 샀어요. 이유요? 당신이 매일 돌아오니까요. 그게 기념할 일이라서요."','"Bought it at a florist in the Nest. Why? Because you come back every day. That\'s worth celebrating."','「巣の花屋で買いました。理由？あなたが毎日帰ってくるから。それって記念すべきことだから」')],
+ ch:[C(['"내일도 돌아올게요. 모레도."','"I\'ll be back tomorrow. And the day after."','「明日も帰ってきます。明後日も」'],10,[L('n','"그럼 꽃도 매일 바꿔야겠네요. 월급이 꽃값으로 다 나가겠어요." 웃음소리가 데스크를 채웠다.','"Then I\'ll have to change the flower every day. My whole salary will go to flowers." Her laughter filled the desk.','「じゃあ花も毎日替えなきゃ。給料が全部花代になっちゃう」笑い声がデスクを満たした。')],{hum:6,sp:8})]},
+// ── 다른 직원: 성격(가장 높은 가치관)별 ──
+{id:'gF1',who:'F',min:0,lines:[L(null,'{n}이(가) 복도에서 어깨를 돌리며 몸을 푼다.','{n} is loosening up in the corridor, rolling their shoulders.','{n}が廊下で肩を回して体をほぐしている。'),L('n','"선배, 오늘 진압 봤어요? 저 놈 다음엔 제가 먼저 갈 거예요."','"Did you see that suppression today? Next time that thing gets out, I\'m going first."','「先輩、今日の鎮圧見ました？次にあいつが出たら、俺が先に行きますよ」')],
+ ch:[C(['"용감하네. 대신 혼자 가진 마."','"Brave. Just don\'t go alone."','「勇敢だね。でも一人では行かないで」'],8,[L('n','"…네. 선배 뒤에 붙어 갈게요."','"…Yes. I\'ll stick behind you."','「…はい。先輩の後ろについて行きます」')]),
+     C(['"먼저 가는 사람이 먼저 죽어."','"The first in is the first to die."','「先に行く人が先に死ぬよ」'],2,[L('n','"…그건 알아요. 그래도 누군가는 가야 하잖아요."','"…I know. But someone has to go."','「…分かってます。でも誰かが行かなきゃ」')])]},
+{id:'gF2',who:'F',min:40,lines:[L(null,'{n}의 팔에 새 흉터가 있다. 본인은 자랑스러운 모양이다.','A new scar on {n}\'s arm. They seem proud of it.','{n}の腕に新しい傷跡がある。本人は誇らしげだ。'),L('n','"이거요? 선배 대신 맞은 거예요. 억울하면 다음엔 선배가 저 대신 맞아 주세요."','"This? I took that one for you. If it bugs you, take one for me next time."','「これですか？先輩の代わりに受けたやつです。悔しかったら次は先輩が俺の代わりに受けてください」')],
+ ch:[C(['"고마워. 다음은 내 차례야."','"Thanks. Next one\'s on me."','「ありがとう。次は私の番だ」'],10,[L('n','"농담인데요! …그래도 그 말, 기억해 둘게요."','"I was joking! …But I\'ll remember you said that."','「冗談ですって！…でもその言葉、覚えておきます」')],{hum:3}),
+     C(['상처를 소독해 준다','Clean the wound for them','傷を消毒してあげる'],8,[L('n','"아야! …살살 해 주세요, 선배."','"Ow! …Go easy, will you?"','「いてっ！…優しくしてくださいよ、先輩」')],{st:{T:1}})]},
+{id:'gP1',who:'P',min:0,lines:[L(null,'{n}이(가) 관찰 보고서에 형광펜을 긋고 있다. 줄이 너무 많아서 보고서가 노랗다.','{n} is highlighting an observation report. So many lines the page has turned yellow.','{n}が観察報告書に蛍光ペンを引いている。線が多すぎて報告書が黄色い。'),L('n','"이 환상체, 작업 시간대마다 반응이 달라요. 아무도 정리를 안 했더라고요."','"This Abnormality reacts differently by time of day. Nobody\'s compiled it."','「このアブノーマリティ、作業時間帯ごとに反応が違うんです。誰もまとめてなくて」')],
+ ch:[C(['"같이 정리해 보자."','"Let\'s compile it together."','「一緒にまとめよう」'],8,[L('n','"정말요? 그럼 표부터 만들게요!" 눈이 반짝였다.','"Really? I\'ll start with a table!" Their eyes lit up.','「本当ですか？じゃあ表から作ります！」目が輝いた。')],{st:{P:1}}),
+     C(['"너무 깊이 알면 위험해."','"Knowing too much is dangerous."','「深く知りすぎると危ないよ」'],2,[L('n','"모르는 게 더 위험해요. 적어도 저한텐요."','"Not knowing is worse. For me, anyway."','「知らないほうが危ないです。少なくとも私には」')])]},
+{id:'gP2',who:'P',min:40,lines:[L(null,'{n}이(가) 정리한 표를 내민다. 맨 아래 칸에 당신 이름이 공동 작성자로 적혀 있다.','{n} hands you the finished table. In the bottom row, your name is listed as co-author.','{n}がまとめた表を差し出す。一番下の欄にあなたの名前が共同作成者として書いてある。'),L('n','"선배가 알려 준 패턴 덕분이에요. 관리팀에 올렸더니 다른 부서도 쓰기로 했대요."','"Thanks to the pattern you spotted. I sent it up and other departments are using it now."','「先輩が教えてくれたパターンのおかげです。管理チームに出したら、他の部署も使うことになったって」')],
+ ch:[C(['"네가 다 한 거야."','"You did all the work."','「全部お前がやったんだよ」'],10,[L('n','"그런 말 들으려고 한 거 아닌데… 좋네요, 이 말."','"I didn\'t do it to hear that… but it\'s nice to hear."','「そう言われたくてやったわけじゃないけど…いいですね、その言葉」')],{hum:3,sp:3})]},
+{id:'gT1',who:'T',min:0,lines:[L(null,'{n}이(가) 휴게실에서 차를 우리고 있다. 잔이 두 개다.','{n} is brewing tea in the break room. There are two cups.','{n}が休憩室でお茶を淹れている。カップが二つある。'),L('n','"오실 것 같아서 하나 더 준비했어요. 오늘 많이 힘드셨죠?"','"I had a feeling you\'d come, so I made an extra. Rough day, wasn\'t it?"','「いらっしゃる気がして、もう一つ用意しました。今日は大変でしたよね？」')],
+ ch:[C(['"고마워요. 같이 마셔요."','"Thank you. Let\'s drink together."','「ありがとう。一緒に飲もう」'],8,[L('n','"네. 여기선 차가 식기 전에 마시는 게 사치예요."','"Yes. In here, drinking tea before it gets cold is a luxury."','「はい。ここではお茶が冷める前に飲むのが贅沢なんです」')],{sp:4}),
+     C(['"남 걱정보다 자기 걱정을 해요."','"Worry about yourself, not others."','「他人より自分の心配をしなよ」'],3,[L('n','"남 걱정을 해야 제 걱정을 잊거든요."','"Worrying about others is how I forget my own worries."','「他人の心配をしてると、自分の心配を忘れられるんです」')])]},
+{id:'gT2',who:'T',min:40,lines:[L(null,'{n}이(가) 당신의 정신력 수치를 조용히 본다.','{n} quietly glances at your sanity readout.','{n}があなたの精神力の数値を静かに見る。'),L('n','"요즘 잘 못 주무시죠. 제가 쓰는 방법 알려 드릴까요? 숫자를 거꾸로 세는 거예요. 백부터."','"You haven\'t been sleeping well. Want my trick? Count backwards. From a hundred."','「最近よく眠れてないですよね。私の方法、教えましょうか？数字を逆に数えるんです。百から」')],
+ ch:[C(['"오늘 밤 해 볼게요."','"I\'ll try it tonight."','「今夜やってみます」'],10,[L('n','"구십쯤에서 잠드시면 성공이에요. 저는 아직 칠십까지 가요."','"If you\'re out by ninety, that\'s a success. I still make it to seventy."','「九十くらいで眠れたら成功です。私はまだ七十まで行っちゃいます」')],{sp:6})]},
+{id:'gJ1',who:'J',min:0,lines:[L(null,'{n}이(가) 근무표를 손가락으로 짚으며 한숨을 쉰다.','{n} sighs, tracing the duty roster with a finger.','{n}が勤務表を指でなぞりながらため息をつく。'),L('n','"위험한 격리실은 늘 같은 사람한테 배정돼요. 이건 공정하지 않아요."','"The dangerous units always go to the same people. It isn\'t fair."','「危険な収容室はいつも同じ人に割り当てられるんです。公平じゃない」')],
+ ch:[C(['"다음엔 내가 맡을게."','"I\'ll take the next one."','「次は私が担当するよ」'],8,[L('n','"…말로만이 아니라면, 믿을게요."','"…If you mean it, I\'ll believe you."','「…口だけじゃないなら、信じます」')],{st:{J:1}}),
+     C(['"회사는 원래 공정하지 않아."','"The company was never fair."','「会社は元々公平じゃないよ」'],-2,[L('n','"알아요. 그래서 우리라도 공정해야 하는 거예요."','"I know. That\'s why we have to be."','「分かってます。だから私たちだけでも公平でいなきゃ」')])]},
+{id:'gJ2',who:'J',min:40,lines:[L(null,'{n}이(가) 당신 이름이 적힌 근무표 칸을 지우고 자기 이름을 적는다.','{n} erases your name from a slot on the roster and writes their own.','{n}が勤務表のあなたの名前を消して、自分の名前を書く。'),L('n','"어제 약속 지키셨잖아요. 오늘은 제 차례예요. 이게 공정한 거예요."','"You kept your word yesterday. Today it\'s my turn. That\'s fair."','「昨日、約束を守ってくれましたよね。今日は私の番です。これが公平です」')],
+ ch:[C(['"그럼 내일은 다시 내 차례."','"Then tomorrow it\'s mine again."','「じゃあ明日はまた私の番」'],10,[L('n','"네. 계속 그렇게 해요, 우리."','"Yes. Let\'s keep it that way, us two."','「はい。ずっとそうしましょう、私たち」')],{hum:4})]},
+// ── 상황 장면 (누구와도) ──
+{id:'xD',who:'any',min:0,once:false,cond:()=>diedToday(),lines:[L(null,'오늘 누군가가 돌아오지 못했다. {n}은(는) 빈 사물함 앞에 서 있다.','Someone didn\'t come back today. {n} is standing in front of an empty locker.','今日、誰かが帰ってこなかった。{n}は空のロッカーの前に立っている。'),L('n','"이름표 떼는 거, 아무도 안 하더라고요. 그래서 제가 하려고요."','"Nobody takes the name tag down. So I\'m going to."','「名札を外すの、誰もやらないんです。だから私がやろうと思って」')],
+ ch:[C(['같이 이름표를 떼고 묵념한다','Take it down together and bow your heads','一緒に名札を外して黙祷する'],8,[L(null,'짧은 묵념. 이름표는 {n}의 주머니로 들어갔다. 버리지 않겠다고 했다.','A short silence. The tag went into {n}\'s pocket. They said they won\'t throw it away.','短い黙祷。名札は{n}のポケットに入った。捨てないと言った。')],{hum:5,sp:-2}),
+     C(['"오늘은 그냥 쉬어."','"Just rest today."','「今日はもう休んで」'],5,[L('n','"…네. 그 말이 필요했어요."','"…Okay. I needed to hear that."','「…はい。その言葉が欲しかったんです」')],{sp:3})]},
+{id:'xS',who:'any',min:20,once:false,cond:()=>G.sp<=-15,lines:[L(null,'{n}이(가) 당신 얼굴을 보더니 말없이 의자를 내준다.','{n} takes one look at your face and silently offers you a chair.','{n}はあなたの顔を見るなり、黙って椅子を差し出す。'),L('n','"선배, 오늘 표정 진짜 안 좋아요. 아무 말 안 해도 되니까 좀 앉아 있어요."','"You look terrible today. You don\'t have to say anything. Just sit for a bit."','「先輩、今日ほんとに顔色悪いですよ。何も言わなくていいから、少し座っててください」')],
+ ch:[C(['고맙다고 하고 앉는다','Thank them and sit','お礼を言って座る'],8,[L(null,'의자에 앉자 몸이 생각보다 무거웠다. {n}은(는) 옆에서 아무것도 묻지 않았다.','Your body felt heavier than you thought once you sat. {n} asked nothing.','座ると体は思ったより重かった。{n}は隣で何も聞かなかった。')],{sp:8}),
+     C(['"괜찮아."','"I\'m fine."','「大丈夫」'],0,[L('n','"안 괜찮은 거 알아요. 그래도… 알겠어요."','"I know you\'re not. But… okay."','「大丈夫じゃないの、分かってます。でも…分かりました」')],{sp:3})]},
+];
+// 볼 장면이 없을 때: 짧은 일상 대화 (반복 가능)
+const SMALL=[['{n}과(와) 컵라면을 나눠 먹었다. 국물 맛에 대해 오래 논쟁했다.','You shared cup noodles with {n} and argued about the broth for a long time.','{n}とカップ麺を分け合った。スープの味について長々と言い合った。'],['{n}이(가) 둥지에서 들은 소문을 늘어놓았다. 반은 거짓말 같았지만 웃겼다.','{n} rattled off rumors from the Nest. Half sounded made up, but it was funny.','{n}が巣で聞いた噂を並べ立てた。半分は嘘っぽかったけど笑えた。'],['{n}과(와) 자판기 앞에서 오늘 있었던 일을 하나씩 말했다. 말하고 나니 조금 가벼워졌다.','At the vending machine you and {n} went over the day one thing at a time. It felt lighter after.','{n}と自販機の前で今日あったことを一つずつ話した。話すと少し軽くなった。'],['{n}이(가) 훈련실에서 자세를 봐 달라고 했다. 둘 다 땀에 젖어 웃었다.','{n} asked you to check their form in the training room. You both ended up soaked and laughing.','{n}に訓練室でフォームを見てほしいと頼まれた。二人とも汗だくで笑った。']];
+
+/* ---------------- 진행 ---------------- */
+function seen(t){G.vn112=G.vn112||{};const k=t.co||t.a.id;return G.vn112[k]=G.vn112[k]||[]}
+function pickScene(t){const v=relOf(t),sv=seen(t),who=t.co||arch(t.a);
+  const ok=s=>(s.who===who||s.who==='any')&&v>=s.min&&!(s.once!==false&&sv.includes(s.id))&&(!s.cond||s.cond());
+  G.vnCtx=G.vnCtx||{};const ctx=S.filter(s=>s.who==='any'&&ok(s)&&G.vnCtx[s.id]!==G.day);
+  if(ctx.length&&chance(.6))return ctx[0];
+  const own=S.filter(s=>s.who===who&&ok(s)).sort((x,y)=>x.min-y.min);return own[0]||null}
+function nm(t){return t.co?CO[t.co].n:t.a.n}
+function fill(s,t){return String(s).replace(/\{n\}/g,nm(t)).replace(/\{me\}/g,(G.name||T('나','me','私')))}
+function hearts(v){const k=tierOf(v);return '♥'.repeat(k)+'♡'.repeat(4-k)}
+function head(t){const v=relOf(t);return `<div class="vn112h"><b>${nm(t)}</b><span class="vn112t">${tx(TIERS[tierOf(v)])}</span><span class="vn112hp" aria-label="${T('관계','Relationship','関係')} ${v}">${hearts(v)}</span><small>${T('유대','Bond','絆')} ${v}</small></div>`}
+function lineHTML(l,t){const sp=l.s==='n'?nm(t):l.s==='me'?(G.name||T('나','Me','私')):null;return `<div class="vn112l ${l.s?'sp':'na'}">${sp?`<em>${sp}</em>`:''}<p>${fill(tx(l.t),t)}</p></div>`}
+function applyFx(fx){if(!fx)return;if(fx.sp)addSp(fx.sp);if(fx.hp)addHp(fx.hp);if(fx.hum)hum(fx.hum);if(fx.st)for(const k in fx.st){try{gainStat(k,fx.st[k])}catch(e){}}}
+function play(t,sc,done){const v0=relOf(t);let i=0;const lines=sc.lines;
+  const draw=(el)=>{const box=el.querySelector('.vn112b');box.innerHTML=lines.slice(0,i+1).map(l=>lineHTML(l,t)).join('');box.scrollTop=box.scrollHeight;
+    const foot=el.querySelector('.vn112f');
+    if(i<lines.length-1){foot.innerHTML=`<button class="btn" data-nx>${T('다음','Next','次へ')} ▶</button><button class="btn ghost small" data-all>${T('모두 보기','Show all','すべて表示')}</button>`;
+      foot.querySelector('[data-nx]').onclick=()=>{i++;draw(el)};foot.querySelector('[data-all]').onclick=()=>{i=lines.length-1;draw(el)}}
+    else{foot.innerHTML=`<div class="choices one">${sc.ch.map((c,j)=>`<button class="ch" data-c="${j}"><b>${fill(tx(c.l),t)}</b></button>`).join('')}</div>`;
+      foot.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>choose(el,sc.ch[+b.dataset.c]))}};
+  const choose=(el,c)=>{addRel(t,c.d);applyFx(c.fx);if(sc.who==='any'){G.vnCtx=G.vnCtx||{};G.vnCtx[sc.id]=G.day}const v1=relOf(t);const box=el.querySelector('.vn112b');
+    box.insertAdjacentHTML('beforeend',`<div class="vn112l me"><em>${G.name||T('나','Me','私')}</em><p>${fill(tx(c.l),t)}</p></div>`+c.rep.map(l=>lineHTML(l,t)).join(''));box.scrollTop=box.scrollHeight;
+    const up=tierOf(v1)>tierOf(v0),dn=tierOf(v1)<tierOf(v0);el.querySelector('.vn112h').outerHTML=head(t);
+    el.querySelector('.vn112f').innerHTML=`<p class="note vn112r">${T(`유대 ${v1-v0>=0?'+':''}${v1-v0}`,`Bond ${v1-v0>=0?'+':''}${v1-v0}`,`絆 ${v1-v0>=0?'+':''}${v1-v0}`)}${up?` · <b>${T(`관계가 「${tx(TIERS[tierOf(v1)])}」(으)로 깊어졌다`,`Your relationship deepened to "${tx(TIERS[tierOf(v1)])}"`,`関係が「${tx(TIERS[tierOf(v1)])}」に深まった`)}</b>`:''}${dn?` · ${T('관계가 조금 식었다','The relationship cooled a little','関係が少し冷えた')}`:''}</p><button class="btn" data-end>${T('하루를 마친다','End the day','一日を終える')}</button>`;
+    el.querySelector('[data-end]').onclick=()=>{closePop();done()}};
+  popup(T(`${nm(t)}와(과)의 시간`,`Time with ${nm(t)}`,`${nm(t)}との時間`),`${head(t)}<div class="vn112b" aria-live="polite"></div><div class="vn112f"></div>`,el=>{el.classList.add('vn112');draw(el)},{wide:true})}
+function talkTo(t){const sc=pickScene(t);const base=Math.round((6+relOf(t)/20)*(G.dept==='safety'?1.3:1));
+  const finish=()=>{try{log(T(`${nm(t)}과(와) 이야기를 나눴다.`,`You talked with ${nm(t)}.`,`${nm(t)}と話をした。`),'q');addSp(base);log(T(`정신력 +${base}.`,`Sanity +${base}.`,`精神力 +${base}。`),'good')}catch(e){}endDay()};
+  if(!sc){const s=pick(SMALL);addRel(t,3);hum(2);log(fill(tx(s),t),'q');return finish()}
+  play(t,sc,()=>{const sv=seen(t);if(!sv.includes(sc.id))sv.push(sc.id);finish()})}
+
+/* ---------------- 「동료를 찾아간다」 화면 교체 ---------------- */
+visit=function(){const cos=Object.keys(CO).filter(k=>coAlive(k));
+  const others=G.agents.filter(a=>a.alive&&!a.out&&!a.co).sort((x,y)=>((y.rel??10)-(x.rel??10))||((y.dept===G.dept)-(x.dept===G.dept))||agRank(y)-agRank(x)).slice(0,10);
+  const row=t=>{const v=relOf(t);const unseen=!!pickScene(t);return `${tx(TIERS[tierOf(v)])} ${hearts(v)} · ${T('유대','Bond','絆')} ${v}${unseen?` · <b>${T('새 이야기','New story','新しい話')}</b>`:''}`};
+  setPanel(T('누구를 찾아갈까','Who will you visit?','誰を訪ねようか'),T('관계가 깊어질수록 새로운 이야기가 열려요. 고른 말에 따라 유대가 오르거나 식어요.','Deeper bonds open new stories. What you say raises or cools the bond.','関係が深まるほど新しい話が開きます。選んだ言葉で絆が上がったり冷えたりします。'),
+   cos.map(k=>{const t={co:k};const st=G.flags['bond_'+k+'_1']?(G.flags['bond_'+k+'_2']?2:1):0;const due=(st===0&&G.rel[k]>=60)||(st===1&&G.rel[k]>=80);
+     return {l:`${CO[k].n}${due?' ★ '+T('특별한 이야기','Special story','特別な話'):''}`,s:`${CO[k].r} · ${row(t)}`,cls:due?'prim':'',f:()=>{
+       if(due){const ev=BOND[k][st];return setPanel(T(`${CO[k].n}와(과)의 시간`,`Time with ${CO[k].n}`,`${CO[k].n}との時間`),'',ev.c.map(([l,e,r])=>({l,f:()=>{fx(e);log(r,'q');G.flags['bond_'+k+'_'+(st+1)]=1;endDay()}})),'',{t:ev.t})}
+       talkTo(t)}}})
+   .concat(others.map(a=>({l:a.n,s:`${DEPT[a.dept]?DEPT[a.dept].n:''} · ${ROMAN[agRank(a)]} · ${row({a})}`,f:()=>talkTo({a})})))
+   .concat([{l:T('돌아간다','Go back','戻る'),f:evening}]))};
+
+/* ---------------- 관계의 보상: 신뢰 이상 직원은 함께 싸울 때 위력 +1 ---------------- */
+mkAgentAlly=(f=>function(ag){const a=f.apply(this,arguments);try{const v=ag.co?(G.rel[ag.co]??0):(ag.rel??10);if(v>=60)a.pow=(a.pow||0)+1}catch(e){}return a})(mkAgentAlly);
+
+const st=document.createElement('style');st.textContent=`
+.vn112 .pop-card{max-width:640px}
+.vn112h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.vn112h b{font-size:17px}.vn112t{font-size:12px;padding:1px 8px;border:1px solid var(--line2);border-radius:999px;color:var(--fg2,var(--fg))}
+.vn112hp{color:var(--c-red,#d6453a);letter-spacing:2px}.vn112h small{color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.vn112b{display:grid;gap:10px;max-height:min(46vh,420px);overflow-y:auto;padding:2px 2px 6px}
+.vn112l{line-height:1.7;animation:vn112in .22s cubic-bezier(.23,1,.32,1)}
+.vn112l em{display:block;font-style:normal;font-size:12px;color:var(--accent);margin-bottom:2px}
+.vn112l.na p{color:var(--muted);font-style:italic}.vn112l.me{padding-left:12px;border-left:2px solid var(--accent)}
+.vn112f{margin-top:12px;display:grid;gap:8px}.vn112f .row,.vn112f{justify-items:start}
+@keyframes vn112in{from{opacity:0;transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){.vn112l{animation:none}}`;document.head.appendChild(st);
+})();
+/* ============ v113: 클리포트 폭주 레벨 하한 — 09:00 Lv1에서 시작해 02:00에는 Lv8 이상 ============
+   게이지가 느리게 차더라도 시각에 맞춰 레벨을 끌어올린다 (한 번에 한 단계씩). 환상체 탈출 중에는 미뤘다가 진압 뒤에 따라잡는다. */
+(function(){
+const T0=540,T2=1560; // 09:00 · 다음 날 02:00
+window.lvFloor113=function(){if(!G||typeof G.min!=='number')return 1;return Math.max(1,Math.min(10,1+Math.floor(7*(G.min-T0)/(T2-T0))))};
+tick=(f=>function(){const r=f.apply(this,arguments);try{
+  if(G&&!G.dead&&!G.ended&&(G.phase==='work'||G.phase==='ordeal')&&!(typeof B!=='undefined'&&B&&!B.done)&&!(window.escOn110&&escOn110())&&(G.mLevel||1)<10&&(G.mLevel||1)<lvFloor113()){G.gauge=0;levelUp()}
+}catch(e){}return r})(tick);
+})();
+/* ============ v114: 붉은 안개(1·2페이즈)·조율자·발톱 합 위력 상향 ============ */
+(function(){
+window.BK114=window.BK114||{rm:1.2,ar:1.2,claw:2.2}; // 시뮬레이션(최고 능력치·ALEPH 장비·자동 배정, 30회) 클리어율 목표 10% 안팎
+function sc(u,k){(u.skills||[]).forEach(s=>{if(!s||!(s.coins>0)||s._k114)return;s._k114=1;s.base=Math.max(1,Math.round(s.base*k));if(s.cp>0)s.cp=Math.max(1,Math.round(s.cp*k))})}
+function apply(u){if(!u||u.ally||u.hp<=0||u.finalArb)return;
+  if(u.lcBoss==='붉은 안개'){if((u.phase||1)<=2)sc(u,BK114.rm)}
+  else if(u.lcBoss==='조율자')sc(u,BK114.ar);
+  else if(u.claw)sc(u,BK114.claw)}
+const run=()=>{try{if(B&&!B.done)B.units.forEach(apply)}catch(e){}};
+startBattle=(f=>function(){const r=f.apply(this,arguments);run();try{renderBattle()}catch(e){}return r})(startBattle);
+newTurn=(f=>function(){const r=f.apply(this,arguments);run();return r})(newTurn);
 })();
 </script>
 
