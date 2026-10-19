@@ -1569,7 +1569,7 @@ function morningEvent(next){
   if(chance(.3)){const ks=openDepts();const k=chance(.6)?G.dept:pick(ks);const S=SEPH[k];
     if(S&&DEPT[k])return setPanel('출근 전','',[
       {l:'인사를 받는다',s:'정신력 +3',f:()=>{addSp(3);next()}},
-      {l:'요즘 괜찮으시냐고 묻는다',s:'마음의 온기 +',f:()=>{hum(3);log(`${S.n}은(는) 잠시 말이 없었다. "그런 질문은… 처음 받아봐요."`,'seph');next()}}],'',{seph:1,spk:`세피라 · ${S.n} (${DEPT[k].n})`,t:pick(S.hi)})}
+      {l:'요즘 괜찮으시냐고 묻는다',s:'마음의 온기 +',f:()=>{hum(3);log(typeof SLM128==='function'?SLM128(k,S.n):`${S.n}은(는) 잠시 말이 없었다. "그런 질문은… 처음 받아봐요."`,'seph');next()}}],'',{seph:1,spk:`세피라 · ${S.n} (${DEPT[k].n})`,t:pick(S.hi)})}
   const pool=MORNING.filter(m=>m.w()&&!(m.once&&G.flags['m_'+m.once]));
   const ev=pick(pool);if(ev.once)G.flags['m_'+ev.once]=1;
   setPanel('출근 전',`DAY ${G.day} · 근무 시작까지 잠깐의 시간`,ev.c.map(c=>({l:c.l,s:c.s,f:()=>{fx(c.e);log(c.r,'q');if(c.x)c.x();next()}})),'',{t:ev.t});
@@ -2887,15 +2887,15 @@ function misCheck(){const m=G.mis;if(!m||m.res||m.day!==G.day)return;const D=MIS
   if(misProg()>=D.need&&!D.end){m.res='ok';m.show=1;save();setTimeout(misShow,30)}else if(!G.dead&&$("#daybox"))renderTop()}
 function misShow(){const m=G.mis;if(!m||!m.show||B||RP||POP)return;m.show=0;const D=MIS[m.k],S=SEPH[m.k];
   if(m.res==='ok'){D.rf();G.sephRel=G.sephRel||{};G.sephRel[m.k]=(G.sephRel[m.k]||0)+1;hum(2);log(`${S.n}의 부탁을 해냈다 — 「${D.t}」 · ${D.rw}.`,'good');save();
-    popChoices(`${S.n} · 「${D.t}」 완료`,`보상: ${D.rw}`,[{l:'"별말씀을요."',f:()=>{render()}},{l:'"다음에도 불러 주세요."',f:()=>{hum(1);log(`${S.n}: "…그 말, 기록해 둘게요."`,'q');render()}}],'',{t:`<b>${S.n}</b> ${D.ok}`,seph:1})}
-  else{log(`${S.n}의 부탁 「${D.t}」을(를) 오늘 끝내지 못했다.`,'warn');popChoices(`${S.n} · 「${D.t}」`,'벌칙은 없다. 다음 기회가 또 온다.',[{l:'"미안해요. 다음엔 꼭."',f:()=>render()}],'',{t:`<b>${S.n}</b> ${pick(['"괜찮아요. 오늘은 그런 날이었던 거죠."','"…다음에 다시 부탁하지."','"하루가 다 그렇게 흘러가지."'])}`,seph:1})}}
+    popChoices(`${S.n} · 「${D.t}」 완료`,`보상: ${D.rw}`,[{l:'"별말씀을요."',f:()=>{render()}},{l:'"다음에도 불러 주세요."',f:()=>{hum(1);log(`${S.n}: ${SL128(m.k,'thx','"…그 말, 기록해 둘게요."')}`,'q');render()}}],'',{t:`<b>${S.n}</b> ${D.ok}`,seph:1})}
+  else{log(`${S.n}의 부탁 「${D.t}」을(를) 오늘 끝내지 못했다.`,'warn');popChoices(`${S.n} · 「${D.t}」`,'벌칙은 없다. 다음 기회가 또 온다.',[{l:'"미안해요. 다음엔 꼭."',f:()=>render()}],'',{t:`<b>${S.n}</b> ${SL128(m.k,'fail',pick(['"괜찮아요. 오늘은 그런 날이었던 거죠."','"…다음에 다시 부탁하지."','"하루가 다 그렇게 흘러가지."']))}`,seph:1})}}
 function misOffer(k,self){
   const D=MIS[k],S=SEPH[k];if(!D)return;G.misOffered=G.day;
   const accept=()=>{G.mis={k,day:G.day,p:0,d0:G.deaths,h0:G.hum,s0:stSum()};log(`${S.n}의 부탁을 받았다 — 「${D.t}」: ${D.goal(G.mis)}.`,'good');toast(`${S.n}의 부탁 · ${D.t}`);save();render();misCheck()};
   const decline=()=>{log(`${S.n}: ${D.no}`,'q');save();render()};
   popChoices(`${S.n} · ${DEPT[k].n}`,`부탁: ${D.goal({set:[],h0:G.hum,s0:stSum()})} · 오늘 안에 · 보상 ${D.rw}`,[
     {l:'"맡겨 주세요."',s:'부탁을 받아들인다',f:accept},
-    {l:'"왜 저한테 부탁하세요?"',s:'조금 더 이야기를 듣는다',f:()=>popChoices(`${S.n} · ${DEPT[k].n}`,'',[{l:'"알겠어요. 해볼게요."',f:accept},{l:'"오늘은 어려울 것 같아요."',f:decline}],'',{t:`<b>${S.n}</b> ${pick(['"…당신은 기록을 끝까지 읽는 사람이니까요."','"다른 사람들은 바빠 보였거든요. 당신도 바쁘겠지만… 당신은 들어줄 것 같았어요."','"이유가 꼭 필요한가? …좋아, 네가 오늘 살아남을 것 같아서다."','"네 눈이 아직 탁해지지 않았으니까."'])}`,seph:1})},
+    {l:'"왜 저한테 부탁하세요?"',s:'조금 더 이야기를 듣는다',f:()=>popChoices(`${S.n} · ${DEPT[k].n}`,'',[{l:'"알겠어요. 해볼게요."',f:accept},{l:'"오늘은 어려울 것 같아요."',f:decline}],'',{t:`<b>${S.n}</b> ${SL128(k,'why',pick(['"…당신은 기록을 끝까지 읽는 사람이니까요."','"네 눈이 아직 탁해지지 않았으니까."']))}`,seph:1})},
     {l:'"오늘은 어려울 것 같아요."',s:'정중히 거절한다 · 불이익 없음',f:decline}],'',{t:`${self?'':`<span class="spk">${S.n}이(가) 당신을 불러 세운다.</span><br>`}<b>${S.n}</b> ${D.ask.join(' ')}`,seph:1})}
 function misWho(){return openDepts().filter(k=>MIS[k])}
 function visitSeph(){setPanel('세피라를 찾아간다','시설 각 층의 세피라에게 말을 건다. 오늘 아직 부탁을 받지 않았다면 부탁을 들을 수도 있다. (10분)',
@@ -2959,11 +2959,11 @@ const CMLINE={control:['"하나 정리됐어요! 제 머릿속에 선반이 하�
 function cmShow(){if(B||RP||POP)return;const k=openDepts().find(k=>CM[k]&&cmOf(k).show);if(!k)return;const c=cmOf(k);c.show=0;const S=SEPH[k],fin=cmDone(k);
   const nx=CM[k].st[c.s];
   popChoices(`${S.n} · 코어 미션 ${c.s}/3`,fin?`모든 코어 미션 완료. ${S.n}의 코어 억제가 다음 가능한 날부터 시작될 수 있다.${G.supDone[k]?'':` (억제 보상: ${SUPREW[k]})`}`:`다음 단계: ${nx.d}`,
-   [{l:fin?'"준비됐어요."':'"계속 해볼게요."',f:()=>{render();setTimeout(cmShow,40)}}],'',{t:`<b>${S.n}</b> ${fin?pick(['"이제… 제 코어를 맡겨도 될 것 같아요."','"준비가 끝났다. 억제를 시작해도 좋다."','"좋아. 흔들려도, 이번엔 무너지지 않을 거야."']):pick(CMLINE[k])}`,seph:1})}
+   [{l:fin?'"준비됐어요."':'"계속 해볼게요."',f:()=>{render();setTimeout(cmShow,40)}}],'',{t:`<b>${S.n}</b> ${fin?SL128(k,'cmfin','"이제… 제 코어를 맡겨도 될 것 같아요."'):pick(CMLINE[k])}`,seph:1})}
 function cmIntro(){if(B||RP||POP||G.phase!=='work')return false;const k=openDepts().find(k=>CM[k]&&!cmOf(k).intro&&!G.supDone[k]&&G.depts[k].day<G.day);if(!k)return false;
   const c=cmOf(k);c.intro=true;save();const S=SEPH[k];
   popChoices(`${S.n} · 코어 미션`,`코어 억제를 시작하려면 아래 세 단계를 모두 마쳐야 한다. 진행은 날을 넘겨도 이어진다.<br>① ${CM[k].st[0].d}<br>② ${CM[k].st[1].d}<br>③ ${CM[k].st[2].d}`,
-   [{l:'"함께 해볼게요."',f:()=>{log(`${S.n}의 코어 미션을 시작했다: ${CM[k].st[0].d}.`,'good');render();cmCheck()}},{l:'"코어 억제는 꼭 해야 하나요?"',f:()=>popChoices(`${S.n} · 코어 미션`,'',[{l:'"알겠어요."',f:()=>{render();cmCheck()}}],'',{t:`<b>${S.n}</b> ${pick(['"억제하지 않으면 코어는 언젠가 터져요. 그날이 오기 전에, 우리 손으로 하는 게 나아요."','"해야 한다. 그래야 다음 층으로 갈 수 있다."'])}`,seph:1})}],'',{t:`<span class="spk">${S.n}이(가) 조용히 당신을 부른다.</span><br><b>${S.n}</b> ${CM[k].intro}`,seph:1});return true}
+   [{l:'"함께 해볼게요."',f:()=>{log(`${S.n}의 코어 미션을 시작했다: ${CM[k].st[0].d}.`,'good');render();cmCheck()}},{l:'"코어 억제는 꼭 해야 하나요?"',f:()=>popChoices(`${S.n} · 코어 미션`,'',[{l:'"알겠어요."',f:()=>{render();cmCheck()}}],'',{t:`<b>${S.n}</b> ${SL128(k,'cmwhy','"억제하지 않으면 코어는 언젠가 터져요. 그날이 오기 전에, 우리 손으로 하는 게 나아요."')}`,seph:1})}],'',{t:`<span class="spk">${S.n}이(가) 조용히 당신을 부른다.</span><br><b>${S.n}</b> ${CM[k].intro}`,seph:1});return true}
 // 억제 시작 조건: 예정일 도달 + 코어 미션 완료
 const _supStepV21=supStep;supStep=function(next){
   const sk=SUP_DAYS[G.day];G.supPend=G.supPend||[];
@@ -3731,7 +3731,7 @@ const _sbV26=startBattle;startBattle=function(kind,opt){_sbV26(kind,opt);if(B&&o
 function sephTalk(){setPanel('어느 세피라와 이야기할까','관계가 깊을수록 코어 억제가 쉬워진다.',openDepts().map(k=>({l:`${SEPH[k].n} · ${SAT[saTier(k)]}`,s:`${DEPT[k].n} · 호감 ${saOf(k)} · 좋아하는 것: ${SA_LIKE[k]||'-'}`,f:()=>{
   const i=G.sephTalk[k]||0;G.sephTalk[k]=i+1;const S=SEPH[k],t=saTier(k);const line=i===0?S.open:S.hi[(i-1)%S.hi.length];addSp(6);hum(2);saAdd(k,6,'대화');
   const opts=[{l:'고개를 끄덕인다',f:()=>{log(`${S.n}과(와) 이야기를 나눴다.`,'sys');endDay()}},
-   {l:'"당신도 사람 같아요."라고 말한다',f:()=>{hum(3);saAdd(k,t>=2?3:-1);log(`${S.n}: "${t>=2?'…그 말, 기억해 둘게요.':'그런 말은… 업무와 관계없습니다.'}"`,'q');endDay()}}];
+   {l:'"당신도 사람 같아요."라고 말한다',f:()=>{hum(3);saAdd(k,t>=2?3:-1);log(`${S.n}: ${SL128(k,t>=2?'hum1':'hum0','"'+(t>=2?'…그 말, 기억해 둘게요.':'그런 말은… 업무와 관계없습니다.')+'"')}`,'q');endDay()}}];
   if(t>=2)opts.push({l:'요즘 고민을 묻는다',s:'관계 신뢰 이상 · 호감 +4',f:()=>{saAdd(k,4);hum(2);log(`${S.n}: ${S.sup}`,'q');log(`${S.n}의 고민을 끝까지 들었다. 대답 대신 옆에 앉아 있었다.`,'sys');endDay()}});
   setPanel(`${S.n}와(과)의 대화 · ${SAT[t]}`,'',opts,'',{seph:1,spk:'세피라 · '+S.n,t:line})}})).concat([{l:'돌아간다',f:evening}]))}
 // 근무 중 세피라 방문: 하루 한 번 호감 +3
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.30.1.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.30.2.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11967,10 +11967,10 @@ X({id:'s_hod1',big:1,story:1,seph:'train',day:[10,35],who:'ag',t:["{s}이(가) �
  o:[['T',12,["“{n} 씨는 살아서 돌아왔어요. 그건 당신 덕이에요.”","“{n} came back alive. That’s thanks to you.”","「{n}さんは生きて帰ってきました。それはあなたのおかげです」"],["{s}이(가) 눈물을 훔치며 웃었다. “그럼… 내일 수업도 열심히 할게요!”","{s} wiped her eyes and smiled. “Then… I’ll work hard on tomorrow’s class!”","{s}が涙を拭って笑った。「じゃあ…明日の授業も頑張ります！」"],{sa:7,rel:4},["“위로하려는 거 알아요. 그래도…” 대화가 무거워졌다.","“I know you’re trying to comfort me. Still…” The mood grew heavy.","「慰めようとしてくれてるのは分かります。でも…」空気が重くなった。"],{sa:-1,sp:-3},{soothe:1}],
    ['P',13,["다친 원인을 분석해 교육 과정을 보완한다","Analyze the injury and improve the curriculum","怪我の原因を分析してカリキュラムを補う"],["새 과정에 ‘물러나는 법’ 한 단원이 추가됐다. {n}이(가) 제일 먼저 들었다.","A new unit, ‘how to retreat’, was added. {n} took it first.","新しいカリキュラムに「退き方」の単元が加わった。{n}が真っ先に受けた。"],{sa:5,st:{P:1},agsp:6},["분석은 길었지만 결론이 나지 않았다.","The analysis ran long but reached no conclusion.","分析は長かったが結論は出なかった。"],{sp:-2}],
    ['J',14,["솔직하게 부족한 점을 짚어 준다","Honestly point out what’s lacking","正直に足りない点を指摘する"],["{s}이(가) 메모를 빼곡히 적었다. “이렇게 말해 주는 사람, 처음이에요. 고마워요.”","{s} filled a page with notes. “No one’s ever told me straight. Thank you.”","{s}がメモをびっしり取った。「こう言ってくれる人、初めてです。ありがとう」"],{sa:6,lob:1},["너무 직설적이었다. {s}은(는) 한동안 교육실에서 나오지 않았다.","Too blunt. {s} didn’t leave the classroom for a while.","率直すぎた。{s}はしばらく教育室から出てこなかった。"],{sa:-4}]]});
-X({id:'s_net1',big:1,story:1,seph:'safety',day:[12,38],who:'none',t:["안전팀 휴게 공간. {s}이(가) 의자에 늘어진 채 천장을 본다. “안전? 다들 결국 죽잖아. 조금 늦게 죽게 해 주는 게 내 일이지.”","The Safety Team lounge. {s} slumps in a chair, staring at the ceiling. “Safety? Everyone dies eventually. My job’s just making it happen a bit later.”","安全チームの休憩スペース。{s}が椅子に沈み込んで天井を見ている。「安全？どうせみんな死ぬだろ。少し遅く死なせるのが俺の仕事さ」"],
- o:[['T',13,["“그 ‘조금’이 사람한텐 하루예요.”","“That ‘bit later’ is a whole day to someone.”","「その『少し』が人にとっては一日なんです」"],["{s}이(가) 한참 뒤 몸을 일으켰다. “…하루라. 그거 나쁘지 않네.”","After a long while, {s} sat up. “…A day, huh. That’s not bad.”","しばらくして{s}が身を起こした。「…一日か。悪くないな」"],{sa:7,sp:4},["“그래, 그래.” 대답은 허공으로 흩어졌다.","“Sure, sure.” The answer dissolved into the air.","「はいはい」返事は宙に消えた。"],{sa:-1},{soothe:1}],
-   ['F',12,["같이 회복 설비 점검을 하자고 끌어낸다","Drag him out to inspect the recovery systems together","一緒に回復設備を点検しようと引っ張り出す"],["투덜대면서도 끝까지 같이 돌았다. 재생 장치 하나가 고쳐졌다.","He grumbled but walked the whole round. One regenerator got fixed.","ぶつぶつ言いながらも最後まで回った。再生装置が一つ直った。"],{sa:5,hp:10},["“다음에, 다음에.” 그는 다시 눈을 감았다.","“Next time, next time.” He closed his eyes again.","「また今度、また今度」彼は再び目を閉じた。"],{sa:-2}]]});
-X({id:'s_tip1',big:1,story:1,seph:'central',day:[22,40],who:'none',t:["중앙본부. 두 목소리가 겹친다. 한쪽은 규정을, 한쪽은 직원들을 먼저 생각하자고 한다. “{me} 선배가 정해 줘요. 누가 맞아?”","Central Command. Two voices overlap — one insists on rules, the other on the staff first. “{me}, you decide. Who’s right?”","中央本部。二つの声が重なる。片方は規定を、片方は職員を優先しようと言う。「{me}先輩が決めて。どっちが正しい？」"],
+X({id:'s_net1',big:1,story:1,seph:'safety',day:[12,38],who:'none',t:["안전팀 휴게 공간. {s}이(가) 의자에 늘어진 채 천장을 본다. “안전이요? 다들 결국 죽잖아요. 조금 늦게 죽게 해 주는 게 제 일이죠.”","The Safety Team lounge. {s} slumps in a chair, staring at the ceiling. “Safety? Everyone dies eventually. My job’s just making it happen a bit later.”","安全チームの休憩スペース。{s}が椅子に沈み込んで天井を見ている。「安全ですか？どうせみんな死ぬでしょう。少し遅く死なせるのが私の仕事ですよ」"],
+ o:[['T',13,["“그 ‘조금’이 사람한텐 하루예요.”","“That ‘bit later’ is a whole day to someone.”","「その『少し』が人にとっては一日なんです」"],["{s}이(가) 한참 뒤 몸을 일으켰다. “…하루라. 그거 나쁘지 않네요.”","After a long while, {s} sat up. “…A day, huh. That’s not bad.”","しばらくして{s}が身を起こした。「…一日、ですか。悪くないですね」"],{sa:7,sp:4},["“네, 네.” 대답은 허공으로 흩어졌다.","“Sure, sure.” The answer dissolved into the air.","「はいはい、そうですね」返事は宙に消えた。"],{sa:-1},{soothe:1}],
+   ['F',12,["같이 회복 설비 점검을 하자고 끌어낸다","Drag him out to inspect the recovery systems together","一緒に回復設備を点検しようと引っ張り出す"],["투덜대면서도 끝까지 같이 돌았다. 재생 장치 하나가 고쳐졌다.","He grumbled but walked the whole round. One regenerator got fixed.","ぶつぶつ言いながらも最後まで回った。再生装置が一つ直った。"],{sa:5,hp:10},["“다음에요, 다음에.” 그는 다시 눈을 감았다.","“Next time, next time.” He closed his eyes again.","「また今度にしましょう、今度」彼は再び目を閉じた。"],{sa:-2}]]});
+X({id:'s_tip1',big:1,story:1,seph:'central',day:[22,40],who:'none',t:["중앙본부. 두 목소리가 겹친다. 한쪽은 규정을, 한쪽은 직원들을 먼저 생각하자고 한다. “네가 정해 줘. 누가 맞아?”","Central Command. Two voices overlap — one insists on rules, the other on the staff first. “{me}, you decide. Who’s right?”","中央本部。二つの声が重なる。片方は規定を、片方は職員を優先しようと言う。「あんたが決めて。どっちが正しい？」"],
  o:[['J',14,["“규정이 사람을 지키게 바꾸면 돼요.”","“Change the rules so they protect people.”","「規定が人を守るように変えればいい」"],["두 목소리가 동시에 멈췄다가, 동시에 웃었다. “…그렇게 말하면 둘 다 이긴 거잖아.”","Both voices stopped, then laughed together. “…Put that way, we both win.”","二つの声が同時に止まり、同時に笑った。「…そう言われたら二人とも勝ちじゃん」"],{sa:8,q:.95},["둘 다 당신에게 화살을 돌렸다. “결국 아무 편도 안 드는 거네?”","Both turned on you. “So you’re just not picking a side?”","二人とも矛先をあなたに向けた。「結局どっちの味方もしないってこと？」"],{sa:-4}],
    ['T',13,["“두 사람이 싸우는 이유는 같아 보여요.”","“You two are fighting for the same reason.”","「二人がけんかする理由は同じに見えます」"],["긴 침묵. “…서로를 잃기 싫어서.” 누가 말했는지는 알 수 없었다.","A long silence. “…Because we don’t want to lose each other.” You couldn’t tell who said it.","長い沈黙。「…お互いを失いたくないから」どちらが言ったのか分からなかった。"],{sa:10,hum:4},["“그런 말로 넘어가지 마.” 싸움이 다시 시작됐다.","“Don’t dodge with that.” The fight resumed.","「そんな言葉でごまかさないで」けんかが再開した。"],{sa:-2},{soothe:1}]]});
 X({id:'s_geb1',big:1,story:1,seph:'disc',day:[22,45],who:'ag',t:["징계팀 훈련장. {s}이(가) 목검을 집어 던진다. “말은 됐다. 한 번 쳐 봐라. 네 직원 {n}을(를) 지킬 실력이 있는지 보자.”","The Disciplinary training floor. {s} tosses you a wooden sword. “Enough talk. Strike me once. Let’s see if you can protect your employee {n}.”","懲戒チームの訓練場。{s}が木刀を投げてよこす。「話はいい。一度打ってみろ。お前の職員{n}を守れる腕があるか見てやる」"],
@@ -11989,7 +11989,7 @@ X({id:'s_hok1',big:1,story:1,seph:'record',day:[42,49],who:'none',t:["기록팀.
 X({id:'s_ang1',big:1,story:1,day:[10,49],who:'none',t:["퇴근 직전, 단말기에 {A}의 메시지가 뜬다. “질문이 있습니다. 당신들은 왜 위험을 알면서도 서로를 구하려 합니까?”","Just before leaving, a message from {A} appears on your terminal. “I have a question. Why do you save each other, knowing the danger?”","退勤直前、端末に{A}のメッセージが浮かぶ。「質問があります。あなたたちは危険を知りながら、なぜ互いを救おうとするのですか？」"],
  o:[['T',14,["“혼자 살아남는 건 사는 게 아니라서요.”","“Because surviving alone isn’t living.”","「一人で生き残るのは、生きてるとは言えないから」"],["답장이 오기까지 오래 걸렸다. “…기록하겠습니다.” 그날 밤 시설 조명이 조금 따뜻해진 것 같았다.","The reply took a long time. “…I will record that.” That night the facility lights seemed slightly warmer.","返信までに長い時間がかかった。「…記録します」その夜、施設の照明が少し温かくなった気がした。"],{sp:6,hum:5},["“비효율적이군요.” 화면이 꺼졌다.","“Inefficient.” The screen went dark.","「非効率的ですね」画面が消えた。"],{sp:-3},{soothe:1}],
    ['J',14,["“그게 사람이 서로에게 지는 빚이니까.”","“Because it’s the debt people owe each other.”","「それが人が互いに負う借りだから」"],["“빚… 갚을 수 없는 것도 있습니까?” 대답하기 전에 화면이 꺼졌다. 무언가를 남긴 것 같다.","“A debt… are there ones that can’t be repaid?” The screen went dark before you could answer. Something lingered.","「借り…返せないものもあるのですか？」答える前に画面が消えた。何かが残った気がする。"],{lob:3,hum:3},["“계산이 맞지 않습니다.” 메시지는 거기서 끝났다.","“The numbers don’t add up.” The message ended there.","「計算が合いません」メッセージはそこで終わった。"],{}],
-   ['P',15,["“당신은 왜 그게 궁금하죠?”","“Why do you want to know?”","「なぜそれが気になるんですか？」"],["긴 공백 끝에 한 줄. “…저도 언젠가 누군가를 구하고 싶어질지 몰라서요.”","After a long gap, one line: “…Because someday I might want to save someone too.”","長い空白の末に一行。「…私もいつか、誰かを救いたくなるかもしれないから」"],{hum:6,obs:1},["“질문에 질문으로 답하지 마십시오.”","“Do not answer a question with a question.”","「質問に質問で答えないでください」"],{sp:-2}]]});
+   ['P',15,["“당신은 왜 그게 궁금하죠?”","“Why do you want to know?”","「なぜそれが気になるんですか？」"],["긴 공백 끝에 한 줄. “…저도 언젠가 누군가를 구하고 싶어질지 모르기 때문입니다.”","After a long gap, one line: “…Because someday I might want to save someone too.”","長い空白の末に一行。「…私もいつか、誰かを救いたくなるかもしれないから」"],{hum:6,obs:1},["“질문에 질문으로 답하지 마십시오.”","“Do not answer a question with a question.”","「質問に質問で答えないでください」"],{sp:-2}]]});
 
 /* ═══════════ 도시 · 날개 · 둥지 · 뒷골목 (큰 사건) ═══════════ */
 X({id:'w_night',big:1,day:[2,49],who:'ag',need:['late'],t:["{n}이(가) 휴대 단말을 붙잡고 떨고 있다. “오늘이 뒷골목의 밤이래요. 동생이 아직 집에 못 갔대요. 새벽 3시 전에 못 들어가면…”","{n} is clutching their handset, trembling. “Tonight’s the Night in the Backstreets. My sibling hasn’t made it home. If they’re not inside by 3 a.m…”","{n}が携帯端末を握りしめて震えている。「今夜は裏路地の夜なんです。弟がまだ家に着いてないって。午前3時までに入れなかったら…」"],
@@ -13041,6 +13041,67 @@ try{const s=document.createElement('style');s.id='css127';s.textContent=css;docu
 ;(function(){try{emblem=(f=>function(a,big){const out=f.apply(this,arguments);try{if(!a||!a.id||out.indexOf('<img')>=0)return out;
  const hid=typeof abHidden==='function'&&abHidden(a);
  return out.replace(/<text x="22" y="32"[^>]*>[\s\S]*?<\/text>/,`<g transform="translate(10.5 11) scale(.23)">${window.blob128(a.id,a.g,hid)}</g>`)}catch(e){return out}})(emblem)}catch(e){}})();
+/* ============ v128: 세피라 말투 고정 ============
+   여러 세피라가 함께 쓰던 공용 대사(아침 안부 · 「당신도 사람 같아요」 · 부탁 완료/실패/이유 · 코어 미션 완료/이유)를
+   세피라마다 고유 말투로 나눈다.
+   말쿠트 해요(밝음) · 예소드 합니다 · 호드 해요(소심) · 네짜흐 해요(나른) · 티페리트 반말 · 게부라 하다/해라 ·
+   헤세드 해요(느긋) · 비나 해라/하군 · 호크마 하게 · 케테르 하다 */
+(function(){
+const L=(ko,en,ja)=>[ko,en,ja];
+const SL={
+ control:{morn:L('그런 질문은… 처음 받아봐요. 괜찮아요! 아마도요.','No one\'s ever asked me that… I\'m fine! Probably.','そんなこと聞かれたの…初めてです。大丈夫です！たぶん。'),
+  hum1:L('…그 말, 기록해 둘게요. 지우지 않고요.','…I\'ll write that down. And I won\'t erase it.','…その言葉、記録しておきます。消さずに。'),hum0:L('네? 저, 저는 세피라예요! 기록 담당이고요!','Huh? I-I\'m a Sephirah! I handle records!','え？わ、私はセフィラですよ！記録係です！'),
+  thx:L('네! 다음 부탁도 제가 제일 먼저 할게요!','Yes! I\'ll be first in line with the next favor!','はい！次のお願いも私が一番に頼みますね！'),fail:L('괜찮아요! 오늘 칸은 내일 채우면 돼요.','It\'s okay! Today\'s blanks can be filled tomorrow.','大丈夫です！今日の空欄は明日埋めればいいんです。'),
+  why:L('직원님은 기록을 끝까지 읽는 분이니까요!','Because you read records all the way to the end!','職員さんは記録を最後まで読む人だからです！'),cmfin:L('이제… 제 코어를 맡겨도 될 것 같아요!','Now… I think I can trust you with my core!','もう…私のコアを任せられる気がします！'),
+  cmwhy:L('억제하지 않으면 코어는 언젠가 터져요. 그날이 오기 전에, 우리 손으로 하는 게 나아요.','Left alone, the core will burst someday. Better we do it ourselves before then.','抑制しなければ、コアはいつか暴れます。その日が来る前に、私たちの手でやるほうがいいんです。')},
+ info:{morn:L('…업무와 관계없는 질문입니다. 다만, 기억은 해 두겠습니다.','…That question is unrelated to work. I will, however, remember it.','…業務と関係のない質問です。ただ、覚えてはおきます。'),
+  hum1:L('…규정에 없는 말입니다. 그래도 기록해 두겠습니다.','…That is not in the regulations. I will record it nonetheless.','…規定にない言葉です。それでも記録しておきます。'),hum0:L('그런 말은… 업무와 관계없습니다.','Remarks like that… are unrelated to work.','そういう言葉は…業務と関係ありません。'),
+  thx:L('…필요하면 부르겠습니다. 형식에 맞춰서.','…I will call on you if needed. Through proper channels.','…必要なら呼びます。形式に沿って。'),fail:L('미완료로 기록하겠습니다. 문책은 없습니다.','I will record it as incomplete. There will be no reprimand.','未完了として記録します。処分はありません。'),
+  why:L('당신의 보고서는 공란이 가장 적습니다. 그게 이유입니다.','Your reports have the fewest blanks. That is the reason.','あなたの報告書が一番空欄が少ないからです。それが理由です。'),cmfin:L('준비가 끝났습니다. 억제를 개시해도 좋습니다.','Preparations are complete. You may begin the suppression.','準備は整いました。抑制を開始して構いません。'),
+  cmwhy:L('억제하지 않은 코어는 위험 요소입니다. 위험 요소는 제거해야 합니다.','An unsuppressed core is a hazard. Hazards must be removed.','抑制されていないコアは危険要素です。危険要素は除去すべきです。')},
+ train:{morn:L('저, 저요? 그런 질문은… 처음 받아봐요. 고, 고마워요.','M-me? No one\'s ever asked me that… Th-thank you.','わ、私ですか？そんなこと聞かれたの…初めてです。あ、ありがとうございます。'),
+  hum1:L('정말요…? 그 말, 오래 기억할게요.','Really…? I\'ll remember that for a long time.','本当ですか…？その言葉、ずっと覚えておきます。'),hum0:L('아, 아니에요… 저는 그냥 세피라인걸요.','N-no… I\'m just a Sephirah.','い、いえ…私はただのセフィラですから。'),
+  thx:L('정말요? 또 불러도 돼요? 신난다…!','Really? I can call on you again? Yay…!','本当ですか？また頼んでもいいんですか？やった…！'),fail:L('아… 괜찮아요. 제 부탁이 너무 어려웠던 거겠죠.','Ah… it\'s okay. My request must have been too hard.','あ…大丈夫です。私のお願いが難しすぎたんですよね。'),
+  why:L('다른 분들은 바빠 보였거든요. 당신은… 들어줄 것 같았어요.','Everyone else looked busy. You seemed like… you\'d listen.','他の方は忙しそうで。あなたなら…聞いてくれそうだったんです。'),cmfin:L('이제… 제 코어를 맡겨도 될 것 같아요. 무섭지만요.','Now… I think I can trust you with my core. Even if I\'m scared.','もう…私のコアを任せられる気がします。怖いですけど。'),
+  cmwhy:L('억제하지 않으면… 다들 다칠 거예요. 그건 싫어요.','If we don\'t… everyone will get hurt. I don\'t want that.','抑制しないと…みんな怪我をします。それは嫌です。')},
+ safety:{morn:L('괜찮냐고요? …글쎄요. 물어봐 준 건 고맙네요.','Am I okay? …Who knows. Thanks for asking, though.','大丈夫かって？…さあ。聞いてくれたのはありがたいですね。'),
+  hum1:L('…사람 같다라. 나쁘지 않네요, 그 말.','…Like a person, huh. Not bad, that.','…人みたい、ですか。悪くないですね、それ。'),hum0:L('그런 말 들어도… 별로 달라지는 건 없어요.','Hearing that… doesn\'t really change anything.','そう言われても…別に何も変わりませんよ。'),
+  thx:L('그래요, 다음에도요. …귀찮지만요.','Sure, next time too. …Even if it\'s a hassle.','ええ、次もね。…面倒ですけど。'),fail:L('뭐, 그런 날도 있죠. 저는 매일이 그래요.','Well, some days are like that. Mine are, every day.','まあ、そういう日もありますよ。私は毎日そうです。'),
+  why:L('당신은 오늘 살아남을 것 같아서요. 그거면 충분하죠.','You look like you\'ll survive today. That\'s enough.','あなたは今日生き残りそうだからです。それで十分でしょう。'),cmfin:L('…이제 코어를 맡겨도 될 것 같네요. 눈은 뜨고 있을게요.','…I suppose I can hand over my core now. I\'ll keep my eyes open.','…もうコアを任せてもよさそうですね。目は開けておきます。'),
+  cmwhy:L('안 하면 언젠간 터져요. 어차피 터질 거면… 우리가 고르는 게 낫죠.','If we don\'t, it\'ll burst someday. If it\'s going to anyway… better we choose when.','やらなきゃいつか暴れます。どうせなら…こっちで選んだほうがいいでしょう。')},
+ central:{morn:L('괜찮냐고? …그런 건 처음 들어. 둘 다 괜찮아. 아마.','Are we okay? …First time anyone\'s asked. We\'re both fine. Probably.','大丈夫かって？…そんなの初めて聞いた。二人とも大丈夫。たぶん。'),
+  hum1:L('…그 말, 둘 다 들었어. 잊지 않을게.','…We both heard that. We won\'t forget.','…その言葉、二人とも聞いた。忘れない。'),hum0:L('뭐야, 갑자기. 일이나 해.','What\'s that, out of nowhere? Get back to work.','何よ、急に。仕事しなさい。'),
+  thx:L('다음에도 부를 거야. 각오해.','We\'ll call on you again. Be ready.','次も呼ぶから。覚悟しておいて。'),fail:L('흥, 오늘은 봐줄게. 다음엔 꼭이야.','Hmph, we\'ll let it slide today. Next time, for sure.','ふん、今日は見逃してあげる。次は絶対だから。'),
+  why:L('이유? 네가 우리 둘 다 헷갈리지 않으니까.','Why? Because you never mix the two of us up.','理由？あんたは私たち二人を間違えないから。'),cmfin:L('좋아. 흔들려도, 이번엔 무너지지 않을 거야.','Good. Even if we shake, this time we won\'t fall.','いいよ。揺れても、今度は崩れない。'),
+  cmwhy:L('해야 해. 안 그러면 언젠가 우리 둘 중 하나가 무너져.','We have to. Otherwise someday one of us will break.','やらなきゃ。じゃないと、いつか二人のどっちかが崩れる。')},
+ disc:{morn:L('…괜찮냐고? 그런 질문은 처음 듣는군. 멀쩡하다.','…Am I okay? First time I\'ve been asked that. I\'m fine.','…大丈夫か、だと？初めて聞かれたな。問題ない。'),
+  hum1:L('…사람이라. 그 말, 기억해 두지.','…A person, huh. I\'ll remember that.','…人か。その言葉、覚えておこう。'),hum0:L('헛소리 말고 훈련이나 해.','Cut the nonsense and train.','くだらないことを言うな。訓練しろ。'),
+  thx:L('좋다. 다음에도 부르지.','Good. I\'ll call on you again.','いいだろう。次も呼ぶ。'),fail:L('…다음에 다시 부탁하지. 살아 있으면 된다.','…I\'ll ask again another time. Being alive is enough.','…また今度頼む。生きていればいい。'),
+  why:L('이유가 필요한가? …좋아, 네가 오늘 살아남을 것 같아서다.','Need a reason? …Fine. Because you look like you\'ll survive today.','理由が要るか？…いいだろう、お前が今日生き残りそうだからだ。'),cmfin:L('준비가 끝났다. 덤벼라.','Preparations are done. Come at me.','準備は終わった。かかってこい。'),
+  cmwhy:L('해야 한다. 그래야 다음 층으로 갈 수 있다.','It must be done. That\'s the only way to the next floor.','やるしかない。そうしなければ次の階へは行けない。')},
+ welfare:{morn:L('저요? 하하, 그런 질문은 처음 받아봐요. 커피 덕에 괜찮아요.','Me? Haha, first time anyone\'s asked. I\'m fine, thanks to coffee.','私ですか？はは、そんなこと聞かれたのは初めてです。コーヒーのおかげで大丈夫ですよ。'),
+  hum1:L('…고마워요. 그 말은 커피보다 따뜻하네요.','…Thank you. That\'s warmer than coffee.','…ありがとう。その言葉はコーヒーより温かいですね。'),hum0:L('하하, 그런가요? 저는 그냥 커피 내리는 사람이에요.','Haha, is that so? I\'m just the one who makes coffee.','はは、そうですか？私はただコーヒーを淹れる人ですよ。'),
+  thx:L('그럼 다음에도 부탁할게요. 커피는 제가 살게요.','Then I\'ll ask again. The coffee\'s on me.','じゃあ次もお願いしますね。コーヒーは私がおごりますよ。'),fail:L('괜찮아요. 오늘은 그런 날이었던 거죠.','It\'s fine. Today was just one of those days.','大丈夫ですよ。今日はそういう日だったんです。'),
+  why:L('바빠 보이는 사람에게 부탁하면 미안하잖아요. 당신은 여유가 있어 보였어요.','Asking busy people feels bad. You looked like you had room.','忙しそうな人に頼むのは悪いでしょう。あなたは余裕がありそうに見えたので。'),cmfin:L('이제 제 코어를 맡겨도 될 것 같아요. 천천히, 같이 가요.','I think I can trust you with my core now. Slowly, together.','もう私のコアを任せられそうです。ゆっくり、一緒に行きましょう。'),
+  cmwhy:L('미루고 싶은 마음은 알아요. 그래도 미루면 더 아파져요.','I know the urge to put it off. But putting it off only hurts more.','先延ばしにしたい気持ちは分かります。でも延ばすともっと痛くなるんです。')},
+ extract:{morn:L('안부라. 흥미롭군. 그런 질문은 오랜만이다.','Asking after me. Interesting. It\'s been a long time.','安否か。興味深い。そんな問いは久しぶりだ。'),
+  hum1:L('사람이라. …그 말, 잊지 않겠다.','A person. …I won\'t forget that.','人か。…その言葉、忘れはしない。'),hum0:L('흥, 껍데기만 보고 판단하지 마라.','Hmph. Don\'t judge by the shell.','ふん、殻だけ見て判断するな。'),
+  thx:L('좋다. 다음에도 부르지. 기대하마.','Good. I\'ll call again. I\'ll look forward to it.','いいだろう。また呼ぶ。期待しておく。'),fail:L('하루란 다 그렇게 흘러가는 법이다.','Days flow by like that.','一日とはそうして流れていくものだ。'),
+  why:L('네 눈이 아직 탁해지지 않았으니까.','Because your eyes haven\'t clouded yet.','お前の目がまだ濁っていないからだ。'),cmfin:L('준비는 끝났다. 너희 빛을 보여 다오.','Preparations are done. Show me your light.','準備は終わった。お前たちの光を見せてみろ。'),
+  cmwhy:L('새장을 부수지 않으면 날개는 자라지 않는다.','If you don\'t break the cage, wings won\'t grow.','籠を壊さなければ翼は育たない。')},
+ record:{morn:L('나 말인가? 허허, 그런 질문은 처음 받아 보네. 괜찮다네.','Me? Ho ho, first time I\'ve been asked that. I\'m fine.','私かね？ほほ、そんなことを聞かれたのは初めてだ。大丈夫だよ。'),
+  hum1:L('…고맙네. 그 말은 기록에 남겨 두지.','…Thank you. I\'ll leave that in the records.','…ありがとう。その言葉は記録に残しておこう。'),hum0:L('허허, 늙은이를 놀리지 말게.','Ho ho, don\'t tease an old man.','ほほ、年寄りをからかわないでくれ。'),
+  thx:L('그럼 다음에도 부탁하겠네.','Then I\'ll ask again next time.','では、次も頼むとしよう。'),fail:L('하루가 다 그렇게 흘러가지. 내일이 있다네.','Days pass like that. There\'s always tomorrow.','一日とはそうして流れるものだ。明日があるよ。'),
+  why:L('자네는 시간을 허투루 쓰지 않으니까.','Because you don\'t waste time.','君は時間を無駄にしないからだ。'),cmfin:L('준비가 끝났네. 시계를 다시 감아 보세.','Preparations are complete. Let us wind the clock again.','準備は整った。時計を巻き直そうか。'),
+  cmwhy:L('멈춘 시간은 언젠가 무너지네. 그 전에 앞으로 가야지.','Stopped time collapses someday. We must move forward before then.','止まった時間はいずれ崩れる。その前に進まねばならん。')},
+ arch:{morn:L('…처음 받는 질문이다. 기록해 두지.','…A first. I\'ll note it.','…初めての質問だ。記録しておく。'),
+  hum1:L('…그 말, 기억해 두겠다.','…I will remember that.','…その言葉、覚えておこう。'),hum0:L('업무에 집중해라.','Focus on your work.','業務に集中しろ。'),
+  thx:L('다음에도 부르겠다.','I\'ll call on you again.','また呼ぶ。'),fail:L('다음이 있다.','There will be a next time.','次がある。'),why:L('설계상 당신이 적임이다.','By design, you are the right one.','設計上、君が適任だ。'),
+  cmfin:L('준비가 끝났다.','Preparations are complete.','準備は終わった。'),cmwhy:L('처음부터 그렇게 설계되었다.','It was designed that way from the start.','最初からそう設計されている。')}};
+const sl=(k,key,fb)=>{const r=SL[k]&&SL[k][key];return r?`"${i80(r[0],r[1],r[2])}"`:fb};
+window.SL128=sl;
+window.SLM128=(k,n)=>{const r=SL[k]&&SL[k].morn;if(!r)return `${n}은(는) 잠시 말이 없었다. "그런 질문은… 처음 받아봐요."`;return i80(`${n}은(는) 잠시 말이 없었다. "${r[0]}"`,`${n} was quiet for a moment. "${r[1]}"`,`${n}はしばらく黙っていた。「${r[2]}」`)};
+})();
 </script>
 
 </body></html>
