@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.27.2.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.27.3.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11599,7 +11599,7 @@ counterZero=(f=>function(a,src){try{if(a&&a.breach&&!a.tool&&!KEEP.has(a.id)&&sr
   log(T(`${a.n}의 카운터가 바닥났지만, 격리실이 간신히 버텨 냈다. 카운터가 돌아왔다.`,`${a.n}'s counter hit zero, but the containment unit barely held. The counter is restored.`,`${a.n}のカウンターが尽きたが、収容室がかろうじて持ちこたえた。カウンターが戻った。`),'warn');return}}catch(e){}return f.apply(this,arguments)})(counterZero);
 })();
 /* ============ v117: 근무 중 직원과의 대화 · 행동 메뉴 정리 ============
-   대화 상대의 칭호(가장 높은 가치관 → 성격, 등급 → 연차)에 따라 말투·좋아하는 화제가 다르다.
+   대화 상대의 가장 높은 가치관(성격·호칭)에 따라 말투·좋아하는 화제가 다르다.
    지금 상황(사망자·폭주 단계·시련·직원의 체력·정신력), 관계 단계, 내가 장착한 E.G.O, 관리 기록(오늘 작업·누적 에너지·억제)에 반응한다.
    한 사람과는 하루 한 번 · 15분. */
 (function(){
@@ -11611,12 +11611,13 @@ const relV=a=>a.co?(G.rel[a.co]??0):(a.rel??10);
 function addR(a,n){if(a.co)rel(a.co,n);else a.rel=Math.max(0,Math.min(100,(a.rel??10)+n))}
 const archOf=a=>{try{return topSt(a.st)}catch(e){return 'T'}};
 const stageOf=a=>{const r=agRank(a);return r>=5?2:r>=3?1:0};
+const vLv=a=>{try{return lv(a.st[archOf(a)]||0)}catch(e){return 1}};
 const ARCHN={F:['용기','Fortitude','勇気'],P:['지혜','Prudence','慎重'],T:['절제','Temperance','自制'],J:['정의','Justice','正義']};
 const STAGEN=[['신입','Rookie','新人'],['중견','Mid-career','中堅'],['베테랑','Veteran','ベテラン']];
-// 호칭: 신입은 선배, 중견은 이름, 베테랑은 후배를 대하듯
-const ADDR=[['선배','boss','先輩'],['{me} 씨','{me}','{me}さん'],['후배님','kid','君']];
+// 호칭: 플레이어가 가장 먼저 입사했다 — 모두에게 선배. 말투는 가장 높은 가치관을 따른다
+const ADDR={F:['선배','boss','先輩'],P:['{me} 선배','{me}','{me}先輩'],T:['선배님','senior','先輩'],J:['{me} 선배님','Senior {me}','{me}先輩']};
 const meN=()=>G.name||T('관리직','manager','管理職');
-function fill(s,a,x){return String(s).replace(/\{addr\}/g,tx(ADDR[stageOf(a)]).replace('{me}',meN())).replace(/\{n\}/g,a.n).replace(/\{me\}/g,meN()).replace(/\{(\w+)\}/g,(m,k)=>x&&x[k]!=null?x[k]:m)}
+function fill(s,a,x){return String(s).replace(/\{addr\}/g,tx(ADDR[archOf(a)]||ADDR.T).replace('{me}',meN())).replace(/\{n\}/g,a.n).replace(/\{me\}/g,meN()).replace(/\{(\w+)\}/g,(m,k)=>x&&x[k]!=null?x[k]:m)}
 
 /* ---------- 상황 읽기 ---------- */
 function ctxOf(a){const c={};
@@ -11652,7 +11653,7 @@ const TOP={
  gear:{l:['장비 이야기를 한다','Talk about gear','装備の話をする'],like:['F'],dis:['T']},
  rec:{l:['관리 기록을 함께 본다','Go over the records together','管理記録を一緒に見る'],like:['J','P'],dis:['F']},
  team:{l:['다음 작업을 같이 하자고 한다','Propose working the next one together','次の作業を一緒にやろうと誘う'],like:['J','F'],dis:[]},
- ask:{l:['조언을 구한다','Ask for advice','助言を求める'],like:['P','T'],dis:[],need:(c,a)=>stageOf(a)>=1},
+ ask:{l:['조언을 구한다','Ask for advice','助言を求める'],like:['P','T'],dis:[],need:(c,a)=>vLv(a)>=2},
  cheer:{l:['격려한다','Encourage them','励ます'],like:['T'],dis:[],need:c=>c.lowSp||c.hurt||c.death},
  line:{l:['선을 긋고 업무 이야기만 한다','Keep it strictly professional','一線を引き、仕事の話だけする'],like:['J'],dis:['T','F']}};
 const R={
@@ -11688,7 +11689,7 @@ try{const _sr=succRate;succRate=function(){const v=_sr.apply(this,arguments);ret
 /* ---------- 대화 창 ---------- */
 function hearts(v){const k=tierOf(v);return '♥'.repeat(k)+'♡'.repeat(4-k)}
 function head(a){const v=relV(a);return `<div class="vn112h"><b>${a.n}</b><span class="vn112t">${tx(TIERS[tierOf(v)])}</span><span class="vn112hp">${hearts(v)}</span><small>${T('유대','Bond','絆')} ${v}</small></div>
-  <p class="note" style="margin:-4px 0 10px">${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])} · ${tx(STAGEN[stageOf(a)])} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · HP ${Math.round(a.hp)}/${agMax(a)} · SP ${a.sp}</p>`}
+  <p class="note" style="margin:-4px 0 10px">${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])} ${ROMAN[vLv(a)]} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · HP ${Math.round(a.hp)}/${agMax(a)} · SP ${a.sp}</p>`}
 function talk(a){const c=ctxOf(a);const arch=archOf(a);const v0=relV(a);const x={gear:c.gearN,dw:c.dw,pe:c.pe,sup:c.sup,ab:c.tipAb?c.tipAb.n:'',w:c.tipW?c.tipW.n:''};
   const ok=k=>!TOP[k].need||TOP[k].need(c,a);
   let keys=Object.keys(TOP).filter(ok);const must=keys.filter(k=>k==='cheer'||k==='tip');const rest=shuffle(keys.filter(k=>!must.includes(k)));keys=must.concat(rest).slice(0,4);
@@ -11706,7 +11707,7 @@ addR(a,d);const fx=good?effect(k,a,c):[];const v1=relV(a);const box=el.querySele
       el.querySelector('[data-end]').onclick=()=>{closePop();log(T(`${a.n}와(과) 잠시 이야기를 나눴다.`,`You talked with ${a.n} for a while.`,`${a.n}と少し話をした。`),'q');act(null,workMenu,15)}};
       if(window.D119){const box=el.querySelector('.vn112f');window.D119.run(box,{stat:STAT,dc:12+(liked?-3:dis?3:0)+(c.lowSp?2:0),a,soothe:k==='care'||k==='cheer',label:tx(t.l)},go)}else go(null)})},{wide:true})}
 function talkMenu(){const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic).sort((x,y)=>((y.dept===G.dept)-(x.dept===G.dept))||relV(y)-relV(x));G.talk117=G.talk117&&G.talk117.d===G.day?G.talk117:{d:G.day,ids:[]};
-  popup(T('누구와 이야기할까','Who will you talk to?','誰と話そうか'),`<p class="sub">${T('한 사람과는 하루 한 번 · 15분. 칭호(성격·연차)에 따라 좋아하는 화제가 달라요.','Once a day per person · 15 min. Favourite topics differ by title (personality and seniority).','一人につき一日一回・15分。称号（性格・年次）によって好きな話題が違います。')}</p><div class="choices one">${L.map(a=>{const done=G.talk117.ids.includes(a.id);const v=relV(a);return `<button class="ch" data-a="${a.id}" ${done?'disabled':''}><b>${a.n} <small style="color:var(--c-red,#d6453a)">${hearts(v)}</small></b><small>${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])}·${tx(STAGEN[stageOf(a)])} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · ${tx(TIERS[tierOf(v)])} ${v}${done?' · '+T('오늘 이야기함','talked today','今日は話した'):''}${a.sp<=-10?' · <b style="color:var(--bad)">'+T('지쳐 보인다','looks worn out','疲れて見える')+'</b>':''}</small></button>`}).join('')||`<p class="note">${T('이야기할 수 있는 직원이 없어요.','No one is available to talk.','話せる職員がいません。')}</p>`}</div>`,el=>el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=G.agents.find(x=>x.id===b.dataset.a);if(!a)return;G.talk117.ids.push(a.id);closePop();talk(a)}),{wide:true})}
+  popup(T('누구와 이야기할까','Who will you talk to?','誰と話そうか'),`<p class="sub">${T('한 사람과는 하루 한 번 · 15분. 가장 높은 가치관에 따라 말투와 좋아하는 화제가 달라요.','Once a day per person · 15 min. Tone and favourite topics follow their highest virtue.','一人につき一日一回・15分。一番高い価値観によって口調と好きな話題が違います。')}</p><div class="choices one">${L.map(a=>{const done=G.talk117.ids.includes(a.id);const v=relV(a);return `<button class="ch" data-a="${a.id}" ${done?'disabled':''}><b>${a.n} <small style="color:var(--c-red,#d6453a)">${hearts(v)}</small></b><small>${(()=>{try{return agTitle(a)}catch(e){return ''}})()} · ${tx(ARCHN[archOf(a)])}·${tx(STAGEN[stageOf(a)])} · ${DEPT[a.dept]?DEPT[a.dept].n:''} · ${tx(TIERS[tierOf(v)])} ${v}${done?' · '+T('오늘 이야기함','talked today','今日は話した'):''}${a.sp<=-10?' · <b style="color:var(--bad)">'+T('지쳐 보인다','looks worn out','疲れて見える')+'</b>':''}</small></button>`}).join('')||`<p class="note">${T('이야기할 수 있는 직원이 없어요.','No one is available to talk.','話せる職員がいません。')}</p>`}</div>`,el=>el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=G.agents.find(x=>x.id===b.dataset.a);if(!a)return;G.talk117.ids.push(a.id);closePop();talk(a)}),{wide:true})}
 window.talkMenu117=talkMenu;
 
 /* ---------- 행동 메뉴 정리: 네 갈래로 묶는다 ---------- */
@@ -11719,7 +11720,7 @@ panelPre=(f=>function(title,sub,ch0){const r=f.apply(this,arguments);try{const c
     const isAb=c=>c&&typeof c.cls==='string'&&/(^|\s)cu(\s|$)|melt/.test(c.cls);const isEnd=c=>c&&(/퇴근/.test(c.grp||'')||/업무 종료/.test(strip(c.l)));
     const buckets={rest:[],people:[],train:[],admin:[]};const keep=[];
     choices.forEach(c=>{if(!c||isAb(c)||isEnd(c)||c.keep117){keep.push(c);return}const lab=strip(c.l);const cat=CAT.find(x=>x.re&&x.re.test(lab));(buckets[cat?cat.k:'admin']).push(c)});
-    buckets.people.unshift({l:`${ic('help')} ${T('직원과 대화','Talk with staff','職員と話す')}`,s:T('칭호에 따라 반응이 다르다 · 15분','Reactions differ by title · 15 min','称号によって反応が違う・15分'),f:talkMenu});
+    buckets.people.unshift({l:`${ic('help')} ${T('직원과 대화','Talk with staff','職員と話す')}`,s:T('가치관에 따라 반응이 다르다 · 15분','Reactions differ by virtue · 15 min','価値観によって反応が違う・15分'),f:talkMenu});
     const G117=T('행동','Actions','行動');
     const cats=CAT.filter(x=>buckets[x.k].length).map(x=>({grp:G117,keep117:1,l:`${ic(x.ic)} ${tx(x.n)}`,s:`${tx(x.h)} · ${buckets[x.k].length}`,f:()=>openCat(x,buckets[x.k])}));
     const endI=keep.findIndex(isEnd);const out=endI>=0?keep.slice(0,endI).concat(cats,keep.slice(endI)):keep.concat(cats);
@@ -11864,7 +11865,7 @@ const EV=[
 {id:'spar',cond(){const a=pickAg(x=>!x.panic&&x.hp>agMax(x)*.6);return a?{a}:null},t:c=>T(`훈련실. ${c.a.n}이(가) 목검을 던져 준다. "한 판 해요. 봐주지 마시고."`,`The training room. ${c.a.n} tosses you a wooden sword. "One round. Don't go easy."`,`訓練室。${c.a.n}が木刀を投げてよこす。「一本やりましょう。手加減なしで」`),
  opts:()=>[O(['정면으로 부딪친다','Meet them head-on','正面からぶつかる'],'F',13),O(['빈틈을 읽는다','Read their openings','隙を読む'],'P',14)],
  res(c,r,o){if(good(r)){try{gainStat(o.stat,1)}catch(e){}addR(c.a,4);return T(`한 판을 따냈다. (${tx(SN[o.stat])} +1)`,`You took the round. (${tx(SN[o.stat])} +1)`,`一本取った。（${tx(SN[o.stat])} +1）`)}try{addHp(-Math.round(maxHp()*.08),T('대련 중','Sparring,','手合わせで'))}catch(e){}addR(c.a,2);return T('호되게 졌다. 그래도 좋은 땀이었다.','You lost badly. Good sweat, though.','こっぴどく負けた。それでもいい汗だった。')}},
-{id:'memo',cond(){const a=pickAg(x=>!x.panic);return a&&contained().some(x=>!x.tool)?{a}:null},t:c=>T(`${c.a.n}이(가) 손때 묻은 관찰 수첩을 내민다. "제 메모랑 {me} 씨 기록, 바꿔 볼래요?"`.replace('{me}',G.name||''),`${c.a.n} holds out a worn observation notebook. "Want to swap my notes for your records?"`,`${c.a.n}が手垢のついた観察手帳を差し出す。「私のメモと記録、交換してみます？」`),
+{id:'memo',cond(){const a=pickAg(x=>!x.panic);return a&&contained().some(x=>!x.tool)?{a}:null},t:c=>T(`${c.a.n}이(가) 손때 묻은 관찰 수첩을 내민다. "제 메모랑 {me} 선배 기록, 바꿔 볼래요?"`.replace('{me}',G.name||''),`${c.a.n} holds out a worn observation notebook. "Want to swap my notes for your records?"`,`${c.a.n}が手垢のついた観察手帳を差し出す。「私のメモと記録、交換してみます？」`),
  opts:()=>[O(['꼼꼼히 대조한다','Cross-check carefully','丁寧に照合する'],'P',13),O(['서로 빠진 칸을 채워 준다','Fill in each other\'s gaps','お互いの抜けを埋め合う'],'J',12)],
  res(c,r){if(good(r)){try{obsGain(pick(contained().filter(x=>!x.tool)),r==='crit'?1:.6)}catch(e){}addR(c.a,4);return T('메모 덕분에 관찰이 진전됐다.','The notes advanced your observation.','メモのおかげで観察が進んだ。')}addR(c.a,1);return T('글씨를 알아볼 수가 없었다.','You couldn\'t read the handwriting.','字が読めなかった。')}}];
 window.EV119=EV;
@@ -11969,7 +11970,7 @@ X({id:'s_hod1',big:1,story:1,seph:'train',day:[10,35],who:'ag',t:["{s}이(가) �
 X({id:'s_net1',big:1,story:1,seph:'safety',day:[12,38],who:'none',t:["안전팀 휴게 공간. {s}이(가) 의자에 늘어진 채 천장을 본다. “안전? 다들 결국 죽잖아. 조금 늦게 죽게 해 주는 게 내 일이지.”","The Safety Team lounge. {s} slumps in a chair, staring at the ceiling. “Safety? Everyone dies eventually. My job’s just making it happen a bit later.”","安全チームの休憩スペース。{s}が椅子に沈み込んで天井を見ている。「安全？どうせみんな死ぬだろ。少し遅く死なせるのが俺の仕事さ」"],
  o:[['T',13,["“그 ‘조금’이 사람한텐 하루예요.”","“That ‘bit later’ is a whole day to someone.”","「その『少し』が人にとっては一日なんです」"],["{s}이(가) 한참 뒤 몸을 일으켰다. “…하루라. 그거 나쁘지 않네.”","After a long while, {s} sat up. “…A day, huh. That’s not bad.”","しばらくして{s}が身を起こした。「…一日か。悪くないな」"],{sa:7,sp:4},["“그래, 그래.” 대답은 허공으로 흩어졌다.","“Sure, sure.” The answer dissolved into the air.","「はいはい」返事は宙に消えた。"],{sa:-1},{soothe:1}],
    ['F',12,["같이 회복 설비 점검을 하자고 끌어낸다","Drag him out to inspect the recovery systems together","一緒に回復設備を点検しようと引っ張り出す"],["투덜대면서도 끝까지 같이 돌았다. 재생 장치 하나가 고쳐졌다.","He grumbled but walked the whole round. One regenerator got fixed.","ぶつぶつ言いながらも最後まで回った。再生装置が一つ直った。"],{sa:5,hp:10},["“다음에, 다음에.” 그는 다시 눈을 감았다.","“Next time, next time.” He closed his eyes again.","「また今度、また今度」彼は再び目を閉じた。"],{sa:-2}]]});
-X({id:'s_tip1',big:1,story:1,seph:'central',day:[22,40],who:'none',t:["중앙본부. 두 목소리가 겹친다. 한쪽은 규정을, 한쪽은 직원들을 먼저 생각하자고 한다. “{me} 씨가 정해 줘. 누가 맞아?”","Central Command. Two voices overlap — one insists on rules, the other on the staff first. “{me}, you decide. Who’s right?”","中央本部。二つの声が重なる。片方は規定を、片方は職員を優先しようと言う。「{me}さんが決めて。どっちが正しい？」"],
+X({id:'s_tip1',big:1,story:1,seph:'central',day:[22,40],who:'none',t:["중앙본부. 두 목소리가 겹친다. 한쪽은 규정을, 한쪽은 직원들을 먼저 생각하자고 한다. “{me} 선배가 정해 줘요. 누가 맞아?”","Central Command. Two voices overlap — one insists on rules, the other on the staff first. “{me}, you decide. Who’s right?”","中央本部。二つの声が重なる。片方は規定を、片方は職員を優先しようと言う。「{me}先輩が決めて。どっちが正しい？」"],
  o:[['J',14,["“규정이 사람을 지키게 바꾸면 돼요.”","“Change the rules so they protect people.”","「規定が人を守るように変えればいい」"],["두 목소리가 동시에 멈췄다가, 동시에 웃었다. “…그렇게 말하면 둘 다 이긴 거잖아.”","Both voices stopped, then laughed together. “…Put that way, we both win.”","二つの声が同時に止まり、同時に笑った。「…そう言われたら二人とも勝ちじゃん」"],{sa:8,q:.95},["둘 다 당신에게 화살을 돌렸다. “결국 아무 편도 안 드는 거네?”","Both turned on you. “So you’re just not picking a side?”","二人とも矛先をあなたに向けた。「結局どっちの味方もしないってこと？」"],{sa:-4}],
    ['T',13,["“두 사람이 싸우는 이유는 같아 보여요.”","“You two are fighting for the same reason.”","「二人がけんかする理由は同じに見えます」"],["긴 침묵. “…서로를 잃기 싫어서.” 누가 말했는지는 알 수 없었다.","A long silence. “…Because we don’t want to lose each other.” You couldn’t tell who said it.","長い沈黙。「…お互いを失いたくないから」どちらが言ったのか分からなかった。"],{sa:10,hum:4},["“그런 말로 넘어가지 마.” 싸움이 다시 시작됐다.","“Don’t dodge with that.” The fight resumed.","「そんな言葉でごまかさないで」けんかが再開した。"],{sa:-2},{soothe:1}]]});
 X({id:'s_geb1',big:1,story:1,seph:'disc',day:[22,45],who:'ag',t:["징계팀 훈련장. {s}이(가) 목검을 집어 던진다. “말은 됐다. 한 번 쳐 봐라. 네 직원 {n}을(를) 지킬 실력이 있는지 보자.”","The Disciplinary training floor. {s} tosses you a wooden sword. “Enough talk. Strike me once. Let’s see if you can protect your employee {n}.”","懲戒チームの訓練場。{s}が木刀を投げてよこす。「話はいい。一度打ってみろ。お前の職員{n}を守れる腕があるか見てやる」"],
@@ -12155,7 +12156,7 @@ const L=[
 ['i_sock',A,["세탁실. {n}이(가) 짝 잃은 양말을 들고 있다. “또 한 짝이 없어요. 여기 세탁기도 환상체 아니에요?”","The laundry room. {n} holds a lone sock. “Another one gone. Isn’t this washer an Abnormality too?”","洗濯室。{n}が片方だけの靴下を持っている。「また片方ない。ここの洗濯機も幻想体じゃないですか？」"],
  ['P',11,["세탁기 뒤를 뒤진다","Search behind the washer","洗濯機の裏を探す"],["양말 열네 짝이 나왔다. 세탁실이 잠시 축제가 됐다.","Fourteen socks emerged. The laundry room became a festival.","靴下が十四足出てきた。洗濯室がちょっとしたお祭りになった。"],{rel:5,hum:3},["먼지만 나왔다.","Only dust.","ほこりしか出てこなかった。"],{hp:-1}],
  ['F',10,["“관찰 기록에 올리자.”","“Let’s file an observation report.”","「観察記録に載せよう」"],["‘양말 먹는 세탁기’ 보고서는 휴게실의 명물이 됐다.","The ‘sock-eating washer’ report became break-room legend.","『靴下を食べる洗濯機』報告書は休憩室の名物になった。"],{rel:6,sp:3},["{n}이(가) 진지하게 받아들였다.","{n} took it seriously.","{n}が真に受けた。"],{agsp:-1}]],
-['i_ramen',A,["야간 근무 중 {n}이(가) 컵라면 두 개를 들고 온다. “하나는 {me} 거예요. 국물은 나눠 마시기.”","On the night shift, {n} brings two cup noodles. “One’s yours. We split the broth.”","夜勤中、{n}がカップ麺を二つ持ってくる。「一つは{me}さんのです。スープは分けっこ」"],
+['i_ramen',A,["야간 근무 중 {n}이(가) 컵라면 두 개를 들고 온다. “하나는 {me} 거예요. 국물은 나눠 마시기.”","On the night shift, {n} brings two cup noodles. “One’s yours. We split the broth.”","夜勤中、{n}がカップ麺を二つ持ってくる。「一つは{me}先輩のです。スープは分けっこ」"],
  ['T',9,["고맙게 받는다","Accept gratefully","ありがたく受け取る"],["뜨거운 국물이 목을 타고 내려갔다. 오늘 최고의 3분이었다.","Hot broth slid down your throat. The best three minutes of the day.","熱いスープが喉を通った。今日最高の三分間だった。"],{rel:6,sp:5,hp:3},["물이 덜 끓었다.","The water wasn’t hot enough.","お湯が沸ききっていなかった。"],{rel:3}],
  ['F',11,["누가 빨리 먹나 내기한다","Race to finish first","早食い競争をする"],["입천장을 데었지만 이겼다.","You burned your mouth but won.","上あごを火傷したが勝った。"],{rel:6,hp:-1},["{n}이(가) 압승했다.","{n} won by a mile.","{n}の圧勝だった。"],{rel:4}]],
 ['i_pw',A,["{n}이(가) 단말기 앞에서 머리를 감싼다. “비밀번호를 잊었어요. 5번 틀리면 잠긴대요.”","{n} holds their head at the terminal. “I forgot my password. Five wrong tries and it locks.”","{n}が端末の前で頭を抱える。「パスワードを忘れました。5回間違えるとロックされるんです」"],
@@ -12189,7 +12190,7 @@ const L=[
  ['F',12,["받아들인다","Accept","受けて立つ"],["50개에서 {n}이(가) 먼저 무너졌다.","At fifty, {n} collapsed first.","50回で{n}が先に崩れた。"],{rel:5,st:{F:1}},["30개에서 팔이 떨렸다. 커피 당번이다.","Your arms shook at thirty. Coffee duty it is.","30回で腕が震えた。コーヒー当番だ。"],{rel:4,hp:-2}],
  ['P',11,["자세 판정 규칙부터 정하자고 한다","Insist on form-judging rules first","まずフォームの判定ルールを決めようと言う"],["엄격한 판정 끝에 무승부. 둘 다 커피 당번이 됐다.","Strict judging ended in a tie. You both got coffee duty.","厳格な判定の末、引き分け。二人ともコーヒー当番になった。"],{rel:6},["규칙 토론만 하다 끝났다.","It ended with just arguing about rules.","ルールの議論だけで終わった。"],{rel:1}]],
 ['i_name',A,["{n}이(가) 당신을 다른 사람 이름으로 불렀다. 이미 죽은 직원의 이름이다. {n}의 얼굴이 하얘진다.","{n} calls you by someone else’s name — a dead employee’s. {n}’s face goes white.","{n}があなたを別の人の名前で呼んだ。すでに亡くなった職員の名前だ。{n}の顔が真っ白になる。"],
- ['T',13,["“그 사람 얘기 해 줄래?”","“Will you tell me about them?”","「その人の話、聞かせてくれる？」"],["{n}은(는) 그 사람의 버릇을 하나씩 말하다가 웃었다. “…{me} 씨랑 걷는 게 닮았어요.”","{n} listed their habits and laughed. “…You walk just like them.”","{n}はその人の癖を一つずつ話して笑った。「…{me}さんと歩き方が似てるんです」"],{rel:9,hum:4},["{n}은(는) 사과만 하고 자리를 떴다.","{n} just apologized and left.","{n}は謝るだけで席を立った。"],{agsp:-4},{soothe:1}],
+ ['T',13,["“그 사람 얘기 해 줄래?”","“Will you tell me about them?”","「その人の話、聞かせてくれる？」"],["{n}은(는) 그 사람의 버릇을 하나씩 말하다가 웃었다. “…{me} 선배랑 걷는 게 닮았어요.”","{n} listed their habits and laughed. “…You walk just like them.”","{n}はその人の癖を一つずつ話して笑った。「…{me}先輩と歩き方が似てるんです」"],{rel:9,hum:4},["{n}은(는) 사과만 하고 자리를 떴다.","{n} just apologized and left.","{n}は謝るだけで席を立った。"],{agsp:-4},{soothe:1}],
  ['F',10,["“나 그렇게 잘생겼어?” 하고 웃어넘긴다","Laugh it off: “Am I that good-looking?”","「そんなにかっこいい？」と笑い飛ばす"],["{n}이(가) 피식 웃었다. 숨이 돌아왔다.","{n} snorted. Their breath came back.","{n}がふっと笑った。息が戻った。"],{rel:6},["농담이 통하지 않았다.","The joke didn’t land.","冗談は通じなかった。"],{agsp:-2}]],
 ['i_puzzle',N,["휴게실 탁자 위에 1000조각 퍼즐이 반쯤 맞춰져 있다. 누가 시작했는지 아무도 모른다. 상자 그림은 바다다.","A 1000-piece puzzle sits half-done on the break-room table. Nobody knows who started it. The box shows the sea.","休憩室のテーブルに1000ピースのパズルが半分ほど組まれている。誰が始めたのか誰も知らない。箱の絵は海だ。"],
  ['P',12,["가장자리 조각을 찾아 맞춘다","Find and fit edge pieces","端のピースを探して合わせる"],["백 조각을 더 맞췄다. 다음 사람이 이어 할 것이다.","You added a hundred pieces. Someone will continue.","百ピース追加した。次の人が続けるだろう。"],{sp:4,hum:3},["한 조각도 맞지 않았다.","Not a single piece fit.","一つもはまらなかった。"],{sp:-1}],
@@ -12253,7 +12254,7 @@ const L=[
  ['J',11,["깨워서 휴식 신청을 하라고 한다","Wake them and have them file for rest","起こして休憩申請をさせる"],["정식 휴식 30분을 받았다.","They got an official 30-minute break.","正式に30分の休憩をもらった。"],{rel:4,agsp:6},["{n}은(는) 잠이 덜 깨 투덜댔다.","{n} grumbled, half asleep.","{n}は寝ぼけてぶつぶつ言った。"],{rel:1}]],
 ['i_diary',A,["복도에 일기장이 떨어져 있다. 표지에 {n}의 이름이 적혀 있다.","A diary lies in the corridor. {n}’s name is on the cover.","廊下に日記帳が落ちている。表紙に{n}の名前が書いてある。"],
  ['J',9,["펼치지 않고 그대로 돌려준다","Return it unopened","開かずにそのまま返す"],["{n}이(가) 안도의 한숨을 쉬었다. “…읽었어요?” “아니.” 그 말을 믿어 주었다.","{n} sighed in relief. “…Did you read it?” “No.” They believed you.","{n}が安堵の息をついた。「…読みました？」「いいや」その言葉を信じてくれた。"],{rel:9},["돌려주러 갔다가 엇갈렸다.","You kept missing each other.","返しに行ったがすれ違った。"],{rel:2}],
- ['T',12,["펼쳐진 마지막 장만 보고 닫는다","See just the open last page, then close it","開いていた最後のページだけ見て閉じる"],["‘오늘 {me} 씨가 웃었다.’ 그 한 줄을 모른 척 돌려주었다.","‘{me} smiled today.’ You returned it, pretending you hadn’t seen.","『今日{me}さんが笑った』その一行を見なかったふりで返した。"],{rel:8,hum:3},["{n}이(가) 그 장면을 봤다.","{n} saw you looking.","{n}がその場面を見ていた。"],{rel:-5}]],
+ ['T',12,["펼쳐진 마지막 장만 보고 닫는다","See just the open last page, then close it","開いていた最後のページだけ見て閉じる"],["‘오늘 {me} 선배가 웃었다.’ 그 한 줄을 모른 척 돌려주었다.","‘{me} smiled today.’ You returned it, pretending you hadn’t seen.","『今日{me}先輩が笑った』その一行を見なかったふりで返した。"],{rel:8,hum:3},["{n}이(가) 그 장면을 봤다.","{n} saw you looking.","{n}がその場面を見ていた。"],{rel:-5}]],
 ['i_vent',N,["환풍구에서 이상한 긁는 소리가 난다. 직원들이 웅성거린다. 환상체일까?","Strange scratching from the vent. Staff murmur. An Abnormality?","換気口から妙な引っかく音がする。職員たちがざわつく。幻想体だろうか？"],
  ['F',13,["직접 덮개를 연다","Open the cover yourself","自分でカバーを開ける"],["쥐 한 마리가 튀어나왔다. 비명과 웃음이 동시에 터졌다.","A rat shot out. Screams and laughter at once.","ネズミが一匹飛び出した。悲鳴と笑いが同時に上がった。"],{hum:4,sp:3},["안은 비어 있었다. 소리는 계속 났다.","Empty inside. The sound continued.","中は空だった。音は続いた。"],{sp:-4}],
  ['P',12,["소리의 패턴을 듣고 위치를 찾는다","Locate it by the sound pattern","音のパターンを聞いて位置を探る"],["배관 진동이었다. 시설팀에 넘겼다.","Pipe vibration. Handed off to maintenance.","配管の振動だった。施設チームに引き継いだ。"],{lob:1},["모르겠다. 소문만 커졌다.","No idea. The rumors grew.","分からない。噂だけが大きくなった。"],{hum:-1}]],
@@ -12262,7 +12263,7 @@ const L=[
  ['F',11,["“야식 먹으러 가자.”","“Let’s grab a late snack.”","「夜食食べに行こう」"],["매점의 마지막 빵 두 개를 나눠 먹었다.","You split the canteen’s last two buns.","売店の最後のパン二つを分けて食べた。"],{rel:7,sp:3},["“배 안 고파요.”","“I’m not hungry.”","「お腹空いてません」"],{rel:1}],{need:['late']}],
 ['i_letters',A,["{n}이(가) ‘계약 종료 후 전달’ 편지함 앞에서 망설인다. “누구한테 써야 할지 모르겠어요. 받을 사람이 아직 있을까요?”","{n} hesitates at the ‘Deliver at Contract End’ letter box. “I don’t know who to write to. Is anyone still out there to receive it?”","{n}が『契約終了後お届け』の手紙箱の前でためらっている。「誰に書けばいいか分からない。受け取る人がまだいるのかな」"],
  ['T',12,["“미래의 너한테 써 봐.”","“Write to your future self.”","「未来の自分に書いてみたら」"],["{n}은(는) 한참 쓰다가 웃었다. “살아서 읽어야겠네요.”","{n} wrote for a long time and smiled. “Guess I have to live to read it.”","{n}は長い間書いて笑った。「生きて読まなきゃですね」"],{rel:8,agsp:10},["펜이 움직이지 않았다.","The pen wouldn’t move.","ペンが動かなかった。"],{agsp:-3},{soothe:1}],
- ['J',11,["나한테 써 달라고 한다","Ask them to write to you","私に書いてと頼む"],["{n}이(가) 웃었다. “그럼 {me} 씨도 저한테 써요. 약속.”","{n} laughed. “Then you write to me too. Promise.”","{n}が笑った。「じゃあ{me}さんも私に書いてください。約束」"],{rel:10,hum:3},["“그건 좀… 부끄러워요.”","“That’s… embarrassing.”","「それはちょっと…恥ずかしいです」"],{rel:3}]],
+ ['J',11,["나한테 써 달라고 한다","Ask them to write to you","私に書いてと頼む"],["{n}이(가) 웃었다. “그럼 {me} 선배도 저한테 써요. 약속.”","{n} laughed. “Then you write to me too. Promise.”","{n}が笑った。「じゃあ{me}先輩も私に書いてください。約束」"],{rel:10,hum:3},["“그건 좀… 부끄러워요.”","“That’s… embarrassing.”","「それはちょっと…恥ずかしいです」"],{rel:3}]],
 ['i_quiet',B2,["점심시간 끝, {n}와(과) {n2}이(가) 빈 회의실에서 눈을 감고 있다. “5분 침묵 모임이에요. 같이 할래요?”","End of lunch: {n} and {n2} sit eyes closed in an empty meeting room. “Five-minute silence club. Join us?”","昼休みの終わり、{n}と{n2}が空いた会議室で目を閉じている。「5分沈黙の会です。一緒にどうです？」"],
  ['T',10,["조용히 합류한다","Join quietly","静かに加わる"],["5분이 길고도 짧았다. 머리가 맑아졌다.","Five minutes felt long and short. Your head cleared.","5分が長くも短くもあった。頭がすっきりした。"],{rel:5,both:1,sp:6},["경보가 울렸다.","An alarm went off.","警報が鳴った。"],{sp:-2}],
  ['F',12,["30초 만에 웃음을 참지 못한다","Crack up within thirty seconds","30秒で笑いをこらえきれない"],["셋 다 웃음이 터졌다. 그것도 나름 명상이었다.","All three burst out laughing. That was a kind of meditation too.","三人とも笑い出した。それもそれで瞑想だった。"],{rel:6,both:1,sp:4},["둘이 진지하게 노려봤다.","They glared at you, seriously.","二人が真剣ににらんだ。"],{rel:-1,both:1}]],
