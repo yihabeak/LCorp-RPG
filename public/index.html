@@ -2631,12 +2631,12 @@ function abPop(a){
   <div class="isec"><span class="lbl">E.G.O</span>
    <p class="note">${ei.w?`무기 ${s.obs>=ei.w.obs?`「${a.eq.wn}」`:'「???」'} ${ei.w.cost} PE · 최대 ${ei.w.max} · 관찰 ${ROMAN[ei.w.obs]}`:'무기 없음'} / ${ei.s?`슈트 ${s.obs>=ei.s.obs?`「${a.eq.wn}」`:'「???」'} ${ei.s.cost} PE · 최대 ${ei.s.max} · 관찰 ${ROMAN[ei.s.obs]}`:'슈트 없음'}${ei.est?' (등급 대표값)':''} · 기프트 ${SLOTN[a.slot]}: ${s.obs>=2?a.gift.d:'관찰 Ⅱ에서 공개'}</p>
    ${ext.length?`<div class="rsp">${ext.map((x,j)=>`<button class="rb" data-ex="${j}" ${x.ok&&!B?'':'disabled'}><span>${x.kind==='suit'?ic('shield'):ic('sword')} ${x.kind==='suit'?'슈트':'무기'} 추출</span><small>PE ${x.cost} · 보유 ${x.have}/${x.max}</small></button>`).join('')}</div>`:''}</div>`}
-  <div class="row" style="margin-top:8px">${canWork(a)&&G.phase==='work'&&!B?'<button class="btn small" id="goWork">이 격리실로 작업하러 간다</button>':''}<label class="btn ghost small"><input type="file" accept="image/*" id="abimg" hidden>${userImg(a.id)?'이미지 바꾸기':'내 이미지 넣기'}</label></div>`;
+  <div class="row" style="margin-top:8px">${canWork(a)&&G.phase==='work'&&!B?'<button class="btn small" id="goWork">이 격리실로 작업하러 간다</button>':''}<label class="btn ghost small"><input type="file" accept="image/*" id="abimg" hidden>${userImg(a.id)?'이미지 바꾸기':'내 이미지 넣기'}</label>${userImg(a.id)?`<button type="button" class="btn ghost small" id="abimgx">${i80('기본 이미지로','Reset to default','デフォルト画像に戻す')}</button>`:''}</div>`;
   popup(a.n,html,b=>{
     b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{const [k,sub]=x.dataset.ul.split('|');unlockInfo(a,k,k==='m'?+sub:sub||null);render();abPop(a)});
     b.querySelectorAll('[data-ex]').forEach(x=>x.onclick=()=>{const e=ext[+x.dataset.ex];if(!e.ok)return;s.pe-=e.cost;addInv(e.kind==='suit'?'s':'w',a.eq.id);log(`${a.n}에게서 E.G.O ${e.kind==='suit'?'슈트':'무기'} 「${a.eq.wn}」 추출 (${invN(e.kind==='suit'?'s':'w',a.eq.id)}/${e.max}).`,'warn');save();render();abPop(a)});
     const g=b.querySelector('#goWork');if(g)g.onclick=()=>{closePop();TAB='work';renderTabs();pickWork(a)};
-    const im=b.querySelector('#abimg');im.onchange=()=>{if(im.files[0]){setUserImg(a.id,im.files[0]);setTimeout(()=>abPop(a),300)}};
+    const im=b.querySelector('#abimg');im.onchange=()=>{if(im.files[0]){setUserImg(a.id,im.files[0]);setTimeout(()=>abPop(a),300)}};const imx=b.querySelector('#abimgx');if(imx)imx.onclick=()=>{try{localStorage.removeItem('lcw_img_'+a.id)}catch(e){};render();abPop(a)};
   },{wide:true});
 }
 
@@ -5402,7 +5402,7 @@ const _wmV49=workMenu;workMenu=function(){const r=_wmV49.apply(this,arguments);
 /* ---------- 1. 근무 화면: 큰 분류 타일 ---------- */
 let CATSEL='work';
 const CATDEF={work:{n:'작업',d:'격리실에 들어가 에너지를 모은다',ic:'ins'},act:{n:'행동',d:'휴식 · 순찰 · 동료 · 훈련',ic:'insi'},leave:{n:'퇴근',d:'하루를 마친다',ic:'att'},etc:{n:'기타',d:'',ic:'req'}};
-function catOf(label){return /격리실/.test(label)?'work':/행동/.test(label)?'act':/퇴근/.test(label)?'leave':'etc'}
+function catOf(label){return /격리실|Unit|収容室/.test(label)?'work':/행동|^Actions|行動/.test(label)?'act':/퇴근|Clock[ -]?[Oo]ut|退勤/.test(label)?'leave':'etc'}
 function catify(P){const box=P.querySelector('.choices');if(!box||box.dataset.cat)return;box.dataset.cat=1;
   const groups={};let cur='etc',curLbl='';
   [...box.children].forEach(el=>{if(el.classList.contains('grouplbl')){curLbl=el.textContent.trim();cur=catOf(curLbl)}(groups[cur]=groups[cur]||[]).push(el);el.dataset.cat=cur});
@@ -5437,7 +5437,7 @@ const TUT_STEPS=[
  {sel:'.cats',t:'할 일은 세 갈래',b:'<b>작업</b>으로 에너지를 모으고, <b>행동</b>으로 쉬거나 훈련하고, 할당량을 채우면 <b>퇴근</b>한다.'},
  {sel:'#panel .choices .ch.cu:not([hidden])',t:'격리실에 들어가 보자',b:'이 카드가 <b>환상체</b>가 갇힌 격리실이다. <b>직접 눌러 보자.</b>',act:1,until:()=>!!document.querySelector('.pop .ch')},
  {sel:'.pop .choices .ch:not([disabled])',t:'작업 고르기',b:'네 가지 작업 중 하나를 고른다. 환상체마다 좋아하는 작업이 다르고, <b>관찰</b>을 쌓으면 선호도가 보인다. <b>아무 작업이나 눌러 보자.</b>',act:1,until:()=>!document.querySelector('.pop .choices .ch')||CURUI!=='work',all:1},
- {hint:'작업 중에 선택지가 나오면 마음에 드는 것을 고르면 된다. 결과는 기록에 남는다.',until:()=>CURUI==='work'&&!POP&&/업무 시간/.test(($('#panel h3')||{}).textContent||'')},
+ {hint:'작업 중에 선택지가 나오면 마음에 드는 것을 고르면 된다. 결과는 기록에 남는다.',until:()=>CURUI==='work'&&!POP&&/업무 시간|Work Hours|業務時間/.test(($('#panel h3')||{}).textContent||'')},
  {sel:'#daybox .hud-cell:nth-child(3)',t:'에너지가 쌓였다',b:'작업에서 성공한 만큼 에너지가 들어온다. 결과가 <b>나쁨</b>이면 환상체의 인내심(카운터)이 줄어드니 조심.'},
  {sel:'.cats .cat[data-cat="act"]',t:'행동',b:'지치면 여기서 <b>휴식</b>한다. 순찰·훈련·동료 돕기도 여기 있다.'},
  {sel:'.cats .cat[data-cat="leave"]',t:'퇴근',b:'할당량을 채우면 이 타일이 <b>초록색</b>으로 바뀐다. 그때 퇴근하면 하루가 끝난다.'},
@@ -5895,7 +5895,7 @@ const _luV55=levelUp;levelUp=function(){const r=_luV55.apply(this,arguments);try
   if(G.sup.key==='control'&&G.mLevel>=3&&G.sup.map){contained().forEach(a=>G.sup.map[a.id]=shuffle(WORKS.map(w=>w.id)));log('말쿠트 억제: 작업 버튼이 다시 뒤섞였다.','warn')}
   if(G.mLevel>=4){addSp(-3);log('코어의 압박이 심해진다. 정신력 -3.','hurt')}}}catch(e){}return r};
 // 상단 표시: 억제 중 직접 작업 진행
-const _rtV55=renderTop;renderTop=function(){_rtV55();try{const S=G&&G.sup;if(!S||S.done||S.key==='disc'||S.key==='extract')return;const el=[...document.querySelectorAll('#daybox *')].find(x=>x.children.length===0&&/코어 억제/.test(x.textContent||''));if(el&&!/직접 작업/.test(el.textContent))el.textContent+=` · 직접 작업 ${S.pw||0}/${SUPNEED}`}catch(e){}};
+const _rtV55=renderTop;renderTop=function(){_rtV55();try{const S=G&&G.sup;if(!S||S.done||S.key==='disc'||S.key==='extract')return;const el=[...document.querySelectorAll('#daybox *')].find(x=>x.children.length===0&&/코어 억제|Core Suppression|コア抑制/.test(x.textContent||''));if(el&&!/직접 작업|Personal work|自ら作業/.test(el.textContent))el.textContent+=i80(` · 직접 작업 ${S.pw||0}/${SUPNEED}`,` · Personal work ${S.pw||0}/${SUPNEED}`,` · 自ら作業 ${S.pw||0}/${SUPNEED}`)}catch(e){}};
 // v56: 라오루 출신 적 · 붉은 안개 — 책장(스킬)·개체 이름을 나무위키(Library of Ruina 각 층 · 접대 문서) 기준으로 교체
 const LRN={
  '불타버린 소녀':{'네 번째 성냥불':'4번째 성냥불'},
@@ -6024,8 +6024,8 @@ AB.forEach(a=>{if(Array.isArray(a.d))a.d=a.d.map(metaClean);if(a.good)a.good=met
 const _logV58=log;log=function(t,c){return _logV58(metaClean(t),c)};
 const _toastV58=toast;toast=function(t,c){return _toastV58(metaClean(t),c)};
 function metaDom(root){if(!root||!root.querySelectorAll)return;
-  root.querySelectorAll('.sptag,.mut').forEach(e=>{if(/원작|자체|미등장|위키/.test(e.textContent))e.remove()});
-  root.querySelectorAll('.chip').forEach(e=>{if(/^(?:미등장·구버전|림버스 전투 반영|원작|자체)$/.test(e.textContent.trim()))e.remove()});
+  root.querySelectorAll('.sptag,.mut').forEach(e=>{if(/원작|자체|미등장|위키|^Original$|^Custom$|Unreleased|Wiki|原作|独自|未登場|ウィキ/.test(e.textContent))e.remove()});
+  root.querySelectorAll('.chip').forEach(e=>{if(/^(?:미등장·구버전|림버스 전투 반영|원작|자체|Original|Custom|原作|独自)$/.test(e.textContent.trim())||/Limbus|リンバス|Unreleased|未登場/.test(e.textContent))e.remove()});
   const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const L=[];while(n=tw.nextNode())L.push(n);
   L.forEach(x=>{const v=metaClean(x.nodeValue);if(v!==x.nodeValue)x.nodeValue=v})}
 function metaRoot(el){try{metaDom(el)}catch(e){}}
@@ -6135,7 +6135,7 @@ supChoices=function(next,fromWork){const R=supReady();
    .concat([{l:fromWork?'아직은 하지 않는다':'오늘은 하지 않는다',s:'준비가 되면 다른 날 아침이나 근무 중에 시작할 수 있다 (하루 한 번)',f:next}])};
 const _sbgV58=supBegin;supBegin=function(k,next){_sbgV58(k,next);try{const p=$('#panel');const sub=p&&p.querySelector('.sub');if(sub)sub.insertAdjacentHTML('afterend',supInfoHtml(k))}catch(e){}};
 // 상단 진행 표시 갱신
-renderTop=(f=>function(){f();try{const S=G&&G.sup;if(!S||S.done)return;document.querySelectorAll('#daybox *').forEach(x=>{if(x.children.length===0&&/코어 억제/.test(x.textContent||''))x.textContent=`${SEPH[S.key].n} 코어 억제 · ${supGoal()}`})}catch(e){}})(renderTop);
+renderTop=(f=>function(){f();try{const S=G&&G.sup;if(!S||S.done)return;document.querySelectorAll('#daybox *').forEach(x=>{if(x.children.length===0&&/코어 억제|Core Suppression|コア抑制/.test(x.textContent||''))x.textContent=i80(`${SEPH[S.key].n} 코어 억제 · ${supGoal()}`,`${SEPH[S.key].n} Core Suppression · ${supGoal()}`,`${SEPH[S.key].n} コア抑制 · ${supGoal()}`)})}catch(e){}})(renderTop);
 // 억제 중 '코어 억제 정보' 버튼 (근무 메뉴)
 const _ppV58=panelPre;panelPre=function(t,s,c){const r=_ppV58(t,s,c);
   if(typeof t==='string'&&t.startsWith('업무 시간')&&G&&G.sup&&!G.sup.done){r.choices.push({grp:'행정 · 시간 경과 없음',l:`${ic('alarm')} 코어 억제 정보`,s:`${SEPH[G.sup.key].n} · ${supGoal()}`,f:()=>popup(`${SEPH[G.sup.key].n} 코어 억제`,`<p>${SUPRULE[G.sup.key]}</p>${supInfoHtml(G.sup.key)}`)})}
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.30.2.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.30.3.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -12552,14 +12552,14 @@ avatarSvg=(f=>function(){const h=f.apply(this,arguments);try{if(!h.startsWith('<
    경고 줄무늬, 회로 같은 배경선, 좁고 굵은 글꼴. 로고·그림은 쓰지 않고 색·선·면의 결만 가져온다.
    코인은 칠각형. 카드 끌기 판정을 위해 전투 무대가 들어 있는 패널은 회전시키지 않는다. */
 (function(){
-try{if(!document.querySelector('link[data-f126]')){const l=document.createElement('link');l.rel='stylesheet';l.dataset.f126=1;l.href='https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Oswald:wght@500;600;700&display=swap';document.head.appendChild(l)}}catch(e){}
+try{if(!document.querySelector('link[data-f126]')){const l=document.createElement('link');l.rel='stylesheet';l.dataset.f126=1;l.href='https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Dela+Gothic+One&family=Oswald:wght@500;600;700&display=swap';document.head.appendChild(l)}}catch(e){}
 // 한쪽 아래 모서리가 꺾여 들어간 판
 const NOTCH=(n=26)=>`polygon(0 0,100% 0,100% calc(100% - ${n}px),calc(100% - ${n*1.6}px) 100%,0 100%)`;
 const NOTCH2=(n=18)=>`polygon(0 0,calc(100% - ${n}px) 0,100% ${n}px,100% 100%,${n*1.4}px 100%,0 calc(100% - ${n*.8}px))`;
 const HEPT='polygon(50% 0,89% 19%,98% 61%,72% 95%,28% 95%,2% 61%,11% 19%)';
 const css=`
 :root{--y-bk:#070707;--y-p:#0e0e0c;--y-p2:#151511;--y-cr:#f4ee9a;--y-cr2:#cfc777;--y-dm:#5d592f;--y-tl:#1d8a75;--y-tl2:#33c3a3;--y-rd:#e8433a;--y-or:#ff8a1a;--y-mu:#9a9566;
- --y-f:'Oswald','Black Han Sans',var(--f-num,system-ui),sans-serif;--y-k:'Black Han Sans','Oswald',sans-serif}
+ --y-f:'Oswald','Black Han Sans','Dela Gothic One',var(--f-num,system-ui),sans-serif;--y-k:'Black Han Sans','Dela Gothic One','Oswald',sans-serif}
 /* 바탕: 검정 + 희미한 회로선 */
 html body{background:
  linear-gradient(90deg,transparent 0 calc(100% - 1px),rgba(244,238,154,.035) 0) 0 0/64px 64px,
@@ -12818,6 +12818,17 @@ function human(o){const C=o.pcol||'#f4ee9a',K='#000',md=o.mood||'ok',st=`stroke=
    ${P('34,64 24,70 16,64 12,69 23,78 34,72')}${band(17,66)}${P('66,64 77,68 84,58 89,62 80,76 66,72')}
    ${P(oct(50,39,23.5))}</g>
    ${L('M18 14q-7-7 0-13M84 12q8-5 3-12',2)}${D(80,30)}${D(20,36)}`}
+ else if(o.pose==='fight'){const sl=md==='stress'?2:0;ht=md==='worry'?-8:md==='stress'?10:-4;hy=38+sl;
+  // 전투 자세: 다리를 벌리고 앞으로 기울여, 앞팔은 무기를 들고 뒷팔은 막는다
+  parts=`<g transform="rotate(5 50 104)">
+   ${P(`40,${96+sl} 49,${96+sl} 38,123 27,123`)}${P(`52,${96+sl} 62,${96+sl} 70,110 76,123 65,123 59,111`)}${L('M28 123h10M66 123h10',3.4)}
+   ${torso(62+sl)}
+   ${P(`34,${64+sl} 25,${69+sl} 29,${83+sl} 45,${80+sl} 45,${74+sl} 34,${74+sl}`)}${band(26,72+sl)}
+   ${P(`66,${64+sl} 76,${60+sl} 86,${50+sl} 91,${55+sl} 81,${68+sl} 67,${75+sl}`)}
+   <g transform="rotate(${ht} 50 ${58+sl})">${P(oct(50,hy,24.5))}</g></g>`;
+  if(md==='calm')parts+=`<polygon points="12,8 14.4,14 20,16 14.4,18 12,24 9.6,18 4,16 9.6,14" fill="${C}" stroke="${K}" stroke-width="1.6"/>`;
+  if(md==='worry')parts+=`<g fill="${C}" stroke="${K}" stroke-width="1.4"><rect x="4" y="6" width="4.4" height="4.4"/><rect x="11" y="6" width="4.4" height="4.4"/><rect x="18" y="6" width="4.4" height="4.4"/></g>`;
+  if(md==='stress')parts+=`${D(14,14)}${D(8,26,3.4)}`}
  else{const sl=md==='stress'?3:0;ht=md==='worry'?-9:md==='stress'?11:0;hy=38+sl;
   parts=`${P(`37,${96+sl} 49,${96+sl} 49,122 36,122`)}${P(`51,${96+sl} 63,${96+sl} 64,122 51,122`)}${L('M38 122h10M52 122h11',3.4)}
    ${torso(62+sl)}
@@ -12827,11 +12838,12 @@ function human(o){const C=o.pcol||'#f4ee9a',K='#000',md=o.mood||'ok',st=`stroke=
   if(md==='worry')parts+=`<g fill="${C}" stroke="${K}" stroke-width="1.4"><rect x="76" y="6" width="4.4" height="4.4"/><rect x="83" y="6" width="4.4" height="4.4"/><rect x="90" y="6" width="4.4" height="4.4"/></g>`;
   if(md==='stress')parts+=`${D(82,14)}${D(89,26,3.4)}${L('M14 10l5 5M10 22l6 1',2)}`}
  const mark=o.rim&&o.rim!=='none'?`<polygon points="43,0 57,0 50,6" fill="${o.rim}" stroke="${K}" stroke-width="1.4"/>`:'';
- const wpn=o.weapon&&md!=='panic'?`<g transform="translate(70 92) scale(.62) translate(-75 -88)">${o.weapon}</g>`:'';
+ const wpn=o.weapon&&md!=='panic'?(o.pose==='fight'?`<g transform="rotate(5 50 104) translate(89 ${53+(md==='stress'?2:0)}) rotate(-62) scale(.7) translate(-75 -88)">${o.weapon}</g>`:`<g transform="translate(70 92) scale(.62) translate(-75 -88)">${o.weapon}</g>`):'';
  const HG=o.overHead?`<g transform="rotate(${ht} 50 58) translate(50 ${hy}) scale(1.35) translate(-50 -36)">${o.overHead}</g>`:'';
  const BG=o.over?`<g transform="translate(50 76) scale(.7) translate(-50 -86)">${o.over}</g>`:'';
  const UG=o.under?`<g transform="translate(50 70) scale(.75) translate(-50 -86)">${o.under}</g>`:'';
- return `<svg viewBox="0 0 100 128" width="100%" height="100%" aria-hidden="true">${UG}${mark}${parts}${HG}${BG}${wpn}</svg>`}
+ const inner=`${UG}${parts}${HG}${BG}${wpn}`;
+ return `<svg viewBox="0 0 100 128" width="100%" height="100%" aria-hidden="true">${mark}${o.flip?`<g transform="translate(100 0) scale(-1 1)">${inner}</g>`:inner}</svg>`}
 
 /* 슈트 속성: 그 슈트를 낳은 환상체의 피해 유형 (없으면 가장 강한 내성) */
 function suitAttr(id){if(!id||id==='basic')return null;const b=String(id).split('~')[0];
@@ -12841,13 +12853,13 @@ const tieOf=id=>{const k=suitAttr(id);return k?({RED:'#e8433a',WHITE:'#ffffff',B
 window.suitAttr127=suitAttr;
 window.human127=human;
 const wsvg=(id,dc)=>{try{return typeof wSvg97==='function'?wSvg97(id,DC[dc]||'#e05040'):''}catch(e){return ''}};
-function agentFig(ag,enemy,sp){let suit='#23262d',rim=enemy?'#e8433a':'none',tie='#b33',arm='#b33',wid='baton',dc='RED';
+function agentFig(ag,enemy,sp,pose){let suit='#23262d',rim=enemy?'#e8433a':'none',tie='#b33',arm='#b33',wid='baton',dc='RED';
  try{const D=DEPT[ag.dept];if(D){tie=D.col;arm=D.col}}catch(e){}
  try{const sid=agSuit(ag);if(sid&&sid!=='basic'){const su=suitOf(sid);suit='#1d2026';if(!enemy)rim=GC[su.g||0]}}catch(e){}
  try{wid=agWeap(ag)||'baton';dc=weapOf(wid).dc}catch(e){}
  let bodyC=tie;try{const sid=agSuit(ag);if(sid&&sid!=='basic')bodyC=GC[(suitOf(sid).g)||0]}catch(e){}
  let tA=null;try{tA=tieOf(agSuit(ag))}catch(e){}
- return human({seed:ag.id+':'+ag.n,tieAttr:tA,pcol:enemy?'#ff8f80':'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,suit,rim:enemy?'#e8433a':'none',weapon:wsvg(wid,dc),mood:moodOf(sp!=null?sp:(ag.sp||0),!!ag.panic)})}
+ return human({pose,flip:!!enemy&&pose==='fight',seed:ag.id+':'+ag.n,tieAttr:tA,pcol:enemy?'#ff8f80':'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,suit,rim:enemy?'#e8433a':'none',weapon:wsvg(wid,dc),mood:moodOf(sp!=null?sp:(ag.sp||0),!!ag.panic)})}
 
 /* 플레이어 */
 avatarSvg=(f=>function(){const h0=f.apply(this,arguments);try{if(!h0.startsWith('<svg')||!G)return h0;
@@ -12857,9 +12869,9 @@ avatarSvg=(f=>function(){const h0=f.apply(this,arguments);try{if(!h0.startsWith(
  let sp=G.sp||0;try{if(B&&!B.done&&B.allies&&B.allies[0])sp=typeof allySpV==='function'?allySpV(B.allies[0]):B.allies[0].sp}catch(e){}
  let tie='#b33';try{tie=DEPT[G.dept].col}catch(e){}
  let bodyC=tie;try{if(G.suit&&G.suit!=='basic')bodyC=GC[((SUIT[G.suit]||suitOf(G.suit)).g)||0]}catch(e){}
- return human({seed:'P:'+(G.name||'')+(G.origin||''),suit,rim:'none',tieAttr:tieOf(G.suit),pcol:'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,weapon:wsvg(G.weapon,dc),mood:moodOf(sp,false),overHead:FH?`<g class="gf125">${FH}</g>`:'',under:Bk?`<g class="gf125">${Bk}</g>`:'',over:F?`<g class="gf125">${F}</g>`:''})}catch(e){return h0}})(avatarSvg);
+ return human({pose:(typeof B!=='undefined'&&B&&!B.done)?'fight':null,seed:'P:'+(G.name||'')+(G.origin||''),suit,rim:'none',tieAttr:tieOf(G.suit),pcol:'#f4ee9a',body:bodyC,tie:'#1b1b1b',arm:tie,weapon:wsvg(G.weapon,dc),mood:moodOf(sp,false),overHead:FH?`<g class="gf125">${FH}</g>`:'',under:Bk?`<g class="gf125">${Bk}</g>`:'',over:F?`<g class="gf125">${F}</g>`:''})}catch(e){return h0}})(avatarSvg);
 /* 직원 */
-lbAllyFig=(f=>function(a){try{if(a&&a.key==='ag'&&a.ag)return `<div class="lb-av av127">${agentFig(a.ag,false,typeof allySpV==='function'?allySpV(a):a.sp)}</div>`}catch(e){}return f.apply(this,arguments)})(lbAllyFig);
+lbAllyFig=(f=>function(a){try{if(a&&a.key==='ag'&&a.ag)return `<div class="lb-av av127">${agentFig(a.ag,false,typeof allySpV==='function'?allySpV(a):a.sp,'fight')}</div>`}catch(e){}return f.apply(this,arguments)})(lbAllyFig);
 
 /* ---------- 적: 자체 디자인 실루엣 ---------- */
 function creatureOld(seed,dc,g){const h=H(seed),c=DC[dc]||'#e8433a',t=(h>>>3)%6,eyesN=Math.max(1,Math.min(5,(g|0)+1)),cr='#f4ee9a';
@@ -12983,10 +12995,10 @@ window.blob128=abnInner;
 window.creature127=creature;
 lbEnemyFig=(f=>function(u){try{
  const agById=id=>(G.agents||[]).find(a=>a.id===id);
- if(u.spar124){const ag=agById(u.spar124);if(ag)return `<div class="lb-ev ev127 hum">${agentFig(ag,true,u.sp||0)}</div>`}
- if(u.p122&&B&&B.opt&&B.opt.ag)return `<div class="lb-ev ev127 hum">${agentFig(B.opt.ag,true,-45)}</div>`;
+ if(u.spar124){const ag=agById(u.spar124);if(ag)return `<div class="lb-ev ev127 hum">${agentFig(ag,true,u.sp||0,'fight')}</div>`}
+ if(u.p122&&B&&B.opt&&B.opt.ag)return `<div class="lb-ev ev127 hum">${agentFig(B.opt.ag,true,-45,'fight')}</div>`;
  if(u.human){const col=u.fx?({'붉은':'#a82626','하얀':'#d8d4c8','검은':'#1b1b1f','창백':'#2f6f78'}[Object.keys({'붉은':1,'하얀':1,'검은':1,'창백':1}).find(k=>String(u.n).includes(k))]||'#3a2a2a'):'#3a2a2a';
-  return `<div class="lb-ev ev127 hum">${human({seed:'E:'+u.n,pcol:'#ff8f80',body:col,suit:col,rim:'#e8433a',tie:'#e8433a',arm:col,eye:'#c22',mood:moodOf(u.sp||0,!!u.panicked)})}</div>`}
+  return `<div class="lb-ev ev127 hum">${human({pose:'fight',flip:true,seed:'E:'+u.n,pcol:'#ff8f80',body:col,suit:col,rim:'#e8433a',tie:'#e8433a',arm:col,eye:'#c22',mood:moodOf(u.sp||0,!!u.panicked)})}</div>`}
  const id=B&&B.opt&&B.opt.ab&&B.units.length===1?B.opt.ab:null;
  if(id&&ABM[id]){if(typeof userImg==='function'&&userImg(id))return f.apply(this,arguments);const a=ABM[id];let dc='RED';try{dc=a.dt||(a.eq&&weapOf(a.eq.id).dc)||'RED'}catch(e){}
   return `<div class="lb-ev ev127">${creature(id,dc,a.g,!!(abHidden&&abHidden(a)))}</div>`}
