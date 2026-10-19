@@ -3306,7 +3306,7 @@ function allyDown(a){
   if(a.key==='queen'){blog(`${ABM.queen.n}이(가) 쓰러졌다. "정의는… 지지 않아…"`,'bh');const s=G.ab.queen;s.cnt=Math.max(0,s.cnt-1)}
 }
 function hitUnit(u,amt,src){
-  const a=amt*(u.stag>0?(has('exec')?2.5:2):1);
+  const a=amt*(u.stag>0?(2):1);
   u.hp-=Math.round(a);
   if(u.hp<=0){u.hp=0;onKill(u,src);return Math.round(a)}
   const thr=u.stg[u.stgIdx];
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.18.2.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.19.0.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -10784,18 +10784,18 @@ function oUse101(){if(!G.oAmmo||G.oAmmo.d!==G.day)G.oAmmo={d:G.day,n:0};G.oAmmo.
 function execAgent101(ag,why){try{(G.roam||[]).forEach(r=>{if(r.e&&r.e.type==='panic'&&r.e.ag===ag.id)r.dead=1});G.roam=(G.roam||[]).filter(r=>!r.dead)}catch(e){}agentDie(ag,why);hum(-2)}
 function outAmmoPop101(){const L=G.agents.filter(a=>a.alive&&!a.out);const left=oLeft101();
   const row=(nm,id,hp,mx,sp,pan)=>`<div class="oa101"><div><b>${nm}</b><small>HP ${Math.max(0,Math.round(hp))}/${mx} · SP ${sp}${pan?` · <b style="color:var(--bad)">${pan}</b>`:''}</small></div><div class="row">
-     <button class="btn ghost small" data-oa="hp" data-t="${id}" ${left?'':'disabled'}>HP-N</button><button class="btn ghost small" data-oa="sp" data-t="${id}" ${left?'':'disabled'}>SP-E</button>${pan&&id!=='me'?`<button class="btn small" data-oa="ex" data-t="${id}" ${left?'':'disabled'}>${T('처분','Execute','処分')}</button>`:''}</div></div>`;
+     <button class="btn ghost small" data-oa="hp" data-t="${id}" ${left?'':'disabled'}>HP-N</button><button class="btn ghost small" data-oa="sp" data-t="${id}" ${left?'':'disabled'}>SP-E</button>${pan&&id!=='me'&&has('exec')?`<button class="btn small" data-oa="ex" data-t="${id}" ${left?'':'disabled'}>${T('처분','Execute','処分')}</button>`:''}</div></div>`;
   popup(T(`관리 탄환 · 오늘 ${left}/${oLim101()}발`,`Management bullets · ${left}/${oLim101()} today`,`管理弾丸・本日 ${left}/${oLim101()}発`),
    `<p class="note">${T('근무 중에도 탄환을 쏠 수 있어요. 하루에 쓸 수 있는 수는 전투당 탄환 수와 같아요. 처분 탄환은 패닉·매혹된 직원을 즉시 처분해요.','You can fire bullets during work too. The daily limit equals your per-battle bullet count. The execution bullet instantly disposes of a panicked or charmed employee.','勤務中でも弾丸を撃てます。1日に使える数は戦闘ごとの弾丸数と同じです。処分弾丸はパニック・魅了状態の職員を即座に処分します。')}</p>
     <div class="oal101">${row(T('나','Me','私'),'me',G.hp,maxHp(),G.sp,'')}${L.map(a=>row(a.n,a.id,a.hp,agMax(a),a.sp,a.panic?(PANT[a.panic]||a.panic)+' '+T('패닉','panic','パニック'):'')).join('')}</div>`,
    el=>el.querySelectorAll('[data-oa]').forEach(b=>b.onclick=()=>{if(!oLeft101())return;const k=b.dataset.oa,id=b.dataset.t;const ag=id==='me'?null:G.agents.find(x=>x.id===id);
      if(k==='hp'){if(ag)ag.hp=Math.min(agMax(ag),ag.hp+25);else addHp(25)}else if(k==='sp'){if(ag){ag.sp=Math.min(45,ag.sp+20)}else addSp(20)}
-     else if(k==='ex'&&ag&&ag.panic){execAgent101(ag,T('처분 탄환','Execution bullet','処分弾丸'))}
+     else if(k==='ex'&&ag&&ag.panic&&has('exec')){execAgent101(ag,T('처분 탄환','Execution bullet','処分弾丸'))}
      oUse101();try{sfx('hit')}catch(e){}log(T(`관리 탄환 발사 — ${ag?ag.n:'나'} · ${k==='hp'?'HP-N':k==='sp'?'SP-E':'처분'}.`,`Fired a management bullet — ${ag?ag.n:'me'} · ${k==='hp'?'HP-N':k==='sp'?'SP-E':'Execution'}.`,`管理弾丸を発射 — ${ag?ag.n:'私'}・${k==='hp'?'HP-N':k==='sp'?'SP-E':'処分'}。`),'sys');save();outAmmoPop101();render()}))}
 setPanel=(f=>function(title,sub,choices){try{if(typeof title==='string'&&title.startsWith('업무 시간')&&Array.isArray(choices)&&oLim101()>0){const i=choices.findIndex(c=>c.grp==='행정 · 시간 경과 없음');
     choices.splice(i>=0?i:choices.length,0,{grp:'행정 · 시간 경과 없음',l:`${ic('sword')} ${T('관리 탄환','Management bullets','管理弾丸')}`,s:T(`오늘 ${oLeft101()}/${oLim101()}발 · 회복·처분`,`${oLeft101()}/${oLim101()} today · heal · execute`,`本日 ${oLeft101()}/${oLim101()}発・回復・処分`),f:outAmmoPop101})}}catch(e){}return f.apply(this,arguments)})(setPanel);
 // 전투: 처분 탄환 (전투당 1발) — 패닉에 빠진 아군이나, 패닉 직원 진압 전투의 상대를 즉시 처분
-startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done)B.exec101=oLim101()>0?1:0}catch(e){}return r})(startBattle);
+startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done)B.exec101=(oLim101()>0&&has('exec'))?1:0}catch(e){}return r})(startBattle);
 renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!B||B.done||!B.exec101)return r;const tgts=B.units.filter(u=>u.hp>0&&u.human&&/패닉|panic|パニック/.test(u.n||'')).map(u=>({u})).concat(B.allies.filter(a=>!a.dead&&a.key==='ag'&&a.ag&&a.ag.panic).map(a=>({a})));
     if(!tgts.length||document.getElementById('exB101'))return r;const ab=document.getElementById('autoBtn');if(!ab)return r;
     ab.insertAdjacentHTML('beforebegin',`<button class="btn ghost" id="exB101">${T('처분 탄환','Execution bullet','処分弾丸')} (1)</button>`);
@@ -10966,12 +10966,12 @@ function spawnSpecial102(ph){const want=[['gold',5],['fog',5]];if(ph>=2)want.pus
   log(T(`조율자의 충격파가 시설을 훑었다. 특수 폭주 — ${want.map(([k])=>`${mkN(k)} ${by(k)}`).join(' · ')} (추출팀 제외).`,`The Arbiter's shockwave swept the facility. Special meltdowns — ${want.map(([k])=>`${mkN(k)} ${by(k)}`).join(' · ')} (Extraction excluded).`,`調律者の衝撃波が施設を薙いだ。特殊暴走 — ${want.map(([k])=>`${mkN(k)} ${by(k)}`).join('・')}（抽出チーム除く）。`),'warn')}
 function arbExit102(u,why){try{const k='boss:'+(B.opt&&B.opt.boss);const ph=u.phase;const arb=u.arb;u.arb=0;const sp0=G.sp,n0=(G.log||[]).length;
     try{battleFlee()}finally{u.arb=arb}G.sp=sp0;try{G.log=G.log.filter((x,i)=>i<n0||!/등을 보인 대가로/.test(x.t||x))}catch(e){}
-    try{const S=G.bsnap&&G.bsnap[k];if(S){S.units.forEach(x=>{if(x.lcBoss==='조율자'){x.arb=arb;x.shockUsed=null;x.p8Used=null}})}}catch(e){}
+    try{const S=G.bsnap&&G.bsnap[k];if(S){S.units.forEach(x=>{if(x.lcBoss==='조율자'){x.arb=arb;x.shockUsed=null;x.p8Used=null;x.shkT102=S.turn||x.shkT102}})}}catch(e){}
     if(why==='p8'){outMelt102(R(1,8),T('여덟 기둥이 시설 곳곳에 박혔다','The eight pillars struck all over the facility','八本の柱が施設のあちこちに突き刺さった'))}else spawnSpecial102(ph);
     try{save();workMenu()}catch(e){}
     setTimeout(()=>{try{popup(T('전투에서 밀려났다','Thrown out of the fight','戦闘から弾き出された'),`<p>${why==='p8'?T('8기둥에 휩쓸려 전투 밖으로 밀려났어요. 무작위 격리실에 클리포트 폭주가 일어났어요.','The Eight Pillars swept you out of the fight. Meltdowns broke out in random cells.','八柱に巻き込まれて戦闘外へ弾き出されました。ランダムな収容室でクリフォト暴走が起きました。')
       :T('충격파에 밀려 전투 밖으로 나왔어요. 시설 곳곳에 특수 폭주가 생겼어요. 다시 맞서기 전에 폭주를 관리하면 조율자가 약해져요.<br>· 황금 전부: 조우 직후 한 턴 행동 없음<br>· 검은 안개 전부: 모든 내성 1.5<br>· 파도 전부(2페이즈~): 검은 파도 취소<br>· 기둥 전부, 300분 안(3페이즈): 8기둥 취소','The shockwave threw you out. Special meltdowns appeared around the facility. Handle them before you face her again to weaken the Arbiter.<br>· All Gold: no action on her first turn<br>· All Black Fog: all resistances 1.5<br>· All Wave (phase 2+): Black Wave cancelled<br>· All Pillar within 300 min (phase 3): Eight Pillars cancelled','衝撃波で戦闘外へ弾き出されました。施設のあちこちに特殊暴走が起きました。再び挑む前に暴走を管理すると調律者が弱まります。<br>・黄金すべて：遭遇直後1ターン行動なし<br>・黒い霧すべて：全耐性1.5<br>・波すべて（2フェーズ〜）：黒い波を取消<br>・柱すべて、300分以内（3フェーズ）：八柱を取消')}</p>`)}catch(e){}},120)}catch(e){}}
-endTurn=(f=>function(){try{if(B&&!B.done&&!(G.arc||G.day>50)){const u=B.units.find(x=>isAR(x)&&x.hp>0);if(u&&(u.shockUsed===B.turn||u.p8Used===B.turn)){if(checkEnd())return;return arbExit102(u,u.p8Used===B.turn?'p8':'shock')}}}catch(e){}return f.apply(this,arguments)})(endTurn);
+endTurn=(f=>function(){try{if(B&&!B.done&&!(G.arc||G.day>50)){const u=B.units.find(x=>isAR(x)&&x.hp>0);if(u){const p8=u.p8Used===B.turn||B.intents.some(i=>i.u===u&&i.s&&i.s.pil8);const sh=u.shockUsed===B.turn||B.intents.some(i=>i.u===u&&i.s&&i.s.shock);if(p8||sh){if(checkEnd())return;u.shkT102=B.turn;return arbExit102(u,p8?'p8':'shock')}}}}catch(e){}return f.apply(this,arguments)})(endTurn);
 // 시설: 특수 폭주 관리 / 실패 추적
 meltFail=(f=>function(a){try{const L=G.arbM&&G.arbM.list;const x=L&&L.find(y=>y.id===a.id&&!y.done&&!y.fail);if(x){x.fail=1;const ov=MK[x.k].ov;setTimeout(()=>{try{G.gauge+=Math.round(gaugeNeed()*ov);log(T(`${mkN(x.k)} 폭주를 막지 못했다. 클리포트 과부하 +${Math.round(ov*100)}%.`,`Failed to stop the ${mkN(x.k)} meltdown. Qliphoth overload +${Math.round(ov*100)}%.`,`${mkN(x.k)}暴走を止められなかった。クリフォト過負荷 +${Math.round(ov*100)}%。`),'hurt')}catch(e){}},0);G.ab[a.id].arbK=null}}catch(e){}return f.apply(this,arguments)})(meltFail);
 function arbTrack102(){try{const L=G.arbM&&G.arbM.list;if(!L)return;L.forEach(x=>{if(x.done||x.fail)return;const s=G.ab[x.id];if(!s||!s.dept){x.fail=1;return}if(s.melt===0){x.done=1;s.arbK=null;
@@ -11188,16 +11188,24 @@ function syncSeen(){if(!G||tut())return;try{G.seen=G.seen||{};const c=cdxLoad();
 save=(f=>function(){const r=f.apply(this,arguments);syncSeen();return r})(save);
 let LG=null;render=(f=>function(){try{if(G&&G!==LG&&!tut()){LG=G;syncSeen();if(window.cdxPull106)cdxPull106()}}catch(e){}return f.apply(this,arguments)})(render);
 // 3) 격리실 도감: 이번 회차에 없는 환상체도 지난 기록 그대로 펼쳐 둔다 (읽기 전용)
-function pastCard(a,r,o){const ob=Math.min(4,(r?((r.b?1:0)+(['ins','insi','att','rep'].every(k=>r.f&&r.f[k])?1:0)+((r.m||[]).every(Boolean)?1:0)+(r.e?1:0)):0)||o.o||0);
-  const fk=w=>r&&r.f&&r.f[w];
-  return `<div class="ab past107">${emblem(a,true)}<div class="body"><header><h4>${a.n} <span class="gr g${a.g}">${GR[a.g]}</span>${a.tool?` <span class="chip">${T('도구형','Tool','ツール型')}</span>`:''}</h4><span class="code">${a.code} · ${dmgIc(a.dt)} <span class="dt d${a.dt}">${a.dt}</span> · ${T('관찰','Obs.','観察')} ${ROMAN[ob]||'0'}</span></header>
-  <p>${a.d.slice(0,Math.min(ob+1,3)).join(' ')}</p>
-  ${!a.tool&&WORKS.some(w=>fk(w.id))?`<div class="pref">${WORKS.map(w=>`<span>${ic(w.id)} ${w.n} · ${fk(w.id)?(a.sp==='request'&&w.id==='att'?T('의뢰','Request','依頼'):prefWord(prefOf(a,w.id))):'?'}</span>`).join('')}</div>`:''}
-  ${!a.tool&&ob>=2?`<div class="note">${T('기프트','Gift','ギフト')} ${SLOTN[a.slot]}: ${a.gift.d}${r&&r.e?` · ${a.breach?T('탈출 가능','Can escape','脱走あり'):T('탈출하지 않음','Does not escape','脱走しない')}`:''}</div>`:''}</div></div>`}
+function pastOb(r,o){return Math.min(4,(r?((r.b?1:0)+(['ins','insi','att','rep'].every(k=>r.f&&r.f[k])?1:0)+((r.m||[]).every(Boolean)?1:0)+(r.e?1:0)):0)||o.o||0)}
+// 지난 기록 카드: 격리 중인 환상체와 같은 격자 카드 · 누르면 읽기 전용 상세
+function pastTile(a,r,o){const ob=pastOb(r,o);const pips=[0,1,2,3].map(i=>`<i class="${i<ob?'on':''}"></i>`).join('');
+  return `<button class="acard tap past107" data-past="${a.id}">${emblem(a)}<span class="an">${a.n}</span><span class="gr g${a.g}">${GR[a.g]}</span><span class="obsp" title="${T('관찰 레벨','Observation level','観察レベル')}">${pips}</span><span class="ape">${T(`작업 ${o.n||0}회`,`${o.n||0} works`,`作業${o.n||0}回`)}</span></button>`}
+function pastPop(a){const c=cdxLoad();const r=c._info&&c._info[a.id],o=c[a.id]||{};const ob=pastOb(r,o);const fk=w=>r&&r.f&&r.f[w];
+  popup(a.n,`<div class="abhead">${emblem(a,true)}<div><div class="row"><span class="gr g${a.g}">${GR[a.g]}</span><span class="code">${a.code}</span><span class="dt d${a.dt}">${a.dt}</span>${a.tool?`<span class="chip">${T('도구형','Tool','ツール型')}</span>`:''}</div>
+   <div class="kpi"><span>${T('관찰','Obs.','観察')}<b>${ROMAN[ob]||'0'}</b></span><span>${T('작업','Works','作業')}<b>${o.n||0}</b></span></div></div></div>
+   <p>${a.d.slice(0,Math.min(ob+1,3)).join(' ')}</p>
+   ${!a.tool&&WORKS.some(w=>fk(w.id))?`<div class="pref">${WORKS.map(w=>`<span>${ic(w.id)} ${w.n} · ${fk(w.id)?(a.sp==='request'&&w.id==='att'?T('의뢰','Request','依頼'):prefWord(prefOf(a,w.id))):'?'}</span>`).join('')}</div>`:''}
+   ${a.tool&&r&&r.b?`<p class="note">${T('사용','Use','使用')}: ${a.use}</p>`:''}
+   ${!a.tool&&ob>=2?`<p class="note">${T('기프트','Gift','ギフト')} ${SLOTN[a.slot]}: ${a.gift.d}${r&&r.e?` · ${a.breach?T('탈출 가능','Can escape','脱走あり'):T('탈출하지 않음','Does not escape','脱走しない')}`:''}</p>`:''}
+   <p class="note">${T('이번 회차에는 수용하지 않은 환상체예요. 다시 수용하면 이 정보를 가진 채로 시작해요.','Not contained this run. Contain it again and it starts with this information.','今回は収容していない幻想体です。再び収容すると、この情報を持った状態で始まります。')}</p>`)}
 abnoView=(f=>function(){let h=f.apply(this,arguments);try{if(tut())return h;const c=cdxLoad();const inRun=new Set(G.order||[]);
   const L=AB.filter(a=>!inRun.has(a.id)&&(c[a.id]||(c._info&&c._info[a.id]))&&!(typeof CODEX_EX!=='undefined'&&CODEX_EX.includes(a.id)));if(!L.length)return h;
-  h+=`<details class="card fold past107w"><summary class="lbl">${T(`지난 기록 · 이번 회차에 수용하지 않은 환상체 ${L.length}`,`Past records · ${L.length} abnormalities not contained this run`,`過去の記録・今回収容していない幻想体 ${L.length}`)}</summary><p class="note">${T('다른 회차에서 연 정보는 그대로 남아 있어요. 다시 수용하면 이 정보를 가진 채로 시작해요.','Information opened in other runs stays here. Contain it again and it starts with this information.','別の周回で開いた情報はそのまま残っています。再び収容すると、この情報を持った状態で始まります。')}</p><div class="abl">${L.sort((x,y)=>x.g-y.g).map(a=>pastCard(a,c._info&&c._info[a.id],c[a.id]||{})).join('')}</div></details>`}catch(e){}return h})(abnoView);
-const st=document.createElement('style');st.textContent=`.past107w{margin-top:12px}.past107w>summary{cursor:pointer;padding:4px 0}.past107{opacity:.88}`;document.head.appendChild(st);
+  h+=`<div class="card past107w"><div class="lbl">${T(`지난 기록 ${L.length}`,`Past records ${L.length}`,`過去の記録 ${L.length}`)}</div><p class="note" style="margin:6px 0 12px">${T('이번 회차에 수용하지 않은 환상체예요. 다른 회차에서 연 정보가 그대로 남아 있고, 다시 수용하면 이 정보를 가진 채로 시작해요.','Abnormalities not contained this run. Information opened in other runs stays, and they start with it when contained again.','今回収容していない幻想体です。別の周回で開いた情報はそのまま残り、再び収容するとその情報を持った状態で始まります。')}</p>
+    <div class="agrid">${L.sort((x,y)=>x.g-y.g||String(x.code).localeCompare(String(y.code))).map(a=>pastTile(a,c._info&&c._info[a.id],c[a.id]||{})).join('')}</div></div>`}catch(e){}return h})(abnoView);
+bindAbno=(f=>function(){const r=f.apply(this,arguments);try{document.querySelectorAll('#tabview [data-past]').forEach(b=>b.onclick=()=>pastPop(ABM[b.dataset.past]))}catch(e){}return r})(bindAbno);
+const st=document.createElement('style');st.textContent=`.past107w{margin-top:12px}.acard.past107{opacity:.82}.acard.past107:hover{opacity:1}`;document.head.appendChild(st);
 })();
 /* ============ v108: 코어 억제 경고음 — 억제를 고르는 화면에서만 울리고, 시작하면 즉시 멈춘다 · 울리는 동안 배경 음악은 잠시 내린다 ============ */
 (function(){if(!window.BGM94||typeof AUD==='undefined')return;
@@ -11245,6 +11253,35 @@ get().then(n=>{if(n){NOTES=n;btn();setInterval(btn,1500);const iv=setInterval(()
 const st=document.createElement('style');st.textContent=`.pn109{display:grid;gap:8px}.pn109 details{border:1px solid var(--line);border-radius:var(--r,6px);background:var(--panel2)}
 .pn109 summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:10px 12px}.pn109 summary small{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .pn109x{white-space:pre-wrap;padding:0 12px 12px;line-height:1.65;color:var(--fg2,var(--fg))}`;document.head.appendChild(st);
+})();
+/* ============ v110: 탈출 중 폭주 정지 · 탄환 증설 · 게부라 연구 「처분 탄환」 ============ */
+(function(){
+const T=(ko,en,ja)=>i80(ko,en,ja);
+/* 1) 환상체가 탈출해 있는 동안에는 클리포트 폭주 게이지가 오르지 않는다 */
+window.escOn110=function(){try{return (G.roam||[]).some(r=>!r.dead&&r.e&&r.e.type==='ab')||(G.breachQ||[]).some(e=>e.type==='ab')}catch(e){return false}};
+function hook(){try{if(!G)return;const d=Object.getOwnPropertyDescriptor(G,'gauge');if(d&&d.set&&d.set._m110)return;
+  let set;if(d&&d.get){set=function(x){x=+x||0;if(escOn110()&&x>d.get.call(G))return;d.set.call(G,x)};set._m110=1;Object.defineProperty(G,'gauge',{configurable:true,enumerable:true,get(){return d.get.call(G)},set})}
+  else{let v=+(d?d.value:0)||0;set=function(x){x=+x||0;if(escOn110()&&x>v)return;v=x};set._m110=1;Object.defineProperty(G,'gauge',{configurable:true,enumerable:true,get(){return v},set})}}catch(e){}}
+window.gaugeWork99=(f=>function(){hook();if(escOn110())return;return f.apply(this,arguments)})(window.gaugeWork99||function(){});
+tick=(f=>function(){const r=f.apply(this,arguments);hook();return r})(tick);
+levelUp=(f=>function(){if(escOn110())return;return f.apply(this,arguments)})(levelUp);
+render=(f=>function(){hook();return f.apply(this,arguments)})(render);
+// 상단 폭주 표시 옆에 '탈출 중 정지' 안내
+renderTop=(f=>function(){const r=f.apply(this,arguments);try{const on=escOn110();let b=document.getElementById('esc110');
+  if(on&&!b){const host=[...document.querySelectorAll('#daybox *, header *')].find(x=>x.children.length===0&&/클리포트 폭주|Qliphoth|クリフォト/.test(x.textContent||''));if(host){host.insertAdjacentHTML('afterend',`<span id="esc110" class="esc110" title="${T('환상체가 탈출해 있는 동안 폭주 게이지가 오르지 않아요','The meltdown gauge does not rise while an Abnormality is out','幻想体の脱走中は暴走ゲージが上がりません')}">${T('탈출 중 정지','Paused · breach','脱走中停止')}</span>`)}}
+  else if(!on&&b)b.remove()}catch(e){}return r})(renderTop);
+/* 2) 탄환 수: 관리 탄환 체계 4발 · 탄환 증설 +2 · 티페리트 억제 +2 (근무 중 하루 사용 수도 같다) */
+ammoMax=function(){return (has('ammo')?4:0)+(has('ammo2')?2:0)+(G.supDone&&G.supDone.central?2:0)};
+try{const c=DEPT.central.res;const a=c.find(x=>x[0]==='ammo'),b=c.find(x=>x[0]==='ammo2');
+  if(a)a[2]=T('전투 중 HP-N·SP-E 탄환을 직접 쏠 수 있다 (전투당 4발 · 근무 중 하루 4발)','Fire HP-N/SP-E bullets yourself in battle (4 per battle · 4 per day at work)','戦闘中にHP-N・SP-E弾を自分で撃てる（戦闘ごと4発・勤務中1日4発）');
+  if(b)b[2]=T('탄환 +2발','+2 bullets','弾丸 +2発')}catch(e){}
+/* 3) 게부라(징계팀) 2번째 연구: 처분 규정 → 처분 탄환 */
+try{const r=DEPT.disc.res.find(x=>x[0]==='exec');if(r){r[1]=T('처분 탄환','Execution Bullet','処分弾');r[2]=T('패닉·매혹된 직원을 즉시 처분하는 탄환을 쓸 수 있다 (전투당 1발 · 근무 중에는 관리 탄환으로)','Unlocks the bullet that instantly disposes of a panicked or charmed employee (1 per battle · at work, from management bullets)','パニック・魅了状態の職員を即座に処分する弾丸が使える（戦闘ごと1発・勤務中は管理弾丸で）')}}catch(e){}
+
+/* 4) 조율자 재진입: 이어서 시작할 때 미리 걸려 있던 충격파 예고는 지운다 (충격파는 5턴마다 · 페이즈 시작 때만) */
+startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){const u=B.units.find(x=>x&&x.lcBoss==='조율자'&&!x.finalArb&&x.hp>0);
+  if(u&&u.shockUsed!==B.turn&&B.intents.some(i=>i.u===u&&i.s&&i.s.shock)){B.intents=B.intents.filter(i=>!(i.u===u&&i.s&&i.s.shock));renderBattle()}}}catch(e){}return r})(startBattle);
+const st=document.createElement('style');st.textContent=`.esc110{margin-left:6px;font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--c-red,#d6453a);color:var(--c-red,#d6453a);white-space:nowrap}`;document.head.appendChild(st);
 })();
 </script>
 
