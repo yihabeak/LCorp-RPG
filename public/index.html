@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.29.5.261019';window.GAME_VER=V;
+(function(){const V='Ver. 3.29.6.261019';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -12862,7 +12862,7 @@ avatarSvg=(f=>function(){const h0=f.apply(this,arguments);try{if(!h0.startsWith(
 lbAllyFig=(f=>function(a){try{if(a&&a.key==='ag'&&a.ag)return `<div class="lb-av av127">${agentFig(a.ag,false,typeof allySpV==='function'?allySpV(a):a.sp)}</div>`}catch(e){}return f.apply(this,arguments)})(lbAllyFig);
 
 /* ---------- 적: 자체 디자인 실루엣 ---------- */
-function creature(seed,dc,g){const h=H(seed),c=DC[dc]||'#e8433a',t=(h>>>3)%6,eyesN=Math.max(1,Math.min(5,(g|0)+1)),cr='#f4ee9a';
+function creatureOld(seed,dc,g){const h=H(seed),c=DC[dc]||'#e8433a',t=(h>>>3)%6,eyesN=Math.max(1,Math.min(5,(g|0)+1)),cr='#f4ee9a';
  const ey=(cx,cy,r,n)=>Array.from({length:n},(_,i)=>{const x=cx+(i-(n-1)/2)*r*2.6;return `<circle cx="${x}" cy="${cy}" r="${r}" fill="${cr}"/><circle cx="${x}" cy="${cy}" r="${r*.45}" fill="#000"/>`}).join('');
  let body='';
  if(t===0){const pts=Array.from({length:14},(_,i)=>{const a=i/14*Math.PI*2,rr=30+((h>>>(i%16))&7);return `${50+Math.cos(a)*rr},${54+Math.sin(a)*rr*.9}`}).join(' ');body=`<polygon points="${pts}" fill="#0b0b0b" stroke="${c}" stroke-width="3" stroke-linejoin="round"/>${ey(50,50,4,eyesN)}`}
@@ -12877,6 +12877,32 @@ function creature(seed,dc,g){const h=H(seed),c=DC[dc]||'#e8433a',t=(h>>>3)%6,eye
  const glow=`<radialGradient id="g127${h%997}" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="${c}" stop-opacity=".32"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`;
  const tex=`<g opacity=".22" stroke="${c}" stroke-width="1">${Array.from({length:4},(_,i)=>`<path d="M${30+i*12} ${30+((h>>>i)&7)}q4 10 0 ${18+((h>>>(i+4))&7)}"/>`).join('')}</g>`;
  return `<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><defs>${glow}</defs><circle cx="50" cy="50" r="46" fill="url(#g127${h%997})"/><ellipse cx="50" cy="96" rx="28" ry="3.5" fill="rgba(0,0,0,.6)"/>${ex}${body}${t===4?'':tex}</svg>`}
+
+/* ---------- 임시 환상체 외형: 크림색 단순 실루엣 (귀 · 눈 · 입 조합) ---------- */
+function blobInner(seed,g,hidden){const h=H(seed),C='#f4ee9a',K='#0b0b0b';g=g|0;
+ const w=20+((h>>>2)&7)+g*1.4,top=30-((h>>>5)&7),bot=106;const L=50-w,R=50+w;
+ const et=(h>>>8)%5;
+ const EARS=[`<polygon points="${L+6},${top+10} ${L+2},${top-20} ${L+20},${top+2}" fill="${C}"/><polygon points="${R-6},${top+10} ${R-2},${top-20} ${R-20},${top+2}" fill="${C}"/>`,
+  `<circle cx="${L+8}" cy="${top+2}" r="9" fill="${C}"/><circle cx="${R-8}" cy="${top+2}" r="9" fill="${C}"/>`,
+  `<path d="M50 ${top}V${top-18}" stroke="${C}" stroke-width="4"/><circle cx="50" cy="${top-21}" r="5" fill="${C}"/>`,
+  '',
+  `<path d="M${L+8} ${top+8}q-14-12-6-28q2 14 16 22z" fill="${C}"/><path d="M${R-8} ${top+8}q14-12 6-28q-2 14-16 22z" fill="${C}"/>`][et];
+ const body=`<path d="M${L+2} ${bot} L${L} ${top+26} Q${L} ${top} 50 ${top} Q${R} ${top} ${R} ${top+26} L${R-2} ${bot} Z" fill="${C}"/>`;
+ const ey=top+24,mt=top+38;const eT=hidden?4:(h>>>11)%4;
+ const EYES=[`<rect x="40" y="${ey}" width="5" height="6" fill="${K}"/><rect x="55" y="${ey}" width="5" height="6" fill="${K}"/>`,
+  `<circle cx="50" cy="${ey+3}" r="6" fill="${K}"/><circle cx="51.6" cy="${ey+1.6}" r="1.6" fill="${C}"/>`,
+  `<rect x="36" y="${ey+1}" width="4.4" height="4.4" fill="${K}"/><rect x="47.8" y="${ey-1}" width="4.4" height="4.4" fill="${K}"/><rect x="59.6" y="${ey+1}" width="4.4" height="4.4" fill="${K}"/>`,
+  `<path d="M38 ${ey+3}l8-2M62 ${ey+3}l-8-2" stroke="${K}" stroke-width="3"/>`,
+  `<text x="50" y="${ey+12}" text-anchor="middle" font-family="Black Han Sans,sans-serif" font-size="20" fill="${K}">?</text>`][eT];
+ const mT=hidden?4:(h>>>14)%4;
+ const MOUTH=[`<path d="M38 ${mt}q12 12 24 0z" fill="${K}"/><path d="M42 ${mt+1}l2 4 2-4M54 ${mt+1}l2 4 2-4" fill="${C}"/>`,
+  `<ellipse cx="50" cy="${mt+3}" rx="4" ry="5" fill="${K}"/>`,
+  `<polyline points="38,${mt} 42,${mt+4} 46,${mt} 50,${mt+4} 54,${mt} 58,${mt+4} 62,${mt}" fill="none" stroke="${K}" stroke-width="2.6"/>`,
+  `<path d="M40 ${mt}q10 7 20 0" fill="none" stroke="${K}" stroke-width="2.8"/>`,''][mT];
+ const pips=Array.from({length:g+1},(_,i)=>`<rect x="${50-(g+1)*3+i*6}" y="${bot-10}" width="3.4" height="3.4" fill="${K}" opacity=".55"/>`).join('');
+ return `${EARS}${body}${EYES}${MOUTH}${pips}`}
+function creature(seed,dc,g,hidden){return `<svg viewBox="0 -12 100 122" width="100%" height="100%" aria-hidden="true">${blobInner(seed,g,hidden)}</svg>`}
+window.blob128=blobInner;
 window.creature127=creature;
 lbEnemyFig=(f=>function(u){try{
  const agById=id=>(G.agents||[]).find(a=>a.id===id);
@@ -12886,7 +12912,7 @@ lbEnemyFig=(f=>function(u){try{
   return `<div class="lb-ev ev127 hum">${human({seed:'E:'+u.n,pcol:'#ff8f80',body:col,suit:col,rim:'#e8433a',tie:'#e8433a',arm:col,eye:'#c22',mood:moodOf(u.sp||0,!!u.panicked)})}</div>`}
  const id=B&&B.opt&&B.opt.ab&&B.units.length===1?B.opt.ab:null;
  if(id&&ABM[id]){if(typeof userImg==='function'&&userImg(id))return f.apply(this,arguments);const a=ABM[id];let dc='RED';try{dc=a.dt||(a.eq&&weapOf(a.eq.id).dc)||'RED'}catch(e){}
-  return `<div class="lb-ev ev127">${creature(id,abHidden&&abHidden(a)?'WHITE':dc,a.g)}</div>`}
+  return `<div class="lb-ev ev127">${creature(id,dc,a.g,!!(abHidden&&abHidden(a)))}</div>`}
  let dc='RED';try{dc=(u.skills&&u.skills[0]&&u.skills[0].c)||'RED'}catch(e){}
  return `<div class="lb-ev ev127">${creature('U:'+u.n,dc,u.g||0)}</div>`}catch(e){return f.apply(this,arguments)}})(lbEnemyFig);
 
@@ -12934,6 +12960,10 @@ html body .rp-msg.r127 .c127{width:17px;height:17px;font-size:10px}
 `;
 try{const s=document.createElement('style');s.id='css127';s.textContent=css;document.head.appendChild(s)}catch(e){}
 })();
+
+;(function(){try{emblem=(f=>function(a,big){const out=f.apply(this,arguments);try{if(!a||!a.id||out.indexOf('<img')>=0)return out;
+ const hid=typeof abHidden==='function'&&abHidden(a);
+ return out.replace(/<text x="22" y="32"[^>]*>[\s\S]*?<\/text>/,`<g transform="translate(10.5 11) scale(.23)">${window.blob128(a.id,a.g,hid)}</g>`)}catch(e){return out}})(emblem)}catch(e){}})();
 </script>
 
 </body></html>
