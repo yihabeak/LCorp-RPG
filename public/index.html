@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Project Moon 팬메이드 비공식·비영리 게임"><meta name="theme-color" content="#12181a"><meta property="og:type" content="website"><meta property="og:site_name" content="L사 본사 근무일지"><meta property="og:title" content="L사 본사 근무일지"><meta property="og:description" content="환상체를 관리하고, 살아남아라. Lobotomy Corporation 팬메이드 웹 RPG (비공식·비영리)"><meta property="og:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="L사 본사 근무일지 배너"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>L사 본사 근무일지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600&display=swap">
@@ -1174,7 +1174,7 @@ function riskW(d){return d<=5?[.45,.55,0,0,0]:d<=10?[.15,.5,.35,0,0]:d<=15?[0,.3
 
 /* ============ 상태 ============ */
 let G=null, B=null, TAB='work';
-const SAVE='lcw_save3';
+const SAVE='lcw_save3';function saveKeyNow(){return (typeof ACT74!=='undefined'&&ACT74)?ACT74.key+'_sav':SAVE}
 function lv(v){return v<30?1:v<45?2:v<65?3:v<85?4:5}
 function rankOfSt(st){const s=lv(st.F)+lv(st.P)+lv(st.T)+lv(st.J);return s>=16?5:s>=12?4:s>=9?3:s>=6?2:1}
 function has(r){return !!(G&&G.res[r])}
@@ -1188,9 +1188,9 @@ function gift(k){let v=0;for(const s in G.gifts){const a=ABM[G.gifts[s]];if(a&&a
 function maxHp(){return 60+Math.round(stE('F')*1.3)+gift('hp')+(has('hpup')?15:0)}
 function spResist(){return clamp(1-(stE('P')-15)/180-gift('pr')/100-(G.dept==='welfare'?.1:0)-(has('mind')?.1:0),0.4,1)}
 function suitR(id){const s=SUIT[id];const r={...s.r};if(has('suitup')||G.supDone.extract)for(const k in r)r[k]=Math.max(.1,+(r[k]-.1).toFixed(2));return r}
-function save(){try{localStorage.setItem(SAVE,JSON.stringify(G))}catch(e){}}
-function loadSave(){try{const s=localStorage.getItem(SAVE);return s?JSON.parse(s):null}catch(e){return null}}
-function clearSave(){try{localStorage.removeItem(SAVE)}catch(e){}}
+function save(){try{localStorage.setItem(saveKeyNow(),JSON.stringify(G))}catch(e){}}
+function loadSave(){try{const s=localStorage.getItem(saveKeyNow());return s?JSON.parse(s):null}catch(e){return null}}
+function clearSave(){try{localStorage.removeItem(saveKeyNow())}catch(e){}}
 // 할당량: 직원 수와 격리 환상체 수가 늘수록 커진다 (자체 공식, 시뮬레이션으로 조정)
 // 할당량: 시설 규모(직원 수 · 환상체 등급)에 비례해 그날 아침에 정해진다 (자체 공식)
 function computeQ(){/* 7+일차/12 회 분량 (45분 단위) */const avg=k=>{const l=deptAbs(k).filter(a=>!a.tool);return l.length?l.reduce((s,a)=>s+(window.BOX103||[8,10,14,18,24])[a.g]*.6,0)/l.length:0};
@@ -6434,12 +6434,12 @@ function birdProvoke(a){const s=G.ab[a.id];s.cnt=Math.max(0,s.cnt-1);G.provoke=(
 const _dwV58b=doWork;doWork=function(a,w){if(G.provoke&&a&&!BIRDS.includes(a.id))G.provoke=[];return _dwV58b(a,w)};
 
 // --- 10. 영구 도감: 사망·엔딩 뒤에도 남는다 ---
-const CDX_KEY='lcw_codex_v1';
-function cdxLoad(){try{return JSON.parse(localStorage.getItem(CDX_KEY)||'{}')}catch(e){return {}}}
-function cdxSave(){if(!G||!G.ab)return;try{const c=cdxLoad();AB.forEach(a=>{const s=G.ab[a.id];if(!s||!(s.dept||s.day||s.met||s.gone))return;const o=c[a.id]||{o:0,n:0};o.o=Math.max(o.o,Math.floor(s.obs||0));o.n=Math.max(o.n,s.works||0);o.m=1;c[a.id]=o});c._runs=(c._runs||0);localStorage.setItem(CDX_KEY,JSON.stringify(c))}catch(e){}}
+const CDX_BASE='lcw_codex_v1';function cdxKeyNow(){return (typeof ACT74!=='undefined'&&ACT74)?ACT74.key+'_cdx':CDX_BASE}
+function cdxLoad(){try{return JSON.parse(localStorage.getItem(cdxKeyNow())||'{}')}catch(e){return {}}}
+function cdxSave(){if(!G||!G.ab)return;try{const c=cdxLoad();AB.forEach(a=>{const s=G.ab[a.id];if(!s||!(s.dept||s.day||s.met||s.gone))return;const o=c[a.id]||{o:0,n:0};o.o=Math.max(o.o,Math.floor(s.obs||0));o.n=Math.max(o.n,s.works||0);o.m=1;c[a.id]=o});c._runs=(c._runs||0);localStorage.setItem(cdxKeyNow(),JSON.stringify(c))}catch(e){}}
 const _saveV58=save;save=function(){const r=_saveV58.apply(this,arguments);if(G&&G.day&&(G.flags.cdxD!==G.day||G.min%120===0)){G.flags.cdxD=G.day;cdxSave()}return r};
-const _dieV58=die;die=function(c){try{cdxSave();const x=cdxLoad();x._runs=(x._runs||0)+1;localStorage.setItem(CDX_KEY,JSON.stringify(x))}catch(e){}return _dieV58(c)};
-const _endV58=endRecord;endRecord=function(){try{cdxSave();const x=cdxLoad();x._runs=(x._runs||0)+1;x._ends=(x._ends||0)+1;localStorage.setItem(CDX_KEY,JSON.stringify(x))}catch(e){}return _endV58.apply(this,arguments)};
+const _dieV58=die;die=function(c){try{cdxSave();const x=cdxLoad();x._runs=(x._runs||0)+1;localStorage.setItem(cdxKeyNow(),JSON.stringify(x))}catch(e){}return _dieV58(c)};
+const _endV58=endRecord;endRecord=function(){try{cdxSave();const x=cdxLoad();x._runs=(x._runs||0)+1;x._ends=(x._ends||0)+1;localStorage.setItem(cdxKeyNow(),JSON.stringify(x))}catch(e){}return _endV58.apply(this,arguments)};
 function cdxView(){const c=cdxLoad();const L=AB.filter(a=>!CODEX_EX.includes(a.id));const seen=L.filter(a=>c[a.id]);const pct=Math.round(seen.reduce((t,a)=>t+Math.min(4,c[a.id].o),0)/(L.length*4)*1000)/10;
   return `<p class="note">지금까지의 모든 근무일지(사망·엔딩 포함)에서 마주친 환상체 기록. 회차 ${c._runs||0} · 엔딩 ${c._ends||0}</p><div class="bigstat"><b>${pct}<small>%</small></b><span>마주친 환상체 ${seen.length}/${L.length}</span></div>
   <div class="abl">${['ZAYIN','TETH','HE','WAW','ALEPH'].map((g,gi)=>`<div class="lbl grouplbl">${g}</div>${L.filter(a=>a.g===gi).map(a=>{const o=c[a.id];return o?`<div class="kvb"><b>${a.n} <span class="gr g${a.g}">${GR[a.g]}</span></b><small>${a.code} · 관찰 ${Math.min(4,o.o)}/4 · 작업 ${o.n}회</small><p class="note">${a.d.slice(0,Math.min(3,1+o.o)).join(' ')}</p></div>`:`<div class="kvb locked"><b>???</b><small>아직 마주치지 않았다</small></div>`}).join('')}`).join('')}</div>`}
@@ -7327,6 +7327,7 @@ let SILLAST=Date.now();setInterval(()=>{const now=Date.now(),dt=now-SILLAST;SILL
   a.d=['시곗바늘과 종을 품은 형체. 늘 무언가를 세고 있다. (구버전 환상체)','시간은 그 앞에서 고르게 흐르지 않는다. 남겨진 흔적들이 일한 사람의 몸짓을 그대로 따라 한다.','열세 번째 종이 울리기 전에 흔적을 모두 지워야 한다. 침묵을 택하면 시간은 멈추지만, 그 값은 몸으로 치른다.'];
   REC60.silence=['종이 열두 번 울리는 동안 아무도 그것을 건드릴 수 없었다.','흔적은 직원의 걸음과 손놀림을 한 박자 늦게 흉내 냈다.','열세 번째 종소리가 울린 뒤의 기록은 대부분 지워져 있다.'];
   CRT60.silence='결과 나쁨 -1 (기본 규칙). 카운터가 0이 되면 탈출한다.'})();
+var BGM_BASE='https://lcorp-rpg.pages.dev/';
 
 /* ================= v62 ================= */
 /* --- A. 침묵의 대가: 작업 기믹 (라이브러리 오브 루이나 접대를 바탕으로 추론) ---
@@ -7913,54 +7914,154 @@ ENEMY.panicAgent=(o)=>{const ag=o.ag,k=weapOf(agWeap(ag)),rk=Math.max(1,agRank(a
   return [u]};
 // 경보 목록: 패닉 직원은 위험도를 함께 보인다 (이름에 포함) · 하루가 끝나면 남은 패닉은 기존 규정대로 처분
 
-/* ================= v73: 사원증 — 가입 · 로그인 · 클라우드 저장 =================
-   비밀번호를 이 페이지가 직접 받지 않는다. claude.ai 로그인을 신원으로 쓰고(user), 사원 정보와 저장은 본인만 읽을 수 있는 칸(db: data/users/<id>/)에 둔다.
-   이 페이지를 claude.ai 계정으로 열 수 없는 환경이면 지금처럼 이 기기에만 저장한다. */
-const ACC={st:'wait',uid:null,db:null,nick:'',cname:'',cloud:null,dirty:false,busy:false};
-function accOff(){try{return localStorage.getItem('acc73_off')==='1'}catch(e){return false}}
-function accSetOff(v){try{v?localStorage.setItem('acc73_off','1'):localStorage.removeItem('acc73_off')}catch(e){}}
-function accDoc(k){return ACC.db.collection('data/users/'+ACC.uid).doc(k)}
-(async function(){try{const c=window.claude;if(!c||!c.use){ACC.st='off';return accTitle()}
-  const [user,db]=await Promise.all([c.use('user'),c.use('db')]);if(!user||!db){ACC.st='off';return accTitle()}
-  const uid=await user.id();if(!uid){ACC.st='off';return accTitle()}
-  ACC.uid=uid;ACC.db=db;try{const me=await user.me();ACC.cname=(me&&me.name)||''}catch(e){}
-  const [p,s]=await Promise.all([accDoc('profile').get(),accDoc('save').get()]);
-  if(p.exists)ACC.nick=String((p.data()||{}).nick||'');if(s.exists)ACC.cloud=s.data()||null;
-  ACC.st=!ACC.nick?'new':accOff()?'out':'in';accTitle()}catch(e){ACC.st='off';accTitle()}})();
-function accFmt(t){try{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
-function accBox(){const B=(id,t,cls)=>`<button class="btn ${cls||''} small" id="${id}" type="button">${t}</button>`;
-  if(ACC.st==='wait')return `<p class="note">사원증 확인 중…</p>`;
-  if(ACC.st==='off')return `<p class="note">이 화면에서는 사원증(로그인)을 쓸 수 없다. claude.ai 계정으로 로그인한 상태에서 이 페이지를 열면 가입하고 기록을 계정에 저장할 수 있다. 지금 진행은 이 기기에만 저장된다.</p>`;
-  if(ACC.st==='new')return `<p>처음 오셨다. 사원증을 발급받으면 진행이 계정에 저장되어, 다른 기기에서도 이어서 출근할 수 있다.</p>
-   <div class="row acc-row"><label class="field" style="flex:1"><span class="lbl">사원증 이름</span><input id="accNick" maxlength="12" value="${esc(ACC.cname||'')}" placeholder="사원증에 새길 이름"></label></div>
-   <div class="row">${B('accJoin','사원증 발급 (가입)')}</div><p class="note">비밀번호는 만들지 않는다. 지금 로그인한 claude.ai 계정이 곧 사원증이다.</p>`;
-  if(ACC.st==='out')return `<p><b>${esc(ACC.nick)}</b>님의 사원증이 있다. 이 기기에서는 로그아웃 상태라 계정에 저장하지 않는다.</p><div class="row">${B('accIn','로그인')}</div>`;
-  const cv=ACC.cloud;return `<p><b>${esc(ACC.nick)}</b>님으로 로그인했다. 진행이 계정에 자동으로 저장된다.</p>
-   <div class="row">${cv&&cv.json?B('accLoad',`계정에서 이어서 출근 · ${esc(cv.name||'')} D${cv.day||'?'}`):''}${B('accRename','이름 바꾸기','ghost')}${B('accOut','로그아웃','ghost')}</div>
-   ${cv&&cv.at?`<p class="note">마지막 저장 ${accFmt(cv.at)}</p>`:'<p class="note">아직 계정에 저장된 기록이 없다. 입사하면 자동으로 저장된다.</p>'}`}
-function accTitle(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');if(!t)return;let box=t.querySelector('#acc73');
-  if(!box){box=document.createElement('section');box.id='acc73';box.className='card acc73';const h=t.querySelector('h1');(h&&h.nextElementSibling?h.nextElementSibling:h||t.firstChild).insertAdjacentElement('afterend',box)}
-  box.innerHTML=`<h2 class="acc-h">사원증</h2>`+accBox();
-  const q=id=>box.querySelector('#'+id);
-  if(q('accJoin'))q('accJoin').onclick=async()=>{const n=(q('accNick').value||'').trim().slice(0,12);if(!n){q('accNick').focus();return toast('사원증에 새길 이름을 적는다','hurt')}q('accJoin').disabled=true;
-    try{await accDoc('profile').set({nick:n,created:Date.now()});ACC.nick=n;accSetOff(false);ACC.st='in';const nm=document.getElementById('nm');if(nm)nm.value=n;toast(`사원증 발급 완료 · ${n}`,'good')}catch(e){toast('사원증을 발급하지 못했다. 잠시 뒤 다시 시도한다','hurt');q('accJoin').disabled=false}accTitle()};
-  if(q('accIn'))q('accIn').onclick=()=>{accSetOff(false);ACC.st='in';toast(`${ACC.nick}님, 다시 오셨다`,'good');accTitle()};
-  if(q('accOut'))q('accOut').onclick=async()=>{await accFlush();accSetOff(true);ACC.st='out';toast('로그아웃했다. 이 기기에서는 계정에 저장하지 않는다','sys');accTitle()};
-  if(q('accRename'))q('accRename').onclick=()=>{const row=q('accRename').parentNode;row.insertAdjacentHTML('afterend',`<div class="row acc-row" id="accRn"><label class="field" style="flex:1"><span class="lbl">새 사원증 이름</span><input id="accNick2" maxlength="12" value="${esc(ACC.nick)}"></label><button class="btn small" id="accRnOk" type="button">바꾼다</button></div>`);q('accRename').disabled=true;q('accNick2').focus();
-    q('accRnOk').onclick=()=>{const n=(q('accNick2').value||'').trim().slice(0,12);if(!n||n===ACC.nick)return accTitle();accDoc('profile').update({nick:n}).then(()=>{ACC.nick=n;accTitle();toast('사원증 이름을 바꿨다','good')}).catch(()=>{toast('이름을 바꾸지 못했다','hurt');accTitle()})}};
-  if(q('accLoad'))q('accLoad').onclick=()=>{try{const sv=JSON.parse(ACC.cloud.json);accResume(sv)}catch(e){toast('계정의 기록을 읽지 못했다','hurt')}};
-  const nm=document.getElementById('nm');if(nm&&ACC.st==='in'&&ACC.nick&&!nm.dataset.acc){nm.dataset.acc=1;nm.value=ACC.nick}}catch(e){}}
-function accResume(sv){G=sv;AB.forEach(a=>{if(!G.ab[a.id])G.ab[a.id]={cnt:a.cnt,pe:0,obs:0,works:0,melt:0,dept:null,day:0}});G.toolUse=G.toolUse||{};G.birdsToday=G.birdsToday||[];G.min=G.min??540;try{migrateInv()}catch(e){}AID=G.agents.length+5;save();render();resumePhase()}
-renderTitle=(f=>function(){const r=f.apply(this,arguments);accTitle();return r})(renderTitle);
-// 저장: 기기 저장은 그대로, 로그인 상태면 20초마다 바뀐 것만 계정에 올린다 (한 번에 하나씩)
-save=(f=>function(){const r=f.apply(this,arguments);try{if(ACC.st==='in'&&G&&!G.dead&&!G.ended)ACC.dirty=true}catch(e){}return r})(save);
-async function accFlush(){if(ACC.st!=='in'||!ACC.dirty||ACC.busy||!G||G.dead||G.ended)return;ACC.busy=true;ACC.dirty=false;
-  try{let json=JSON.stringify(G);if(json.length>240000)json=JSON.stringify(Object.assign({},G,{log:(G.log||[]).slice(-120)}));
-    const doc={json,name:String(G.name||''),day:G.day||1,at:Date.now(),v:1};await accDoc('save').set(doc);ACC.cloud=doc}catch(e){ACC.dirty=true}finally{ACC.busy=false}}
-setInterval(accFlush,20000);document.addEventListener('visibilitychange',()=>{if(document.hidden)accFlush()});
-// 죽음 · 결말이면 계정의 진행 기록도 정리한다 (기기 저장과 같은 규칙)
-clearSave=(f=>function(){const r=f.apply(this,arguments);try{ACC.dirty=false;if(ACC.st==='in'){accDoc('save').delete().catch(()=>{});ACC.cloud=null}}catch(e){}return r})(clearSave);
-(function(){const st=document.createElement('style');st.textContent=`.acc73{display:grid;gap:10px}.acc73 .acc-h{margin:0;font-size:18px}.acc73 p{margin:0}.acc73 .row{gap:8px;flex-wrap:wrap}`;document.body.appendChild(st)})();
+/* ================= v74 (배포판): 사원증 — 아이디 가입/로그인 · 계정 저장소 3칸 =================
+   Vercel 함수(/api/auth, /api/slot)와 Vercel에서 연결한 Redis 저장소로 동작한다. 외부 로그인 서비스는 쓰지 않는다.
+   서버가 없거나 저장소가 연결되지 않았으면 비회원 플레이만 된다. 저장소마다 진행 기록과 도감을 따로 가진다. */
+var ACT74=null;           // 지금 쓰는 저장소 {uid,n,key} · null이면 비회원
+const A74={st:'wait',user:null,slots:{1:null,2:null,3:null},dirty:false,busy:false,err:'',pend:null,confirm:null};
+const LKEY74=(uid,n)=>`lcw74_${uid}_s${n}`;const TK74='lcw74_tok';
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+function cdxPct74(json){try{const c=typeof json==='string'?JSON.parse(json||'{}'):(json||{});const L=AB.filter(a=>!CODEX_EX.includes(a.id));return Math.round(L.reduce((t,a)=>t+(c[a.id]?Math.min(4,c[a.id].o||0):0),0)/(L.length*4)*1000)/10}catch(e){return 0}}
+const ERR74={'id-taken':'이미 쓰고 있는 아이디다. 다른 아이디를 고른다.','id-bad':'아이디 또는 비밀번호가 맞지 않는다.','id-form':'아이디는 영문 소문자·숫자·밑줄(_)로 4~16자, 비밀번호는 8~128자다.',
+ 'too-many':'시도가 너무 많다. 잠시 뒤 다시 한다.','auth':'로그인이 풀렸다. 다시 로그인한다.','net':'네트워크에 연결할 수 없다.','nodb':'계정 저장소가 아직 연결되지 않았다 (배포자 설정 필요).',
+ 'too-big':'저장 기록이 너무 커서 올리지 못했다.','server':'서버에 문제가 생겼다. 잠시 뒤 다시 한다.'};
+const errMsg74=e=>ERR74[e&&e.code]||('문제가 생겼다: '+((e&&e.code)||(e&&e.message)||'알 수 없음'));
+// --- 계정 서버 (/api) ---
+const fire74=id=>window.dispatchEvent(new CustomEvent('fb-auth',{detail:id?{uid:id,name:id,email:'',provider:'id'}:null}));
+async function api74(path,opt){opt=opt||{};const t=lsGet(TK74);let r;
+  try{r=await fetch('/api'+path,{method:opt.method||'GET',headers:Object.assign({'Content-Type':'application/json'},t?{Authorization:'Bearer '+t}:{}),body:opt.body?JSON.stringify(opt.body):undefined,keepalive:!!opt.keep,cache:'no-store'})}catch(e){throw {code:'net'}}
+  let j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok){const code=(j&&j.code)||(r.status===404?'noapi':'server');if(code==='auth'&&t){lsSet(TK74,null);setTimeout(()=>fire74(null),0)}throw {code}}
+  return j}
+(function(){if(window.FB_MOCK){window.FB=window.FB_MOCK;setTimeout(()=>{window.dispatchEvent(new Event('fb-ready'));window.FB._fire&&window.FB._fire()},0);return}
+  const sign=act=>async(id,pw)=>{const j=await api74('/auth',{method:'POST',body:{action:act,id,pw}});lsSet(TK74,j.token);fire74(j.id)};
+  window.FB={signup:sign('signup'),login:sign('login'),
+    logout:async()=>{try{await api74('/auth',{method:'POST',body:{action:'logout'}})}catch(e){}lsSet(TK74,null);fire74(null)},
+    getSlot:async(uid,n)=>(await api74('/slot?n='+n)).data||null,
+    setSlot:(uid,n,data)=>api74('/slot?n='+n,{method:'PUT',body:data,keep:JSON.stringify(data).length<60000})};
+  (async()=>{try{const j=await api74('/auth');if(!j||!j.db){A74.st='noconfig';return acc74Render()}
+      A74.st='out';acc74Render();if(j.user)fire74(j.user);else lsSet(TK74,null)}
+    catch(e){A74.st=e.code==='net'?'off':'noconfig';acc74Render()}})()})();
+window.addEventListener('fb-ready',()=>{if(A74.st==='wait')A74.st='out';acc74Render()});
+window.addEventListener('fb-error',e=>{A74.err=errMsg74(e.detail);acc74Render()});
+window.addEventListener('fb-auth',async e=>{const u=e.detail;if(!u){A74.user=null;A74.st='out';ACT74=null;A74.slots={1:null,2:null,3:null};return acc74Render()}
+  A74.user=u;A74.st='loading';acc74Render();
+  try{for(const n of [1,2,3])A74.slots[n]=await window.FB.getSlot(u.uid,n);A74.st='in';A74.err=''}catch(err){A74.st='in';A74.err=errMsg74(err)}acc74Render()});
+// --- 저장소 ---
+function slotLocal74(uid,n){const k=LKEY74(uid,n);return {save:lsGet(k+'_sav'),cdx:lsGet(k+'_cdx'),at:+(lsGet(k+'_at')||0)}}
+function useSlot74(n){const uid=A74.user.uid;const k=LKEY74(uid,n);const c=A74.slots[n]||{};const L=slotLocal74(uid,n);
+  if(!L.at||(c.at||0)>=L.at){lsSet(k+'_sav',c.save||null);lsSet(k+'_cdx',c.cdx||null);lsSet(k+'_at',String(c.at||0))}else A74.dirty=true;   // 기기에 더 최신 기록이 있으면 그것을 올린다
+  ACT74={uid,n,key:k}}
+function slotInfo74(n){const c=A74.slots[n];const L=A74.user?slotLocal74(A74.user.uid,n):{};const useL=L.at&&L.at>((c&&c.at)||0);
+  const raw=useL?L.save:(c&&c.save);let g=null;try{g=raw?JSON.parse(raw):null}catch(e){}
+  return {g:(g&&!g.dead&&!g.ended)?g:null,cdx:useL?L.cdx:(c&&c.cdx),at:useL?L.at:(c&&c.at)}}
+async function flush74(){if(!ACT74||!A74.dirty||A74.busy||!window.FB||!A74.user)return;A74.busy=true;A74.dirty=false;
+  try{const k=ACT74.key;let sv=lsGet(k+'_sav');if(sv&&sv.length>700000){try{const g=JSON.parse(sv);g.log=(g.log||[]).slice(-120);sv=JSON.stringify(g)}catch(e){}}
+    const at=Date.now();let sg=null;try{sg=sv?JSON.parse(sv):null}catch(e){}const data={save:sv||null,cdx:lsGet(k+'_cdx')||'{}',name:(sg&&sg.name)||'',day:(sg&&sg.day)||0,at,v:1};
+    await window.FB.setSlot(ACT74.uid,ACT74.n,data);A74.slots[ACT74.n]=data;lsSet(k+'_at',String(at))}catch(e){A74.dirty=true;A74.err=errMsg74(e)}finally{A74.busy=false}}
+save=(f=>function(){const r=f.apply(this,arguments);if(ACT74){A74.dirty=true;lsSet(ACT74.key+'_at',String(Date.now()))}return r})(save);
+clearSave=(f=>function(){const r=f.apply(this,arguments);if(ACT74){A74.dirty=true;lsSet(ACT74.key+'_at',String(Date.now()));setTimeout(flush74,50)}return r})(clearSave);
+cdxSave=(f=>function(){const r=f.apply(this,arguments);if(ACT74)A74.dirty=true;return r})(cdxSave);
+setInterval(flush74,30000);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush74()});window.addEventListener('pagehide',()=>{flush74()});
+endDay=(f=>function(){const r=f.apply(this,arguments);setTimeout(flush74,100);return r})(endDay);
+function resume74(sv){G=sv;AB.forEach(a=>{if(!G.ab[a.id])G.ab[a.id]={cnt:a.cnt,pe:0,obs:0,works:0,melt:0,dept:null,day:0}});G.toolUse=G.toolUse||{};G.birdsToday=G.birdsToday||[];G.min=G.min??540;try{migrateInv()}catch(e){}AID=G.agents.length+5;render();resumePhase()}
+// 비회원 기록 → 저장소로 옮기기
+function guest74(){let g=null;try{const s=lsGet(SAVE);g=s?JSON.parse(s):null}catch(e){}const c=lsGet(CDX_BASE);return {g:(g&&!g.dead&&!g.ended)?g:null,raw:lsGet(SAVE),cdx:c,has:!!(g&&!g.dead&&!g.ended)||(!!c&&c!=='{}')}}
+function cdxMerge74(a,b){let A={},B={};try{A=JSON.parse(a||'{}')}catch(e){}try{B=JSON.parse(b||'{}')}catch(e){}const o=Object.assign({},A);
+  for(const id in B){if(!o[id]||((B[id]&&B[id].o)||0)>((o[id]&&o[id].o)||0))o[id]=B[id]}return JSON.stringify(o)}
+async function import74(n){const gu=guest74();const uid=A74.user.uid;const k=LKEY74(uid,n);const I=slotInfo74(n);
+  lsSet(k+'_sav',gu.g?gu.raw:null);lsSet(k+'_cdx',cdxMerge74(I.cdx,gu.cdx));lsSet(k+'_at',String(Date.now()));const prev=ACT74;ACT74={uid,n,key:k};A74.dirty=true;await flush74();
+  if(!A74.dirty){lsSet(SAVE,null);lsSet(CDX_BASE,null);toast(`비회원 기록을 저장소 ${n}(으)로 옮겼다`,'good')}else toast('옮기지 못했다. 잠시 뒤 다시 시도한다','hurt');ACT74=prev;acc74Render()}
+// --- 화면 ---
+function slotCard74(n){const I=slotInfo74(n);const pct=cdxPct74(I.cdx);const busy=A74.confirm&&A74.confirm.n===n;
+  const t=I.g?`<b>${esc(I.g.name||'')}</b> · D${I.g.day} <small>${accFmt74(I.at)}</small>`:`<b>빈 저장소</b>`;
+  return `<div class="slot74${ACT74&&ACT74.n===n?' on':''}"><div class="sl-h"><span>저장소 ${n}</span><em>도감 ${pct}%</em></div><div class="sl-b">${t}</div>
+   ${busy?`<div class="sl-a"><span class="note">${A74.confirm.kind==='new'?'진행 중인 기록을 지우고 새로 입사할까?':A74.confirm.kind==='import'?'이 저장소의 진행 기록을 비회원 기록으로 덮어쓸까? 도감은 합쳐진다.':'이 저장소의 진행 기록을 지울까? 도감은 남는다.'}</span><button class="btn small" data-yes="${n}">${A74.confirm.kind==='del'?'지운다':'그렇게 한다'}</button><button class="btn ghost small" data-no="1">취소</button></div>`
+   :`<div class="sl-a">${I.g?`<button class="btn small" data-cont="${n}">이어서 출근</button>`:''}<button class="btn ${I.g?'ghost ':''}small" data-new="${n}">새로 입사</button>${I.g?`<button class="btn ghost small" data-code="${n}">코드 복사</button><button class="btn ghost small" data-del="${n}">지우기</button>`:''}</div>`}</div>`}
+function accFmt74(t){if(!t)return '';try{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}catch(e){return ''}}
+function acc74Html(){const st=A74.st;const err=A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'';
+  if(st==='wait'||st==='loading')return `<p class="note">${st==='wait'?'로그인 기능을 불러오는 중…':'저장소를 불러오는 중…'}</p>`;
+  if(st==='noconfig'||st==='off')return `<p class="note">${st==='off'?'로그인 서버에 연결하지 못했다.':'계정 기능이 아직 준비되지 않았다.'} 비회원으로 플레이하면 이 기기에만 저장된다.</p>`;
+  if(st==='out')return `${err}<p class="note">로그인하면 저장소 3칸을 쓰고 다른 기기에서도 이어서 출근할 수 있다. 로그인하지 않아도 바로 플레이할 수 있다.</p>
+   <form class="acc-mail" id="a74i" autocomplete="on"><label class="field"><span class="lbl">아이디 (영문 소문자·숫자·_ 4~16자)</span><input id="a74id" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="16" pattern="[a-zA-Z0-9_]{4,16}" required></label>
+   <label class="field"><span class="lbl">비밀번호 (8자 이상)</span><input type="password" id="a74ip" autocomplete="current-password" minlength="8" required></label>
+   ${A74.idSign?`<label class="field"><span class="lbl">비밀번호 확인</span><input type="password" id="a74ip2" autocomplete="new-password" minlength="8" required></label><p class="note">비밀번호를 잊으면 스스로 되찾을 수 없다. 꼭 기억해 둔다.</p>`:''}
+   <div class="row">${A74.idSign?'<button class="btn small" type="submit">아이디로 가입</button><button class="btn ghost small" type="button" id="a74isw">이미 아이디가 있다</button>':'<button class="btn small" type="submit">로그인</button><button class="btn ghost small" type="button" id="a74isw">아이디 만들기</button>'}</div></form>`;
+  const u=A74.user;
+  return `${err}<div class="acc-me"><span><b>${esc(u.name||'사원')}</b>님${ACT74?` · 저장소 ${ACT74.n}`:''}</span><button class="btn ghost small" id="a74o" type="button">로그아웃</button></div>
+   <p class="note">저장소는 화면 가운데에서 고른다. 진행은 30초마다 계정에 저장된다.</p>`}
+// 화면 가운데: 저장소 3칸 + 비회원 기록 옮기기 (로그인했을 때만)
+function slots74Html(){const gu=guest74();const imp=gu.has&&!A74.impHide;
+  return `<h2 class="acc-h">저장소</h2>
+   ${imp?`<div class="acc-imp"><p><b>이 기기에 비회원 기록이 있다</b> · ${gu.g?`${esc(gu.g.name)} D${gu.g.day} · `:''}도감 ${cdxPct74(gu.cdx)}%</p>
+     <p class="note">넣을 저장소를 고른다. 진행 기록이 있는 칸은 덮어쓴다. 도감은 두 기록 중 더 많이 관찰한 쪽을 남긴다. 옮기면 이 기기의 비회원 기록은 비워진다.</p>
+     <div class="row">${[1,2,3].map(n=>`<button class="btn ${slotInfo74(n).g?'ghost ':''}small" data-imp="${n}">저장소 ${n}${slotInfo74(n).g?' 덮어쓰기':'에 넣기'}</button>`).join('')}<button class="btn ghost small" data-imphide="1">그대로 둔다</button></div></div>`:''}
+   <div class="slots74">${[1,2,3].map(slotCard74).join('')}</div>
+   ${ACT74?`<p class="note">저장소 ${ACT74.n}에 새로 입사한다. 아래에서 이름과 출신을 고른다.</p>`:'<p class="note">이어서 출근하거나, 새로 입사할 저장소를 고른다.</p>'}`}
+function acc74Render(){try{const app=document.getElementById('app');const t=app&&app.querySelector('.title');const ow=document.getElementById('acc74w');if(!t){if(ow)ow.remove();return}
+  // 오른쪽 위: 로그인 버튼 → 누르면 펼쳐지는 작은 창 (로그인·로그아웃만). body에 붙여 화면 모서리에 고정한다.
+  let w=ow;
+  if(!w){w=document.createElement('div');w.id='acc74w';w.className='acc74w';w.innerHTML='<button type="button" class="acc74b" id="acc74b" aria-expanded="false" aria-controls="acc74"></button><section id="acc74" class="card acc74" role="dialog" aria-label="사원증" hidden></section>';document.body.appendChild(w);
+    w.querySelector('#acc74b').onclick=()=>{A74.open=!A74.open;acc74Render();if(A74.open){const i=w.querySelector('#acc74 input,#acc74 button.btn');i&&i.focus()}}}
+  const show=['out','in','loading'].includes(A74.st);w.style.display=show?'':'none';
+  const bt=w.querySelector('#acc74b');bt.textContent=A74.st==='in'||A74.st==='loading'?((A74.user&&A74.user.name)||'사원'):'로그인';
+  bt.classList.toggle('in',A74.st==='in');bt.setAttribute('aria-expanded',!!A74.open);
+  const box=w.querySelector('#acc74');box.hidden=!A74.open;
+  box.innerHTML=`<div class="acc-hd"><h2 class="acc-h">사원증</h2><button type="button" class="acc-x" id="a74x" aria-label="닫기">닫기</button></div>`+acc74Html();
+  // 가운데: 로그인했으면 저장소 칸을 입사 양식 위에 둔다
+  const inn=A74.st==='in';const pick=inn&&!ACT74;
+  const cont=t.querySelector('#cont');if(cont)cont.closest('.row').style.display=inn?'none':'';
+  const form=t.querySelector('#go')&&t.querySelector('#go').closest('.card');if(form)form.style.display=pick?'none':'';
+  let mid=t.querySelector('#slot74c');
+  if(inn){if(!mid){mid=document.createElement('section');mid.id='slot74c';mid.className='card slot74c';if(form)form.insertAdjacentElement('beforebegin',mid);else t.appendChild(mid)}mid.innerHTML=(A74.err?`<p class="acc-err" role="alert">${esc(A74.err)}</p>`:'')+slots74Html()}
+  else if(mid)mid.remove();
+  const close=()=>{A74.open=false;acc74Render();const b=document.getElementById('acc74b');b&&b.focus()};
+  box.querySelector('#a74x').onclick=close;
+  const q=s=>box.querySelector(s);const run=async(p,ok)=>{A74.err='';try{await p;ok&&toast(ok,'good');return true}catch(e){A74.err=errMsg74(e);acc74Render();return false}};
+  if(q('#a74isw'))q('#a74isw').onclick=()=>{A74.idSign=!A74.idSign;A74.err='';acc74Render()};
+  if(q('#a74i'))q('#a74i').onsubmit=ev=>{ev.preventDefault();const id=q('#a74id').value.trim().toLowerCase(),p=q('#a74ip').value;
+    if(!/^[a-z0-9_]{4,16}$/.test(id)){A74.err='아이디는 영문 소문자·숫자·밑줄(_)로 4~16자다.';return acc74Render()}
+    if(p.length<8||p.length>128){A74.err='비밀번호는 8~128자다.';return acc74Render()}
+    if(A74.idSign){if(p!==q('#a74ip2').value){A74.err='비밀번호 확인이 맞지 않는다.';return acc74Render()}
+      run(window.FB.signup(id,p),`아이디 ${id}(으)로 가입했다`).then(ok=>{if(ok){A74.idSign=false;A74.open=false;acc74Render()}})}
+    else run(window.FB.login(id,p)).then(ok=>{if(ok){A74.open=false;acc74Render()}})};
+  if(q('#a74o'))q('#a74o').onclick=async()=>{await flush74();ACT74=null;A74.open=false;run(window.FB.logout(),'로그아웃했다')};
+  if(!mid)return;const M=s=>mid.querySelectorAll(s);
+  M('[data-cont]').forEach(b=>b.onclick=()=>{const n=+b.dataset.cont;useSlot74(n);const sv=loadSave();if(sv)resume74(sv)});
+  M('[data-new]').forEach(b=>b.onclick=()=>{const n=+b.dataset.new;if(slotInfo74(n).g){A74.confirm={n,kind:'new'};return acc74Render()}useSlot74(n);acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()});
+  M('[data-code]').forEach(b=>b.onclick=()=>{const n=+b.dataset.code;const I=slotInfo74(n);if(typeof exportPop76==='function')exportPop76(I.g,I.cdx,`저장소 ${n} · ${I.g.name||''}`)});
+  M('[data-del]').forEach(b=>b.onclick=()=>{A74.confirm={n:+b.dataset.del,kind:'del'};acc74Render()});
+  M('[data-imp]').forEach(b=>b.onclick=()=>{const n=+b.dataset.imp;if(slotInfo74(n).g){A74.confirm={n,kind:'import'};return acc74Render()}import74(n)});
+  M('[data-imphide]').forEach(b=>b.onclick=()=>{A74.impHide=true;acc74Render()});
+  M('[data-no]').forEach(b=>b.onclick=()=>{A74.confirm=null;acc74Render()});
+  M('[data-yes]').forEach(b=>b.onclick=async()=>{const c=A74.confirm;A74.confirm=null;const n=c.n;
+    if(c.kind==='import')return import74(n);
+    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
+}catch(e){}}
+renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!ACT74)A74.confirm=null;acc74Render();return r})(renderTitle);
+// 로그아웃 상태에서 입사하면 비회원 저장, 로그인 상태면 고른 저장소에 저장
+(function(){const st=document.createElement('style');st.textContent=`
+.acc74w{position:fixed;top:max(12px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:60;display:flex;flex-direction:column;align-items:flex-end}
+.acc74b{background:var(--raised);color:var(--fg);border:0;border-radius:2px;padding:0 14px;min-height:40px;font:inherit;font-size:14px;cursor:pointer;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc74b:hover{background:var(--panel2)}.acc74b.in{box-shadow:inset 0 -2px 0 var(--dept)}
+.acc74{position:absolute;top:48px;right:0;width:min(400px,calc(100vw - 32px));max-height:min(78vh,640px);overflow:auto;display:grid;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,.45);animation:acc75 .2s cubic-bezier(.23,1,.32,1)}
+.acc74[hidden]{display:none}.acc74 .acc-h{margin:0;font-size:18px}.acc74 p{margin:0}
+.acc-hd{display:flex;justify-content:space-between;align-items:center}.acc-x{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;min-height:40px;padding:0 4px;cursor:pointer}
+.slot74c{display:grid;gap:12px}.slot74c .acc-h{margin:0;font-size:18px}.slot74c p{margin:0}
+@keyframes acc75{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.acc74{animation:none}}
+
+.acc-mail{display:grid;gap:8px}.acc-mail .field input{width:100%;max-width:none}.acc-err{color:var(--bad)}
+.acc-me{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.slots74{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.slot74{background:var(--panel2);border-radius:2px;padding:12px;display:grid;gap:8px}.slot74.on{box-shadow:inset 0 -2px 0 var(--dept)}
+.sl-h{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.sl-h em{font-style:normal;color:var(--fg2);font-variant-numeric:tabular-nums}
+.sl-b small{color:var(--muted);margin-left:4px}.sl-a{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acc-imp{background:var(--sunk);padding:12px;border-radius:2px;display:grid;gap:8px}`;document.body.appendChild(st)})();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&A74.open){A74.open=false;acc74Render()}});
+document.addEventListener('click',e=>{const w=document.getElementById('acc74w');if(A74.open&&w&&!w.contains(e.target)&&document.body.contains(e.target)){A74.open=false;acc74Render()}});
+render=(f=>function(){const r=f.apply(this,arguments);if(!document.querySelector('#app .title')){const w=document.getElementById('acc74w');if(w)w.remove()}return r})(render);
+setTimeout(acc74Render,0);
 /* ================= v75: 전투 가이드 — 공용 키워드만 보인다 =================
    요정·포자·향기·한기·죄·쾌락·최강·돌아오는 감각처럼 특정 적만 쓰는 키워드는 목록에서 뺀다. 적 정보 창의 설명은 그대로 둔다. */
 const KW_COMMON75=['bleed','burn','rupture','sinking','tremor','poise','fragile','protect','bind','haste','paralysis','charge'];
@@ -10001,6 +10102,42 @@ function reroll(){if(!G||!G.ab||!G.ab.dontouch||!G.ab.dontouch.dept)return;if(G.
 render=(f=>function(){try{reroll()}catch(e){}return f.apply(this,arguments)})(render);
 })();
 
+/* ================= v87: 서버 사용량 줄이기 =================
+   평소에는 브라우저에만 저장한다. 서버에는 ① 하루가 끝날 때(일차 변경) ② 타이틀(근무일지 첫 화면)로 갈 때 ③ 저장 후 종료·언어 변경 같은 직접 조작 때만 올린다.
+   올릴 때는 압축하고, 로그인 직후에는 저장소 세 칸과 언어 설정을 한 번에 받는다. */
+(function(){if(typeof A74==='undefined'||typeof flush74!=='function')return;
+// --- 압축: 저장 기록을 deflate로 줄여 올린다 ('Z1:' 접두) ---
+const b64e=u8=>{let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)};
+const b64d=t=>{const s=atob(t);const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+const pipe=async(u8,C)=>new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new C('deflate-raw'))).arrayBuffer());
+async function z(s){if(typeof s!=='string'||!s||s.startsWith('Z1:')||typeof CompressionStream!=='function')return s;try{return 'Z1:'+b64e(await pipe(new TextEncoder().encode(s),CompressionStream))}catch(e){return s}}
+async function uz(s){if(typeof s!=='string'||!s.startsWith('Z1:'))return s;try{return new TextDecoder().decode(await pipe(b64d(s.slice(3)),DecompressionStream))}catch(e){return null}}
+async function unpack(d){if(!d)return d;const o=Object.assign({},d);o.save=await uz(o.save);o.cdx=await uz(o.cdx);return o}
+// --- 받기: 세 칸 + 언어 설정을 한 번에 (5초 동안 재사용) ---
+let ALL=null,ALLT=0;
+function all87(){if(ALL&&Date.now()-ALLT<5000)return ALL;ALLT=Date.now();ALL=api74('/slot?n=all').then(async j=>({list:await Promise.all((j.list||[]).map(unpack)),pref:j.pref||null})).catch(e=>{ALL=null;throw e});return ALL}
+const FB=window.FB;if(FB&&!window.FB_MOCK){const g0=FB.getSlot,s0=FB.setSlot;
+  FB.getSlot=async(uid,n)=>{try{const a=await all87();return a.list[n-1]||null}catch(e){if(e&&e.code==='noapi')throw e;return unpack(await g0(uid,n))}};
+  FB.setSlot=async(uid,n,data)=>{const d=Object.assign({},data);
+    try{const g=JSON.parse(d.save||'null');if(g&&Array.isArray(g.log)&&g.log.length>150){g.log=g.log.slice(-150);d.save=JSON.stringify(g)}}catch(e){}
+    d.save=await z(d.save);d.cdx=await z(d.cdx);ALL=null;return s0(uid,n,d)}}
+const api0=api74;api74=async function(path,opt){if(path==='/pref'&&(!opt||!opt.method||opt.method==='GET')){try{const a=await all87();return {pref:a.pref}}catch(e){}}return api0.apply(this,arguments)};
+// --- 올리기: 정해진 때만 ---
+// 예전 30초 주기 타이머는 원래 함수를 직접 부르므로 '사용 중' 표시로 막아 둔다
+const F0=flush74;let LOCK=true;A74.busy=true;
+flush74=async function(){if(!ACT74||!A74.user)return;if(document.hidden)return;   // 탭을 가리거나 닫을 때는 올리지 않는다 (다음에 열 때 올림)
+  if(!A74.dirty)return;LOCK=false;A74.busy=false;try{await F0()}finally{LOCK=true;A74.busy=true}};
+// 다른 코드가 busy를 풀어 둬도 다시 잠근다
+setInterval(()=>{if(LOCK&&!A74.busy)A74.busy=true},1000);
+// ① 일차 변경: endDay가 이미 flush74를 부른다 (보이는 탭에서만 실행)
+// ② 타이틀로 갈 때: 기기에 서버보다 새 기록이 남아 있으면 그때 올린다 (지난번에 그냥 창을 닫은 경우 포함)
+async function pending87(){if(A74.st!=='in'||!A74.user)return;const uid=A74.user.uid;const prev=ACT74;
+  for(const n of [1,2,3]){try{const L=slotLocal74(uid,n),c=A74.slots[n];if(L.at&&L.at>((c&&c.at)||0)&&(L.save||L.cdx)){ACT74={uid,n,key:LKEY74(uid,n)};A74.dirty=true;await flush74()}}catch(e){}}
+  ACT74=prev}
+let tq=0;renderTitle=(f=>function(){const r=f.apply(this,arguments);clearTimeout(tq);tq=setTimeout(()=>{pending87().catch(()=>{})},800);return r})(renderTitle);
+window.addEventListener('fb-auth',e=>{if(e.detail)setTimeout(()=>{pending87().catch(()=>{})},2500)});
+})();
+
 /* ================= v88: 회사 경보 — 화면 네 모서리에 !WARNING! 표시 =================
    제1·2·3경보는 화면 전체를 덮지 않는다. 원작처럼 네 모서리에 등급만큼 느낌표를 붙여 띄운다.
    화면 전체 붉은 점멸은 '만지지 마시오'에만 남긴다. */
@@ -10031,6 +10168,34 @@ function upd(){const L=lv();if(L===cur)return;cur=L;
 const rf=window.redFlash84;if(rf){window.redFlash84=function(n,text,hard){if(!hard&&typeof WARNN!=='undefined'&&WARNN.indexOf(text)>0)return;return rf.apply(this,arguments)};try{redFlash84=window.redFlash84}catch(e){}}
 renderTop=(f=>function(){const r=f.apply(this,arguments);try{upd()}catch(e){}return r})(renderTop);
 setInterval(upd,1000);
+})();
+
+/* ================= v89: 접속 통계 (호스팅판 전용) =================
+   기기마다 무작위 방문자 번호(원문 IP·아이디와 무관)를 만들어, 접속할 때 한 번 /api/hit에 알린다.
+   플레이 시간은 화면을 보고 있고 2분 안에 조작이 있었던 시간만 브라우저에 모아 두었다가,
+   다음 접속 때 또는 탭을 내릴 때(10분에 한 번 이하) 함께 보낸다. */
+(function(){if(location.protocol==='file:'||window.FB_MOCK)return;
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const kday=(t=Date.now())=>new Date(t+9*3600e3).toISOString().slice(0,10);
+let vid=ls.g('lcw_vid');if(!vid||!/^[A-Za-z0-9_-]{12,40}$/.test(vid)){const a=new Uint8Array(12);crypto.getRandomValues(a);vid=Array.from(a,b=>b.toString(16).padStart(2,'0')).join('');ls.s('lcw_vid',vid)}
+const get=()=>{try{return JSON.parse(ls.g('lcw_play')||'{}')||{}}catch(e){return {}}};
+const put=o=>ls.s('lcw_play',JSON.stringify(o));
+// 활동 시간 모으기 (5초 단위)
+let act=Date.now();['pointerdown','keydown','wheel','touchstart'].forEach(e=>addEventListener(e,()=>{act=Date.now()},{passive:true,capture:true}));
+setInterval(()=>{if(document.hidden||Date.now()-act>120000)return;const o=get(),d=kday();o[d]=(o[d]||0)+5;
+  const lim=kday(Date.now()-3*86400e3);for(const k in o)if(k<lim)delete o[k];put(o)},5000);
+const total=o=>Object.values(o).reduce((a,b)=>a+(+b||0),0);
+function take(){const o=get();put({});return o}
+function back(o){const c=get();for(const k in o)c[k]=(c[k]||0)+o[k];put(c)}
+let lastSent=0;
+async function hit(open){const play=take();const li=typeof A74!=='undefined'&&A74&&A74.st==='in'?1:0;
+  try{const r=await fetch('/api/hit',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({vid,open:open?1:0,li,play})});if(!r.ok)throw 0;lastSent=Date.now()}
+  catch(e){back(play)}}
+// 접속 1회 (로그인 확인이 끝날 시간을 조금 둔다)
+setTimeout(()=>hit(true),4000);
+// 탭을 내릴 때: 1분 이상 모였고, 마지막 전송 뒤 10분이 지났을 때만
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;const o=get();if(total(o)<60||Date.now()-lastSent<600000)return;
+  put({});const ok=navigator.sendBeacon&&navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({vid,play:o})],{type:'application/json'}));if(ok)lastSent=Date.now();else back(o)});
 })();
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
