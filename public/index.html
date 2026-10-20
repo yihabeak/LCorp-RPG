@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.7.1.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.8.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11290,7 +11290,7 @@ return {render:render,css:CSS,colors:COL}})();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function get(){try{const r=await fetch('/api/notes',{cache:'no-store'});if(!r.ok)return null;const j=await r.json();return Array.isArray(j.notes)?j.notes:null}catch(e){return null}}
 function show(){const L=NOTES||[];const d=t=>{try{return new Date(t).toLocaleDateString(LANG80==='ja'?'ja-JP':LANG80==='en'?'en-US':'ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'short',day:'numeric'})}catch(e){return ''}};
-  popup(T('패치노트','Patch notes','パッチノート'),L.length?`<div class="pn109">${L.map((n,i)=>`<details ${i===0?'open':''}><summary><b>${esc(n.t)}</b><small>${d(n.at)}</small></summary>${n.f?`<div class="pn109x pn109f pnf">${PNF.render(n.x)}</div>`:`<div class="pn109x">${esc(n.x)}</div>`}</details>`).join('')}</div>`:`<p class="sub">${T('아직 올라온 패치노트가 없어요.','No patch notes yet.','まだパッチノートはありません。')}</p>`,null,{wide:true})}
+  popup(T('패치노트','Patch notes','パッチノート'),L.length?`<div class="pn109">${L.map((n,i)=>`<details data-nid="${n.id}" ${i===0?'open':''}><summary><b>${esc(n.t)}</b><small>${d(n.at)}</small></summary>${n.f?`<div class="pn109x pn109f pnf">${PNF.render(n.x)}</div>`:`<div class="pn109x">${esc(n.x)}</div>`}</details>`).join('')}</div>`:`<p class="sub">${T('아직 올라온 패치노트가 없어요.','No patch notes yet.','まだパッチノートはありません。')}</p>`,null,{wide:true})}
 function btn(){try{const w=document.getElementById('lnk100');if(!w||document.getElementById('pn109b')||!NOTES)return;
   w.insertAdjacentHTML('afterbegin',`<a href="#" id="pn109b" role="button">${T('패치노트','Patch notes','パッチノート')}</a>`);
   document.getElementById('pn109b').onclick=async e=>{e.preventDefault();NOTES=(await get())||NOTES;show()}}catch(e){}}
@@ -14004,7 +14004,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.7.1.261020';
+const VER='Ver. 4.8.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -15482,6 +15482,217 @@ startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&G.day===31&&!G
 
 /* 가이드 */
 try{const g=GUIDE.find(x=>x.k==='people')||GUIDE.find(x=>x.k==='staff');const add=T('<p class="tip">직원들은 상황을 보고 움직여요. 사람이 죽어 나가거나 위협이 크면 몸을 사리고, 탈출이 여럿이면 더 많이 나서요. 평소엔 결과가 좋았던 곳으로 손이 가고, 다친 곳은 피해요. 다만 사람이라 늘 옳게 판단하지는 않아요. 31일차부터는 시설이 점점 더 거칠어져요.</p>','<p class="tip">Staff read the situation. When people are dying or threats are high they play safe; when several things escape, more of them step up. Normally they gravitate to units that went well and avoid ones that hurt them. Being human, they are not always right. From Day 31 the facility grows harsher.</p>','<p class="tip">職員は状況を見て動きます。死者が出たり脅威が大きいと身を守り、脱走が重なるとより多く立ち向かいます。普段は結果が良かった所へ手が伸び、傷ついた所は避けます。ただ人間なので、いつも正しく判断するとは限りません。31日目からは施設が次第に荒くなります。</p>');if(g)g.b+=add;else GUIDE.push({k:'ai149',t:T('직원의 판단','How staff decide','職員の判断'),b:add})}catch(e){}
+})();
+/* ============ v150: 편의 · 가독성 · 고침 묶음 (4.8) ============
+   고침
+   · 미녀와 야수: 억압 작업 연속 횟수는 그날 안에서만 센다 (다음 날로 넘어가지 않는다)
+   · 교육팀 코어 미션 「내 등급 Ⅲ」: 행동교정 · 열망하는 심장처럼 잠시 오르는 가치관은 세지 않는다 (임시 등급으로 미션 · LOB가 나가던 문제)
+   · 늙은 여인: 이야기를 들어주면 정신력이 깎이지 않는다
+   · 기생수: 카운터 0이 되어도 직원이 즉사하지 않는다 → 뿌리 감염(체력 · 정신력 큰 피해, 그날 의무실 행) + 부서 정신력 감소
+   · 사망 0명 조건 전부 → 사망 3명 이하 (네짜흐 부탁 · 네짜흐 코어 미션)
+   · 코어 미션 「도감 정보 n건 해금」: 미션이 열리기 전에 해금한 정보도 센다
+   선택지
+   · 고를 것이 있는 창이 떠 있는 동안 실시간 진행을 멈춘다
+   · 고를 것이 있는 창은 다른 알림 창에 덮이거나 꺼지지 않는다 (알림은 그 창을 닫은 뒤 차례로 뜬다)
+   보기 · 편의 (⚙ 설정 → 화면 · 글자)
+   · 글꼴 5종 · 글자 크기 4단계 · 굵기 · 줄 간격 · 색 테마 4종(기본 · 고대비 · 부드러운 · 색약 보조) · 움직임 줄이기 · 작업 결과 카드(크게/간단히/끄기) · 주사위 연출
+   · 기본 글꼴을 읽기 쉬운 고딕으로 바꾸고 흐린 글씨의 대비를 높였다
+   · 모바일: 작업 뒤 결과 카드는 위쪽에 한 줄로 짧게 뜬다
+   · 「동료와의 유대」에 모든 직원이 보인다 (처음 동기만 보이던 문제)
+   직원
+   · 사람처럼 배운다: 작업 종류를 고를 때 자기 경험(그 환상체에서 어떤 작업이 잘 됐는지)을 기억해 고른다. 도감 선호를 알면 참고하되, 가끔은 안 해 본 작업도 시도한다
+   · 정신력이 바닥나는 동료를 보면 다독이러 간다
+   동료 돕기
+   · 작업 중인 직원 → 「함께 작업」: 그 작업 성공률 +15% · 결과가 좋으면 내 에너지에도 일부
+   · 쉬는 · 대기 중인 직원 → 「다독이기」: 정신력 +15 · 체력 +10%
+   · 교전 중인 직원은 지금 도울 수 없다 · 패닉 직원은 진압 전투
+   튜토리얼: 마음의 온기 · 주사위 판정 · 동료 돕기 (처음 마주칠 때 한 번 · 가이드에서 다시) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const UI=(ko,en,ja)=>{try{if(typeof I80D!=='undefined'&&I80D.ui&&!I80D.ui[ko])I80D.ui[ko]=[en,ja]}catch(e){}};
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const H=s=>(typeof esc==='function'?esc(s):String(s));
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const LS={g:(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* ================= 고침 ================= */
+startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&G.ab&&G.ab.beauty){G.ab.beauty.rep2=0}}catch(e){}return r})(startDay);
+try{const st=CM.train&&CM.train.st;if(st)for(const S of st)if(S.stv&&/rank\(\)>=3/.test(String(S.stv)))S.stv=()=>rankOfSt(G.st)>=3?1:0}catch(e){}
+try{const W=WK.oldlady;if(W&&W[1]&&W[1][0])W[1][0][1]={cnt:1,hum:1}}catch(e){}
+try{const S=SPW.oldlady&&SPW.oldlady[0];if(S){S.s=()=>T('20분 · 오늘 외로움으로 카운터가 줄지 않는다 · 마음의 온기 +3','20 min · the counter will not drop from loneliness today · Warmth +3','20分・今日は孤独でカウンターが減らない・心の温もり +3');S.f=function(a){G.ab.oldlady.lastDay=G.day;hum(3);log(T('노파의 옛날이야기를 끝까지 들었다. 노파가 오래 웃었다.','You listened to the old woman\'s story to the end. She laughed for a long time.','老婆の昔話を最後まで聞いた。老婆は長いこと笑っていた。'),'q')}}}catch(e){}
+counterZero=(f=>function(a,src){if(!a||a.id!=='parasite')return f.apply(this,arguments);
+ try{const s=G.ab[a.id];s.melt=0;s.cnt=a.cnt;const L=G.agents.filter(x=>x.alive&&!x.out&&x.dept===s.dept);const v=L.length?pick(L):null;
+  if(v){v.hp=Math.max(1,Math.round(v.hp-agMax(v)*.6));v.sp=Math.max(-40,(v.sp||0)-25);v.task={k:'rest',until:Math.max(G.min+240,1080)};v.loc=null;
+   log(T(`${NL(v.n)}의 팔에서 가느다란 뿌리가 돋았다. 의료팀이 급히 걷어 냈지만, 오늘은 의무실에서 나오지 못한다.`,`Thin roots sprouted from ${NL(v.n)}'s arm. Medical removed them in time, but they will not leave the infirmary today.`,`${NL(v.n)}の腕から細い根が生えた。医療チームが急いで取り除いたが、今日は医務室から出られない。`),'hurt')}
+  else{try{addHp(-Math.round(maxHp()*.25))}catch(e){}log(T('기생수의 뿌리가 바닥을 타고 번졌다. 발목이 긁혔다.','The Parasite Tree\'s roots spread across the floor and scraped your ankle.','寄生樹の根が床を這って広がり、足首を擦った。'),'hurt')}
+  G.agents.filter(x=>x.alive&&x.dept===s.dept&&x!==v).forEach(x=>{x.sp=Math.max(-44,(x.sp||0)-8)});
+  log(T(`경보. ${NL(a.n)}의 클리포트 카운터가 0이 되었다.`,`Alert. ${NL(a.n)}'s Qliphoth counter hit 0.`,`警報。${NL(a.n)}のクリフォトカウンターが0になった。`),'warn')}catch(e){console.error(e)}})(counterZero);
+// 사망 0명 → 3명 이하
+try{const M=MIS.safety;if(M){M.goal=()=>'휴게실 휴식 1회, 그리고 오늘 사망자 3명 이하로 퇴근';M.end=m=>(G.deaths-(m.d0||0))<=3;
+ UI('휴게실 휴식 1회, 그리고 오늘 사망자 3명 이하로 퇴근','Rest in the break room once, and clock out today with 3 or fewer deaths','休憩室で休憩1回、そして今日の死者3人以下で退勤')}}catch(e){}
+try{for(const k of Object.keys(CM)){for(const S of CM[k].st||[]){if(/사망자 없이 퇴근 (\d+)일/.test(S.d||'')){const n=+RegExp.$1;S.d=`사망자 3명 이하로 퇴근 ${n}일`;S.ev=(e,d)=>e==='dayend'&&(G.deaths-(G.cmD0==null?G.deaths:G.cmD0))<=3?1:0;
+  UI(S.d,`Clock out with 3 or fewer deaths on ${n} days`,`死者3人以下で退勤 ${n}日`)}}}}catch(e){}
+// 도감 해금: 지금까지 연 정보를 모두 센다
+function infoN(){let n=0;try{for(const a of contained()){if(a.tool)continue;const i=G.ab[a.id]&&G.ab[a.id].info;if(!i)continue;n+=(i.b?1:0)+Object.values(i.f||{}).reduce((s,v)=>s+(v?1:0),0)+(i.m||[]).reduce((s,v)=>s+(v?1:0),0)+(i.e?1:0)}}catch(e){}return n}
+try{for(const k of Object.keys(CM))for(const S of CM[k].st||[])if(/도감 정보 \d+건 해금/.test(S.d||'')){delete S.ev;S.stv=infoN}}catch(e){}
+
+/* ================= 선택지 창 ================= */
+let LAST_IN=0,QUEUE=[];
+const isDecide=html=>/class="(?:[^"]*\s)?(?:ch|choices)[\s"]|data-o=|data-rto=|data-yes=|data-y\b/.test(String(html||''));
+document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.pop'))LAST_IN=Date.now()},true);
+document.addEventListener('keydown',()=>{if(typeof POP!=='undefined'&&POP)LAST_IN=Date.now()},true);
+const userRecent=()=>Date.now()-LAST_IN<8000;
+popup=(f=>function(title,html){try{if(typeof POP!=='undefined'&&POP&&POP.classList.contains('decide')&&!userRecent()&&!window.__pop150force){QUEUE.push([this,[...arguments]]);if(QUEUE.length>6)QUEUE.shift();return document.createElement('div')}}catch(e){}
+ const r=f.apply(this,arguments);try{if(r&&r.classList&&isDecide(html))r.classList.add('decide')}catch(e){}return r})(popup);
+closePop=(f=>function(){const r=f.apply(this,arguments);if(QUEUE.length)setTimeout(()=>{if(typeof POP!=='undefined'&&POP)return;const q=QUEUE.shift();if(q){window.__pop150force=1;try{popup.apply(q[0],q[1])}finally{window.__pop150force=0}}},120);return r})(closePop);
+// 전투 · 엔딩처럼 화면이 통째로 바뀔 때는 막지 않는다
+['startBattle','die','renderRecord'].forEach(n=>{try{const f=window[n];if(typeof f!=='function')return;window[n]=function(){window.__pop150force=1;try{return f.apply(this,arguments)}finally{window.__pop150force=0}}}catch(e){}});
+
+/* ================= 보기 · 편의 설정 ================= */
+const KEY='lcw_set150';
+const DEF={font:'plex',size:'100',weight:'n',lh:'n',theme:'base',motion:'auto',card:'auto'};
+let SET=Object.assign({},DEF,(()=>{try{return JSON.parse(LS.g(KEY,'{}'))}catch(e){return {}}})());
+const FONTS={plex:{n:L3('읽기 쉬운 고딕','Easy-read sans','読みやすいゴシック'),fam:"'IBM Plex Sans KR','Inter',system-ui,sans-serif",head:"'IBM Plex Sans KR','Inter',sans-serif",url:null},
+ noto:{n:L3('노토 산스','Noto Sans','Noto Sans'),fam:"'Noto Sans KR','Noto Sans JP',system-ui,sans-serif",head:"'Noto Sans KR',sans-serif",url:'family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700'},
+ gowun:{n:L3('고운 돋움','Gowun Dodum','Gowun Dodum'),fam:"'Gowun Dodum','IBM Plex Sans KR',sans-serif",head:"'Gowun Dodum','IBM Plex Sans KR',sans-serif",url:'family=Gowun+Dodum'},
+ serif:{n:L3('나눔 명조','Nanum Myeongjo (serif)','ナヌム明朝'),fam:"'Nanum Myeongjo','Noto Serif JP',serif",head:"'Nanum Myeongjo',serif",url:'family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+JP:wght@400;700'},
+ bold:{n:L3('원래의 굵은 글꼴','Original bold display','元の太い書体'),fam:null,head:null,url:null}};
+function L3(k,e,j){return [k,e,j]}const tx=a=>T(a[0],a[1],a[2]);
+const loaded={};function loadFont(k){const F=FONTS[k];if(!F||!F.url||loaded[k])return;loaded[k]=1;const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?'+F.url+'&display=swap';document.head.appendChild(l)}
+let ST=null;
+function apply(){const s=SET;const F=FONTS[s.font]||FONTS.plex;loadFont(s.font);const root=document.documentElement;
+ root.classList.toggle('s150-rm',s.motion==='off');root.dataset.s150theme=s.theme;root.dataset.s150card=s.card;
+ const z=+s.size/100;try{document.body.style.zoom=z===1?'':String(z)}catch(e){}
+ let css='';
+ if(F.fam){css+=`html body,html body button,html body input,html body select,html body textarea{font-family:${F.fam}!important}
+ :root{--y-k:${F.head}!important;--y-f:'Oswald',${F.head}!important}
+ html body .tabs button,html body .ch b,html body .btn,html body #panel>h3,html body .panel h3,html body .pop-h h3,html body button.cat b,html body .lb-card>b,html body .lb-card .who,html body .lb-nm,html body .title h1,html body .brand,html body .rp-who b,html body .rp-msg,html body details.cb77>summary h4,html body .lb-gh{font-weight:${s.weight==='b'?700:600}!important;letter-spacing:0!important}`}
+ css+=`html body{font-weight:${s.weight==='b'?500:400}}html body p,html body li,html body small,html body .note,html body .sub{line-height:${s.lh==='w'?1.85:1.6}}`;
+ if(!ST){ST=document.createElement('style');ST.id='s150dyn';document.head.appendChild(ST)}ST.textContent=css;
+ if(s.motion==='off')LS.s('lcw_dice148','off')}
+function save150(){LS.s(KEY,JSON.stringify(SET));apply()}
+const OPTS=[
+ ['font',L3('글꼴','Font','書体'),Object.keys(FONTS).map(k=>[k,FONTS[k].n])],
+ ['size',L3('글자 크기','Text size','文字サイズ'),[['90',L3('작게','Small','小')],['100',L3('보통','Normal','普通')],['112',L3('크게','Large','大')],['125',L3('아주 크게','Extra large','特大')]]],
+ ['weight',L3('글자 굵기','Weight','太さ'),[['n',L3('보통','Regular','標準')],['b',L3('굵게','Bold','太く')]]],
+ ['lh',L3('줄 간격','Line spacing','行間'),[['n',L3('보통','Normal','普通')],['w',L3('넓게','Wide','広く')]]],
+ ['theme',L3('색 테마','Color theme','カラーテーマ'),[['base',L3('기본','Default','標準')],['hc',L3('고대비','High contrast','ハイコントラスト')],['soft',L3('부드러운','Soft','ソフト')],['cb',L3('색약 보조','Color-blind aid','色覚サポート')]]],
+ ['motion',L3('움직임','Motion','動き'),[['auto',L3('기기 설정 따름','Follow device','端末に従う')],['off',L3('줄이기','Reduce','減らす')]]],
+ ['card',L3('작업 결과 카드','Work result card','作業結果カード'),[['auto',L3('자동 (모바일은 간단히)','Auto (compact on mobile)','自動(モバイルは簡易)')],['big',L3('크게','Full','大きく')],['mini',L3('간단히','Compact','簡易')],['off',L3('끄기','Off','オフ')]]]];
+function setPop(){const dice=LS.g('lcw_dice148','on')!=='off';
+ popup(T('화면 · 글자 설정','Display & text','表示・文字設定'),`<div class="s150">${OPTS.map(([k,l,V])=>`<div class="s150r"><b>${tx(l)}</b><div class="s150o">${V.map(([v,n])=>`<button type="button" class="btn small ${SET[k]===v?'':'ghost'}" data-s150="${k}:${v}">${tx(n)}</button>`).join('')}</div></div>`).join('')}
+  <div class="s150r"><b>${T('작업 주사위 연출','Work dice animation','作業サイコロ演出')}</b><div class="s150o"><button type="button" class="btn small ${dice?'':'ghost'}" data-s150d="on">${T('켜기','On','オン')}</button><button type="button" class="btn small ${dice?'ghost':''}" data-s150d="off">${T('끄기','Off','オフ')}</button></div></div>
+  <p class="note s150p">${T('미리보기 — 오늘의 할당량은 15 PE예요. 「좋음」은 초록, 「나쁨」은 빨강으로 보여요.','Preview — today\'s quota is 15 PE. "Good" shows in green, "Bad" in red.','プレビュー — 今日のノルマは15 PEです。「良好」は緑、「不良」は赤で表示されます。')} <span class="s150g">${T('좋음','Good','良好')}</span> · <span class="s150b">${T('나쁨','Bad','不良')}</span></p>
+  <div class="row"><button type="button" class="btn ghost small" data-s150reset>${T('처음 설정으로','Reset to default','初期設定に戻す')}</button></div></div>`,el=>{
+  el.querySelectorAll('[data-s150]').forEach(b=>b.onclick=()=>{const [k,v]=b.dataset.s150.split(':');SET[k]=v;save150();closePop();setPop()});
+  el.querySelectorAll('[data-s150d]').forEach(b=>b.onclick=()=>{if(b.dataset.s150d==='on')LS.s('lcw_dice148','on');else LS.s('lcw_dice148','off');closePop();setPop()});
+  el.querySelector('[data-s150reset]').onclick=()=>{SET=Object.assign({},DEF);save150();closePop();setPop()}},{wide:true})}
+window.setPop150=setPop;
+try{settingsPop76=(f=>function(){const r=f.apply(this,arguments);try{const b=document.querySelector('.set76');if(b&&!b.querySelector('.s150b')){b.insertAdjacentHTML('afterbegin',`<section class="s150b"><h4>${T('화면 · 글자','Display & text','表示・文字')}</h4><p class="note">${T('글꼴 · 글자 크기 · 굵기 · 줄 간격 · 색 테마 · 움직임 · 결과 카드','Font, size, weight, spacing, colors, motion, result card','書体・サイズ・太さ・行間・色・動き・結果カード')}</p><button class="btn ghost" type="button" id="s150open">${T('화면 · 글자 설정 열기','Open display settings','表示設定を開く')}</button></section>`);b.querySelector('#s150open').onclick=()=>{closePop();setPop()}}}catch(e){}return r})(settingsPop76)}catch(e){}
+// 타이틀 화면에서도
+function titleBtn(){try{const w=document.getElementById('lnk100');if(w&&!document.getElementById('s150t')){w.insertAdjacentHTML('beforeend',`<a href="#" id="s150t" role="button">⚙ ${T('화면 · 글자','Display','表示')}</a>`);document.getElementById('s150t').onclick=e=>{e.preventDefault();setPop()}}}catch(e){}}
+setInterval(titleBtn,1500);
+// 결과 카드
+apply();
+
+/* ---------- 「동료와의 유대」: 모든 직원 ---------- */
+function bondHtml(){const co=Object.keys(CO).map(k=>{const al=coAlive(k);const ag=coAgent(k);const v=G.rel[k]??0;return `<span><b>${H(CO[k].n)}</b> · ${ag?H(DEPT[ag.dept].n):T('사무직','Office','事務職')} · ${al?`${T('유대','Bond','絆')} ${v}${v>=80?' ★★':v>=60?' ★':''}`:`<span style="color:var(--bad)">${T('사망','Dead','死亡')}</span>`}</span>`}).join('');
+ const L=G.agents.filter(a=>!a.co&&!a._ar146&&!a._mir136).map(a=>({a,v:a.rel??10})).sort((x,y)=>(y.a.alive-x.a.alive)||(y.v-x.v));
+ return co+L.map(({a,v})=>`<span><b>${H(NL(a.n))}</b> · ${DEPT[a.dept]?H(DEPT[a.dept].n):''} · ${a.alive?`${T('유대','Bond','絆')} ${v}${v>=80?' ★★':v>=60?' ★':''}`:`<span style="color:var(--bad)">${T('사망','Dead','死亡')}</span>`}</span>`).join('')+`<span style="margin-top:6px">${T('마음의 온기','Warmth','心の温もり')} <b>${G.hum}</b></span>`}
+renderSide=(f=>function(){const r=f.apply(this,arguments);try{const S=document.getElementById('side');if(S&&G){const c=[...S.querySelectorAll('.card')].find(x=>{const l=x.querySelector('.lbl');return l&&(l.dataset.en==='BOND'||/^(동료와의 유대|BONDS?|Bonds|同僚との絆)$/i.test(l.textContent.trim()))});const m=c&&c.querySelector('.mini');if(m){m.innerHTML=bondHtml();m.classList.add('b150')}}}catch(e){}return r})(renderSide);
+
+/* ================= 직원: 사람처럼 배우는 작업 선택 ================= */
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function brain(ag){ag.ai149=ag.ai149||{b:0,top:(()=>{try{return topSt(ag.st)}catch(e){return 'T'}})(),mem:{},run:0};ag.ai149.wm=ag.ai149.wm||{};return ag.ai149}
+function chooseWork(ag,a){const B=brain(ag);const works=WORKS.filter(w=>!(a.sp==='request'&&w.id==='att'));
+ if(Math.random()<.12)return pick(works);                                   // 가끔은 안 해 본 것도 해 본다
+ let best=null,bs=-9;for(const w of works){const m=B.wm[a.id+'|'+w.id];let known=null;try{if(favKnown(a,w.id))known=prefOf(a,w.id)}catch(e){}
+  let sc=known!=null?known:.5;if(m&&m.n){const k=m.n/(m.n+2);sc=sc*(1-k)+m.r*k}sc+=w.v===B.top?.04:0;sc+=gauss()*.08;if(sc>bs){bs=sc;best=w}}return best||pick(works)}
+npcWork=(f=>function(ag,a){if(!ag||!a||a.tool)return f.apply(this,arguments);let w=null;try{w=chooseWork(ag,a)}catch(e){}
+ if(!w)return f.apply(this,arguments);const keep=WORKS.slice();WORKS.splice(0,WORKS.length,w);let r;
+ try{r=f.apply(this,arguments)}finally{WORKS.splice(0,WORKS.length,...keep)}
+ try{const B=brain(ag);const box=(window.BOX103||[8,10,14,18,24])[a.g]||10;const ratio=r&&r.pe!=null?r.pe/box:.55;
+  const k=a.id+'|'+w.id;const m=B.wm[k]||{n:0,r:.5};m.r=(m.r*m.n+ratio)/(m.n+1);m.n=Math.min(8,m.n+1);B.wm[k]=m}catch(e){}
+ return r})(npcWork);
+// 동료가 무너지기 직전이면 다독이러 간다
+agentStep=(f=>function(ag,now,pAb,notes,count){try{const Tk=ag.task||{k:'idle',until:0};
+ if(ag.alive&&!ag.panic&&now>=Tk.until&&(Tk.k==='idle'||Tk.k==='rest')&&ag.sp>0&&ag.hp>agMax(ag)*.5&&Math.random()<.18){
+  const m=G.agents.find(x=>x!==ag&&x.alive&&!x.panic&&!x.out&&x.dept===ag.dept&&x.sp<-25&&!(x.task&&(x.task.k==='fight'||x.task.k==='respond'||x.task.k==='work')));
+  if(m){m.sp=Math.min(45,m.sp+10);ag.task={k:'rest',until:now+20};if(!G.c150||G.c150<now-90){G.c150=now;notes.push(T(`${ag.n}이(가) ${m.n}의 곁에 앉아 이야기를 들어 주었다.`,`${ag.n} sat with ${m.n} and listened.`,`${ag.n}が${m.n}の隣に座り、話を聞いた。`))}
+   try{if(!m.co)m.rel=cl((m.rel??10)+2,0,100)}catch(e){}return}}}catch(e){}
+ return f.apply(this,arguments)})(agentStep);
+
+/* ================= 동료 돕기 ================= */
+const busyK=a=>a.task&&a.task.k;
+helpCo=function(){const pan=G.agents.filter(a=>a.alive&&a.panic);
+ const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic&&!a._ar146).sort((x,y)=>(y.dept===G.dept)-(x.dept===G.dept)||agRank(y)-agRank(x));
+ const row=a=>{const k=busyK(a);const bond=a.co?(G.rel[a.co]??0):(a.rel??10);const base=`${DEPT[a.dept]?DEPT[a.dept].n:''} · ${ROMAN[agRank(a)]} · HP ${a.hp}/${agMax(a)} · ${T('정신력','SP','精神力')} ${a.sp} · ${T('유대','Bond','絆')} ${bond}`;
+  if(k==='fight'||k==='respond')return {grp:T('교전 · 출동 중','In combat','交戦中'),l:H(NL(a.n)),s:`${base} · ${T('지금은 도울 수 없어요','Cannot help right now','今は手伝えません')}`,dis:true};
+  if(k==='work'||k==='move'){const ab=ABM[a.task.ab];return {grp:T('작업 중 → 함께 작업','Working → Work together','作業中 → 一緒に作業'),l:`${H(NL(a.n))} · ${ab?H(NL(ab.n)):''}`,s:`${base} · ${T('그 작업 성공률 +15% · 좋으면 내 에너지 일부 · 다음 직접 작업 +8%','that work +15% success · share of energy if good · your next work +8%','その作業の成功率+15%・良ければエネルギーの一部・次の直接作業+8%')}`,f:()=>doHelp(a,'team')}}
+  return {grp:T('쉬는 중 · 대기 → 다독이기','Resting/idle → Encourage','休憩・待機 → 励ます'),l:H(NL(a.n)),s:`${base} · ${T('정신력 +15 · 체력 +10% · 다음 직접 작업 +8%','SP +15 · HP +10% · your next work +8%','精神力+15・体力+10%・次の直接作業+8%')}`,f:()=>doHelp(a,'care')}};
+ setPanel('누구를 도울까',T('작업 중인 직원은 함께 작업하고, 쉬는 직원은 다독여요. 둘 다 40분이 걸리고 유대 · 마음의 온기가 올라요.','Work alongside staff who are working; encourage those resting. Both take 40 minutes and raise Bond and Warmth.','作業中の職員とは一緒に作業し、休んでいる職員は励まします。どちらも40分かかり、絆と心の温もりが上がります。'),
+  pan.map(a=>({grp:'패닉 직원 · 진압',cls:'melt',l:`${a.n} · ${PANT[a.panic]} 패닉`,s:`${DEPT[a.dept].n} · HP ${a.hp}/${agMax(a)} · 퇴근 시간까지 방치하면 처분된다`,f:()=>panicFight(a)})).concat(L.map(row),[{l:'돌아간다',f:workMenu}]));
+ try{if(!LS.g('lcw_tut_help150',''))setTimeout(()=>{if(!(typeof TUT!=='undefined'&&TUT)){LS.s('lcw_tut_help150','1');tutStart(TUT_TOPIC.help150(),'topic')}},300)}catch(e){}};
+function doHelp(a,mode){agRel(a,6);hum(2);G.buff.help=1;addSp(3);
+ if(mode==='team'){a.help150={d:G.day,ab:a.task&&a.task.ab};log(T(`${NL(a.n)}의 작업에 함께 들어갔다. 둘이서 상자를 하나씩 맡았다.`,`You joined ${NL(a.n)}'s work. You each took a box.`,`${NL(a.n)}の作業に一緒に入った。二人で箱を一つずつ受け持った。`),'q')}
+ else{a.sp=Math.min(45,a.sp+15);a.hp=Math.min(agMax(a),a.hp+Math.round(agMax(a)*.1));log(T(`${NL(a.n)}의 곁에 잠시 앉아 있었다. "선배 덕분에 살았어요." 과장이길 바랐다.`,`You sat with ${NL(a.n)} for a while. "You saved me." You hoped they were exaggerating.`,`${NL(a.n)}の隣にしばらく座っていた。「先輩のおかげで助かりました」大げさであってほしかった。`),'q')}
+ act(null,workMenu,40)}
+// 함께 작업: 그 작업 성공률 +15% · 좋으면 에너지 일부
+npcWork=(f=>function(ag,a){const h=ag&&ag.help150;if(!h||h.d!==G.day||!a||(h.ab&&h.ab!==a.id))return f.apply(this,arguments);ag.help150=null;
+ const _p=prefOf;prefOf=function(x,w){const v=_p(x,w);return x===a?v+.15:v};let r;try{r=f.apply(this,arguments)}finally{prefOf=_p}
+ try{const bx=(window.BOX103||[8,10,14,18,24])[a.g]||10;if(r&&r.pe&&r.pe/bx>=.7){const g=Math.max(1,Math.round(r.pe*.25));const s=G.ab[a.id];if(s)s.pe+=g;log(T(`함께 한 작업이 잘 끝났다. ${NL(a.n)} 관찰 에너지 +${g}.`,`The work you shared went well. ${NL(a.n)} observation energy +${g}.`,`一緒の作業がうまくいった。${NL(a.n)}の観察エネルギー +${g}。`),'good')}}catch(e){}return r})(npcWork);
+
+/* ================= 튜토리얼: 마음의 온기 · 주사위 · 동료 돕기 ================= */
+const S_=(sel,t,b,x)=>Object.assign({sel,t,b},x||{});const N_=(t,b,x)=>Object.assign({t,b},x||{});
+TUT_TOPIC.help150=()=>[
+ N_(T('동료 돕기','Helping coworkers','同僚を手伝う'),T('누구를 돕느냐보다 <b>그 사람이 지금 무엇을 하고 있느냐</b>에 따라 효과가 달라요. 어느 부서 직원이든 도울 수 있고, 한 번에 40분이 걸려요.','The effect depends on <b>what that person is doing right now</b>. You can help anyone in any department; it takes 40 minutes.','誰を手伝うかより、<b>その人が今何をしているか</b>で効果が変わります。どの部署の職員でも手伝え、40分かかります。')),
+ N_(T('작업 중이면 — 함께 작업','Working → Work together','作業中なら — 一緒に作業'),T('그 직원이 하고 있는 작업의 <b>성공률 +15%</b>. 결과가 「좋음」이면 그 환상체의 관찰 에너지 일부가 들어와요. 카운터가 위태로운 격리실을 맡은 동료를 도울 때 좋아요.','That work gets <b>+15% success</b>. If it ends "Good", some observation energy for that Abnormality comes in. Best when a coworker holds a risky unit.','その職員の作業の<b>成功率+15%</b>。「良好」なら、そのアブノーマリティの観察エネルギーが一部入ります。カウンターが危うい収容室を担当する同僚を手伝う時に有効です。')),
+ N_(T('쉬는 중 · 대기면 — 다독이기','Resting/idle → Encourage','休憩・待機なら — 励ます'),T('그 직원의 <b>정신력 +15 · 체력 +10%</b>. 정신력이 바닥나기 전에 다독이면 패닉을 막을 수 있어요.','That employee gets <b>SP +15 · HP +10%</b>. Encouraging before their SP bottoms out can prevent a panic.','その職員の<b>精神力+15・体力+10%</b>。精神力が底をつく前に励ませばパニックを防げます。')),
+ N_(T('공통 · 예외','Always · exceptions','共通・例外'),T('어느 쪽이든 <b>유대 +6 · 마음의 온기 +2 · 내 정신력 +3 · 내 다음 직접 작업 성공률 +8%</b>.<br>· 교전 · 출동 중인 직원은 도울 수 없어요.<br>· 패닉에 빠진 직원은 진압 전투로 정신을 되찾게 해요 (WHITE 피해가 정신력을 채워요).','Either way: <b>Bond +6 · Warmth +2 · your SP +3 · your next direct work +8%</b>.<br>· Staff in combat cannot be helped.<br>· Panicked staff are brought back through a suppression battle (WHITE damage restores their SP).','どちらでも<b>絆+6・心の温もり+2・自分の精神力+3・次の直接作業の成功率+8%</b>。<br>・交戦・出動中の職員は手伝えません。<br>・パニックの職員は鎮圧戦闘で正気に戻します(WHITEダメージが精神力を満たします)。'),{last:1})];
+TUT_TOPIC.hum150=()=>[
+ S_('#side .b150',T('마음의 온기','Warmth','心の温もり'),T('당신이 아직 <b>사람으로 남아 있는 정도</b>예요 (0~100, 처음 50).<br>· 오르는 일: 동료를 돕고, 이야기를 들어 주고, 아픈 사람 곁에 있는 선택<br>· 내리는 일: 사람을 도구처럼 쓰는 선택, 정신을 정돈해 주는 장치, 죽음에 무뎌지는 일','How much you are <b>still human</b> (0–100, starts at 50).<br>· Raised by helping coworkers, listening, staying with the hurt<br>· Lowered by using people as tools, mind-tidying devices, growing numb to death','あなたが<b>まだ人間でいられる度合い</b>です(0〜100、最初は50)。<br>・上がる:同僚を手伝う、話を聞く、傷ついた人のそばにいる選択<br>・下がる:人を道具のように扱う選択、心を整える装置、死に慣れること')),
+ N_(T('온기가 바꾸는 것','What Warmth changes','温もりが変えるもの'),T('· <b>80 이상</b>: 칭호 「아직 무서워할 줄 아는 사람」 — 직원 · 세피라와의 관계가 더 잘 올라요<br>· <b>60 이상</b>: 패닉 직원을 더 다양한 방법으로 진정시킬 수 있어요<br>· <b>20 이하</b>: 칭호 「무감각」 — 정신력 피해는 줄지만 관계가 잘 안 올라요<br>· <b>결말</b>: 마지막 날의 온기가 어떤 결말에 닿는지를 크게 바꿔요','· <b>80+</b>: title "Still Knows Fear" — bonds with staff and Sephirah grow faster<br>· <b>60+</b>: more ways to calm panicked staff<br>· <b>20 or less</b>: title "Numb" — less SP damage, but bonds grow slowly<br>· <b>Endings</b>: your Warmth on the last day strongly shapes which ending you reach','・<b>80以上</b>:称号「まだ怖がれる人」— 職員・セフィラとの関係が上がりやすい<br>・<b>60以上</b>:パニック職員をより多くの方法で落ち着かせられる<br>・<b>20以下</b>:称号「無感覚」— 精神ダメージは減るが関係が上がりにくい<br>・<b>結末</b>:最後の日の温もりがどの結末に辿り着くかを大きく変えます'),{last:1})];
+TUT_TOPIC.dice150=()=>[
+ N_(T('주사위 판정','Dice checks','サイコロ判定'),T('이 시설의 일은 두 종류의 주사위로 정해져요.','Two kinds of dice decide things in this facility.','この施設の物事は二種類のサイコロで決まります。')),
+ N_(T('작업 — d100','Work — d100','作業 — d100'),T('작업의 상자마다 <b>d100</b>을 굴려 <b>성공률 이하</b>가 나오면 성공이에요. 성공한 상자의 비율이 70% 이상이면 「좋음」, 40% 이상이면 「보통」, 그 아래는 「나쁨」.<br>성공률은 선호 작업 · 가치관 · 정신력 · 장비 · 동료의 도움으로 바뀌어요. 작업 목록의 작은 주사위가 얼마나 찼는지로 가늠해요.','For each box of work, roll <b>d100</b>; at or below the <b>success rate</b> is a success. 70%+ successful boxes is "Good", 40%+ "Normal", below that "Bad".<br>Success rate shifts with preferred work, virtues, Sanity, gear and help from coworkers. The little die in the work list shows how full it is.','作業の箱ごとに<b>d100</b>を振り、<b>成功率以下</b>なら成功です。成功した箱が70%以上で「良好」、40%以上で「普通」、それ未満は「不良」。<br>成功率は好みの作業・価値観・精神力・装備・同僚の手助けで変わります。作業一覧の小さなサイコロの埋まり具合で目安が分かります。')),
+ N_(T('사건 — d20','Incidents — d20','事件 — d20'),T('사건의 선택지는 <b>d20 + 보정 ≥ 난이도</b>로 판정해요. 보정은 가치관 · 관계 · 정신력에서 나오고, 판정 창에서 <b>물건을 쓰거나</b> <b>마음 쓰기</b>(정신력 5 → +2)로 보탤 수 있어요. 20은 대성공, 1은 대실패.','Incident choices roll <b>d20 + modifiers ≥ DC</b>. Modifiers come from virtues, bonds and Sanity; in the check window you can <b>use an item</b> or <b>pour your heart</b> (5 Sanity → +2). 20 is a critical success, 1 a critical failure.','事件の選択肢は<b>d20+補正 ≥ 難易度</b>で判定します。補正は価値観・関係・精神力から来て、判定画面で<b>アイテムを使う</b>か<b>心を注ぐ</b>(精神力5 → +2)で上乗せできます。20は大成功、1は大失敗。'),{last:1})];
+// 처음 마주칠 때 한 번
+startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&G.day>=2&&!LS.g('lcw_tut_hum150',''))setTimeout(()=>{if(!(typeof TUT!=='undefined'&&TUT)&&!(typeof POP!=='undefined'&&POP)&&G.phase==='work'){LS.s('lcw_tut_hum150','1');tutStart(TUT_TOPIC.hum150(),'topic')}},1500)}catch(e){}return r})(startDay);
+finishWork=(f=>function(){const r=f.apply(this,arguments);try{if(!LS.g('lcw_tut_dice150','')&&G&&!G.flags.tutSand)setTimeout(function w(){if(document.querySelector('.dc148'))return setTimeout(w,500);if(typeof TUT!=='undefined'&&TUT)return;LS.s('lcw_tut_dice150','1');tutStart(TUT_TOPIC.dice150(),'topic')},800)}catch(e){}return r})(finishWork);
+try{GUIDE.push({k:'help150',t:T('동료 돕기','Helping coworkers','同僚を手伝う'),b:T('<p>작업 중인 직원은 <b>함께 작업</b>(그 작업 성공률 +15%, 좋으면 관찰 에너지 일부), 쉬는 · 대기 중인 직원은 <b>다독이기</b>(정신력 +15 · 체력 +10%). 어느 쪽이든 유대 +6 · 마음의 온기 +2 · 내 다음 직접 작업 +8%, 40분.</p>','<p>For working staff: <b>Work together</b> (+15% on that work, some observation energy if Good). For resting/idle staff: <b>Encourage</b> (SP +15 · HP +10%). Either way Bond +6 · Warmth +2 · your next direct work +8%, 40 minutes.</p>','<p>作業中の職員には<b>一緒に作業</b>(その作業+15%、良好なら観察エネルギーの一部)、休憩・待機中の職員には<b>励ます</b>(精神力+15・体力+10%)。どちらも絆+6・心の温もり+2・次の直接作業+8%、40分。</p>')});
+ GUIDE.push({k:'hum150',t:T('마음의 온기','Warmth','心の温もり'),b:T('<p>당신이 아직 사람으로 남아 있는 정도(0~100). 돕고 들어 주는 선택으로 오르고, 사람을 도구처럼 쓰면 내려가요. 80 이상이면 관계가 잘 오르고, 20 이하면 무감각해져요. 마지막 날의 온기가 결말을 크게 바꿔요.</p>','<p>How human you still are (0–100). Helping and listening raise it; using people as tools lowers it. At 80+ bonds grow faster; at 20 or less you go numb. Your Warmth on the last day strongly shapes the ending.</p>','<p>まだ人間でいられる度合い(0〜100)。手伝い、話を聞く選択で上がり、人を道具のように扱うと下がります。80以上で関係が上がりやすく、20以下で無感覚に。最後の日の温もりが結末を大きく変えます。</p>')});
+ GUIDE.push({k:'dice150',t:T('주사위 판정','Dice checks','サイコロ判定'),b:T('<p>작업은 상자마다 d100 ≤ 성공률이면 성공(성공 비율 70%↑ 좋음 · 40%↑ 보통). 사건은 d20 + 보정 ≥ 난이도, 물건 · 마음 쓰기로 보탤 수 있어요.</p>','<p>Work: each box succeeds on d100 ≤ success rate (70%+ Good · 40%+ Normal). Incidents: d20 + modifiers ≥ DC, boosted by items or pouring your heart.</p>','<p>作業:箱ごとにd100 ≤ 成功率で成功(70%以上良好・40%以上普通)。事件:d20+補正 ≥ 難易度、アイテムや心を注ぐことで上乗せできます。</p>')})}catch(e){}
+
+/* ================= 스타일 ================= */
+const st=document.createElement('style');st.textContent=`
+/* 가독성 기본값 */
+:root{--muted:#b7bcc4}html body .note,html body small{color:var(--muted)}
+html body small{font-size:max(12px,.86em)}
+html body .tabs button[aria-selected="true"],html body .tabs button.on{transform:none!important}
+html body #panel>h3,html body .panel h3{transform:none!important}
+.b150{max-height:260px;overflow:auto}
+/* 설정 창 */
+.s150{display:grid;gap:12px}.s150r{display:grid;gap:6px}.s150o{display:flex;flex-wrap:wrap;gap:6px}.s150p{margin-top:4px}.s150g{color:var(--good,#5fcf8a);font-weight:700}.s150b{color:var(--bad,#f2786d);font-weight:700}
+/* 테마 */
+:root[data-s150theme="hc"]{--fg:#ffffff;--fg2:#f1f1f1;--muted:#d8d8d8;--y-cr:#fff7a8;--y-cr2:#fff07a;--good:#7dffad;--bad:#ff8c80}
+:root[data-s150theme="hc"] body .card,:root[data-s150theme="hc"] body .pop-card,:root[data-s150theme="hc"] body .ch{border-width:2px!important}
+:root[data-s150theme="soft"]{--y-bk:#16171a;--y-p:#1c1d21;--y-p2:#222328;--y-cr:#e4dfb8;--y-cr2:#b9b48f;--fg:#e6e6e2;--muted:#a9aaa6}
+:root[data-s150theme="soft"] body{background:#16171a!important}
+:root[data-s150theme="cb"]{--good:#4aa3ff;--bad:#ff9d2e}
+:root[data-s150theme="cb"] .dc148g .d.ok{border-color:#4aa3ff;color:#4aa3ff;background:rgba(74,163,255,.12)}:root[data-s150theme="cb"] .dc148g .d.no{border-color:#ff9d2e;color:#ffb35c;background:rgba(255,157,46,.1)}
+/* 움직임 줄이기 */
+html.s150-rm *,html.s150-rm *::before,html.s150-rm *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+/* 작업 결과 카드 */
+:root[data-s150card="off"] .wr62{display:none!important}
+:root[data-s150card="mini"] .wr62 .wr-g,:root[data-s150card="mini"] .wr62 .wr-x{display:none!important}
+:root[data-s150card="mini"] .wr62{bottom:auto!important;top:calc(8px + env(safe-area-inset-top,0px));padding:6px 10px!important;width:auto!important;max-width:calc(100vw - 24px)}
+:root[data-s150card="mini"] .wr62 .wr-h{margin:0!important;font-size:13px!important}
+@media (max-width:760px){:root[data-s150card="auto"] .wr62 .wr-g,:root[data-s150card="auto"] .wr62 .wr-x{display:none!important}
+ :root[data-s150card="auto"] .wr62{bottom:auto!important;top:calc(8px + env(safe-area-inset-top,0px));padding:6px 10px!important;width:auto!important;max-width:calc(100vw - 24px);opacity:.96}
+ :root[data-s150card="auto"] .wr62 .wr-h{margin:0!important;font-size:13px!important}}`;
+document.head.appendChild(st);
+// 작은 화면 결과 카드는 더 빨리 사라진다
+try{const ob=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.classList&&n.classList.contains('wr62')){const mini=SET.card==='mini'||(SET.card==='auto'&&innerWidth<=760);if(mini)setTimeout(()=>{if(n.isConnected)n.remove()},2200)}});ob.observe(document.body,{childList:true})}catch(e){}
 })();
 </script>
 

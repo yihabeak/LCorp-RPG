@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>댓글 기록</title>
+<style>
+:root{--bg:#12181a;--pn:#1a2326;--ln:#2c3a3e;--tx:#dfe7e4;--mu:#8fa19c;--ac:#e8b04a;--ok:#5fc48a;--bad:#ff5a4f;--ed:#74c0fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.6 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:6px 0 2px}.mu{color:var(--mu);font-size:12.5px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+input,select,button{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:7px 10px}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+button{cursor:pointer;background:#2a3a3f}button:hover{border-color:var(--ac)}button.pri{background:var(--ac);color:#12181a;border-color:var(--ac);font-weight:700}button.del{color:var(--bad)}
+#key{flex:1 1 220px}#q{flex:1 1 220px}
+.sum{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.sum span{padding:4px 10px;border:1px solid var(--ln);border-radius:999px;font-size:12.5px}
+.tw{overflow-x:auto;border:1px solid var(--ln);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:820px}th,td{padding:7px 10px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top;font-size:13px}th{background:#172023;position:sticky;top:0}
+td.t{white-space:pre-wrap;overflow-wrap:anywhere;max-width:420px}td.t del{color:var(--mu)}
+.act{display:inline-block;padding:1px 8px;border-radius:4px;font-weight:700;font-size:12px;color:#111}.act.create{background:var(--ok)}.act.edit{background:var(--ed)}.act.delete{background:var(--bad)}
+.who b{display:block}.who small{color:var(--mu)}
+.ok{color:var(--ok)}.err{color:var(--bad)}[hidden]{display:none!important}
+</style></head><body><main>
+<h1>패치노트 댓글 기록</h1>
+<div class="mu">쓰기 · 고치기 · 지우기가 모두 시간순으로 남아요. 지운 댓글도 원문이 남고, 고친 댓글은 고치기 전 내용이 함께 보여요. 관리자 키(ADMIN_KEY, 없으면 STATS_KEY)가 필요해요.</div>
+<div class="bar">
+  <input id="key" type="password" placeholder="관리자 키" autocomplete="current-password">
+  <label class="mu"><input id="keep" type="checkbox"> 이 기기에 기억</label>
+  <button id="load" class="pri">불러오기</button>
+</div>
+<div id="msg" class="mu" role="status"></div>
+<section id="tool" hidden>
+  <div class="bar">
+    <input id="q" type="search" placeholder="아이디 · 표시 이름 · 내용 · 글 제목 검색">
+    <select id="act"><option value="">모든 기록</option><option value="create">쓰기</option><option value="edit">고치기</option><option value="delete">지우기</option></select>
+    <select id="note"><option value="">모든 글</option></select>
+    <button id="csv">CSV 저장</button>
+    <button id="re">새로 고침</button>
+  </div>
+  <div class="sum" id="sum"></div>
+  <div class="tw"><table><thead><tr><th>시각</th><th>기록</th><th>작성자</th><th>글</th><th>내용</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+let KEY=ls.g('cm_key')||'',LOG=[],NOTES={},DELETED=new Set();
+$('#key').value=KEY;$('#keep').checked=!!KEY;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const when=t=>new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'medium'});
+const say=(m,c)=>{$('#msg').className=c||'mu';$('#msg').textContent=m};
+const AN={create:'쓰기',edit:'고치기',delete:'지우기'};
+async function api(path,opt){const r=await fetch(path,Object.assign({headers:{'Content-Type':'application/json','x-admin-key':KEY},cache:'no-store'},opt||{}));const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error({auth:'관리자 키가 맞지 않아요.','too-many':'시도가 너무 많아요. 15분 뒤 다시 해 주세요.',nodb:'저장소가 연결되지 않았어요.'}[j.code]||('오류 '+r.status));return j}
+async function load(){KEY=$('#key').value.trim();ls.s('cm_key',$('#keep').checked?KEY:null);say('불러오는 중…');
+  try{const [l,n]=await Promise.all([api('/api/comments?op=log&n=5000'),api('/api/notes')]);LOG=l.log||[];NOTES={};(n.notes||[]).forEach(x=>NOTES[x.id]=x.t);
+    DELETED=new Set(LOG.filter(x=>x.act==='delete').map(x=>x.id));
+    $('#note').innerHTML='<option value="">모든 글</option>'+[...new Set(LOG.map(x=>x.note))].map(id=>`<option value="${esc(id)}">${esc(NOTES[id]||'(지워진 글) '+id)}</option>`).join('');
+    $('#tool').hidden=false;say(`기록 ${LOG.length}건을 불러왔어요.`,'ok');draw()}catch(e){$('#tool').hidden=true;say(e.message,'err')}}
+function filtered(){const q=$('#q').value.trim().toLowerCase(),a=$('#act').value,n=$('#note').value;
+  return LOG.filter(x=>(!a||x.act===a)&&(!n||x.note===n)&&(!q||[x.uid,x.nick,x.text,x.prev,NOTES[x.note]].some(v=>String(v||'').toLowerCase().includes(q))))}
+function draw(){const L=filtered();const users=new Set(L.map(x=>x.uid));
+  $('#sum').innerHTML=`<span>표시 ${L.length}건</span><span>작성자 ${users.size}명</span><span>쓰기 ${L.filter(x=>x.act==='create').length}</span><span>고치기 ${L.filter(x=>x.act==='edit').length}</span><span>지우기 ${L.filter(x=>x.act==='delete').length}</span>`;
+  $('#rows').innerHTML=L.map(x=>`<tr><td>${when(x.at)}</td><td><span class="act ${x.act}">${AN[x.act]||x.act}</span>${x.by?`<div class="mu">${x.by==='admin'?'관리자':'본인'}</div>`:''}</td>
+   <td class="who"><b>${esc(x.uid)}</b><small>${esc(x.nick)}${x.ip?` · ${esc(x.ip)}`:''}</small></td><td>${esc(NOTES[x.note]||'(지워진 글)')}</td>
+   <td class="t">${x.act==='edit'?`<del>${esc(x.prev)}</del>\n→ ${esc(x.text)}`:esc(x.text)}</td>
+   <td>${x.act==='create'&&!DELETED.has(x.id)?`<button class="del" data-d="${esc(x.id)}" data-n="${esc(x.note)}">숨기기</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6" class="mu">기록이 없어요.</td></tr>';
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(!confirm('이 댓글을 화면에서 지울까요? (기록은 남아요)'))return;try{await api('/api/comments',{method:'DELETE',body:JSON.stringify({note:b.dataset.n,id:b.dataset.d})});say('지웠어요.','ok');load()}catch(e){say(e.message,'err')}})}
+function csv(){const L=filtered();const c=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const s='﻿'+['시각,기록,주체,아이디,표시이름,IP해시,글,내용,이전 내용,댓글ID'].concat(L.map(x=>[when(x.at),AN[x.act]||x.act,x.by||'',x.uid,x.nick,x.ip||'',NOTES[x.note]||x.note,x.text,x.prev||'',x.id].map(c).join(','))).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));a.download='comments-log.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+$('#load').onclick=load;$('#re').onclick=load;$('#key').onkeydown=e=>{if(e.key==='Enter')load()};
+['#q','#act','#note'].forEach(s=>$(s).addEventListener('input',draw));$('#csv').onclick=csv;
+if(KEY)load();
+</script>
+</body></html>
