@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.33.2.261020';window.GAME_VER=V;
+(function(){const V='Ver. 3.34.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13742,7 +13742,7 @@ async function report(meta,win,forfeit){let msg='';
 
 /* ---------- 화면 ---------- */
 let TAB='deck',ROOM=null,POLL=0;
-function head(){return `<p class="note">${DESC()}</p><div class="m136-tabs">${[['deck',T('덱 편성','Decks','デッキ編成')],['find',T('도전','Challenge','挑戦')],['rank',T('순위','Ranking','ランキング')],['room',T('친선전 (베타)','Friendly (Beta)','親善戦(ベータ)')]].map(([k,l])=>`<button type="button" class="btn small ${TAB===k?'':'ghost'}" data-m136t="${k}">${l}</button>`).join('')}</div>`}
+function head(){return `<p class="note">${DESC()}</p><div class="m136-tabs">${[['deck',T('덱 편성','Decks','デッキ編成')],['find',T('도전','Challenge','挑戦')],['rank',T('순위','Ranking','ランキング')],['room',T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)')],['rt',T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)')]].map(([k,l])=>`<button type="button" class="btn small ${TAB===k?'':'ghost'}" data-m136t="${k}">${l}</button>`).join('')}</div>`}
 function memLine(m){return `<b>${esc(NL(m.n))}</b> <small>${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,m.rk)-1]} · HP ${m.hp} · ${esc(wN(m.w))} / ${esc(sN(m.s))}</small>`}
 function deckEd(kind){const d=decks()[kind];const used=d.map(m=>m.id);
  const row=(m,i)=>{const rk=rkOf(m.id);const who=i===0?`<b>${T('나','Me','私')} · ${esc(NL(G.name))}</b>`:`<select data-m136a="${kind}:${i}">${ags().filter(a=>a.id===m.id||!used.includes(a.id)).map(a=>`<option value="${a.id}" ${a.id===m.id?'selected':''}>${esc(NL(a.n))} (${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,agRank(a))-1]})</option>`).join('')}</select>`;
@@ -13766,7 +13766,7 @@ async function body(){if(TAB==='deck'){const u=user();return `${deckEd('atk')}${
 async function open(tab){if(tab)TAB=tab;stopPoll();
  popup(NAME(),`${head()}<div id="m136b"><p class="note">${T('불러오는 중…','Loading…','読み込み中…')}</p></div>`,b=>bindHead(b),{wide:1});
  const h=await body();const box=document.getElementById('m136b');if(!box)return;box.innerHTML=h;bind(box);if(TAB==='room'&&ROOM)poll()}
-function bindHead(b){b.querySelectorAll('[data-m136t]').forEach(x=>x.onclick=()=>open(x.dataset.m136t))}
+function bindHead(b){b.querySelectorAll('[data-m136t]').forEach(x=>x.onclick=()=>{if(x.dataset.m136t==='rt'){if(typeof window.rt139==='function'){closePop();window.rt139()}return}open(x.dataset.m136t)})}
 function bind(box){
  const at=s=>{const [k,i]=s.split(':');return [decks()[k],+i,k]};
  box.querySelectorAll('[data-m136a]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136a);d[i]={id:x.value,w:defW(x.value),s:defS(x.value)};open('deck')});
@@ -13815,7 +13815,7 @@ async function roomScore(code,sc){try{await api('',{method:'POST',body:{op:'room
  if(ROOM&&ROOM.code===code){TAB='room';open('room')}}
 
 /* ---------- 메뉴 ---------- */
-window.mirror136=open;
+window.mirror136=open;window.mirSnap136=d=>snap(d);window.mirDecks136=decks;window.mirApiSlot136=slot;
 function lockWhy(){if(G.arc||G.day>50)return T('지금은 들어갈 수 없어요','Not available now','今は入れません');if((G.roam||[]).some(r=>!r.dead)||(G.breachQ||[]).length)return T('경보 중에는 들어갈 수 없어요','Not during an alert','警報中は入れません');return ''}
 panelPre=(f=>function(title,sub,choices){
  try{if(typeof title==='string'&&(title.startsWith('업무 시간')||title==='퇴근 후')&&Array.isArray(choices)&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){
@@ -13857,6 +13857,239 @@ const after=f=>function(){const on=!!(B&&B.spar124&&!B.done);const r=f.apply(thi
 battleWin=after(battleWin);battleLose=after(battleLose);battleFlee=after(battleFlee);
 /* 중간에 창을 닫았다 다시 그려져도 원래대로 */
 render=(f=>function(){try{if(REST&&!STARTING&&!(B&&!B.done&&B.kind==='spar124'))restore()}catch(e){}return f.apply(this,arguments)})(render);
+})();
+/* ============ v138: 모의 전투 · 거울 세계 — 상대도 우리와 같은 규칙으로 ============
+   ① 상대의 슬롯도 1턴 1칸에서 시작해, 아군과 같은 규칙으로 늘어난다 (2턴부터 매 턴 한 칸씩, 등급이 높은 쪽부터 · 모두 2칸 뒤 Ⅳ등급 이상 3칸).
+   ② 체력 · 위력: 같은 사람이 아군으로 설 때와 똑같이 — 최대 체력 그대로, 무기 스킬 그대로(직원은 위력 -2 · 주는 피해 60%).
+      (원인: 보스 취급으로 체력 ×1.3~2.8, 보스 보정 +1, 등급만큼 위력 +가 겹쳐 붙고 있었다)
+   ③ 스킬 로테이션: 1·2·3스킬을 3·2·1장 섞은 덱에서 슬롯마다 차례로 뽑는다. 덱이 비면 다시 섞는다. */
+(function(){
+const FAIR=k=>k==='spar124'||k==='mir136';
+function memOf(u){try{if(u.spar124){const a=G.agents.find(x=>x.id===u.spar124);if(a)return {pl:0,rk:Math.max(1,agRank(a)),hp:agMax(a),st:a.st,w:agWeap(a),s:agSuit(a)}}
+ if(u.mir136&&B&&B.opt&&B.opt.foes)return B.opt.foes[u.mir136.i]}catch(e){}return null}
+function fair(u){const m=memOf(u);if(!m)return;let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
+ const rk=Math.max(1,Math.min(5,m.rk||1));const pow=m.pl?0:Math.floor(rk/2)-2;const sb=Math.floor(((m.st||{}).J||0)/30);
+ u.max=Math.max(1,Math.round(m.hp||80));u.hp=u.max;u.spd=[2+sb,5+sb];u.rk138=rk;u.ag138=!m.pl;u.acts=1;u.deck138=[];
+ u.skills=k.skills.map(s=>S(s.n,Math.max(1,s.base+pow),s.cp,s.coins,s.t,k.dc,s.sin,s.on));
+ u.cres=Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{});
+ u.ai=ai}
+/* 아군 규칙 그대로: 1턴 1칸 · 이후 매 턴 한 칸 (등급 높은 쪽부터) · Ⅳ등급 이상은 3칸까지 */
+function want(){const act=B.units.filter(x=>x.rk138&&x.hp>0&&!(x.stag>0)).sort((x,y)=>y.rk138-x.rk138);const cap1=act.length,cap2=act.filter(x=>x.rk138>=4).length;
+ let extra=Math.min(Math.max(0,B.turn-1),cap1+cap2);const W=new Map(act.map(x=>[x,1]));for(const x of act){if(extra<=0)break;W.set(x,2);extra--}for(const x of act){if(extra<=0)break;if(x.rk138>=4){W.set(x,3);extra--}}return W}
+function draw(u){if(!u.deck138||!u.deck138.length)u.deck138=shuffle([0,0,0,1,1,2].filter(i=>i<u.skills.length));return u.skills[u.deck138.pop()]||u.skills[0]}
+function ai(u){const n=want().get(u)||1;const L=[];for(let i=0;i<n;i++)L.push(draw(u));if((u.slot138||1)<n&&B.turn>1)blog(i80(`${u.n}의 슬롯이 ${n}칸으로 늘었다.`,`${u.n}'s slots increased to ${n}.`,`${u.n}のスロットが${n}枠に増えた。`),'b');u.slot138=n;return L}
+startBattle=(f=>function(kind,opt){if(!FAIR(kind))return f.apply(this,arguments);const r=f.apply(this,arguments);
+ try{if(B&&B.kind===kind){B.units.forEach(fair);
+  // 첫 턴 의도를 새 규칙으로 다시 만든다
+  const live=B.allies.filter(a=>!a.dead);B.intents=[];for(const u of B.units){if(u.hp<=0||!u.ai)continue;for(const s of u.ai(u))B.intents.push({u,s,spd:Math.max(1,R(u.spd[0],u.spd[1])),id:B.intents.length,tgt:pick(live)})}
+  B.wc={};try{autoAssign()}catch(e){}renderBattle()}}catch(e){}return r})(startBattle);
+/* 직원 출신 상대는 아군 직원처럼 주는 피해 60% */
+let EAG=0;
+attackFromEnemy=(f=>function(u){const p=EAG;EAG=u&&u.ag138?1:0;try{return f.apply(this,arguments)}finally{EAG=p}})(attackFromEnemy);
+dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;return f.apply(this,A)}return f.apply(this,arguments)})(dmgAlly);
+})();
+/* ============ v139: 실시간 친선전 (베타) — 아인·소프·오르 ============
+   1) 코인 토스: 앞면이 나온 사람이 선공/후공을 고른다.
+   2) 턴마다 선공 → 후공 순서로 스킬을 고른다. 각자 50초.
+   3) 빛: 1스킬 1 · 2스킬 2 · 3스킬 3 · 수비 0. 한 턴에 최대 빛을 넘길 수 없다. 첫 턴 최대 빛 6, 턴마다 +1 (최대 10).
+   4) 선공의 선택은 고르는 동안 후공에게 보이지 않는다. 확정되면 절반(반올림)은 「?」로 숨겨진 채 후공에게 넘어가고,
+      후공은 보이는 스킬과 대상을 보고 빛을 짐작해 대응한다(합 · 일방 공격 · 수비). 그다음 속도 순서로 진행한다.
+   5) 다음 턴은 선공과 후공이 바뀐다. 한쪽이 모두 쓰러질 때까지 (20턴이 지나면 남은 체력 비율로 판정).
+   · 전투 계산은 두 브라우저가 같은 시드 · 같은 선택으로 똑같이 한다. 서버는 방과 선택만 보관한다.
+   · 덱은 공격 덱을 쓴다. 거울 세계의 일이라 아무것도 잃지 않는다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const TRN=n=>(typeof tr80==='function'?tr80(n):n);
+const VER='Ver. 3.34.0.261020';
+const online=()=>typeof api74==='function';
+const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
+const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
+const api=(path,opt)=>{opt=opt||{};if(opt.body)opt.body=Object.assign({slot:slot()},opt.body);else path+=(path.includes('?')?'&':'?')+'slot='+slot();return api74('/pvp'+path,opt)};
+const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),noroom:T('방을 찾을 수 없어요.','Room not found.','部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),ver:T('게임 버전이 달라요. 둘 다 새로고침해 주세요.','Game versions differ. Both of you, please refresh.','ゲームのバージョンが違います。二人とも再読み込みしてください。'),noapi:T('서버에서 대전 기능(/api/pvp)을 찾지 못했어요.','The server has no /api/pvp.','サーバーに /api/pvp が見つかりません。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),turn:T('지금은 내 차례가 아니에요.','It is not your turn.','今は自分の番ではありません。')};
+const errMsg=e=>ERR[e&&e.code]||T('문제가 생겼어요: ','Something went wrong: ','問題が発生しました：')+((e&&e.code)||'?');
+const LMAX=t=>Math.min(10,5+t);
+const oth=s=>s==='h'?'g':'h';
+const SI=s=>s==='h'?0:1;
+
+/* ---------- 결정적 난수 ---------- */
+function rng(seed){let a=seed>>>0;return ()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
+function hsh(){let h=2166136261;for(const c of Array.prototype.join.call(arguments,'|')){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+const ri=(R,lo,hi)=>lo+Math.floor(R()*(hi-lo+1));
+function shuf(R,L){for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[L[i],L[j]]=[L[j],L[i]]}return L}
+
+/* ---------- 유닛 ---------- */
+const DEFB=[5,6,8,10,12],DEFC=[3,3,4,4,5];
+function mkUnit(m,side,i){let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
+ const rk=Math.max(1,Math.min(5,m.rk||1)),pow=m.pl?0:Math.floor(rk/2)-2,sb=Math.floor(((m.st||{}).J||0)/30),g=Math.max(0,Math.min(4,su.g||0));
+ return {side,i,n:m.n,pl:m.pl,rk,max:m.hp,hp:m.hp,sp:0,spd:[2+sb,5+sb],ag:!m.pl,w:m.w,s:m.s,
+  sk:k.skills.slice(0,3).map(s=>({n:s.n,base:Math.max(1,s.base+pow),cp:s.cp||0,coins:Math.max(1,s.coins||1),dc:s.c||k.dc||'RED'})),
+  def:{n:(k.def&&k.def.n)||T('수비','Defend','守備'),type:(k.def&&k.def.type)||'guard',base:DEFB[g],cp:DEFC[g]},res:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),
+  deck:[],panic:0,down:false,speed:0,guard:null}}
+function build(st){return [(st.hd||[]).map((m,i)=>mkUnit(m,0,i)),(st.gd||[]).map((m,i)=>mkUnit(m,1,i))]}
+const alive=L=>L.filter(u=>!u.down);
+function wantN(L,t){const act=L.filter(u=>!u.down&&!(u.panic>0)).slice().sort((x,y)=>(y.rk-x.rk)||(x.i-y.i));const cap1=act.length,cap2=act.filter(u=>u.rk>=4).length;
+ let extra=Math.min(Math.max(0,t-1),cap1+cap2);const W=new Map(act.map(u=>[u,1]));for(const u of act){if(extra<=0)break;W.set(u,2);extra--}for(const u of act){if(extra<=0)break;if(u.rk>=4){W.set(u,3);extra--}}return W}
+function draw(u,R){if(!u.deck.length)u.deck=shuf(R,[0,0,0,1,1,2].filter(i=>i<u.sk.length));return u.deck.pop()}
+const costOf=(u,o)=>o===0||o===1?null:0;
+
+/* ---------- 턴 준비 · 해결 ---------- */
+function setup(S,t){const R=rng(hsh(S.seed,'s',t));S.slots=[[],[]];
+ for(const sd of [0,1]){const L=S.u[sd];const W=wantN(L,t);for(const u of L){if(u.down)continue;u.speed=ri(R,u.spd[0],u.spd[1]);if(u.panic>0)continue;const n=W.get(u)||0;
+  for(let k=0;k<n;k++){const a=draw(u,R),b=draw(u,R);S.slots[sd].push({u:u.i,opts:[a,b]})}}}}
+function pickCost(S,sd,j,o){const sl=S.slots[sd][j];if(!sl||!(o===0||o===1))return 0;return sl.opts[o]+1}
+function sanitize(S,sd,P,t){const out=[];let used=0;const L=S.slots[sd];for(let j=0;j<L.length;j++){const p=Object.assign({o:null,u:null,sl:null},(P||[])[j]||{});
+  if(p.o!=='d'&&p.o!==0&&p.o!==1)p.o=null;const c=pickCost(S,sd,j,p.o);if(used+c>LMAX(t)){p.o=null}else used+=c;out.push(p)}return out}
+function heads(R,u,n){const h=Math.max(.05,Math.min(.95,.5+u.sp/100));let k=0;for(let i=0;i<n;i++)if(R()<h)k++;return k}
+function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const L=[];S.logs[t]=L;
+ const nm=u=>NL(u.n);const sk=(u,i)=>TRN(u.sk[i].n);
+ pf=sanitize(S,F,pf,t);ps=sanitize(S,Sd,ps,t);
+ const U=(sd,i)=>S.u[sd][i];
+ const fixT=(sd,i)=>{const E=S.u[1-sd];const x=E[i];if(x&&!x.down)return x.i;const a=alive(E)[0];return a?a.i:null};
+ [[F,pf],[Sd,ps]].forEach(([sd,P])=>P.forEach((p,j)=>{if(p.o==='d'){const u=U(sd,S.slots[sd][j].u);u.guard={type:u.def.type,used:false};L.push(T(`${nm(u)}: 수비 자세 (${u.def.type==='guard'?'가드':'회피'})`,`${nm(u)}: defense stance (${u.def.type==='guard'?'Guard':'Evade'})`,`${nm(u)}：守備の構え(${u.def.type==='guard'?'ガード':'回避'})`))}}));
+ const FA=[];pf.forEach((p,j)=>{if(p.o===0||p.o===1){const sl=S.slots[F][j];FA.push({sd:F,k:j,u:sl.u,s:sl.opts[p.o],tg:fixT(F,p.u==null?0:p.u),cl:null})}});
+ const SA=[];ps.forEach((p,j)=>{if(p.o===0||p.o===1){const sl=S.slots[Sd][j];const me=U(Sd,sl.u);const a={sd:Sd,k:j,u:sl.u,s:sl.opts[p.o],tg:fixT(Sd,p.u==null?0:p.u),inCl:false};
+  if(p.sl!=null){const fa=FA.find(x=>x.k===p.sl);if(fa&&!fa.cl){const fu=U(F,fa.u);if(fa.tg===me.i||me.speed>fu.speed){fa.cl=a;a.inCl=true;a.tg=fa.u}}else if(!fa){const fs=S.slots[F][p.sl];if(fs)a.tg=fixT(Sd,fs.u)}}
+  SA.push(a)}});
+ const EV=[];FA.forEach(a=>EV.push({a,spd:Math.max(U(F,a.u).speed,a.cl?U(Sd,a.cl.u).speed:0),sd:F,k:a.k}));SA.filter(a=>!a.inCl).forEach(a=>EV.push({a,spd:U(Sd,a.u).speed,sd:Sd,k:a.k}));
+ EV.sort((x,y)=>(y.spd-x.spd)||((x.sd===F?0:1)-(y.sd===F?0:1))||(x.k-y.k));
+ const canAct=u=>u&&!u.down&&!(u.panic>0);
+ function hit(att,si,coins,tgtI){let tg=U(1-att.side,tgtI);if(!tg||tg.down){const a=alive(S.u[1-att.side])[0];if(!a)return;tg=a}
+  const s=att.sk[si];let hc=0,tot=0,ev=0;
+  for(let c=0;c<coins;c++){if(R()<Math.max(.05,Math.min(.95,.5+att.sp/100)))hc++;const p=s.base+hc*s.cp;
+   if(tg.guard&&tg.guard.type==='evade'){const e=tg.def.base+heads(R,tg,2)*tg.def.cp;if(e>=p){ev++;continue}}
+   if(tg.guard&&tg.guard.type==='guard'&&!tg.guard.used){tg.guard.used=true;tg.shield=tg.def.base+heads(R,tg,2)*tg.def.cp}
+   let d=Math.max(0,Math.round(p*(tg.res[s.dc]||1)*(att.ag?.6:1)));tot+=d;
+   if(s.dc==='WHITE')tg.sp-=d;else{if(tg.shield>0){const a=Math.min(tg.shield,d);tg.shield-=a;d-=a}tg.hp-=d;if(s.dc==='BLACK')tg.sp-=Math.round(d/2)}
+   if(tg.hp<=0){tg.hp=0;tg.down=true;break}}
+  L.push(T(`${nm(att)}의 「${sk(att,si)}」 → ${nm(tg)}: ${s.dc==='WHITE'?'정신력':'피해'} ${tot}${ev?` (회피 ${ev})`:''}`,`${nm(att)}'s "${sk(att,si)}" → ${nm(tg)}: ${s.dc==='WHITE'?'SP damage':'damage'} ${tot}${ev?` (evaded ${ev})`:''}`,`${nm(att)}の「${sk(att,si)}」→ ${nm(tg)}：${s.dc==='WHITE'?'精神ダメージ':'ダメージ'} ${tot}${ev?`(回避 ${ev})`:''}`));
+  if(tg.down)L.push(T(`${nm(tg)}이(가) 쓰러졌다.`,`${nm(tg)} is down.`,`${nm(tg)}が倒れた。`));
+  else if(tg.sp<=-45&&!(tg.panic>0)){tg.panic=2;L.push(T(`${nm(tg)}: 정신력 -45 · 패닉 (다음 턴 행동 불가)`,`${nm(tg)}: SP -45 · panic (cannot act next turn)`,`${nm(tg)}：精神力-45・パニック(次のターン行動不可)`))}}
+ for(const e of EV){const a=e.a,au=U(a.sd,a.u);
+  if(a.cl){const b=a.cl,bu=U(b.sd,b.u);const okA=canAct(au),okB=canAct(bu);
+   if(okA&&okB){let ca=au.sk[a.s].coins,cb=bu.sk[b.s].coins,n=0;
+    while(ca>0&&cb>0&&n++<40){const pa=au.sk[a.s].base+heads(R,au,ca)*au.sk[a.s].cp,pb=bu.sk[b.s].base+heads(R,bu,cb)*bu.sk[b.s].cp;if(pa>pb)cb--;else if(pb>pa)ca--}
+    const [W,Lo,ws,wc]=ca>0?[au,bu,a.s,ca]:[bu,au,b.s,cb];W.sp=Math.min(45,W.sp+5);Lo.sp=Math.max(-45,Lo.sp-5);
+    L.push(T(`합 · ${nm(au)}「${sk(au,a.s)}」 vs ${nm(bu)}「${sk(bu,b.s)}」 → ${nm(W)} 승 (코인 ${wc} 남음)`,`Clash · ${nm(au)} "${sk(au,a.s)}" vs ${nm(bu)} "${sk(bu,b.s)}" → ${nm(W)} wins (${wc} coins left)`,`マッチ・${nm(au)}「${sk(au,a.s)}」vs ${nm(bu)}「${sk(bu,b.s)}」→ ${nm(W)}の勝ち(コイン残り${wc})`));
+    hit(W,ws,wc,Lo.i)}
+   else if(okA)hit(au,a.s,au.sk[a.s].coins,a.tg);else if(okB)hit(bu,b.s,bu.sk[b.s].coins,b.tg);}
+  else if(canAct(au))hit(au,a.s,au.sk[a.s].coins,a.tg);
+  if(over(S))break}
+ [0,1].forEach(sd=>S.u[sd].forEach(u=>{u.guard=null;u.shield=0;if(u.panic>0){u.panic--;if(u.panic===0&&!u.down){u.sp=0}}}));
+ const o=over(S);if(!o&&t>=20){const r=[0,1].map(sd=>S.u[sd].reduce((x,u)=>x+u.hp,0)/S.u[sd].reduce((x,u)=>x+u.max,0));S.end=r[0]>r[1]?'h':r[1]>r[0]?'g':'draw';L.push(T('20턴 — 남은 체력 비율로 판정','Turn 20 — decided by remaining HP','20ターン — 残り体力の割合で判定'))}else if(o)S.end=o}
+function over(S){const a=alive(S.u[0]).length,b=alive(S.u[1]).length;return !a&&!b?'draw':!a?'g':!b?'h':null}
+const firstOf=(st,t)=>t%2===1?st.f1:oth(st.f1);
+function sim(st){const S={seed:st.seed,u:build(st),logs:{},end:null,slots:[[],[]],t:0};if(!st.f1)return S;
+ for(let t=1;t<=Math.max(1,st.turn);t++){S.t=t;setup(S,t);const P=st.P&&st.P[t];if(P&&P.s){const F=SI(firstOf(st,t));resolve(S,t,F,P.f||[],P.s);if(S.end)return S}else break}return S}
+
+/* ---------- 화면 ---------- */
+let ROOM=null,ST=null,FETCHED=0,POLL=0,TICK=0,PK=[],SENT=-1,LASTLOG=0,TO_SENT=0,ENDSENT=0;
+function el(){let e=document.getElementById('rt139');if(!e){e=document.createElement('div');e.id='rt139';document.body.appendChild(e)}return e}
+function close(){stop();const e=document.getElementById('rt139');if(e)e.remove();ROOM=null;ST=null}
+function stop(){clearTimeout(POLL);clearInterval(TICK);POLL=0;TICK=0}
+function left(){if(!ST)return 0;return Math.ceil((ST.dl-(ST.now+(Date.now()-FETCHED)))/1000)}
+function lobby(){stop();const e=el();const ok=online()&&user();
+ e.innerHTML=`<div class="rt-box"><div class="rt-h"><b>${T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)')}</b><button type="button" class="rt-x" id="rtX">✕</button></div>
+ <p class="note">${T('공격 덱으로 겨뤄요. 코인 토스로 앞면이 나온 사람이 선공·후공을 정해요. 턴마다 선공 → 후공 순서로 각자 50초 안에 스킬을 고르고, 빛(1·2·3스킬 = 1·2·3, 수비 0)은 한 턴 최대치를 넘을 수 없어요. 선공이 고른 스킬의 절반은 ?로 가려진 채 후공에게 보여요. 다음 턴엔 선후공이 바뀌어요.','You fight with your attack deck. A coin toss decides who picks first or second. Each turn the first player, then the second, picks skills within 50 seconds; light (skills 1·2·3 cost 1·2·3, defense 0) cannot exceed the turn maximum. Half of the first player\'s picks are hidden as ? from the second player. Roles swap every turn.','攻撃デッキで戦います。コイントスで表が出た人が先攻・後攻を決めます。毎ターン先攻→後攻の順に50秒以内でスキルを選び、光(1・2・3スキル=1・2・3、守備0)はターン上限を超えられません。先攻が選んだスキルの半分は後攻に?で隠されます。次のターンは先後攻が入れ替わります。')}</p>
+ ${ok?`<div class="row"><button type="button" class="btn" id="rtNew">${T('방 만들기','Create room','部屋を作る')}</button></div><div class="row"><input id="rtCode" maxlength="6" placeholder="${T('방 코드','Room code','部屋コード')}"><button type="button" class="btn ghost" id="rtJoin">${T('참가','Join','参加')}</button></div>`:`<p class="note">${online()?ERR.auth:T('이 링크(사본)에는 서버가 없어서 쓸 수 없어요. 게임 사이트 주소로 접속해 주세요.','This copy has no server. Please open the game site.','この複製にはサーバーがありません。ゲームサイトで接続してください。')}</p>`}</div>`;
+ e.querySelector('#rtX').onclick=close;
+ const nw=e.querySelector('#rtNew');if(nw)nw.onclick=async()=>{try{const d=window.mirSnap136(window.mirDecks136().atk.slice());const r=await api('',{method:'POST',body:{op:'new',name:G.name,deck:d,v:VER}});ROOM=r.code;go()}catch(x){toast(errMsg(x))}};
+ const jn=e.querySelector('#rtJoin');if(jn)jn.onclick=async()=>{const c=(e.querySelector('#rtCode').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));
+  try{const d=window.mirSnap136(window.mirDecks136().atk.slice());await api('',{method:'POST',body:{op:'join',code:c,name:G.name,deck:d,v:VER}});ROOM=c;go()}catch(x){toast(errMsg(x))}}}
+function go(){PK=[];SENT=-1;LASTLOG=0;TO_SENT=0;ENDSENT=0;poll();TICK=setInterval(tick,300)}
+async function poll(){clearTimeout(POLL);if(!ROOM)return;
+ try{const r=await api(`?op=get&code=${ROOM}`);const prev=ST&&JSON.stringify(Object.assign({},ST,{now:0}));ST=r.st;FETCHED=Date.now();if(JSON.stringify(Object.assign({},ST,{now:0}))!==prev)draw_()}
+ catch(x){if(x&&x.code==='noroom'){toast(ERR.noroom);return close()}if(!(x&&x.code))console.error('rt139',x)}
+ if(ROOM)POLL=setTimeout(poll,1500)}
+function tick(){const t=document.getElementById('rtT');if(!ST||!t)return;const s=left();t.textContent=Math.max(0,s);t.classList.toggle('low',s<=10);
+ const myTurn=(ST.ph==='p1'&&ST.side===firstOf(ST,ST.turn))||(ST.ph==='p2'&&ST.side!==firstOf(ST,ST.turn));
+ if(myTurn&&s<=0&&SENT!==ST.turn*10+(ST.ph==='p1'?1:2))submit(true);
+ if(!myTurn&&(ST.ph==='p1'||ST.ph==='p2')&&s<=-4&&TO_SENT!==ST.turn*10+(ST.ph==='p1'?1:2)){TO_SENT=ST.turn*10+(ST.ph==='p1'?1:2);api('',{method:'POST',body:{op:'timeout',code:ROOM}}).catch(()=>{})}}
+async function submit(auto){if(!ST)return;const key=ST.turn*10+(ST.ph==='p1'?1:2);if(SENT===key)return;SENT=key;
+ try{await api('',{method:'POST',body:{op:'pick',code:ROOM,turn:ST.turn,picks:PK}});if(auto)toast(T('시간이 다 되어 지금까지 고른 것으로 확정했어요.','Time ran out; your current picks were submitted.','時間切れのため、今の選択で確定しました。'))}catch(x){if(!(x&&x.code==='turn'))toast(errMsg(x));SENT=-1}
+ PK=[];poll()}
+function uCard(u,S,sd,me){const pct=Math.max(0,u.hp)/u.max*100;return `<div class="rt-u ${u.down?'down':''} ${me?'me':'op'}"><b>${esc(NL(u.n))}</b><small>${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][u.rk-1]} · ${T('속도','Spd','速度')} ${u.down?'-':u.speed}</small>
+ <div class="rt-bar"><i style="width:${pct}%"></i><em>${Math.max(0,u.hp)}/${u.max}</em></div><div class="rt-sp">SP ${u.sp>0?'+':''}${u.sp}${u.panic>0?` · ${T('패닉','Panic','パニック')}`:''}${u.down?` · ${T('쓰러짐','Down','戦闘不能')}`:''}</div></div>`}
+function skLab(u,si){const s=u.sk[si];return `${esc(TRN(s.n))} <small>${T('빛','Light','光')} ${si+1} · ${s.base}~${s.base+s.cp*s.coins} · ${'◆'.repeat(s.coins)}</small>`}
+function draw_(){const e=el();if(!ST)return;const st=ST,me=SI(st.side),op=1-me;const S=sim(st);
+ if(S.end&&st.ph!=='end'&&!ENDSENT){ENDSENT=1;api('',{method:'POST',body:{op:'end',code:ROOM,w:S.end}}).catch(()=>{})}
+ const myN=esc(NL(st.side==='h'?st.hn:st.gn)),opN=esc(NL(st.side==='h'?st.gn||'…':st.hn));
+ let main='';
+ if(st.ph==='wait')main=`<p class="note">${T('상대를 기다리는 중이에요. 방 코드를 알려 주세요.','Waiting for an opponent. Share the room code.','相手を待っています。部屋コードを伝えてください。')}</p>`;
+ else if(st.ph==='toss'){const won=st.tw===st.side;main=`<div class="rt-coin">${T('코인 토스','Coin toss','コイントス')} — ${T('앞면','Heads','表')}: <b>${esc(NL(st.tw==='h'?st.hn:st.gn))}</b></div>`+
+  (won?`<div class="row"><button type="button" class="btn" data-rtf="1">${T('선공','Go first','先攻')}</button><button type="button" class="btn ghost" data-rtf="0">${T('후공','Go second','後攻')}</button></div>`:`<p class="note">${T('상대가 선공·후공을 고르는 중이에요.','Your opponent is choosing first or second.','相手が先攻・後攻を選んでいます。')}</p>`)}
+ else if(st.ph==='end'||S.end){const w=S.end||(st.end&&st.end.w);const res=w==='draw'?T('무승부','Draw','引き分け'):w===st.side?T('승리','Victory','勝利'):T('패배','Defeat','敗北');
+  main=`<p class="rt-res ${w===st.side?'w':w==='draw'?'':'l'}">${res}</p>${st.end&&st.end.by==='leave'?`<p class="note">${st.end.who===st.side?T('기권했어요.','You forfeited.','棄権しました。'):T('상대가 기권했어요.','Your opponent forfeited.','相手が棄権しました。')}</p>`:''}`}
+ else{const t=st.turn,F=firstOf(st,t),iFirst=st.side===F;const mine=(st.ph==='p1'&&iFirst)||(st.ph==='p2'&&!iFirst);
+  const role=iFirst?T('선공','First','先攻'):T('후공','Second','後攻');
+  let oppInt='';
+  if(st.ph==='p2'&&!iFirst&&st.P[t]&&st.P[t].f){const f=st.P[t].f;let vis=0,hid=0;
+   oppInt=`<div class="rt-int"><b>${T('상대의 선택','Opponent\'s picks','相手の選択')}</b>${S.slots[op].map((sl,j)=>{const p=f[j]||{o:null};const u=S.u[op][sl.u];const tg=p.u!=null&&S.u[me][p.u]?esc(NL(S.u[me][p.u].n)):'-';
+    if(p.o==='?'){hid++;return `<div class="rt-io">${T('슬롯','Slot','スロット')} ${j+1} · ${esc(NL(u.n))}: <b>?</b> → ${tg}</div>`}
+    if(p.o==='d')return `<div class="rt-io">${T('슬롯','Slot','スロット')} ${j+1} · ${esc(NL(u.n))}: ${T('수비','Defend','守備')}</div>`;
+    if(p.o===0||p.o===1){vis+=sl.opts[p.o]+1;return `<div class="rt-io">${T('슬롯','Slot','スロット')} ${j+1} · ${esc(NL(u.n))} (${T('속도','Spd','速度')} ${u.speed}): ${skLab(u,sl.opts[p.o])} → ${tg}</div>`}
+    return `<div class="rt-io mut">${T('슬롯','Slot','スロット')} ${j+1} · ${esc(NL(u.n))}: ${T('없음','None','なし')}</div>`}).join('')}
+    <p class="note">${T(`보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 상대 최대 빛 ${LMAX(t)}`,`Visible light ${vis} · hidden picks ${hid} · their max light ${LMAX(t)}`,`見えている光 ${vis}・隠れた選択 ${hid}・相手の最大光 ${LMAX(t)}`)}</p></div>`}
+  let pick='';
+  if(mine){const L=S.slots[me];while(PK.length<L.length)PK.push({o:null,u:null,sl:null});const used=PK.reduce((x,p,j)=>x+pickCost(S,me,j,p.o),0);
+   const fp=st.ph==='p2'&&st.P[t]&&st.P[t].f;
+   pick=`<div class="rt-pick"><div class="rt-light">${T('빛','Light','光')} <b>${used}</b> / ${LMAX(t)}</div>${L.map((sl,j)=>{const u=S.u[me][sl.u];const p=PK[j];
+    const opt=sl.opts.map((si,o)=>{const c=si+1;const dis=p.o!==o&&used-pickCost(S,me,j,p.o)+c>LMAX(t);return `<button type="button" class="rt-o ${p.o===o?'on':''}" data-rto="${j}:${o}" ${dis?'disabled':''}>${skLab(u,si)}</button>`}).join('')+
+     `<button type="button" class="rt-o ${p.o==='d'?'on':''}" data-rto="${j}:d">${esc(TRN(u.def.n))} <small>${T('빛','Light','光')} 0 · ${u.def.type==='guard'?T('가드','Guard','ガード'):T('회피','Evade','回避')}</small></button><button type="button" class="rt-o ${p.o===null?'on':''}" data-rto="${j}:n">${T('안 함','Pass','なし')}</button>`;
+    let tg='';if(p.o===0||p.o===1){tg=alive(S.u[op]).map(x=>`<button type="button" class="rt-t ${p.sl==null&&p.u===x.i?'on':''}" data-rtu="${j}:${x.i}">${T('일방','One-sided','一方')} → ${esc(NL(x.n))}</button>`).join('');
+     if(fp)tg+=S.slots[op].map((os,k)=>{const q=fp[k]||{};if(!(q.o===0||q.o===1||q.o==='?'))return '';const ou=S.u[op][os.u];if(ou.down)return '';const okc=q.u===u.i||u.speed>ou.speed;if(!okc)return '';
+      return `<button type="button" class="rt-t cl ${p.sl===k?'on':''}" data-rtc="${j}:${k}">${T('합','Clash','マッチ')} → ${T('슬롯','Slot','スロット')} ${k+1} (${esc(NL(ou.n))})</button>`}).join('')}
+    return `<div class="rt-sl"><div class="rt-slh">${T('슬롯','Slot','スロット')} ${j+1} · <b>${esc(NL(u.n))}</b> · ${T('속도','Spd','速度')} ${u.speed}</div><div class="rt-os">${opt}</div>${tg?`<div class="rt-ts">${tg}</div>`:''}</div>`}).join('')||`<p class="note">${T('이번 턴에 움직일 수 있는 슬롯이 없어요.','No slots can act this turn.','このターン動けるスロットがありません。')}</p>`}
+   <div class="row"><button type="button" class="btn" id="rtGo">${T('확정','Confirm','確定')}</button></div></div>`}
+  else pick=`<p class="note">${st.ph==='p1'?T('선공이 스킬을 고르는 중이에요. (선택은 보이지 않아요)','The first player is choosing. (Hidden from you)','先攻がスキルを選んでいます。(見えません)'):T('후공이 대응을 고르는 중이에요.','The second player is responding.','後攻が対応を選んでいます。')}</p>`;
+  main=`<div class="rt-turn">${T('턴','Turn','ターン')} ${t} · ${T('최대 빛','Max light','最大光')} ${LMAX(t)} · <b>${role}</b> · ${mine?T('내 차례','Your move','自分の番'):T('상대 차례','Their move','相手の番')} · <span id="rtT">${Math.max(0,left())}</span>${T('초','s','秒')}</div>${oppInt}${pick}`}
+ const lastT=Math.max(...Object.keys(S.logs).map(Number),0);const lg=lastT?`<div class="rt-log"><b>${T('턴','Turn','ターン')} ${lastT} ${T('결과','result','結果')}</b>${(S.logs[lastT]||[]).map(x=>`<div>${esc(x)}</div>`).join('')}</div>`:'';
+ e.innerHTML=`<div class="rt-box"><div class="rt-h"><b>${T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)')}</b> <span class="rt-code">${ROOM}</span><button type="button" class="rt-x" id="rtX">✕</button></div>
+  <div class="rt-vs">${myN} vs ${opN}</div>
+  <div class="rt-team op">${S.u[op].map(u=>uCard(u,S,op,false)).join('')}</div>
+  <div class="rt-mid">${main}</div>
+  <div class="rt-team me">${S.u[me].map(u=>uCard(u,S,me,true)).join('')}</div>${lg}
+  <div class="row"><button type="button" class="btn ghost small" id="rtLeave">${st.ph==='end'||S.end?T('닫기','Close','閉じる'):T('기권','Forfeit','棄権')}</button></div></div>`;
+ bindM(e,S,me)}
+function bindM(e,S,me){e.querySelector('#rtX').onclick=()=>{if(ST&&ST.ph!=='end'&&!sim(ST).end&&ST.ph!=='wait'){if(!confirmLeave())return}close()};
+ const lv=e.querySelector('#rtLeave');if(lv)lv.onclick=async()=>{if(ST&&ST.ph!=='end'&&!sim(ST).end){if(!confirmLeave())return;try{await api('',{method:'POST',body:{op:'leave',code:ROOM}})}catch(x){}poll();return}close()};
+ e.querySelectorAll('[data-rtf]').forEach(b=>b.onclick=async()=>{try{await api('',{method:'POST',body:{op:'choose',code:ROOM,first:b.dataset.rtf==='1'}})}catch(x){toast(errMsg(x))}poll()});
+ e.querySelectorAll('[data-rto]').forEach(b=>b.onclick=()=>{const [j,o]=b.dataset.rto.split(':');const p=PK[+j];p.o=o==='d'?'d':o==='n'?null:+o;if(p.o===0||p.o===1){if(p.u==null&&p.sl==null){const a=alive(S.u[1-me])[0];p.u=a?a.i:0}}else{p.u=null;p.sl=null}draw_()});
+ e.querySelectorAll('[data-rtu]').forEach(b=>b.onclick=()=>{const [j,i]=b.dataset.rtu.split(':').map(Number);PK[j].u=i;PK[j].sl=null;draw_()});
+ e.querySelectorAll('[data-rtc]').forEach(b=>b.onclick=()=>{const [j,k]=b.dataset.rtc.split(':').map(Number);PK[j].sl=k;const os=S.slots[1-me][k];PK[j].u=os?os.u:PK[j].u;draw_()});
+ const g=e.querySelector('#rtGo');if(g)g.onclick=()=>submit(false)}
+function confirmLeave(){return window.confirm(T('기권할까요? 상대의 승리로 끝나요.','Forfeit? Your opponent will win.','棄権しますか?相手の勝利になります。'))}
+window.rt139=()=>{if(B&&!B.done)return toast(T('전투 중에는 할 수 없어요.','Not during a battle.','戦闘中はできません。'));if(ROOM){el();go();return}lobby()};
+window.rt139sim=sim;window.rt139state=()=>ST;
+
+const css=`
+#rt139{position:fixed;inset:0;z-index:8500;background:rgba(3,4,5,.88);overflow:auto;padding:16px;box-sizing:border-box}
+#rt139 .rt-box{max-width:980px;margin:0 auto;background:#0b0b0b;border:2px solid #f4ee9a;padding:14px 16px;color:#ece8dd}
+#rt139 .rt-h{display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:17px;color:#f4ee9a}
+#rt139 .rt-code{font-size:18px;letter-spacing:.16em;color:#ffd27a;margin-left:auto}
+#rt139 .rt-x{background:none;border:1px solid #f4ee9a;color:#f4ee9a;width:32px;height:32px;cursor:pointer;font:inherit}
+#rt139 .rt-vs{text-align:center;margin:6px 0 10px;color:#c9cfcc}
+#rt139 .rt-team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#rt139 .rt-u{border:1px solid rgba(244,238,154,.3);padding:8px 10px}#rt139 .rt-u.op{border-color:rgba(232,67,58,.6)}#rt139 .rt-u.down{opacity:.45}
+#rt139 .rt-u small{display:block;color:#b9c2bf;font-size:12px}
+#rt139 .rt-bar{position:relative;height:14px;background:#2a1d1b;margin-top:6px}#rt139 .rt-bar i{position:absolute;inset:0 auto 0 0;background:#c22f26}#rt139 .rt-u.me .rt-bar i{background:#d8c95a}
+#rt139 .rt-bar em{position:absolute;right:4px;top:-1px;font-size:11px;font-style:normal;color:#fff}
+#rt139 .rt-sp{font-size:12px;color:#c9cfcc;margin-top:3px}
+#rt139 .rt-mid{margin:12px 0;padding:10px 0;border-top:1px dashed rgba(244,238,154,.25);border-bottom:1px dashed rgba(244,238,154,.25)}
+#rt139 .rt-turn{font-size:15px;margin-bottom:8px}#rt139 #rtT{font-weight:700;color:#7fd69a}#rt139 #rtT.low{color:#ff8f80}
+#rt139 .rt-int{border:1px solid rgba(232,67,58,.45);padding:8px 10px;margin-bottom:10px}#rt139 .rt-io{font-size:13.5px;margin:3px 0}#rt139 .rt-io.mut{color:#8a918f}
+#rt139 .rt-light{font-size:15px;margin-bottom:6px}#rt139 .rt-light b{color:#ffd27a;font-size:18px}
+#rt139 .rt-sl{border:1px solid rgba(244,238,154,.22);padding:8px;margin:6px 0}#rt139 .rt-slh{font-size:13.5px;margin-bottom:6px}
+#rt139 .rt-os,#rt139 .rt-ts{display:flex;flex-wrap:wrap;gap:6px}#rt139 .rt-ts{margin-top:6px}
+#rt139 .rt-o,#rt139 .rt-t{background:#151515;color:#ece8dd;border:1px solid rgba(244,238,154,.35);padding:6px 9px;font:inherit;font-size:13px;cursor:pointer;text-align:left}
+#rt139 .rt-o small,#rt139 .rt-t small{color:#b9c2bf}#rt139 .rt-o.on,#rt139 .rt-t.on{background:#f4ee9a;color:#111}#rt139 .rt-o.on small{color:#333}
+#rt139 .rt-o:disabled{opacity:.4;cursor:not-allowed}#rt139 .rt-t.cl{border-color:#7fd69a}
+#rt139 .rt-coin{font-size:18px;margin:6px 0 10px}#rt139 .rt-res{font-size:30px;font-weight:700}#rt139 .rt-res.w{color:#7fd69a}#rt139 .rt-res.l{color:#ff8f80}
+#rt139 .rt-log{font-size:13px;line-height:1.6;border:1px solid rgba(244,238,154,.18);padding:8px 10px;margin-top:10px;max-height:220px;overflow:auto}
+#rt139 input{background:#111;color:#f4ee9a;border:1px solid rgba(244,238,154,.35);padding:6px 8px;font:inherit;width:9em;text-transform:uppercase}
+@media (max-width:640px){#rt139 .rt-team{grid-template-columns:1fr}}
+`;
+try{const st=document.createElement('style');st.id='css139';st.textContent=css;document.head.appendChild(st)}catch(e){}
 })();
 </script>
 
