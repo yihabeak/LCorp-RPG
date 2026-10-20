@@ -8036,7 +8036,7 @@ function acc74Render(){try{const app=document.getElementById('app');const t=app&
   M('[data-no]').forEach(b=>b.onclick=()=>{A74.confirm=null;acc74Render()});
   M('[data-yes]').forEach(b=>b.onclick=async()=>{const c=A74.confirm;A74.confirm=null;const n=c.n;
     if(c.kind==='import')return import74(n);
-    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='new'){acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
+    useSlot74(n);clearSave();A74.dirty=true;await flush74();if(c.kind==='del'||c.kind==='new'){try{await api74('/mirror',{method:'POST',body:{op:'slot_del',slot:n}})}catch(e){}}if(c.kind==='new'){acc74Render();const nm=document.getElementById('nm');if(nm)nm.focus()}else{ACT74=null;acc74Render()}});
 }catch(e){}}
 renderTitle=(f=>function(){const r=f.apply(this,arguments);if(A74.st==='in'&&!ACT74)A74.confirm=null;acc74Render();return r})(renderTitle);
 // 로그아웃 상태에서 입사하면 비회원 저장, 로그인 상태면 고른 저장소에 저장
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.4.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.6.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13720,6 +13720,7 @@ const NAME=()=>T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・�
 const DESC=()=>T('거울 세계의 당신과 마주하여 가능성을 구원하라','Face yourself in the Mirror World and redeem possibility','鏡の世界のあなたと向き合い、可能性を救済せよ');
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
+const MYN=()=>{const u=user();return u&&(u.uid||u.name)?String(u.uid||u.name):G.name};
 const slot=()=>{try{return (typeof ACT74!=='undefined'&&ACT74&&ACT74.n)||0}catch(e){return 0}};
 const api=(path,opt)=>{opt=opt||{};if(opt.body)opt.body=Object.assign({slot:slot()},opt.body);else path=(path||'?')+(path&&path.length>1?'&':'')+'slot='+slot();return api74('/mirror'+path,opt)};
 const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),nodb:T('서버 저장소가 연결되지 않았어요.','The server storage is not connected.','サーバー保存先が接続されていません。'),daily:T('오늘 도전 횟수를 다 썼어요.','No challenges left today.','今日の挑戦回数を使い切りました。'),noroom:T('그 방을 찾을 수 없어요.','Room not found.','その部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員の部屋です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),slow:T('잠시 뒤 다시 시도해 주세요.','Please try again shortly.','少し後でもう一度お試しください。'),gone:T('상대의 수비 덱이 사라졌어요.','That defense deck is gone.','相手の守備デッキが消えました。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),noapi:T('서버에서 대전 기능(/api/mirror)을 찾지 못했어요. 이 주소에는 아직 배포되지 않았거나, 서버가 없는 사본이에요.','The server has no battle feature (/api/mirror) at this address. It is not deployed here, or this copy has no server.','このアドレスのサーバーに対戦機能(/api/mirror)が見つかりません。未配備か、サーバーのない複製です。'),art:T('이 링크(사본)에는 서버가 없어서 쓸 수 없어요. 게임 사이트 주소로 접속해 주세요.','This link (a copy) has no server. Please open the game site address.','このリンク(複製)にはサーバーがないため使えません。ゲームサイトのアドレスで接続してください。')};
@@ -13742,7 +13743,7 @@ function countOK(d){const use={};for(const m of d){for(const g of m.g||[])use['g
 function fixG(m){const A=AR();if(!A){m.g=[];return}const own=A.gifts();const seen={};m.g=(m.g||[]).filter(id=>{const x=A.gInfo(id);if(!x||!own.includes(id)||seen[x.slot])return false;seen[x.slot]=1;return true}).slice(0,3)}
 function fix(d){d.forEach(m=>{fixG(m);const rk=rkOf(m.id);if(!ownList('w').includes(m.w)||!wOK(m.w,rk))m.w=wOK(defW(m.id),rk)?defW(m.id):'baton';if(!ownList('s').includes(m.s)||!sOK(m.s,rk))m.s=sOK(defS(m.id),rk)?defS(m.id):'basic'});return d}
 function gsum(m){return AR()?AR().gSum(m.g):{hp:0,pow:0,spd:0}}
-function snap(d){return fix(d).map(m=>{const q=gsum(m);const gx={g:(m.g||[]).slice(),gp:q.pow,gs:q.spd};if(m.id==='player')return Object.assign({pl:1,n:G.name,rk:rank(),hp:maxHp()-gift('hp')+q.hp,st:{F:stE('F'),P:stE('P'),T:stE('T'),J:stE('J')},w:m.w,s:m.s},gx);
+function snap(d){return fix(d).map(m=>{const q=gsum(m);const gx={g:(m.g||[]).slice(),gp:q.pow,gs:q.spd};if(m.id==='player')return Object.assign({pl:1,n:MYN(),rk:rank(),hp:maxHp()-gift('hp')+q.hp,st:{F:stE('F'),P:stE('P'),T:stE('T'),J:stE('J')},w:m.w,s:m.s},gx);
  const a=agById(m.id);return Object.assign({pl:a._pl?1:0,n:a.n,rk:agRank(a),hp:agMax(a)+q.hp,st:Object.assign({},a.st),w:m.w,s:m.s},gx)})}
 const wN=id=>{try{return TRN(weapOf(id).n)}catch(e){return id}},sN=id=>{try{return TRN(suitOf(id).n)}catch(e){return id}};
 const gr=g=>typeof GR!=='undefined'&&GR[g]?GR[g]:'';
@@ -13824,7 +13825,7 @@ function picker(kind,i){const ty={m:T('사람 고르기','Choose a member','メ�
   <div class="pk146l">${pickList(kind,i)}</div></div>`}
 function deckEd(kind){const d=decks()[kind];
  const row=(m,i)=>{const a=i===0?null:agById(m.id);const rk=rkOf(m.id);const open=PK&&PK.k===kind&&PK.i===i;
-  const who=i===0?`<b>${T('나','Me','私')} · ${esc(NL(G.name))}</b>`:`<button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:m">${esc(NL(a?a.n:'?'))} <small>${RN[Math.max(1,rk)-1]}${a&&a._ar146?' · ⧉':''}</small> ▾</button>`;
+  const who=i===0?`<b>${T('나','Me','私')} · ${esc(MYN())}</b>`:`<button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:m">${esc(NL(a?a.n:'?'))} <small>${RN[Math.max(1,rk)-1]}${a&&a._ar146?' · ⧉':''}</small> ▾</button>`;
   const gifts=(m.g||[]).map(id=>`<button type="button" class="gf146" data-gx="${kind}:${i}:${esc(id)}" title="${T('눌러서 빼기','Tap to remove','押して外す')}">✦ ${esc(gName(id))} ✕</button>`).join('');
   return `<div class="m136-row m146">${who}<button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:w">${esc(wN(m.w))} ${gr(weapOf(m.w).g)} ▾</button><button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:s">${esc(sN(m.s))} ${gr(suitOf(m.s).g)} ▾</button>${i>0?`<button type="button" class="btn ghost small" data-m136x="${kind}:${i}">${T('빼기','Remove','外す')}</button>`:''}
    <div class="gf146w">${gifts}${(m.g||[]).length<3?`<button type="button" class="btn ghost small" data-pk="${kind}:${i}:g">+ ${T('기프트','Gift','ギフト')}</button>`:''}</div>${open?picker(kind,i):''}</div>`};
@@ -13849,7 +13850,7 @@ async function body(){if(TAB==='ar')return arHtml();if(TAB==='deck'){const u=use
   try{L=(await api('?op=find')).list||[]}catch(e){return `<p class="note">${errMsg(e)}</p>`}
   window.__m136L=L;
   return `<p class="note">${T(`내 점수 ${me.st.pts||0}${me.rank?` · ${me.rank}위`:''} · 공격 ${me.st.w}승 ${me.st.l}패 · 수비 ${me.st.dw}승 ${me.st.dl}패`,`My points ${me.st.pts||0}${me.rank?` · #${me.rank}`:''} · attack ${me.st.w}W ${me.st.l}L · defense ${me.st.dw}W ${me.st.dl}L`,`ポイント ${me.st.pts||0}${me.rank?`・${me.rank}位`:''}・攻撃 ${me.st.w}勝${me.st.l}敗・守備 ${me.st.dw}勝${me.st.dl}敗`)}</p>`+
-   (L.length?L.map((r,i)=>`<div class="m136-foe"><div><b>${esc(NL(r.n))}</b> <small>${T('전력','Power','戦力')} ${r.pw} · ${T('점수','Pts','ポイント')} ${r.pts}</small><div class="m136-mem">${r.deck.map(memLine).join('<br>')}</div></div><button type="button" class="btn" data-m136f="${i}">${T('도전','Challenge','挑戦')}</button></div>`).join('')+`<div class="row"><button type="button" class="btn ghost small" id="m136re">${T('다른 상대 보기','Show others','他の相手を見る')}</button></div>`
+   (L.length?L.map((r,i)=>`<div class="m136-foe"><div><b>${esc(NL(r.n))}</b> <small>${T('전력','Power','戦力')} ${r.pw} · ${T('점수','Pts','ポイント')} ${r.pts}</small><div class="m136-mem">${r.deck.map((m,j)=>memLine(m)+` <button type="button" class="rt-ib" data-m136i="${i}:${j}" title="${T('상세 정보','Details','詳細')}">ℹ</button>`).join('<br>')}</div></div><button type="button" class="btn" data-m136f="${i}">${T('도전','Challenge','挑戦')}</button></div>`).join('')+`<div class="row"><button type="button" class="btn ghost small" id="m136re">${T('다른 상대 보기','Show others','他の相手を見る')}</button></div>`
     :`<p class="note">${T('아직 도전할 수 있는 수비 덱이 없어요. 다른 관리직이 등록하면 나타나요.','No defense decks to challenge yet. They will appear as other managers register.','まだ挑戦できる守備デッキがありません。他の管理職が登録すると現れます。')}</p>`)}
  if(TAB==='rank'){let L=[];try{L=(await api('?op=rank')).list||[]}catch(e){return `<p class="note">${errMsg(e)}</p>`}
   return L.length?`<ol class="m136-rank">${L.map(r=>`<li class="${r.me?'me':''}"><b>${esc(NL(r.n))}</b><span>${r.pts}</span></li>`).join('')}</ol>`:`<p class="note">${T('아직 기록이 없어요.','No records yet.','まだ記録がありません。')}</p>`}
@@ -13878,9 +13879,10 @@ function bind(box){
  const sv=box.querySelector('#m136save');if(sv)sv.onclick=async()=>{const D=decks();for(const k of ['atk','def']){const bad=countOK(fix(D[k]));if(bad){const [t,id]=bad.split(':');return toast(T(`보유 수량보다 많이 넣었어요: ${t==='w'?wN(id):sN(id)}`,`More than you own: ${t==='w'?wN(id):sN(id)}`,`所持数より多く入れています：${t==='w'?wN(id):sN(id)}`))}}
   try{save()}catch(e){}
   if(!online()||!user()){toast(T('덱을 저장했어요. 수비 덱 등록은 로그인 뒤에 할 수 있어요.','Decks saved. Log in to register the defense deck.','デッキを保存しました。守備デッキの登録はログイン後にできます。'));return}
-  try{const r=await api('',{method:'PUT',body:{op:'def',name:G.name,deck:snap(D.def)}});toast(T(`수비 덱을 등록했어요 · 전력 ${r.pw}`,`Defense deck registered · power ${r.pw}`,`守備デッキを登録しました・戦力 ${r.pw}`),'good')}catch(e){toast(errMsg(e))}};
+  try{const r=await api('',{method:'PUT',body:{op:'def',name:MYN(),deck:snap(D.def)}});toast(T(`수비 덱을 등록했어요 · 전력 ${r.pw}`,`Defense deck registered · power ${r.pw}`,`守備デッキを登録しました・戦力 ${r.pw}`)+(r.prev?T(` · ${r.prev}번 저장소에서 올렸던 수비 덱을 이것으로 바꿨어요`,` · replaced the defense deck from save slot ${r.prev}`,` · ${r.prev}番の保存枠から登録していた守備デッキを置き換えました`):''),'good')}catch(e){toast(errMsg(e))}};
  box.querySelectorAll('[data-m136f]').forEach(x=>x.onclick=()=>{const r=(window.__m136L||[])[+x.dataset.m136f];if(!r)return;if(countOK(fix(decks().atk)))return toast(T('공격 덱의 장비 수량을 확인해 주세요.','Check your attack deck gear counts.','攻撃デッキの装備数を確認してください。'));fight(r.deck,{mode:'rank',k:r.k,n:r.n})});
  const re=box.querySelector('#m136re');if(re)re.onclick=()=>open('find');
+ box.querySelectorAll('[data-m136i]').forEach(x=>x.onclick=()=>{const [i,j]=x.dataset.m136i.split(':').map(Number);const r=(window.__m136L||[])[i];if(!r||!window.rt139detail)return;const nx=x.nextElementSibling;if(nx&&nx.classList.contains('m146d')){nx.remove();return}x.insertAdjacentHTML('afterend',`<div class="m146d">${window.rt139detail(r.deck[j])}</div>`)});
  bindRoom(box)}
 
 /* ---------- 친선전 (베타) ---------- */
@@ -13900,9 +13902,9 @@ function roomHtml(){if(!ROOM)return `<p class="note">${T('방을 만들어 코�
   <div class="row">${r.gn&&!myS?`<button type="button" class="btn" id="m136go">${T('도전 시작','Start challenge','挑戦開始')}</button>`:''}<button type="button" class="btn ghost small" id="m136leave">${T('방 나가기','Leave room','部屋を出る')}</button></div></div>`}
 function cmp(a,b){return (a.win-b.win)||(a.hp-b.hp)||(b.t-a.t)}
 function bindRoom(box){
- const nw=box.querySelector('#m136new');if(nw)nw.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'room_new',name:G.name,deck:snap(decks().def)}});ROOM={code:r.code,side:'h',r:{hn:G.name}};open('room')}catch(e){toast(errMsg(e))}};
+ const nw=box.querySelector('#m136new');if(nw)nw.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'room_new',name:MYN(),deck:snap(decks().def)}});ROOM={code:r.code,side:'h',r:{hn:G.name}};open('room')}catch(e){toast(errMsg(e))}};
  const jn=box.querySelector('#m136join');if(jn)jn.onclick=async()=>{const c=(box.querySelector('#m136code').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));
-  try{await api('',{method:'POST',body:{op:'room_join',code:c,name:G.name,deck:snap(decks().def)}});ROOM={code:c,side:'g',r:{}};open('room')}catch(e){toast(errMsg(e))}};
+  try{await api('',{method:'POST',body:{op:'room_join',code:c,name:MYN(),deck:snap(decks().def)}});ROOM={code:c,side:'g',r:{}};open('room')}catch(e){toast(errMsg(e))}};
  const go=box.querySelector('#m136go');if(go)go.onclick=()=>{const r=ROOM.r;const foe=ROOM.side==='h'?r.gd:r.hd;const nm=ROOM.side==='h'?r.gn:r.hn;if(!foe)return;stopPoll();fight(foe,{mode:'room',code:ROOM.code,n:nm})};
  const lv=box.querySelector('#m136leave');if(lv)lv.onclick=()=>{ROOM=null;stopPoll();open('room')}}
 function stopPoll(){clearTimeout(POLL);POLL=0}
@@ -14002,7 +14004,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.4.0.261020';
+const VER='Ver. 4.6.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -14030,7 +14032,7 @@ function mkUnit(m,side,i,o,extra){let k=null,su=null;try{k=weapOf(m.w)}catch(e){
  return {side,i,o,extra:!!extra,n:m.n,pl:m.pl,rk,max:m.hp,hp:m.hp,sp:0,spd:[2+sb,5+sb],ag:!m.pl,w:m.w,s:m.s,
   sk:k.skills.slice(0,3).map(s=>({n:s.n,base:Math.max(1,s.base+pow),cp:s.cp||0,coins:Math.max(1,s.coins||1),dc:s.c||k.dc||'RED'})),
   def:{n:(k.def&&k.def.n)||T('수비','Defend','守備'),type:(k.def&&k.def.type)||'guard',base:DEFB[g],cp:DEFC[g]},res:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),
-  deck:[],panic:0,down:false,speed:0,guard:null}}
+  deck:[],panic:0,down:false,speed:0,guard:null,g:(m.g||[]).slice(),gp:m.gp|0,gs:m.gs|0,spdR:[2+sb,5+sb]}}
 /* 편성: 1:1은 각자 덱 전체 · 다수는 사람마다 관리직 하나. 인원이 모자란 팀은 그 팀 사람들이 가진 직원으로 채운다 (가진 사람이 조작) */
 function roster(bt){const R=[[],[]];if(!bt)return R;['A','B'].forEach((tm,sd)=>(bt[tm]||[]).forEach(x=>{if(bt.mode==='team')R[sd].push({m:x.d.find(z=>z.pl)||x.d[0],o:x.id});else x.d.forEach(m=>R[sd].push({m,o:x.id}))}));
  if(bt.mode==='team'){const diff=R[0].length-R[1].length;if(diff){const sd=diff>0?1:0,tm=sd?'B':'A';const pool=(bt[tm]||[]).map(x=>({id:x.id,L:x.d.filter(z=>!z.pl).slice().sort((a,b)=>b.rk-a.rk)}));
@@ -14065,6 +14067,11 @@ function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const 
  const SA=[];ps.forEach((p,j)=>{if(p.o===0||p.o===1){const sl=S.slots[Sd][j];const me=U(Sd,sl.u);const a={sd:Sd,k:j,u:sl.u,s:sl.opts[p.o],tg:fixT(Sd,p.u==null?0:p.u),inCl:false};
   if(p.sl!=null){const fa=FA.find(x=>x.k===p.sl);if(fa&&!fa.cl){const fu=U(F,fa.u);if(fa.tg===me.i||me.speed>fu.speed){fa.cl=a;a.inCl=true;a.tg=fa.u}}else if(!fa){const fs=S.slots[F][p.sl];if(fs)a.tg=fixT(Sd,fs.u)}}
   SA.push(a)}});
+ /* 수비 카드를 상대 슬롯에 놓았을 때: 그 공격이 나를 노리면 수비, 동료를 노리고 내가 더 빠르면 감싸기, 아니면 일방 수비(자세) */
+ [[F,pf],[Sd,ps]].forEach(([sd,P])=>P.forEach((p,j)=>{if(p.o!=='d'||p.sl==null)return;const me=U(sd,S.slots[sd][j].u);if(!me||me.down||me.panic>0||!me.guard)return;
+  const A=(1-sd)===F?FA:SA;const a=A.find(x=>x.k===p.sl);if(!a||a.cl||a.inCl)return;const au=U(1-sd,a.u);
+  if(a.tg===me.i){me.guard.vs=1;L.push(T(`${nm(me)}: ${nm(au)}의 공격을 수비한다`,`${nm(me)} defends against ${nm(au)}'s attack`,`${nm(me)}：${nm(au)}の攻撃を守備する`))}
+  else if(me.speed>au.speed){const was=U(sd,a.tg);a.tg=me.i;me.guard.vs=1;L.push(T(`${nm(me)}: ${was?nm(was):'동료'}을(를) 감싼다 — ${nm(au)}의 공격을 대신 받는다`,`${nm(me)} covers ${was?nm(was):'an ally'} — takes ${nm(au)}'s attack instead`,`${nm(me)}：${was?nm(was):'仲間'}をかばう — ${nm(au)}の攻撃を代わりに受ける`))}}));
  const EV=[];FA.forEach(a=>EV.push({a,spd:Math.max(U(F,a.u).speed,a.cl?U(Sd,a.cl.u).speed:0),sd:F,k:a.k}));SA.filter(a=>!a.inCl).forEach(a=>EV.push({a,spd:U(Sd,a.u).speed,sd:Sd,k:a.k}));
  EV.sort((x,y)=>(y.spd-x.spd)||((x.sd===F?0:1)-(y.sd===F?0:1))||(x.k-y.k));
  const canAct=u=>u&&!u.down&&!(u.panic>0);
@@ -14105,7 +14112,7 @@ const TTL_=()=>T('실시간 친선전 (베타)','Live Friendly (Beta)','リア�
 const TEAM=tm=>tm==='A'?T('A팀','Team A','Aチーム'):T('B팀','Team B','Bチーム');
 function pauseRt(){if(RT0===null&&G){RT0=G.rt!==false;G.rt=false;try{renderTop()}catch(e){}}}
 function resumeRt(){if(RT0!==null&&G){G.rt=RT0;RT0=null;try{renderTop()}catch(e){}}}
-function close(){stop();ROOM=null;ST=null;SEL=null;resumeRt();try{CURUI=null;TAB='work';renderTabs();workMenu()}catch(e){}}
+function close(){stop();ROOM=null;ST=null;SEL=null;try{if(GHOST){GHOST.remove();GHOST=null}}catch(e){}resumeRt();try{CURUI=null;TAB='work';renderTabs();workMenu()}catch(e){}}
 function stop(){clearTimeout(POLL);clearInterval(TICK);POLL=0;TICK=0}
 function left(){if(!ST)return 0;return Math.ceil((ST.dl-(ST.now+(Date.now()-FETCHED)))/1000)}
 function panel(sub,html){try{if(TAB!=='work'){TAB='work';renderTabs()}}catch(e){}setPanel(TTL_(),sub||'',[],html);CURUI='rt139'}
@@ -14122,8 +14129,8 @@ function lobby(){stop();const ok=online()&&user();
  <div class="row"><button type="button" class="btn ghost small" id="rtBack">${T('돌아가기','Go back','戻る')}</button></div></div>`);
  const P=document.getElementById('panel');P.querySelector('#rtBack').onclick=close;
  const deck=()=>window.mirSnap136(window.mirDecks136().atk.slice());
- P.querySelectorAll('[data-rtnew]').forEach(b=>b.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'new',type:b.dataset.rtnew,name:G.name,deck:deck(),v:VER}});ROOM=r.code;go()}catch(x){toast(errMsg(x))}});
- const join=async(c,spec)=>{try{await api('',{method:'POST',body:{op:'join',code:c,name:G.name,deck:deck(),v:VER,spec:spec?1:0}});ROOM=c;if(spec)toast(T('관전석으로 들어갔어요.','Joined as a spectator.','観戦席に入りました。'));go()}catch(x){toast(errMsg(x))}};
+ P.querySelectorAll('[data-rtnew]').forEach(b=>b.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'new',type:b.dataset.rtnew,name:((typeof A74!=='undefined'&&A74.user&&A74.user.uid)||G.name),deck:deck(),v:VER}});ROOM=r.code;go()}catch(x){toast(errMsg(x))}});
+ const join=async(c,spec)=>{try{await api('',{method:'POST',body:{op:'join',code:c,name:((typeof A74!=='undefined'&&A74.user&&A74.user.uid)||G.name),deck:deck(),v:VER,spec:spec?1:0}});ROOM=c;if(spec)toast(T('관전석으로 들어갔어요.','Joined as a spectator.','観戦席に入りました。'));go()}catch(x){toast(errMsg(x))}};
  const byCode=spec=>{const c=(P.querySelector('#rtCode').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));join(c,spec)};const jn=P.querySelector('#rtJoin');if(jn)jn.onclick=()=>byCode(0);const wt=P.querySelector('#rtWatch');if(wt)wt.onclick=()=>byCode(1);
  const loadPub=async()=>{const box=P.querySelector('#rtPub');if(!box)return;try{const L=(await api('?op=list')).list||[];
    box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> · ${r.mode==='team'?T('다수 전투','Team','多人数'):'1:1'} · ${r.n}${T('명','','人')} · ${r.ph==='lobby'?T(`빈자리 ${r.free}`,`${r.free} seats open`,`空席 ${r.free}`):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><span class="rt-btns">${r.ph==='lobby'?`<button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${T('들어가기','Join','入る')}</button>`:''}<button type="button" class="btn small ghost" data-rtv="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>👁 ${T('관전','Spectate','観戦')}</button></span></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
@@ -14187,20 +14194,20 @@ function drawBattle(st,S,me,op,spec,vs,AN){
  const used=mine?myIdx.reduce((x,j,k)=>x+pickCost(S,me,j,PK[k].o),0):0;
  const Pt=st.P&&st.P[t];const fp=AN?null:(!spec&&st.ph==='p2'&&!myFirst&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
  const enemies=S.u[op].map(u=>{const its=S.slots[op].map((sl,k)=>({sl,k})).filter(x=>x.sl.u===u.i).map(({sl,k})=>{const q=fp?fp[k]:null;
-   if(!q)return `<div class="lb-int i79 rt-hid"><b>${u.speed}</b><span class="rt-qm">…</span></div>`;
-   if(q.o===null)return `<div class="lb-int i79 rt-none"><b>${u.speed}</b><span class="rt-qm">-</span></div>`;
+   if(!q)return `<div class="lb-int i79 rt-hid ${mine&&SEL!=null?'can':''}" data-rtk="${k}"><b>${u.speed}</b><span class="rt-qm">…</span></div>`;
+   if(q.o===null)return `<div class="lb-int i79 rt-none" data-rtk="${k}"><b>${u.speed}</b><span class="rt-qm">-</span></div>`;
    const tg=q.u!=null&&S.u[me][q.u]?esc(NL(S.u[me][q.u].n)):'-';const clk=mine&&(q.o===0||q.o===1||q.o==='?');
-   if(q.o==='d')return `<div class="lb-int i79 def"><b>${u.speed}</b><span class="rt-qm">${T('수비','Def','守')}</span></div>`;
+   if(q.o==='d')return `<div class="lb-int i79 def" data-rtk="${k}"><b>${u.speed}</b><span class="rt-qm">${T('수비','Def','守')}</span></div>`;
    if(q.o==='?')return `<div class="lb-int i79 rt-q ${clk?'can':''}" data-rtk="${k}"><b>${u.speed}</b><span class="rt-qm">?</span><i class="lb-adv">? → ${tg}</i></div>`;
    const s=u.sk[sl.opts[q.o]];return `<div class="lb-int i79 ${clk?'can':''}" data-rtk="${k}"><b>${u.speed}</b><span class="cd">${'<i></i>'.repeat(s.coins)}</span><i class="lb-adv">${esc(TRN(s.n))} · ${T('빛','L','光')}${sl.opts[q.o]+1} · ${skRange(s)} → ${tg}</i></div>`}).join('');
-  return `<div class="lb-fig lb-fo ${u.down?'dead':''}" data-rteu="${u.i}"><div class="lb-slots">${its||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('행동 없음','No action','行動なし')}</span>`)}</div>${fig(u,true)}<div class="lb-nm">${uName(u)}</div>${bars(u,true)}</div>`}).join('');
+  return `<div class="lb-fig lb-fo ${u.down?'dead':''}" data-rteu="${u.i}"><div class="lb-slots">${its||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('행동 없음','No action','行動なし')}</span>`)}</div>${fig(u,true)}<div class="lb-nm">${uName(u)} <button type="button" class="rt-ib" data-rtinfo="${op}:${u.i}" title="${T('상세 정보','Details','詳細')}">ℹ</button></div>${bars(u,true)}</div>`}).join('');
  const allies=S.u[me].map(u=>{const sls=L.map((sl,j)=>({sl,j})).filter(x=>x.sl.u===u.i).map(({sl,j})=>{const p=pkOf(j);
    if(!p)return `<div class="lb-slot s79 none rt-mate"><b>${u.speed}</b><em>${spec?'':T('동료','Ally','味方')}</em></div>`;
    let lab=T('대기','Idle','待機'),cls='none',sub='';
-   if(p.o==='d'){lab=T('수비','Defend','守備');cls='def'}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];cls=p.sl!=null?'clash':'atk';lab=`<i class="c127">${s.coins}</i>${skRange(s)}`;
+   if(p.o==='d'){cls='def';lab=T('수비','Defend','守備');if(p.sl!=null){const os=S.slots[op][p.sl],q=fp?fp[p.sl]:null;const ou=os&&S.u[op][os.u];if(q&&(q.o===0||q.o===1)){sub=q.u===u.i?T('수비','Defend','守備'):(ou&&u.speed>ou.speed)?T('감싸기','Cover','かばう'):T('일방 수비','One-sided','一方守備')}else sub=T('예약','Set','予約')}else sub=T('일방 수비','One-sided','一方守備')}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];cls=p.sl!=null?'clash':'atk';lab=`<i class="c127">${s.coins}</i>${skRange(s)}`;
      if(p.sl!=null&&fp){const os=S.slots[op][p.sl],q=fp[p.sl]||{};const ou=os&&S.u[op][os.u];const es=ou&&(q.o===0||q.o===1)?ou.sk[os.opts[q.o]]:null;sub=es?Math.round(winP(u,s,ou,es)*100)+'%':'?'}else sub=T('일방','One-sided','一方')}
    return `<button type="button" class="lb-slot s79 s127 ${cls} ${SEL===j?'sel79':''}" data-rts="${j}"><b>${u.speed}</b><em>${lab}</em>${sub?`<small class="p127 ${p.sl==null&&cls==='atk'?'one':''}">${sub}</small>`:''}</button>`}).join('');
-  return `<div class="lb-fig lb-al ${u.down?'dead':''} ${u.o===st.me?'mine':''}" data-rtau="${u.i}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${uName(u)}</div>${bars(u,false)}</div>`}).join('');
+  return `<div class="lb-fig lb-al ${u.down?'dead':''} ${u.o===st.me?'mine':''}" data-rtau="${u.i}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${uName(u)} <button type="button" class="rt-ib" data-rtinfo="${me}:${u.i}" title="${T('상세 정보','Details','詳細')}">ℹ</button></div>${bars(u,false)}</div>`}).join('');
  let dock='';
  if(mine){dock=myIdx.map((j,k)=>{const sl=L[j],u=S.u[me][sl.u],p=PK[k];const who=`${esc(NL(u.n))} · ${T('속도','Spd','速度')} ${u.speed}`;
    const cards=sl.opts.map((si,o)=>{const s=u.sk[si];const c=si+1;const dis=p.o!==o&&used-pickCost(S,me,j,p.o)+c>(S.Lc[st.me]??maxOf(S,t));
@@ -14211,7 +14218,7 @@ function drawBattle(st,S,me,op,spec,vs,AN){
  let info='';
  if(ended){const w=S.end||(st.end&&st.end.w);const win=!spec&&w===st.myTeam;info=`<p class="rt-res ${win?'w':w==='draw'||spec?'':'l'}">${w==='draw'?T('무승부','Draw','引き分け'):spec?`${st.bt.mode==='team'?TEAM(w):esc(NL(nmOf((st.bt[w]||[])[0]&&st.bt[w][0].id)))} ${T('승리','wins','の勝利')}`:win?T('승리','Victory','勝利'):T('패배','Defeat','敗北')}</p>${st.end&&(st.end.by==='leave'||st.end.by==='idle')?`<p class="note">${st.end.who===st.myTeam?T('우리 쪽이 모두 나가 끝났어요.','Our side left.','こちらが全員退出しました。'):T('상대 쪽이 나가 끝났어요.','The other side left.','相手側が退出しました。')}</p>`:''}${(st.host||st.myTeam)?`<div class="row"><button type="button" class="btn" id="rtRe">${T('대기실로 (다음 대전)','Back to lobby (next match)','待機室へ(次の対戦)')}</button></div>`:`<p class="note">${T('대전한 사람이나 방장이 대기실로 돌아가기를 기다리는 중이에요.','Waiting for a fighter or the host to return to the lobby.','対戦者か部屋主が待機室に戻るのを待っています。')}</p>`}`}
  else if(mine){const vis=fp?S.slots[op].reduce((x,sl,k)=>{const q=fp[k]||{};return x+((q.o===0||q.o===1)?sl.opts[q.o]+1:0)},0):0,hid=fp?fp.filter(q=>q&&q.o==='?').length:0;
-  info=`<span>${T('내 카드를 누르고, 상대 몸(일방 공격)이나 상대 슬롯(합)을 눌러 대상을 정해요. 동료의 유닛은 그 사람이 골라요.','Tap your card, then an enemy (one-sided) or enemy slot (clash). Teammates choose for their own units.','自分のカードを押して、相手の体(一方攻撃)か相手のスロット(マッチ)を押します。味方のユニットはその人が選びます。')}</span>${fp?`<span class="rt-est">${T(`상대: 보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 한 사람 최대 ${maxOf(S,t)}`,`Opponents: visible light ${vis} · hidden ${hid} · max ${maxOf(S,t)} each`,`相手：見えている光 ${vis}・隠れた選択 ${hid}・一人最大 ${maxOf(S,t)}`)}</span>`:''}`}
+  info=`<span>${T('카드를 한 번 누르면 집어 들어요. 그다음 상대 슬롯(합)이나 상대 몸(일방 공격)을 눌러 놓아요. 수비 카드는 상대 슬롯에 놓으면 수비 · 감싸기, 몸에 놓으면 일방 수비예요. 들고 있는 카드를 다시 누르면 빼요. ℹ로 상세 정보를 봐요.','Tap a card once to pick it up, then tap an enemy slot (clash) or enemy body (one-sided). A defense card on an enemy slot defends or covers; on a body it is a one-sided defense. Tap the held card again to remove it. ℹ shows details.','カードを一度押すと手に取ります。次に相手のスロット(マッチ)か相手の体(一方攻撃)を押して置きます。守備カードは相手スロットに置くと守備・かばう、体に置くと一方守備です。持っているカードをもう一度押すと外れます。ℹで詳細を見られます。')}</span>${fp?`<span class="rt-est">${T(`상대: 보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 한 사람 최대 ${maxOf(S,t)}`,`Opponents: visible light ${vis} · hidden ${hid} · max ${maxOf(S,t)} each`,`相手：見えている光 ${vis}・隠れた選択 ${hid}・一人最大 ${maxOf(S,t)}`)}</span>`:''}`}
  else if(spec)info=`<span>${T('관전 중이에요. 이번 턴의 선택은 턴이 끝나야 보여요.','Spectating. This turn\'s picks appear once the turn ends.','観戦中です。このターンの選択はターン終了後に見えます。')}</span>`;
  else{const done=(Pt&&Pt.done)||[];const team=st.ph==='p1'?F:oth(F);const owe=(st.bt[team]||[]).map(x=>x.id).filter(id=>st.mem.some(m=>m.id===id));const waitN=owe.filter(id=>!done.includes(id)).map(id=>esc(NL(nmOf(id))));
   info=`<span>${myPhase()?T('내 선택을 냈어요. 동료를 기다리는 중이에요.','Submitted. Waiting for teammates.','提出しました。味方を待っています。'):st.ph==='p1'?T('선공 쪽이 스킬을 고르는 중이에요. (선택은 보이지 않아요)','The first side is choosing. (Hidden from you)','先攻側が選んでいます。(見えません)'):T('후공 쪽이 대응을 고르는 중이에요.','The second side is responding.','後攻側が対応を選んでいます。')}${waitN.length?` · ${T('기다리는 사람','Waiting on','待ち')}: ${waitN.join(', ')}`:''}</span>`}
@@ -14275,12 +14282,20 @@ function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return
  if(!S||!myIdx)return;const st=ST,t=st.turn;const Pt=st.P&&st.P[t];const fp=(st.myTeam&&st.ph==='p2'&&st.myTeam!==firstOf(st,t)&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
  const pk=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
  P.querySelectorAll('[data-rto]').forEach(c=>c.onclick=()=>{if(c.dataset.dragged)return;if(c.classList.contains('lock'))return toast(T('빛이 모자라요.','Not enough light.','光が足りません。'));const [j,o]=c.dataset.rto.split(':');const p=pk(+j);if(!p)return;
-  if(o==='d'){p.o=p.o==='d'?null:'d';p.u=null;p.sl=null;SEL=null}else{const v=+o;if(p.o===v){p.o=null;p.u=null;p.sl=null;SEL=null}else{p.o=v;if(p.u==null&&p.sl==null){const a=alive(S.u[op])[0];p.u=a?a.i:0}SEL=+j}}draw_()});
+  const v=o==='d'?'d':+o;
+  if(p.o===v&&SEL===+j){p.o=null;p.u=null;p.sl=null;SEL=null}            // 들고 있는 카드를 다시 누르면 내려놓기(배정 해제)
+  else if(p.o===v){SEL=+j}                                                 // 이미 놓인 카드를 누르면 다시 집어 든다
+  else{p.o=v;p.sl=null;if(v==='d'){p.u=null}else{const a=alive(S.u[op])[0];p.u=a?a.i:0}SEL=+j}
+  draw_()});
  P.querySelectorAll('[data-rts]').forEach(b=>b.onclick=()=>{const j=+b.dataset.rts;if(!pk(j))return;SEL=SEL===j?null:j;draw_()});
- P.querySelectorAll('[data-rteu]').forEach(f=>f.addEventListener('click',ev=>{if(SEL==null||ev.target.closest('[data-rtk]'))return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const i=+f.dataset.rteu;if(S.u[op][i].down)return;p.u=i;p.sl=null;draw_()}));
- P.querySelectorAll('[data-rtk]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();if(SEL==null||!fp)return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const k=+x.dataset.rtk;const q=fp[k]||{};
-  const sl=S.slots[me][SEL],u=S.u[me][sl.u],os=S.slots[op][k],ou=S.u[op][os.u];if(!(q.o===0||q.o===1||q.o==='?'))return;
-  if(!(q.u===u.i||u.speed>ou.speed))return toast(T('합 불가 — 그 공격이 나를 노리거나, 내가 더 빨라야 해요.','No clash — it must target you, or you must be faster.','マッチ不可 — その攻撃が自分を狙っているか、自分の方が速い必要があります。'));p.sl=k;p.u=os.u;draw_()});
+ P.querySelectorAll('[data-rteu]').forEach(f=>f.addEventListener('click',ev=>{if(ev.target.closest('[data-rtk],[data-rtinfo]'))return;const i=+f.dataset.rteu;if(SEL==null){return info(S,op,i)}const p=pk(SEL);if(!p)return;
+  if(p.o==='d'){p.sl=null;p.u=null;SEL=null;return draw_()}if(!(p.o===0||p.o===1))return;if(S.u[op][i].down)return;p.u=i;p.sl=null;SEL=null;draw_()}));
+ P.querySelectorAll('[data-rtinfo]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const [sd,i]=b.dataset.rtinfo.split(':').map(Number);info(S,sd,i)});
+ P.querySelectorAll('[data-rtk]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();const k=+x.dataset.rtk;const os0=S.slots[op][k];if(SEL==null){if(os0)info(S,op,os0.u);return}const p=pk(SEL);if(!p)return;
+  if(p.o==='d'){p.sl=k;p.u=null;SEL=null;return draw_()}if(!(p.o===0||p.o===1))return;
+  if(!fp){if(os0&&!S.u[op][os0.u].down){p.u=os0.u;p.sl=null;SEL=null;draw_()}return}const q=fp[k]||{};
+  const sl=S.slots[me][SEL],u=S.u[me][sl.u],os=S.slots[op][k],ou=S.u[op][os.u];if(!(q.o===0||q.o===1||q.o==='?')){p.u=os.u;p.sl=null;SEL=null;return draw_()}
+  if(!(q.u===u.i||u.speed>ou.speed)){p.u=os.u;p.sl=null;SEL=null;toast(T('합이 안 돼서 일방 공격으로 놓았어요. (그 공격이 나를 노리거나, 내가 더 빨라야 합이 돼요)','No clash possible, so it was placed as a one-sided attack. (It must target you, or you must be faster.)','マッチできないため一方攻撃にしました。(その攻撃が自分を狙っているか、自分の方が速い必要があります)'));return draw_()}p.sl=k;p.u=os.u;SEL=null;draw_()});
  P.querySelectorAll('.lb-card[data-rto]').forEach(c=>{const [j,o]=c.dataset.rto.split(':');if(o==='d')return;
   c.addEventListener('pointerdown',ev=>{if(ev.button>0||c.classList.contains('lock'))return;const x0=ev.clientX,y0=ev.clientY;let gh=null;
    const mark=on=>{P.querySelectorAll('[data-rteu]').forEach(f=>f.classList.toggle('can',on&&!S.u[op][+f.dataset.rteu].down));P.querySelectorAll('[data-rtk]').forEach(k=>k.classList.toggle('dropok',on))};
@@ -14290,9 +14305,28 @@ function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return
     if(k){k.click();return}if(f&&!S.u[op][+f.dataset.rteu].down){p.u=+f.dataset.rteu;p.sl=null}else if(p.u==null){const a=alive(S.u[op])[0];p.u=a?a.i:0}
     c.dataset.dragged=1;setTimeout(()=>{delete c.dataset.dragged},50);draw_()};
    addEventListener('pointermove',mv);addEventListener('pointerup',up)})});
- const g=P.querySelector('#rtGo');if(g)g.onclick=()=>submit(false)}
+ const g=P.querySelector('#rtGo');if(g)g.onclick=()=>submit(false);
+ carryGhost(P)}
+let GHOST=null,LASTXY=null;
+function carryGhost(P){if(GHOST){GHOST.remove();GHOST=null}if(SEL==null)return;const c=P.querySelector(`.lb-card.on[data-rto^="${SEL}:"]`);if(!c)return;
+ P.querySelectorAll('[data-rteu],[data-rtk]').forEach(x=>x.classList.add('can'));
+ if(matchMedia('(pointer:coarse)').matches)return;GHOST=c.cloneNode(true);GHOST.classList.add('lb-ghost','rt-carry');GHOST.style.cssText=`position:fixed;pointer-events:none;z-index:9500;transform:translate(12px,12px) rotate(-3deg) scale(.9);width:${c.offsetWidth}px;opacity:.92`;document.body.appendChild(GHOST);if(LASTXY){GHOST.style.left=LASTXY[0]+'px';GHOST.style.top=LASTXY[1]+'px'}else{GHOST.style.display='none'}}
+addEventListener('pointermove',e=>{LASTXY=[e.clientX,e.clientY];if(GHOST){GHOST.style.display='';GHOST.style.left=e.clientX+'px';GHOST.style.top=e.clientY+'px'}});
+document.addEventListener('pointerdown',e=>{if(SEL==null||CURUI!=='rt139')return;if(e.target.closest('[data-rto],[data-rteu],[data-rtk],[data-rts],[data-rtinfo],.pop,#rtGo'))return;SEL=null;try{draw_()}catch(x){}},true);
+/* 상세 정보 */
+function info(S,sd,i){const u=S&&S.u[sd]&&S.u[sd][i];if(!u)return;popup(`${esc(NL(u.n))} · ${T('상세 정보','Details','詳細')}`,detHtml(u),null,{})}
+function detHtml(u){let w=null,su=null;try{w=weapOf(u.w)}catch(e){}try{su=suitOf(u.s)}catch(e){}
+ const R5=['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'];const resW=v=>v<=.5?T('내성','Resist','耐性'):v<1?T('견딤','Endure','耐える'):v===1?T('보통','Normal','普通'):v<2?T('약점','Weak','弱点'):T('취약','Fatal','脆弱');
+ const G2=window.AR146?(u.g||[]).map(id=>AR146.gInfo(id)).filter(Boolean):[];
+ return `<div class="rt-det">
+  <p><b>${R5[Math.max(1,u.rk)-1]}</b> · HP ${Math.max(0,u.hp)}/${u.max} · ${T('정신력','SP','精神力')} ${u.sp} · ${T('속도','Speed','速度')} ${u.spdR?u.spdR.join('~'):'?'}${u.panic>0?` · ${T('패닉','Panic','パニック')}`:''}${u.down?` · ${T('쓰러짐','Down','ダウン')}`:''}</p>
+  <p>${T('무기','Weapon','武器')}: <b>${esc(w?TRN(w.n):u.w)}</b> · ${T('슈트','Suit','スーツ')}: <b>${esc(su?TRN(su.n):u.s)}</b>${u.gp||u.gs?` · ${T('기프트 보정','Gift bonus','ギフト補正')} ${u.gp?`${T('위력','Power','威力')} +${u.gp}`:''} ${u.gs?`${T('속도','Speed','速度')} +${u.gs}`:''}`:''}</p>
+  <div class="lbl">${T('스킬','Skills','スキル')}</div>${u.sk.map((s,k)=>`<div class="rt-sk"><b>${k+1}. ${esc(TRN(s.n))}</b> <small>${skRange(s)} · ${T('코인','Coins','コイン')} ${s.coins} · ${s.dc} · ${T('빛','Light','光')} ${k+1}</small></div>`).join('')}
+  <div class="rt-sk"><b>${T('수비','Defense','守備')} · ${esc(TRN(u.def.n))}</b> <small>${u.def.type==='guard'?T('가드','Guard','ガード'):T('회피','Evade','回避')} · ${u.def.base}+${u.def.cp}×2</small></div>
+  <div class="lbl">${T('내성','Resistances','耐性')}</div><div class="rt-res4">${['RED','WHITE','BLACK','PALE'].map(k=>`<span class="c-${k}">${k} ×${u.res[k]} <small>${resW(u.res[k])}</small></span>`).join('')}</div>
+  ${G2.length?`<div class="lbl">${T('기프트','Gifts','ギフト')}</div>${G2.map(x=>`<div class="rt-sk">✦ ${esc(x.n)} <small>${AR146.gText(x)}</small></div>`).join('')}`:''}</div>`}
 window.rt139=()=>{if(B&&!B.done)return toast(T('전투 중에는 할 수 없어요.','Not during a battle.','戦闘中はできません。'));if(ROOM){go();return}lobby()};
-window.rt139sim=sim;window.rt139state=()=>ST;
+window.rt139sim=sim;window.rt139detail=m=>{try{const u=mkUnit(m,1,0,'x');return detHtml(u)}catch(e){return ''}};window.rt139state=()=>ST;
 
 const css=`
 .rt-codebox{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 12px;padding:10px 14px;border:2px solid #f4ee9a;background:rgba(244,238,154,.06)}
@@ -14313,7 +14347,7 @@ const css=`
 .rt139 .rt-log{font-size:13px;line-height:1.6;border:1px solid rgba(244,238,154,.18);padding:8px 10px;margin-top:10px;max-height:220px;overflow:auto}
 .rt-mk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.rt-mkc{border:1px solid rgba(244,238,154,.3);padding:10px;display:flex;flex-direction:column;gap:6px}.rt-mkc b{color:#f4ee9a}.rt-mkc small{color:#b9c2bf}
 .rt-list{margin-top:12px;border-top:1px dashed rgba(244,238,154,.25);padding-top:8px}.rt-lh{display:flex;justify-content:space-between;align-items:center}
-.rt-btns{display:flex;gap:6px;flex-wrap:wrap}.rt-room{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(244,238,154,.2);margin:6px 0}.rt-room em{color:#ff8f80;font-style:normal}
+.rt-ib{font:inherit;font-size:11px;line-height:1;padding:2px 5px;margin-left:4px;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;opacity:.7;cursor:pointer}.rt-ib:hover{opacity:1}.rt-det p{margin:4px 0}.rt-sk{padding:4px 0;border-bottom:1px dashed var(--line,#444)}.rt-sk small{color:var(--muted,#9aa)}.rt-res4{display:flex;gap:8px;flex-wrap:wrap}.rt-res4 span{padding:2px 8px;border:1px solid var(--line2,#555);border-radius:6px}.rt-res4 small{color:var(--muted,#9aa)}.rt-btns{display:flex;gap:6px;flex-wrap:wrap}.rt-room{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(244,238,154,.2);margin:6px 0}.rt-room em{color:#ff8f80;font-style:normal}
 .rt-mem{margin-top:12px;border:1px solid rgba(244,238,154,.2);padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rt-mem>b{width:100%}.rt-mem span{padding:3px 8px;border:1px solid rgba(244,238,154,.25)}.rt-mem span.me{border-color:#ffd27a;color:#ffd27a}.rt-mem small{margin-left:6px;color:#b9c2bf}.rt-mem .note{width:100%;margin:2px 0 0}
 .rt-tag{color:#c9cfcc;margin:0 0 8px}
 @media (max-width:640px){.rt-mk{grid-template-columns:1fr}}
@@ -14357,6 +14391,7 @@ function hub(){if(!on())return;
  setPanel(NAME(),DESC(),[
   {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-deck',l:`${ic('sword')} ${T('덱 편성','Decks','デッキ編成')}`,s:T('공격 덱 · 수비 덱을 짜고 수비 덱을 등록해요','Build attack and defense decks; register the defense deck','攻撃・守備デッキを組み、守備デッキを登録します'),f:()=>window.mirror136('deck')},
   {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-find',l:T('도전 (비동기)','Challenge (async)','挑戦(非同期)'),s:T('다른 관리직의 수비 덱에 도전해요 · 하루 10번','Challenge other managers\' defense decks · 10 a day','他の管理職の守備デッキに挑戦・1日10回'),f:()=>window.mirror136('find')},
+  {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-ar',l:T('보관함','Archive','保管庫'),s:T('엔딩을 봐도 남는 직원 · 장비 · 기프트 · 검색','Staff, gear and gifts kept across endings · search','エンディング後も残る職員・装備・ギフト・検索'),f:()=>window.mirror136('ar')},
   {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-rank',l:T('순위','Ranking','ランキング'),s:T('상위 20명','Top 20','上位20人'),f:()=>window.mirror136('rank')},
   {grp:T('친선전','Friendly','親善戦'),cls:'mh-live',l:T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)'),s:T('공개 방 · 초대 코드 방 · 1:1 / 다수 전투','Public or invite rooms · 1v1 / team','公開・招待コード部屋・1対1/多人数'),f:()=>window.rt139&&window.rt139()},
   {grp:T('친선전','Friendly','親善戦'),cls:'mh-rec',l:T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)'),s:T('서로의 수비 덱에 동시에 도전해 기록을 비교해요','Both challenge each other\'s defense decks and compare','互いの守備デッキに同時に挑み記録を比べます'),f:()=>window.mirror136('room')},
@@ -15203,6 +15238,152 @@ try{collect()}catch(e){}
 .pk146q{width:100%;padding:7px 10px;font:inherit;color:inherit;background:var(--bg,#111);border:1px solid var(--line2,#555);border-radius:var(--r,6px)}.pk146f{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.pk146s{width:8px}
 .pk146l,.ar146l{display:grid;gap:4px;max-height:44vh;overflow:auto}.pk146i{text-align:left;font:inherit;color:inherit;padding:6px 10px;border:1px solid var(--line,#444);border-radius:var(--r,6px);background:var(--panel,#151515);cursor:pointer}.pk146i.on{border-color:var(--accent,#e8b04a)}.pk146i[disabled]{opacity:.45;cursor:not-allowed}.pk146i small,.ar146i small{color:var(--muted,#9aa)}
 .ar146i{padding:6px 10px;border:1px solid var(--line,#444);border-radius:var(--r,6px);background:var(--panel2,#1d1d1d)}`;document.head.appendChild(st)})();
+(function(){const st=document.createElement('style');st.textContent=`.m146d{margin:6px 0 8px;padding:8px 10px;border:1px solid var(--line2,#555);border-radius:var(--r,6px);background:var(--panel,#151515)}`;document.head.appendChild(st)})();
+/* ============ v147: 튜토리얼 다듬기 (4.5) ============
+   ① 아인·소프·오르 화면 안내: 보관함 · 기프트 · 검색을 더하고 덱 편성 설명을 지금 방식에 맞춘다.
+   ② 실시간 친선전 안내(처음 들어가면 한 번): 방 만들기 · 코드 · 공개 방 목록의 들어가기 / 관전 · 전투 조작.
+   ③ 근무 튜토리얼: 저녁 시간의 선택(숙소 · 정비 · 소문)과 이야기 실을 한 단계로 안내.
+   ④ 가이드 「아인·소프·오르」에 보관함 · 기프트 · 관전 · 카드 조작 · 수비 배치를 덧붙인다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const S=(sel,t,b,x)=>Object.assign({sel,t,b},x||{});
+const N=(t,b,x)=>Object.assign({t,b},x||{});
+
+/* ① 허브 안내 */
+try{const M0=TUT_TOPIC.mirror;TUT_TOPIC.mirror=function(){const L=M0();if(!window.MIRMODE140)return L;
+ const i=L.findIndex(s=>s.sel==='#panel .ch.mh-deck');
+ if(i>=0)L[i]=S('#panel .ch.mh-deck',T('① 덱 편성','① Decks','① デッキ編成'),T('공격 덱 · 수비 덱을 짜요. 사람 · 무기 · 슈트 · 기프트 칸을 누르면 <b>검색 창</b>이 열려요. 이름으로 찾고, 등급과 출처(지금 기록 / 보관함)로 거를 수 있어요.<br>· 기프트는 한 사람당 부위가 겹치지 않게 3개까지예요.<br>· 수비 덱은 <b>등록</b>해야 다른 사람이 도전할 수 있어요.','Build attack and defense decks. Tapping a member, weapon, suit or gift slot opens a <b>search panel</b>: find by name, filter by grade and source (this record / archive).<br>· Up to 3 gifts per member, no two on the same body slot.<br>· <b>Register</b> the defense deck so others can challenge it.','攻撃デッキ・守備デッキを組みます。人・武器・スーツ・ギフトの欄を押すと<b>検索画面</b>が開きます。名前で探し、等級と出どころ(現在の記録 / 保管庫)で絞り込めます。<br>・ギフトは一人につき部位が重ならないよう3つまで。<br>・守備デッキは<b>登録</b>すると他の人が挑戦できます。'));
+ const j=L.findIndex(s=>s.sel==='#panel .ch.mh-rank');
+ L.splice(j>=0?j:2,0,S('#panel .ch.mh-ar',T('보관함','Archive','保管庫'),T('근무하며 만난 직원(떠난 사람 포함) · 역대 관리직 · E.G.O 무기 · 슈트 · 기프트가 <b>엔딩을 봐도</b> 여기 남아요. 덱 편성에서 모두 고를 수 있어요. 로그인하면 다른 기기 · 저장소와 합쳐져요.','Staff you met (including those gone), past managers, E.G.O weapons, suits and gifts stay here <b>even after an ending</b>. All of them can be picked in Decks. Log in to merge across devices and save slots.','勤務で出会った職員(去った人も含む)・歴代管理職・E.G.O武器・スーツ・ギフトは<b>エンディングを迎えても</b>ここに残ります。デッキ編成ですべて選べます。ログインすると他の端末・保存枠と統合されます。')));
+ const k=L.findIndex(s=>s.sel==='#panel .ch.mh-live');
+ if(k>=0)L[k]=S('#panel .ch.mh-live',T('④ 실시간 친선전','④ Live Friendly','④ リアルタイム親善戦'),T('공개 방이나 초대 코드 방에서 실시간으로 싸워요. 공개 방 목록의 <b>👁 관전</b>이나 <b>코드로 관전</b>으로 구경만 할 수도 있어요. 처음 들어가면 짧은 안내가 나와요.','Fight live in public or invite-code rooms. Use <b>👁 Spectate</b> in the room list or <b>Spectate by code</b> to just watch. A short guide appears the first time you enter.','公開部屋や招待コード部屋でリアルタイムに戦います。公開部屋一覧の<b>👁 観戦</b>や<b>コードで観戦</b>で見るだけもできます。初めて入ると短い案内が出ます。'));
+ return L}}catch(e){}
+
+window.tutMir141=function(){try{localStorage.setItem('lcw_tut_mir141','1')}catch(e){}try{if(typeof TUT!=='undefined'&&TUT)return;tutStart(TUT_TOPIC.mirror(),'topic')}catch(e){}};
+/* ② 실시간 친선전 안내 */
+const LIVE=()=>[
+ N(T('실시간 친선전','Live Friendly','リアルタイム親善戦'),T('다른 관리직과 실시간으로 겨루는 곳이에요. 체력 · 정신력에는 영향이 없어요.','Compete with other managers in real time. HP and SP are not affected.','他の管理職とリアルタイムで競う場所です。体力・精神力には影響しません。')),
+ S('.rt-mk',T('방 만들기','Create a room','部屋を作る'),T('<b>공개 방</b>은 목록에 올라 누구나 들어와요. <b>초대 코드 방</b>은 코드를 아는 사람만 들어와요. 방장이 1:1 또는 다수(팀당 5명)를 정해요.','<b>Public rooms</b> are listed for anyone. <b>Invite-code rooms</b> admit only those with the code. The host picks 1v1 or team (5 per side).','<b>公開部屋</b>は一覧に載り誰でも入れます。<b>招待コード部屋</b>はコードを知る人だけ。部屋主が1対1か多人数(1チーム5人)を決めます。')),
+ S('#rtCode',T('코드로 참가 · 관전','Join or spectate by code','コードで参加・観戦'),T('받은 코드를 넣고 <b>코드로 참가</b>하거나 <b>👁 코드로 관전</b>해요. 참가해도 자리에 앉기 전까지는 관전석이에요.','Enter a code, then <b>Join by code</b> or <b>👁 Spectate by code</b>. Even after joining, you are a spectator until you take a seat.','コードを入れて<b>コードで参加</b>か<b>👁 コードで観戦</b>。参加しても席に座るまでは観戦席です。')),
+ S('#rtPub',T('공개 방 목록','Public rooms','公開部屋一覧'),T('대기 중인 방은 <b>들어가기</b>와 <b>👁 관전</b>을, 전투 중인 방은 <b>관전</b>을 고를 수 있어요. 버전이 다른 방은 들어갈 수 없으니 새로고침해 주세요.','Waiting rooms offer <b>Join</b> and <b>👁 Spectate</b>; rooms in battle offer <b>Spectate</b>. Rooms on another version are locked — refresh the page.','待機中の部屋は<b>入る</b>と<b>👁 観戦</b>、対戦中の部屋は<b>観戦</b>を選べます。バージョン違いの部屋には入れないので再読み込みしてください。')),
+ N(T('전투 조작','Battle controls','戦闘操作'),T('일반 전투와 같아요.<br>· 카드를 <b>한 번 누르면 집어 들고</b>, 상대 <b>슬롯</b>(합)이나 상대 <b>몸</b>(일방 공격)을 눌러 놓아요. 끌어서 놓아도 돼요.<br>· <b>수비 카드</b>: 나를 노리는 슬롯에 놓으면 수비, 동료를 노리는 슬롯에 놓고 내가 더 빠르면 감싸기, 몸에 놓으면 일방 수비예요.<br>· 이름 옆 <b>ℹ</b>로 상대의 스킬 · 내성 · 기프트를 봐요.<br>· 끝나면 방장이나 싸운 사람이 <b>대기실로</b>를 눌러 다음 판을 준비해요.','Same as normal battles.<br>· <b>Tap a card once to pick it up</b>, then tap an enemy <b>slot</b> (clash) or enemy <b>body</b> (one-sided). Dragging works too.<br>· <b>Defense cards</b>: on a slot aimed at you = defend; on a slot aimed at an ally while you are faster = cover; on a body = one-sided defense.<br>· <b>ℹ</b> beside a name shows skills, resistances and gifts.<br>· When it ends, the host or a fighter presses <b>Back to lobby</b> for the next match.','通常の戦闘と同じです。<br>・カードを<b>一度押すと手に取り</b>、相手の<b>スロット</b>(マッチ)か<b>体</b>(一方攻撃)を押して置きます。ドラッグでもOK。<br>・<b>守備カード</b>:自分を狙うスロットに置くと守備、仲間を狙うスロットに置き自分が速ければかばう、体に置くと一方守備。<br>・名前の横の<b>ℹ</b>でスキル・耐性・ギフトを見られます。<br>・終わったら部屋主か対戦者が<b>待機室へ</b>を押して次の対戦を準備します。'),{last:1})];
+try{TUT_TOPIC.live=LIVE}catch(e){}
+const seenLive=()=>{try{return !!localStorage.getItem('lcw_tut_live147')}catch(e){return true}};
+try{const R0=window.rt139;window.rt139=function(){const r=R0.apply(this,arguments);try{if(!seenLive()&&!(typeof TUT!=='undefined'&&TUT))setTimeout(()=>{if(document.querySelector('.rt-mk')&&!(typeof TUT!=='undefined'&&TUT)){try{localStorage.setItem('lcw_tut_live147','1')}catch(e){}tutStart(LIVE(),'topic')}},500)}catch(e){}return r}}catch(e){}
+
+/* ③ 근무 튜토리얼: 저녁 시간 */
+try{const i=TUT_STEPS.findIndex(s=>s&&s.sel==='#nb143');TUT_STEPS.splice(i<0?TUT_STEPS.length-1:i+1,0,
+ N(T('저녁 시간','Evenings','夕方の時間'),T('퇴근 뒤 저녁에는 하나를 골라 하루를 마쳐요. 숙소를 돌며 <b>직원들 사이의 낌새</b>를 살피거나, 시설 정비를 돕거나, 소문을 잠재울 수 있어요. 열쇠 · 단서 같은 물건이 있으면 새 선택지가 열려요. 작은 선택이 쌓여 이야기와 결말이 달라져요.','After work, pick one thing to end the day. Walk the dorms to notice <b>what is between people</b>, help with repairs, or quiet rumors. Items like keys and clues open new choices. Small choices add up to different stories and endings.','退勤後の夕方は一つ選んで一日を終えます。宿舎を回って<b>職員同士の気配</b>を探ったり、施設の整備を手伝ったり、噂を鎮めたりできます。鍵や手がかりなどの物があると新しい選択肢が開きます。小さな選択が積み重なり、物語と結末が変わります。')))}catch(e){}
+
+/* ④ 가이드 */
+try{const g=GUIDE.find(x=>x.k==='mirror');if(g)g.b+=T(
+`<p class="tip"><b>보관함</b> — 근무하며 만난 직원 · 역대 관리직 · E.G.O 무기 · 슈트 · 기프트는 엔딩을 봐도 남아요. 덱 편성의 검색 창에서 모두 고를 수 있어요. 기프트는 한 사람당 부위가 겹치지 않게 3개까지, 거울 세계에서는 체력 · 위력 · 속도만 적용돼요.</p>
+<p class="tip"><b>실시간 전투 조작</b> — 카드를 한 번 누르면 집어 들고, 상대 슬롯(합)이나 몸(일방 공격)을 눌러 놓아요. 수비 카드는 슬롯에 놓으면 수비 · 감싸기, 몸에 놓으면 일방 수비예요. 이름 옆 ℹ로 상세 정보를 봐요. 공개 방 목록과 코드 입력칸에서 관전만 할 수도 있어요.</p>`,
+`<p class="tip"><b>Archive</b> — Staff you met, past managers, E.G.O weapons, suits and gifts remain after any ending. Pick them all from the search panel in Decks. Up to 3 gifts per member on different body slots; in the Mirror World only HP, power and speed apply.</p>
+<p class="tip"><b>Live battle controls</b> — Tap a card once to pick it up, then tap an enemy slot (clash) or body (one-sided). A defense card on a slot defends or covers; on a body it is a one-sided defense. ℹ beside a name shows details. You can also just spectate from the room list or by code.</p>`,
+`<p class="tip"><b>保管庫</b> — 勤務で出会った職員・歴代管理職・E.G.O武器・スーツ・ギフトは、どのエンディングの後も残ります。デッキ編成の検索画面ですべて選べます。ギフトは一人につき部位が重ならないよう3つまで、鏡の世界では体力・威力・速度のみ適用されます。</p>
+<p class="tip"><b>リアルタイム戦闘の操作</b> — カードを一度押して手に取り、相手スロット(マッチ)か体(一方攻撃)を押して置きます。守備カードはスロットに置くと守備・かばう、体に置くと一方守備。名前の横のℹで詳細を見られます。公開部屋一覧やコード入力欄から観戦だけもできます。</p>`)}catch(e){}
+})();
+/* ============ v148: 작업 판정을 주사위로 ============
+   · 작업이 끝나면 상자마다 d100을 굴리는 장면을 보여 준다. 목표값(성공률) 이하가 나오면 성공.
+   · 화면의 주사위 눈은 실제 판정에 쓰인 난수 그대로다 (판정 중 쓰인 난수를 기록해, 결과와 일치하는 구간을 찾는다).
+     찾지 못하면 실제 성공 수를 그대로 두고 눈만 만들어 보여 준다.
+   · 누르거나 스페이스 · Esc로 바로 결과까지 넘긴다. '동작 줄이기' 설정이면 바로 결과. 연출 끄기 선택 가능.
+   · 작업 고르기 목록의 성공률 옆에 작은 주사위(채워진 정도 = 확률)를 붙인다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const KEY='lcw_dice148';
+const on=()=>{try{return localStorage.getItem(KEY)!=='off'}catch(e){return true}};
+const RM=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+const H=s=>(typeof esc==='function'?esc(s):String(s));
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+finishWork=(f=>function(a,w,m){
+ if(!a||!w||(m&&m.abort)||!G||!on()||(typeof TUT!=='undefined'&&TUT)||(G.flags&&G.flags.tutSand))return f.apply(this,arguments);
+ let p0=null;try{p0=succRate(a,w)+((m&&m.succ)||0)}catch(e){}
+ const R0=Math.random,rec=[];Math.random=function(){const r=R0.call(Math);rec.push(r);return r};
+ // 판정에 실제로 쓰인 성공률을 받아 둔다 (작업 중에 붙고 빠지는 보정까지)
+ const S0=succRate,srs=[];succRate=function(){const v=S0.apply(this,arguments);if(typeof v==='number')srs.push(v);return v};
+ const n0=(G.log||[]).length;let r;
+ try{r=f.apply(this,arguments)}finally{Math.random=R0;succRate=S0}
+ const ps=[...new Set(srs.map(v=>v+((m&&m.succ)||0)))];if(p0!=null&&!ps.length)ps.push(p0);
+ try{let succ=null,boxes=null;for(let i=(G.log||[]).length-1;i>=n0;i--){const t=String(G.log[i].t||'');const x=/(\d+)\s*\/\s*(\d+)\s*PE/.exec(t);if(x){succ=+x[1];boxes=+x[2];break}}
+  if(boxes&&boxes<=80)setTimeout(()=>show(a,w,ps,rec,succ,boxes,G.lastRes),30)}catch(e){}
+ return r})(finishWork);
+
+function findRun(rec,ps,succ,boxes){if(!ps||!ps.length)return null;const cands=[...new Set([0,.1,-.1].flatMap(d=>ps.map(p=>cl(p+d,.05,.97))))];
+ for(const p of cands)for(let i=0;i+boxes<=rec.length;i++){let k=0;for(let j=i;j<i+boxes;j++)if(rec[j]<p)k++;if(k===succ)return {p,rolls:rec.slice(i,i+boxes)}}return null}
+function synth(p,succ,boxes){const P=Math.round(p*100);const idx=[...Array(boxes).keys()].sort(()=>Math.random()-.5).slice(0,succ);const S=new Set(idx);
+ return [...Array(boxes).keys()].map(i=>S.has(i)?(Math.random()*Math.max(1,P))/100:(P+Math.random()*(100-P))/100)}
+
+let OV=null;
+function show(a,w,ps,rec,succ,boxes,res){const p0=ps&&ps.length?ps[0]:null;
+ if(OV){try{OV.remove()}catch(e){}OV=null}
+ const run=findRun(rec,ps,succ,boxes);const p=run?run.p:cl(p0==null?succ/boxes:p0,.05,.97);const rolls=run?run.rolls:synth(p,succ,boxes);
+ const P=Math.round(p*100);const val=r=>Math.min(100,Math.floor(r*100)+1);
+ const resL={good:T('좋음','Good','良好'),normal:T('보통','Normal','普通'),bad:T('나쁨','Bad','不良')}[res]||'';
+ const el=document.createElement('div');el.className='dc148';el.setAttribute('role','dialog');el.setAttribute('aria-label',T('작업 판정','Work check','作業判定'));
+ el.innerHTML=`<div class="dc148b"><div class="dc148h"><b>${T('작업 판정','Work check','作業判定')}</b><span>${H(NL(a.n))} · ${H(typeof tr80==='function'?tr80(w.n||''):(w.n||''))}</span></div>
+  <div class="dc148t">${T('상자마다','Each box:','箱ごとに')} <b>d100 ≤ ${P}</b> ${T('이면 성공','succeeds','で成功')} <small>(${boxes}${T('번',' rolls','回')})</small></div>
+  <div class="dc148g">${rolls.map((r,i)=>`<i class="d" data-i="${i}">?</i>`).join('')}</div>
+  <div class="dc148bar"><div class="f"></div><em style="left:40%"></em><em style="left:70%"></em><span class="l0">${T('나쁨','Bad','不良')}</span><span class="l1" style="left:40%">${T('보통','Normal','普通')}</span><span class="l2" style="left:70%">${T('좋음','Good','良好')}</span></div>
+  <div class="dc148r"><span class="n">0 / ${boxes}</span><b class="res"></b></div>
+  <div class="dc148f"><small>${T('누르거나 스페이스로 넘기기','Tap or Space to skip','タップかスペースで飛ばす')}</small><label><input type="checkbox" class="off"> ${T('다음부터 주사위 연출 끄기','Turn off dice next time','次からサイコロ演出を切る')}</label></div></div>`;
+ document.body.appendChild(el);OV=el;
+ const D=[...el.querySelectorAll('.d')],nEl=el.querySelector('.n'),fEl=el.querySelector('.f'),rEl=el.querySelector('.res');
+ let k=0,ok=0,done=false,iv=0,ti=0;
+ const reveal=i=>{const r=rolls[i],v=val(r),s=r<p;D[i].textContent=v;D[i].classList.add(s?'ok':'no','set');if(s)ok++;nEl.textContent=`${ok} / ${boxes}`;fEl.style.width=(ok/boxes*100)+'%'};
+ const finish=()=>{if(done)return;done=true;clearInterval(iv);clearTimeout(ti);while(k<D.length)reveal(k++);D.forEach(d=>d.classList.remove('spin'));
+  rEl.textContent=resL;rEl.className='res '+(res||'');fEl.className='f '+(res||'');setTimeout(close,RM()?900:1500)};
+ const close=()=>{try{const c=el.querySelector('.off');if(c&&c.checked)localStorage.setItem(KEY,'off')}catch(e){}el.classList.add('out');setTimeout(()=>{el.remove();if(OV===el)OV=null},180);removeEventListener('keydown',key,true)};
+ const key=e=>{if(e.key===' '||e.key==='Escape'||e.key==='Enter'){e.preventDefault();e.stopPropagation();done?close():finish()}};
+ addEventListener('keydown',key,true);
+ el.addEventListener('click',e=>{if(e.target.closest('label'))return;done?close():finish()});
+ if(RM())return finish();
+ D.forEach(d=>d.classList.add('spin'));
+ iv=setInterval(()=>{for(let i=k;i<D.length;i++)D[i].textContent=1+Math.floor(Math.random()*100)},55);
+ const step=Math.max(28,Math.min(70,1600/boxes));
+ const go=()=>{if(done)return;if(k>=D.length)return finish();reveal(k);D[k].classList.remove('spin');k++;ti=setTimeout(go,step)};
+ ti=setTimeout(go,380)}
+
+/* 작업 고르기 목록: 성공률 옆 작은 주사위 */
+const RX=/((?:예상 성공률|[Ee]xpected success(?: rate)?|予想成功率)\s*)(\d{1,3})%/;
+function decorate(root){if(!root)return;root.querySelectorAll('.ch small, .ch span, small').forEach(s=>{if(s.dataset.dz148||!RX.test(s.textContent))return;s.dataset.dz148=1;
+  s.innerHTML=s.innerHTML.replace(RX,(m,pre,n)=>`${pre}<span class="dz148" style="--p:${n}"><i aria-hidden="true"></i>${n}%</span>`)})}
+popup=(f=>function(){const r=f.apply(this,arguments);try{decorate(document.querySelector('.pop'))}catch(e){}return r})(popup);
+setPanel=(f=>function(){const r=f.apply(this,arguments);try{decorate(document.getElementById('panel'))}catch(e){}return r})(setPanel);
+
+const st=document.createElement('style');st.textContent=`
+.dc148{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:rgba(0,0,0,.55);animation:dc148in .16s ease-out}
+.dc148.out{opacity:0;transition:opacity .18s}
+@keyframes dc148in{from{opacity:0}to{opacity:1}}
+.dc148b{width:min(560px,calc(100vw - 32px));max-height:86vh;overflow:auto;padding:16px 18px;border:2px solid var(--accent,#e8b04a);border-radius:var(--r,8px);background:var(--panel,#121212);box-shadow:0 18px 40px rgba(0,0,0,.5);display:grid;gap:10px;cursor:pointer}
+.dc148h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}.dc148h span{color:var(--muted,#9aa);font-size:13px}
+.dc148t{font-size:14px}.dc148t b{font-variant-numeric:tabular-nums;color:var(--accent,#e8b04a)}
+.dc148g{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}
+.dc148g .d{font-style:normal;display:grid;place-items:center;height:38px;border:2px solid var(--line2,#555);border-radius:8px;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;background:var(--panel2,#1d1d1d);color:var(--fg,#eee)}
+.dc148g .d.spin{animation:dc148s .22s linear infinite;color:var(--muted,#9aa)}
+@keyframes dc148s{0%{transform:rotate(0)}25%{transform:rotate(9deg) translateY(-2px)}50%{transform:rotate(0)}75%{transform:rotate(-9deg) translateY(-2px)}100%{transform:rotate(0)}}
+.dc148g .d.set{animation:dc148p .18s ease-out}
+@keyframes dc148p{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.dc148g .d.ok{border-color:#5fc48a;color:#5fc48a;background:rgba(95,196,138,.12)}.dc148g .d.no{border-color:#8a4a45;color:#c8817b;background:rgba(224,90,79,.08)}
+.dc148bar{position:relative;height:30px}.dc148bar::before{content:'';position:absolute;left:0;right:0;top:4px;height:10px;border-radius:5px;background:rgba(127,127,127,.25)}
+.dc148bar .f{position:absolute;left:0;top:4px;height:10px;width:0;border-radius:5px;background:var(--accent,#e8b04a);transition:width .12s}
+.dc148bar .f.good{background:#5fc48a}.dc148bar .f.bad{background:#e05a4f}
+.dc148bar em{position:absolute;top:0;width:2px;height:18px;background:var(--fg,#eee);opacity:.6}
+.dc148bar span{position:absolute;top:17px;font-size:11px;color:var(--muted,#9aa);transform:translateX(4px)}.dc148bar .l0{left:0;transform:none}
+.dc148r{display:flex;justify-content:space-between;align-items:center}.dc148r .n{font-variant-numeric:tabular-nums;font-weight:700}
+.dc148r .res{font-size:20px}.dc148r .res.good{color:#5fc48a}.dc148r .res.normal{color:var(--accent,#e8b04a)}.dc148r .res.bad{color:#e05a4f}
+.dc148f{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted,#9aa);font-size:12px}.dc148f label{cursor:pointer}
+.dz148{display:inline-flex;align-items:center;gap:3px;font-weight:700;font-variant-numeric:tabular-nums}
+.dz148 i{display:inline-block;width:11px;height:11px;border:1.5px solid currentColor;border-radius:3px;background:linear-gradient(to top,currentColor calc(var(--p)*1%),transparent 0);opacity:.85}
+@media (prefers-reduced-motion:reduce){.dc148,.dc148g .d.spin,.dc148g .d.set{animation:none}.dc148bar .f{transition:none}}`;
+document.head.appendChild(st);
+
+/* 가이드: 설정 되돌리기 안내 */
+try{const g=GUIDE.find(x=>x.k==='work');if(g)g.b+=T('<p class="tip">작업이 끝나면 상자마다 d100 주사위를 굴려요. 목표값(성공률) 이하가 나오면 성공이에요. 주사위 연출을 껐다면, 이 가이드의 버튼으로 다시 켤 수 있어요. <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'주사위 연출을 다시 켰어요.\')}catch(e){}">주사위 연출 다시 켜기</button></p>','<p class="tip">When work ends, a d100 is rolled for each box. At or below the target (success rate) is a success. If you turned the dice off, turn them back on here. <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'Dice animation is back on.\')}catch(e){}">Turn dice back on</button></p>','<p class="tip">作業が終わると箱ごとにd100を振ります。目標値(成功率)以下なら成功です。サイコロ演出を切った場合は、ここで戻せます。 <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'サイコロ演出を戻しました。\')}catch(e){}">サイコロ演出を戻す</button></p>')}catch(e){}
+})();
 </script>
 
 </body></html>

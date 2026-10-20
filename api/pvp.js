@@ -124,6 +124,9 @@ function view(r, me) {
   };
 }
 
+// 아인·소프·오르의 이름은 계정 아이디
+const pl = (deck, uid) => { for (const m of deck) if (m.pl) m.n = String(uid).slice(0, 20); return deck; };
+
 export default async function handler(req, res) {
   try {
     if (!hasDb) return send(res, 503, { code: 'nodb' });
@@ -140,7 +143,7 @@ export default async function handler(req, res) {
       const type = b.type === 'pub' ? 'pub' : 'code';
       let code = code6();
       for (let i = 0; i < 4 && await redis('EXISTS', `rt:${code}`); i++) code = code6();
-      const r = { type, mode: '1v1', v: txt(b.v, 20), mem: [{ id, n: txt(b.name, 20) || uid, d: deck, seen: Date.now() }], seats: { A: [], B: [] }, ready: {}, P: {}, at: Date.now() };
+      const r = { type, mode: '1v1', v: txt(b.v, 20), mem: [{ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now() }], seats: { A: [], B: [] }, ready: {}, P: {}, at: Date.now() };
       toLobby(r);
       await redis('SET', `rt:${code}`, JSON.stringify(r), 'EX', TTL);
       if (type === 'pub') await redis('SADD', 'rt:pub', code);
@@ -180,7 +183,7 @@ export default async function handler(req, res) {
         if (r.mem.length >= MAX_MEM) return send(res, 409, { code: 'full' });
         if (r.v && txt(b.v, 20) !== r.v) return send(res, 409, { code: 'ver', v: r.v });
         const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
-        r.mem.push({ id, n: txt(b.name, 20) || uid, d: deck, seen: Date.now() });
+        r.mem.push({ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now() });
       } else have.seen = Date.now();
       await save(); return send(res, 200, { ok: true });
     }
