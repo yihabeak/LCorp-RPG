@@ -1,6 +1,7 @@
 // 아인·소프·오르 — 거울 세계의 비동기 PvP · 친선전(베타)
 // 모든 요청은 로그인(사원증) 필요. 계산은 각자의 브라우저에서 하고, 서버는 덱·전적·방만 보관한다.
 //
+// 모든 요청에 slot(0~3, 계정 저장소 번호)을 붙인다. 덱 · 전적 · 순위는 계정+저장소마다 따로다.
 // GET  /api/mirror?op=me                    → { def, st:{pts,w,l,dw,dl}, rank }
 // PUT  /api/mirror { op:'def', name, deck } → 수비 덱 등록
 // GET  /api/mirror?op=find                  → { list:[{k,n,pw,deck,pts}] }   도전 상대 최대 3
@@ -42,10 +43,13 @@ const stOf = h => { const o = { pts: 0, w: 0, l: 0, dw: 0, dl: 0 }; if (Array.is
 export default async function handler(req, res) {
   try {
     if (!hasDb) return send(res, 503, { code: 'nodb' });
-    const id = await sessionUser(req);
-    if (!id) return send(res, 401, { code: 'auth' });
+    const uid = await sessionUser(req);
+    if (!uid) return send(res, 401, { code: 'auth' });
     const b = req.method === 'GET' ? {} : body(req);
     const op = req.method === 'GET' ? q(req, 'op') : b.op;
+    // 저장소(1~3칸)마다 다른 관리직으로 본다 — 같은 계정의 다른 저장소끼리도 마주칠 수 있다
+    const slot = num(req.method === 'GET' ? q(req, 'slot') : b.slot, 0, 3);
+    const id = slot ? `${uid}~${slot}` : uid;
 
     if (op === 'me') {
       const [def, h, rk] = await pipe([['GET', `m:def:${id}`], ['HGETALL', `m:st:${id}`], ['ZREVRANK', 'm:rank', id]]);
@@ -70,7 +74,7 @@ export default async function handler(req, res) {
       return send(res, 200, { list: list.slice(0, 3).map(r => ({ k: r.k, n: r.n, pw: r.pw, pts: r.pts, deck: r.deck })) });
     }
     if (op === 'fight' && req.method === 'POST') {
-      const k = String(b.k || ''); if (!k || k === id || k.length > 40) return send(res, 400, { code: 'bad' });
+      const k = String(b.k || ''); if (!k || k === id || k.length > 48) return send(res, 400, { code: 'bad' });
       const exists = await redis('EXISTS', `m:def:${k}`); if (!exists) return send(res, 404, { code: 'gone' });
       const dk = `m:day:${id}:${kday()}`;
       const [n, added] = await pipe([['INCR', dk + ':n'], ['SADD', dk, k], ['EXPIRE', dk + ':n', 172800], ['EXPIRE', dk, 172800]]);

@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.33.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 3.33.2.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13668,8 +13668,9 @@ const NAME=()=>T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・�
 const DESC=()=>T('거울 세계의 당신과 마주하여 가능성을 구원하라','Face yourself in the Mirror World and redeem possibility','鏡の世界のあなたと向き合い、可能性を救済せよ');
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
-const api=(path,opt)=>api74('/mirror'+path,opt);
-const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),nodb:T('서버 저장소가 연결되지 않았어요.','The server storage is not connected.','サーバー保存先が接続されていません。'),daily:T('오늘 도전 횟수를 다 썼어요.','No challenges left today.','今日の挑戦回数を使い切りました。'),noroom:T('그 방을 찾을 수 없어요.','Room not found.','その部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員の部屋です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),slow:T('잠시 뒤 다시 시도해 주세요.','Please try again shortly.','少し後でもう一度お試しください。'),gone:T('상대의 수비 덱이 사라졌어요.','That defense deck is gone.','相手の守備デッキが消えました。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),noapi:T('사이트에서만 쓸 수 있어요.','Only available on the site.','サイトでのみ利用できます。')};
+const slot=()=>{try{return (typeof ACT74!=='undefined'&&ACT74&&ACT74.n)||0}catch(e){return 0}};
+const api=(path,opt)=>{opt=opt||{};if(opt.body)opt.body=Object.assign({slot:slot()},opt.body);else path=(path||'?')+(path&&path.length>1?'&':'')+'slot='+slot();return api74('/mirror'+path,opt)};
+const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),nodb:T('서버 저장소가 연결되지 않았어요.','The server storage is not connected.','サーバー保存先が接続されていません。'),daily:T('오늘 도전 횟수를 다 썼어요.','No challenges left today.','今日の挑戦回数を使い切りました。'),noroom:T('그 방을 찾을 수 없어요.','Room not found.','その部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員の部屋です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),slow:T('잠시 뒤 다시 시도해 주세요.','Please try again shortly.','少し後でもう一度お試しください。'),gone:T('상대의 수비 덱이 사라졌어요.','That defense deck is gone.','相手の守備デッキが消えました。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),noapi:T('서버에서 대전 기능(/api/mirror)을 찾지 못했어요. 이 주소에는 아직 배포되지 않았거나, 서버가 없는 사본이에요.','The server has no battle feature (/api/mirror) at this address. It is not deployed here, or this copy has no server.','このアドレスのサーバーに対戦機能(/api/mirror)が見つかりません。未配備か、サーバーのない複製です。'),art:T('이 링크(사본)에는 서버가 없어서 쓸 수 없어요. 게임 사이트 주소로 접속해 주세요.','This link (a copy) has no server. Please open the game site address.','このリンク(複製)にはサーバーがないため使えません。ゲームサイトのアドレスで接続してください。')};
 const errMsg=e=>ERR[e&&e.code]||T('문제가 생겼어요: ','Something went wrong: ','問題が発生しました：')+((e&&e.code)||'?');
 
 /* ---------- 덱 ---------- */
@@ -13751,7 +13752,7 @@ function deckEd(kind){const d=decks()[kind];const used=d.map(m=>m.id);
  return `<div class="m136-deck"><h4>${kind==='atk'?T('공격 덱','Attack deck','攻撃デッキ'):T('수비 덱','Defense deck','守備デッキ')}</h4><p class="note">${kind==='atk'?T('내가 다른 관리직의 수비 덱에 도전할 때 쓰는 팀이에요.','The team you use to challenge other managers\' defense decks.','他の管理職の守備デッキに挑むときのチームです。'):T('다른 관리직이 도전해 오는 팀이에요. 저장하면 서버에 올라가요.','The team others challenge. Saving uploads it to the server.','他の管理職が挑んでくるチームです。保存するとサーバーに登録されます。')}</p>${d.map(row).join('')}
   ${d.length<3&&free.length?`<button type="button" class="btn ghost small" data-m136add="${kind}">+ ${T('직원 추가','Add staff','職員を追加')}</button>`:''}</div>`}
 async function body(){if(TAB==='deck'){const u=user();return `${deckEd('atk')}${deckEd('def')}<div class="row"><button type="button" class="btn" id="m136save">${T('덱 저장 · 수비 덱 등록','Save decks · register defense','デッキ保存・守備デッキ登録')}</button></div>${u?'':`<p class="note">${ERR.auth}</p>`}`}
- if(!online())return `<p class="note">${ERR.noapi}</p>`;if(!user())return `<p class="note">${ERR.auth}</p>`;
+ if(!online())return `<p class="note">${ERR.art}</p>`;if(!user())return `<p class="note">${ERR.auth}</p>`;
  if(TAB==='find'){let me=null,L=[];try{me=await api('?op=me')}catch(e){return `<p class="note">${errMsg(e)}</p>`}
   if(!me.def)return `<p class="note">${T('먼저 [덱 편성]에서 수비 덱을 등록해 주세요. 수비 덱을 올린 관리직만 도전할 수 있어요.','Register a defense deck in [Decks] first. Only managers with a defense deck can challenge.','先に[デッキ編成]で守備デッキを登録してください。守備デッキを登録した管理職だけが挑戦できます。')}</p>`;
   try{L=(await api('?op=find')).list||[]}catch(e){return `<p class="note">${errMsg(e)}</p>`}
@@ -13839,6 +13840,24 @@ try{const st=document.createElement('style');st.id='css136';st.textContent=css;d
 })();
 /* 팝업 닫기 ✕가 어두운 칸에 묻히지 않게 */
 (function(){try{const st=document.createElement('style');st.textContent='html body .pop .pop-x{color:#f4ee9a!important;font-weight:700}html body .pop .pop-x:hover{color:#111!important;background:#f4ee9a!important}';document.head.appendChild(st)}catch(e){}})();
+/* ============ v137: 모의 전투 — 체력 · 정신력에 영향이 없다 ============
+   시작할 때 모두 체력 가득 · 정신력 0으로 겨루고, 끝나면(승리·패배·기권) 나와 참가한 직원 모두 전투 전 체력·정신력으로 돌아간다. */
+(function(){
+let REST=null,STARTING=0;
+function restore(){if(!REST)return;const R=REST;REST=null;G.hp=R.hp;G.sp=R.sp;R.ags.forEach(([a,h,s])=>{a.hp=h;a.sp=s});try{save()}catch(e){}try{render()}catch(e){}}
+startBattle=(f=>function(kind,opt){
+ if(kind!=='spar124')return f.apply(this,arguments);
+ const ids=new Set();const L=[...((opt&&opt.mates)||[]),...((opt&&opt.foes)||[])].filter(a=>a&&!ids.has(a.id)&&ids.add(a.id));
+ REST={hp:G.hp,sp:G.sp,ags:L.map(a=>[a,a.hp,a.sp])};
+ G.hp=maxHp();G.sp=0;
+ STARTING=1;let r;try{r=f.apply(this,arguments)}finally{STARTING=0}
+ try{if(B&&B.spar124){B.allies.forEach(a=>{if(a.key==='player'){a.hp=a.max;G.hp=a.max}else{a.hp=a.max;a.sp=0}});renderBattle()}else restore()}catch(e){}
+ return r})(startBattle);
+const after=f=>function(){const on=!!(B&&B.spar124&&!B.done);const r=f.apply(this,arguments);if(on)restore();return r};
+battleWin=after(battleWin);battleLose=after(battleLose);battleFlee=after(battleFlee);
+/* 중간에 창을 닫았다 다시 그려져도 원래대로 */
+render=(f=>function(){try{if(REST&&!STARTING&&!(B&&!B.done&&B.kind==='spar124'))restore()}catch(e){}return f.apply(this,arguments)})(render);
+})();
 </script>
 
 </body></html>
