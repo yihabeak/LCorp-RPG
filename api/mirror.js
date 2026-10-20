@@ -16,7 +16,8 @@ import { hasDb, redis, pipe, sessionUser, send, body, kday, limited } from './_l
 
 const DAY_MAX = 10;
 const ROOM_TTL = 1800;
-const ID = /^[A-Za-z0-9_]{1,32}$/;
+// 장비 id: 기본 영문·숫자·_ 에 변조 장비 표시(~)까지 — 예: baton~pierce
+const ID = /^[A-Za-z0-9_][A-Za-z0-9_~.-]{0,63}$/;
 const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
 const txt = (v, n) => String(v || '').replace(/[<>&"']/g, '').slice(0, n);
 

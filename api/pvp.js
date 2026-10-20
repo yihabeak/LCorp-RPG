@@ -22,7 +22,8 @@ import crypto from 'node:crypto';
 import { hasDb, redis, sessionUser, send, body, limited } from './_lib.js';
 
 const TTL = 7200, PICK_MS = 50000, GRACE = 3000, MAX_MEM = 12, IDLE = 45000;
-const ID = /^[A-Za-z0-9_]{1,32}$/;
+// 장비 id: 기본 영문·숫자·_ 에 변조 장비 표시(~)까지 — 예: baton~pierce
+const ID = /^[A-Za-z0-9_][A-Za-z0-9_~.-]{0,63}$/;
 const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
 const txt = (v, n) => String(v || '').replace(/[<>&"']/g, '').slice(0, n);
 const q = (req, k) => req.query?.[k] ?? new URL(req.url, 'http://x').searchParams.get(k);
