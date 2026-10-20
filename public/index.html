@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.9.2.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.9.3.261021';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14005,7 +14005,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.9.2.261020';
+const VER='Ver. 4.9.3.261021';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -14576,9 +14576,11 @@ const UPL={
  audit:[null,L3('복도 끝에 낯선 정장이 서 있었다.','An unfamiliar suit stood at the end of the hall.','廊下の端に見慣れないスーツが立っていた。'),L3('부서 서류가 한 묶음씩 사라졌다가 돌아온다.','Department files vanish and return, one bundle at a time.','部署の書類が一束ずつ消えては戻ってくる。'),L3('당신의 이름이 적힌 파일이 감사팀 책상에 놓였다.','A file with your name on it sits on the audit desk.','あなたの名前が書かれたファイルが監査チームの机に置かれた。')],
  damage:[null,L3('천장 배관에서 물이 샌다.','The ceiling pipes are leaking.','天井の配管から水が漏れている。'),L3('복도 조명이 자꾸 깜빡인다.','The corridor lights keep flickering.','廊下の照明が何度も点滅する。'),L3('벽에 금이 가 있다. 아무도 고치러 오지 않는다.','Cracks run along the walls. No one comes to fix them.','壁にひびが入っている。誰も直しに来ない。')]};
 const lvI=(k,v)=>{const L=WV[k].lv;let i=0;L.forEach((x,j)=>{if(v>=x[0])i=j});return i};
-function wv(k,d){const w=W();if(!w||!d)return;const o=w.w[k];const n=cl(o+d,0,100);w.w[k]=n;if(n>=100){w.hit=w.hit||{};w.hit[k]=1}const a=lvI(k,o),b=lvI(k,n);
+// 4.9.3: 시설 상태가 50일 진행을 과하게 흔들지 않도록 나쁜 쪽 변화만 줄인다 (사기 하락 ×0.6 · 소문 · 감사 상승 ×0.7)
+const DMP={morale:[.6,1],rumor:[1,.7],audit:[1,.7]};
+function wv(k,d){const w=W();if(!w||!d)return 0;const m=DMP[k];if(m){d=d<0?d*m[0]:d*m[1];d=d<0?Math.min(-1,Math.round(d)):Math.max(1,Math.round(d))}const o=w.w[k];const n=cl(o+d,0,100);w.w[k]=n;if(n>=100){w.hit=w.hit||{};w.hit[k]=1}const a=lvI(k,o),b=lvI(k,n);
  if(a!==b){const up=k==='morale'?b<a:b>a;const line=k==='morale'?(UPL.morale[b]):(b>a?UPL[k][b]:null);
-  if(line)log(`${tx(line)} <small>(${tx(WV[k].n)} · ${tx(WV[k].lv[b][1])})</small>`,up?'warn':'good')}}
+  if(line)log(`${tx(line)} <small>(${tx(WV[k].n)} · ${tx(WV[k].lv[b][1])})</small>`,up?'warn':'good')}return d}
 const lvTxt=k=>tx(WV[k].lv[lvI(k,W().w[k])][1]);
 
 /* ---------- ② 소지품 ---------- */
@@ -14643,9 +14645,9 @@ const GRIEF_LOG={
  rival:L3('{b}이(가) "이길 사람이 없어졌네"라고 중얼거렸다. 웃지 않았다.','{b} muttered, "Nobody left to beat." They did not smile.','{b}が「勝つ相手がいなくなった」と呟いた。笑わなかった。'),
  grudge:L3('{b}은(는) 아무 말도 하지 않았다. 그날 밤 숙소 불이 늦게까지 켜져 있었다.','{b} said nothing. Their dorm light stayed on late that night.','{b}は何も言わなかった。その夜、宿舎の明かりは遅くまで点いていた。')};
 function onLoss(ag,died){const w=W();if(w.gone[ag.id])return;w.gone[ag.id]=died?'d':'g';
- wv('morale',died?-6:-3);
+ wv('morale',died?-4:-2);
  for(const {k,r,o} of relsOf(ag.id)){const p=agById(o);if(!p||!p.alive||p.out)continue;const R=RT[r.t];reveal(k,2);
-  agSp(p,-R.g*(died?1:.5));log(fillAB(tx(GRIEF_LOG[r.t]),ag,p),'q');
+  agSp(p,-Math.round(R.g*(died?1:.5)*.6));log(fillAB(tx(GRIEF_LOG[r.t]),ag,p),'q');
   if(R.th&&died){w.mourn[p.id]=G.day;w.th['grief:'+p.id]={s:1,d:G.day,dead:ag.n,t:r.t};note([0,1,2].map(i=>fillAB(L3('{b}이(가) {a}을(를) 잃었다.','{b} lost {a}.','{b}が{a}を失った。')[i],ag,p)))}}
  // 이 사람이 주인인 이야기는 닫는다
  const g=w.th['grief:'+ag.id];if(g&&g.s<9){g.s=9;g.end='gone';note([0,1,2].map(i=>[`${NL(ag.n)}의 애도는 끝나지 못했다.`,`${NL(ag.n)}'s mourning was never finished.`,`${NL(ag.n)}の喪は終わらなかった。`][i]))}
@@ -14654,7 +14656,7 @@ function scanLoss(){const w=W();if(!w)return;for(const a of G.agents||[])if(!a.a
 agentDie=(f=>function(ag){const was=ag&&ag.alive;const r=f.apply(this,arguments);try{if(was&&!ag.alive&&G&&!G.ended)onLoss(ag,true)}catch(e){}return r})(agentDie);
 
 /* ---------- 하루의 흐름 ---------- */
-function daily(){const w=W();if(!w||w.dd===G.day)return;w.dd=G.day;for(const k of ['audit','damage'])if(w.w[k]>=100){w.hit=w.hit||{};w.hit[k]=1}scanLoss();rollRels();
+function daily(){const w=W();if(!w||w.dd===G.day)return;w.dd=G.day;w.am={audit:w.w.audit,damage:w.w.damage};scanLoss();rollRels();
  const A=G.agents.filter(a=>a.alive&&!a.out);
  // 관계의 낌새: 숨은 사이는 길어야 나흘 안에 낌새가 보이고, 열흘이면 드러난다
  for(const [k,r] of Object.entries(w.rel)){const [x,y]=k.split('|').map(agById);if(!x||!y||!x.alive||!y.alive)continue;const age=G.day-(r.kd||r.d);
@@ -14663,12 +14665,12 @@ function daily(){const w=W();if(!w||w.dd===G.day)return;w.dd=G.day;for(const k o
   if(RT[r.t].day&&ok(x)&&ok(y)){agSp(x,RT[r.t].day);agSp(y,RT[r.t].day)}}
  // 시설 상태의 자연스러운 흐름
  const v=w.w;wv('damage',Math.min(w.br,4)*2+((G.mLevel||1)>=6?1:0)-4);w.br=0;
- wv('rumor',-3);wv('audit',v.rumor>=50?4:-2);wv('morale',v.morale>52?-1:v.morale<48?1:0);
- if(v.morale>=70)A.forEach(a=>agSp(a,3));else if(v.morale<25){A.forEach(a=>agSp(a,-4));log(T('사기가 바닥이다. 직원들의 정신력이 아침부터 깎여 있다.','Morale is broken. The staff start the day already worn down.','士気がどん底だ。職員たちの精神力が朝から削れている。'),'hurt')}
+ wv('rumor',-4);wv('audit',v.rumor>=60?3:-3);wv('morale',v.morale>55?-1:v.morale<35?3:v.morale<48?2:0);
+ if(v.morale>=70)A.forEach(a=>agSp(a,3));else if(v.morale<20){A.forEach(a=>agSp(a,-2));log(T('사기가 바닥이다. 직원들의 정신력이 아침부터 깎여 있다.','Morale is broken. The staff start the day already worn down.','士気がどん底だ。職員たちの精神力が朝から削れている。'),'hurt')}
  if(v.damage>=75){try{addSp(-3)}catch(e){}log(T('갈라진 벽 사이로 바람 소리가 들린다. 잠을 설쳤다. (정신력 -3)','Wind whistles through the cracked walls. You slept badly. (Sanity -3)','ひび割れた壁から風の音がする。よく眠れなかった。(精神力-3)'),'hurt')}
  // 애도 중인 사람이 떠났거나 회복했으면 정리
  for(const id of Object.keys(w.mourn)){const p=agById(id);if(!p||!p.alive||G.day-w.mourn[id]>6)delete w.mourn[id]}
- if((v.audit>=100||(w.hit&&w.hit.audit))&&!w.audEnd)w.audEnd=1}
+ if(w.am.audit>=100&&!w.audEnd)w.audEnd=1}
 startDay=(f=>function(){const pre=G&&G.flags&&G.flags['init'+G.day];const r=f.apply(this,arguments);try{if(G&&!G.ended&&G.day>(W().dd||0))daily();if(G&&W().audEnd===1&&!G.ended)setTimeout(auditEnding,50)}catch(e){console.error(e)}return r})(startDay);
 roamFromQ=(f=>function(){const n0=(G.roam||[]).length;const r=f.apply(this,arguments);try{const d=(G.roam||[]).length-n0;if(d>0)W().br+=d}catch(e){}return r})(roamFromQ);
 tick=(f=>function(){const r=f.apply(this,arguments);try{if(G&&!G.ended)scanLoss()}catch(e){}return r})(tick);
@@ -14678,7 +14680,7 @@ const EV=window.EV119||[];
 const O=(l,stat,dc,ex)=>Object.assign({l,stat,dc},ex||{});
 const good=r=>r==='ok'||r==='crit';
 const fx=(n,txt)=>`${txt}${n.length?`<br><small class="note">${n.join(' · ')}</small>`:''}`;
-const WN=(k,d)=>{wv(k,d);return `${tx(WV[k].n)} ${d>0?'+':''}${d}`};
+const WN=(k,d)=>{d=wv(k,d)||d;return `${tx(WV[k].n)} ${d>0?'+':''}${d}`};
 const IG=id=>{give(id,1,true);return `${IT[id].ic} ${tx(IT[id].n)}`};
 function relPair(f){const w=W();const L=shuffle(Object.entries(w.rel).filter(([k,r])=>{const [x,y]=k.split('|').map(agById);return ok(x)&&ok(y)&&f(r)}));if(!L.length)return null;const [k,r]=L[0];const [a,b]=k.split('|').map(agById);return {k,r,a,b}}
 const nm=a=>NL(a.n);
@@ -15009,10 +15011,10 @@ function emptyEnd(){const me=ME();G.phase='ending';pages([P(T('공문','The Memo
   P(T('빈 자리','Empty Seats','空席'),T(`마지막 직원이 나가며 고개를 숙였다. ${me}은(는) 빈 책상들 사이에 혼자 남았다. 내일부터는 이름 모를 사람들이 이 자리를 채울 것이다.`,`The last of the staff bowed on the way out. ${me} was left alone among empty desks. From tomorrow, strangers will fill these seats.`,`最後の職員が頭を下げて出ていった。${me}は空の机の間に一人残された。明日からは名も知らぬ人々がこの席を埋めるだろう。`))],
   ()=>window.finish134('empty',`${T('빈 부서','The Empty Department','空の部署')} · ${T('해체 엔딩','Dissolution Ending','解体エンディング')}`,T(`${G.day}일째, 사기가 바닥난 채 사흘이 지났다. 부서는 해체되었다.`,`Day ${G.day}: three days with morale at rock bottom. The department was dissolved.`,`${G.day}日目、士気がどん底のまま三日が過ぎた。部署は解体された。`)))}
 startDay=(f=>function(){const r=f.apply(this,arguments);try{const w=W();if(!w||G.ended||G.arc||G.day>=50)return r;
-  if(w.dk144!==G.day){w.dk144=G.day;w.low144=w.w.morale<=5?(w.low144||0)+1:0;
-   if(w.low144===2)log(T('직원들이 서로 말을 하지 않는다. 이대로라면 본사가 움직일 것이다.','The staff no longer speak to each other. If this continues, head office will act.','職員たちが互いに口をきかない。このままでは本社が動くだろう。'),'hurt');
+  if(w.dk144!==G.day){w.dk144=G.day;w.low144=w.w.morale<=3?(w.low144||0)+1:0;
+   if(w.low144===3)log(T('직원들이 서로 말을 하지 않는다. 이대로라면 본사가 움직일 것이다.','The staff no longer speak to each other. If this continues, head office will act.','職員たちが互いに口をきかない。このままでは本社が動くだろう。'),'hurt');
    if(w.w.damage>=90&&w.w.damage<100)log(T('벽 안쪽에서 무언가 끊어지는 소리가 났다. 시설이 버티지 못하고 있다.','Something snapped inside the walls. The facility is failing.','壁の内側で何かが切れる音がした。施設が持ちこたえられていない。'),'hurt')}
-  if((w.w.damage>=100||(w.hit&&w.hit.damage))&&!w.endQ){w.endQ='dark';setTimeout(darkEnd,60)}else if(w.low144>=3&&!w.endQ){w.endQ='empty';setTimeout(emptyEnd,60)}}catch(e){console.error(e)}return r})(startDay);
+  if(((w.am&&w.am.damage>=100)||w.w.damage>=100)&&!w.endQ){w.endQ='dark';setTimeout(darkEnd,60)}else if(w.low144>=5&&!w.endQ){w.endQ='empty';setTimeout(emptyEnd,60)}}catch(e){console.error(e)}return r})(startDay);
 
 /* 가이드 보강 */
 try{const g=GUIDE.find(x=>x.k==='journal');if(g)g.b+=T('<p class="tip">시설 상태가 끝까지 치우치면 돌이킬 수 없는 결말이 오기도 해요. 수첩에서 조짐을 살펴보세요.</p>','<p class="tip">If the facility state tips all the way, an irreversible ending may come. Watch for signs in the Notebook.</p>','<p class="tip">施設の状態が極端に傾くと、取り返しのつかない結末が来ることもあります。手帳で兆しを見てください。</p>')}catch(e){}
@@ -16239,7 +16241,7 @@ function admHtml(){const l=L(),w=W();if(!l||!w)return `<details class="fold"><su
  <details class="fold" open><summary><span class="lbl">시설 상태</span><small>사기 ${w.w.morale} · 소문 ${w.w.rumor} · 감사 ${w.w.audit} · 손상 ${w.w.damage}</small></summary><div class="fold-b">
   <div class="agrid2">${inp('w153morale',w.w.morale,'사기')}${inp('w153rumor',w.w.rumor,'소문')}${inp('w153audit',w.w.audit,'감사')}${inp('w153damage',w.w.damage,'시설 손상')}</div>
   <div class="row">${B('wApply','적용','prim')}${B('wFix','시설 완전 복구 (손상 0)')}${B('wHit','100 도달 기록 지우기')}${B('wNorm','모두 기본값')}</div>
-  <p class="note">100 도달 기록 ${w.hit?Object.keys(w.hit).filter(k=>w.hit[k]).join(', ')||'없음':'없음'} · 이 기록이 있으면 다음 날 해당 엔딩이 열린다.</p></div></details>
+  <p class="note">아침이 될 때 감사 · 시설 손상이 100이면 해당 엔딩, 사기 3 이하가 5일 이어지면 해체 엔딩이 열린다.</p></div></details>
  <details class="fold"><summary><span class="lbl">아이템</span><small>${Object.keys(w.it||{}).length}종 보유</small></summary><div class="fold-b">
   <div class="row">${B('itAll','모든 아이템 1개씩')}${B('itClear','모두 비우기','bad')}</div>
   <div class="admlist">${Object.keys(l.IT).map(k=>`<div class="admrow"><b>${l.IT[k].ic} ${esc(tx(l.IT[k].n))}</b><span class="code">${esc(k)} · 보유 ${w.it[k]||0}</span><span class="row">${B('itAdd:'+k,'+1')}${B('itSub:'+k,'-1')}</span></div>`).join('')}</div>
