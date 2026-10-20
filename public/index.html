@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.35.1.261020';window.GAME_VER=V;
+(function(){const V='Ver. 3.36.1.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13818,7 +13818,7 @@ async function roomScore(code,sc){try{await api('',{method:'POST',body:{op:'room
 window.mirror136=open;window.mirSnap136=d=>snap(d);window.mirDecks136=decks;window.mirApiSlot136=slot;
 function lockWhy(){if(G.arc||G.day>50)return T('지금은 들어갈 수 없어요','Not available now','今は入れません');if((G.roam||[]).some(r=>!r.dead)||(G.breachQ||[]).length)return T('경보 중에는 들어갈 수 없어요','Not during an alert','警報中は入れません');return ''}
 panelPre=(f=>function(title,sub,choices){
- try{if(typeof title==='string'&&(title.startsWith('업무 시간')||title==='퇴근 후')&&Array.isArray(choices)&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){
+ try{if(false&&typeof title==='string'&&(title.startsWith('업무 시간')||title==='퇴근 후')&&Array.isArray(choices)&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){
   const why=lockWhy();const grp=title==='퇴근 후'?'행정':undefined;
   choices=choices.concat([Object.assign({l:`${ic('sword')} ${NAME()}`,s:why||DESC(),dis:!!why,f:()=>open('deck')},grp?{grp}:{})])}}catch(e){}
  return f.call(this,title,sub,choices)})(panelPre);
@@ -13901,7 +13901,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 3.35.1.261020';
+const VER='Ver. 3.36.1.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -13954,7 +13954,7 @@ function sanitize(S,sd,P,t){const out=[];const used={};const L=S.slots[sd];for(l
 /* 사람별 선택 → 그 편 슬롯 순서로 */
 function combine(S,sd,box){const cnt={};return S.slots[sd].map(sl=>{const k=cnt[sl.o]=(cnt[sl.o]||0);cnt[sl.o]++;return ((box||{})[sl.o]||[])[k]||{o:null}})}
 function heads(R,u,n){const h=Math.max(.05,Math.min(.95,.5+u.sp/100));let k=0;for(let i=0;i<n;i++)if(R()<h)k++;return k}
-function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const L=[];S.logs[t]=L;
+function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const L=[];S.logs[t]=L;const EVS=[];S.ev=S.ev||{};S.ev[t]=EVS;const snap=()=>S.u.map(Lx=>Lx.map(u=>[u.hp,u.sp,u.down?1:0]));let CUR=null;
  const nm=u=>NL(u.n);const sk=(u,i)=>TRN(u.sk[i].n);
  S.used={};pf=sanitize(S,F,pf,t);ps=sanitize(S,Sd,ps,t);for(const ow of Object.keys(S.used))S.Lc[ow]=Math.max(0,(S.Lc[ow]||0)-S.used[ow]);
  const U=(sd,i)=>S.u[sd][i];
@@ -13967,7 +13967,7 @@ function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const 
  const EV=[];FA.forEach(a=>EV.push({a,spd:Math.max(U(F,a.u).speed,a.cl?U(Sd,a.cl.u).speed:0),sd:F,k:a.k}));SA.filter(a=>!a.inCl).forEach(a=>EV.push({a,spd:U(Sd,a.u).speed,sd:Sd,k:a.k}));
  EV.sort((x,y)=>(y.spd-x.spd)||((x.sd===F?0:1)-(y.sd===F?0:1))||(x.k-y.k));
  const canAct=u=>u&&!u.down&&!(u.panic>0);
- function hit(att,si,coins,tgtI){let tg=U(1-att.side,tgtI);if(!tg||tg.down){const a=alive(S.u[1-att.side])[0];if(!a)return;tg=a}
+ function hit(att,si,coins,tgtI){let tg=U(1-att.side,tgtI);if(!tg||tg.down){const a=alive(S.u[1-att.side])[0];if(!a)return;tg=a}const H={k:'hit',att:[att.side,att.i,si],tg:[tg.side,tg.i],coins};
   const s=att.sk[si];let hc=0,tot=0,ev=0;
   for(let c=0;c<coins;c++){if(R()<Math.max(.05,Math.min(.95,.5+att.sp/100)))hc++;const p=s.base+hc*s.cp;
    if(tg.guard&&tg.guard.type==='evade'){const e=tg.def.base+heads(R,tg,2)*tg.def.cp;if(e>=p){ev++;continue}}
@@ -13976,15 +13976,18 @@ function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const 
    if(s.dc==='WHITE')tg.sp-=d;else{if(tg.shield>0){const a=Math.min(tg.shield,d);tg.shield-=a;d-=a}tg.hp-=d;if(s.dc==='BLACK')tg.sp-=Math.round(d/2)}
    if(tg.hp<=0){tg.hp=0;tg.down=true;break}}
   L.push(T(`${nm(att)}의 「${sk(att,si)}」 → ${nm(tg)}: ${s.dc==='WHITE'?'정신력':'피해'} ${tot}${ev?` (회피 ${ev})`:''}`,`${nm(att)}'s "${sk(att,si)}" → ${nm(tg)}: ${s.dc==='WHITE'?'SP damage':'damage'} ${tot}${ev?` (evaded ${ev})`:''}`,`${nm(att)}の「${sk(att,si)}」→ ${nm(tg)}：${s.dc==='WHITE'?'精神ダメージ':'ダメージ'} ${tot}${ev?`(回避 ${ev})`:''}`));
+  H.dmg=tot;H.ev=ev;H.white=s.dc==='WHITE';if(CUR)CUR.hit=H;else{H.after=snap();EVS.push(H)}
   if(tg.down)L.push(T(`${nm(tg)}이(가) 쓰러졌다.`,`${nm(tg)} is down.`,`${nm(tg)}が倒れた。`));
   else if(tg.sp<=-45&&!(tg.panic>0)){tg.panic=2;L.push(T(`${nm(tg)}: 정신력 -45 · 패닉 (다음 턴 행동 불가)`,`${nm(tg)}: SP -45 · panic (cannot act next turn)`,`${nm(tg)}：精神力-45・パニック(次のターン行動不可)`))}}
  for(const e of EV){const a=e.a,au=U(a.sd,a.u);
   if(a.cl){const b=a.cl,bu=U(b.sd,b.u);const okA=canAct(au),okB=canAct(bu);
    if(okA&&okB){let ca=au.sk[a.s].coins,cb=bu.sk[b.s].coins,n=0;
-    while(ca>0&&cb>0&&n++<40){const pa=au.sk[a.s].base+heads(R,au,ca)*au.sk[a.s].cp,pb=bu.sk[b.s].base+heads(R,bu,cb)*bu.sk[b.s].cp;if(pa>pb)cb--;else if(pb>pa)ca--}
-    const [W,Lo,ws,wc]=ca>0?[au,bu,a.s,ca]:[bu,au,b.s,cb];W.sp=Math.min(45,W.sp+5);Lo.sp=Math.max(-45,Lo.sp-5);
+    const flip=(u,k)=>{const h=Math.max(.05,Math.min(.95,.5+u.sp/100));const z=[];for(let i=0;i<k;i++)z.push(R()<h);return z};
+    const C={k:'clash',a:[au.side,au.i,a.s],b:[bu.side,bu.i,b.s],coins:[ca,cb],hp:[Math.round(Math.max(.05,Math.min(.95,.5+au.sp/100))*100),Math.round(Math.max(.05,Math.min(.95,.5+bu.sp/100))*100)],rounds:[]};
+    while(ca>0&&cb>0&&n++<40){const ah=flip(au,ca),bh=flip(bu,cb);const pa=au.sk[a.s].base+ah.filter(Boolean).length*au.sk[a.s].cp,pb=bu.sk[b.s].base+bh.filter(Boolean).length*bu.sk[b.s].cp;C.rounds.push({ca,cb,ah,bh,x:pa,y:pb});if(pa>pb)cb--;else if(pb>pa)ca--}
+    const [W,Lo,ws,wc]=ca>0?[au,bu,a.s,ca]:[bu,au,b.s,cb];W.sp=Math.min(45,W.sp+5);Lo.sp=Math.max(-45,Lo.sp-5);C.win=ca>0?'a':'b';C.left=wc;CUR=C;
     L.push(T(`합 · ${nm(au)}「${sk(au,a.s)}」 vs ${nm(bu)}「${sk(bu,b.s)}」 → ${nm(W)} 승 (코인 ${wc} 남음)`,`Clash · ${nm(au)} "${sk(au,a.s)}" vs ${nm(bu)} "${sk(bu,b.s)}" → ${nm(W)} wins (${wc} coins left)`,`マッチ・${nm(au)}「${sk(au,a.s)}」vs ${nm(bu)}「${sk(bu,b.s)}」→ ${nm(W)}の勝ち(コイン残り${wc})`));
-    hit(W,ws,wc,Lo.i)}
+    hit(W,ws,wc,Lo.i);CUR=null;C.after=snap();EVS.push(C)}
    else if(okA)hit(au,a.s,au.sk[a.s].coins,a.tg);else if(okB)hit(bu,b.s,bu.sk[b.s].coins,b.tg);}
   else if(canAct(au))hit(au,a.s,au.sk[a.s].coins,a.tg);
   if(over(S))break}
@@ -13992,11 +13995,11 @@ function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const 
  const o=over(S);if(!o&&t>=20){const r=[0,1].map(sd=>S.u[sd].reduce((x,u)=>x+u.hp,0)/S.u[sd].reduce((x,u)=>x+u.max,0));S.end=r[0]>r[1]?'A':r[1]>r[0]?'B':'draw';L.push(T('20턴 — 남은 체력 비율로 판정','Turn 20 — decided by remaining HP','20ターン — 残り体力の割合で判定'))}else if(o)S.end=o}
 function over(S){const a=alive(S.u[0]).length,b=alive(S.u[1]).length;return !a&&!b?'draw':!a?'B':!b?'A':null}
 const firstOf=(st,t)=>t%2===1?st.f1:oth(st.f1);
-function sim(st){const S={seed:st.seed,u:build(st),logs:{},end:null,slots:[[],[]],t:0,mode:st.bt&&st.bt.mode,Lc:{}};S.u.forEach(L=>L.forEach(u=>{S.Lc[u.o]=0}));if(!st.f1||!st.bt)return S;
- for(let t=1;t<=Math.max(1,st.turn);t++){S.t=t;setup(S,t);const P=st.P&&st.P[t];if(t<st.turn&&P){const F=SI(firstOf(st,t));resolve(S,t,F,combine(S,F,P.f),combine(S,1-F,P.s));if(S.end)return S}else break}return S}
+function sim(st,stopAt){const S={seed:st.seed,u:build(st),logs:{},end:null,slots:[[],[]],t:0,mode:st.bt&&st.bt.mode,Lc:{}};S.u.forEach(L=>L.forEach(u=>{S.Lc[u.o]=0}));if(!st.f1||!st.bt)return S;
+ for(let t=1;t<=Math.max(1,st.turn);t++){S.t=t;setup(S,t);const P=st.P&&st.P[t];if(t<st.turn&&P&&t!==stopAt){const F=SI(firstOf(st,t));resolve(S,t,F,combine(S,F,P.f),combine(S,1-F,P.s));if(S.end)return S}else break}return S}
 
 /* ---------- 화면: 일반 전투 화면과 같은 틀 (#panel) ---------- */
-let ROOM=null,ST=null,FETCHED=0,POLL=0,TICK=0,PK=[],SENT=-1,TO_SENT=0,ENDSENT=0,SEL=null,RT0=null;
+let ROOM=null,ST=null,FETCHED=0,POLL=0,TICK=0,PK=[],SENT=-1,TO_SENT=0,ENDSENT=0,SEL=null,RT0=null,PLAYED=null,ANIM=false,ASKIP=false;
 const TTL_=()=>T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)');
 const TEAM=tm=>tm==='A'?T('A팀','Team A','Aチーム'):T('B팀','Team B','Bチーム');
 function pauseRt(){if(RT0===null&&G){RT0=G.rt!==false;G.rt=false;try{renderTop()}catch(e){}}}
@@ -14025,9 +14028,9 @@ function lobby(){stop();const ok=online()&&user();
    box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> · ${r.mode==='team'?T('다수 전투','Team','多人数'):'1:1'} · ${r.n}${T('명','','人')} · ${r.ph==='lobby'?T(`빈자리 ${r.free}`,`${r.free} seats open`,`空席 ${r.free}`):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${r.ph==='lobby'?T('들어가기','Join','入る'):T('관전','Spectate','観戦')}</button></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
    box.querySelectorAll('[data-rtj]').forEach(b=>b.onclick=()=>join(b.dataset.rtj))}catch(x){box.innerHTML=`<p class="note">${errMsg(x)}</p>`}};
  const rf=P.querySelector('#rtRef');if(rf)rf.onclick=loadPub;loadPub()}
-function go(){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;pauseRt();poll();clearInterval(TICK);TICK=setInterval(tick,300)}
+function go(){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;PLAYED=null;ANIM=false;pauseRt();poll();clearInterval(TICK);TICK=setInterval(tick,300)}
 async function poll(){clearTimeout(POLL);if(!ROOM)return;
- try{const r=await api(`?op=get&code=${ROOM}`);if(ST&&r.st&&ST.seed!==r.st.seed){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null}
+ try{const r=await api(`?op=get&code=${ROOM}`);if(ST&&r.st&&ST.seed!==r.st.seed){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;PLAYED=null}
   const prev=ST&&JSON.stringify(Object.assign({},ST,{now:0}));ST=r.st;FETCHED=Date.now();
   const lost=!document.getElementById('rtStage')&&!document.getElementById('rtWait');
   if(JSON.stringify(Object.assign({},ST,{now:0}))!==prev||(lost&&TAB==='work'&&!POP))draw_()}
@@ -14065,7 +14068,7 @@ function lobbyRoom(){const st=ST,cap=st.mode==='team'?5:1;const mySeat=(st.mem.f
   <div class="rt-status">${status}</div>
   <div class="row">${mySeat?`<button type="button" class="btn ${meR?'ghost':''}" id="rtReady">${meR?T('준비 취소','Cancel ready','準備取消'):T('준비','Ready','準備')}</button><button type="button" class="btn ghost small" id="rtStand">${T('자리 떠나기','Leave seat','席を離れる')}</button>`:''}<button type="button" class="btn ghost small" id="rtLeave">${T('방 나가기','Leave room','退室')}</button></div>
   <div class="rt-mem"><b>${T('관전','Spectators','観戦')} ${specs.length}</b>${specs.map(m=>`<span class="${m.id===st.me?'me':''}">${m.host?'♛ ':''}${esc(NL(m.n))}</span>`).join('')||`<small>-</small>`}<p class="note">${T('방장이 나가면 남은 사람 중 가장 먼저 들어온 사람이 방장이 돼요.','If the host leaves, the earliest remaining member becomes host.','部屋主が退出すると、残った人のうち最も早く入った人が部屋主になります。')}</p></div>`}
-function draw_(){if(!ST)return;const st=ST;
+function draw_(){if(!ST||ANIM)return;const st=ST;
  if(st.ph==='lobby'){panel('',`<div id="rtWait">${lobbyRoom()}</div>`);return bindM(null,0)}
  const S=sim(st);const me=st.myTeam?SI(st.myTeam):0,op=1-me,spec=!st.myTeam;
  if(S.end&&st.ph!=='end'&&!ENDSENT&&!spec){ENDSENT=1;call('end',{w:S.end}).catch(()=>{})}
@@ -14073,11 +14076,15 @@ function draw_(){if(!ST)return;const st=ST;
  if(st.ph==='toss'){const won=st.leader===st.me;
   const body=`<div class="rt-coin"><i class="coin"></i> ${T('코인 토스','Coin toss','コイントス')} — ${T('앞면','Heads','表')}: <b>${st.bt.mode==='team'?TEAM(st.tw):esc(NL(nmOf(st.leader)))}</b></div>`+(won?`<div class="row"><button type="button" class="btn" data-rtf="1">${T('선공','Go first','先攻')}</button><button type="button" class="btn ghost" data-rtf="0">${T('후공','Go second','後攻')}</button></div>`:`<p class="note">${esc(NL(nmOf(st.leader)))}${T('이(가) 선공·후공을 고르는 중이에요.',' is choosing first or second.','が先攻・後攻を選んでいます。')}</p>`);
   panel(vs,`<div id="rtWait">${codeBox()}${body}<div class="row"><button type="button" class="btn ghost small" id="rtLeave">${T('나가기','Leave','退出')}</button></div></div>`);return bindM(S,me)}
- const ended=st.ph==='end'||!!S.end;const t=st.turn,F=firstOf(st,t),myFirst=st.myTeam===F;const mine=!ended&&myPhase()&&!iDone();
+ const lastR=Math.max(...Object.keys(S.logs).map(Number),0);if(PLAYED===null)PLAYED=lastR;
+ if(lastR>PLAYED){ANIM=true;animate(st,lastR,me);return}
+ return drawBattle(st,S,me,op,spec,vs,null)}
+function drawBattle(st,S,me,op,spec,vs,AN){
+ const ended=!AN&&(st.ph==='end'||!!S.end);const t=AN?AN.t:st.turn,F=firstOf(st,t),myFirst=st.myTeam===F;const mine=!AN&&!ended&&myPhase()&&!iDone();
  const L=S.slots[me]||[];const myIdx=L.map((sl,j)=>sl.o===st.me?j:-1).filter(j=>j>=0);while(PK.length<myIdx.length)PK.push({o:null,u:null,sl:null});
  const pkOf=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
  const used=mine?myIdx.reduce((x,j,k)=>x+pickCost(S,me,j,PK[k].o),0):0;
- const Pt=st.P&&st.P[t];const fp=(!spec&&st.ph==='p2'&&!myFirst&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
+ const Pt=st.P&&st.P[t];const fp=AN?null:(!spec&&st.ph==='p2'&&!myFirst&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
  const enemies=S.u[op].map(u=>{const its=S.slots[op].map((sl,k)=>({sl,k})).filter(x=>x.sl.u===u.i).map(({sl,k})=>{const q=fp?fp[k]:null;
    if(!q)return `<div class="lb-int i79 rt-hid"><b>${u.speed}</b><span class="rt-qm">…</span></div>`;
    if(q.o===null)return `<div class="lb-int i79 rt-none"><b>${u.speed}</b><span class="rt-qm">-</span></div>`;
@@ -14089,9 +14096,10 @@ function draw_(){if(!ST)return;const st=ST;
  const allies=S.u[me].map(u=>{const sls=L.map((sl,j)=>({sl,j})).filter(x=>x.sl.u===u.i).map(({sl,j})=>{const p=pkOf(j);
    if(!p)return `<div class="lb-slot s79 none rt-mate"><b>${u.speed}</b><em>${spec?'':T('동료','Ally','味方')}</em></div>`;
    let lab=T('대기','Idle','待機'),cls='none',sub='';
-   if(p.o==='d'){lab=T('수비','Defend','守備');cls='def'}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];lab=esc(TRN(s.n));cls=p.sl!=null?'clash':'atk';sub=p.sl!=null?`${T('합','Clash','マッチ')} · ${T('슬롯','Slot','スロット')}${p.sl+1}`:(p.u!=null&&S.u[op][p.u]?esc(NL(S.u[op][p.u].n)):'')}
-   return `<button type="button" class="lb-slot s79 ${cls} ${SEL===j?'sel79':''}" data-rts="${j}"><b>${u.speed}</b><em>${lab}</em>${sub?`<small class="p127">${sub}</small>`:''}</button>`}).join('');
-  return `<div class="lb-fig lb-al ${u.down?'dead':''} ${u.o===st.me?'mine':''}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${uName(u)}</div>${bars(u,false)}</div>`}).join('');
+   if(p.o==='d'){lab=T('수비','Defend','守備');cls='def'}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];cls=p.sl!=null?'clash':'atk';lab=`<i class="c127">${s.coins}</i>${skRange(s)}`;
+     if(p.sl!=null&&fp){const os=S.slots[op][p.sl],q=fp[p.sl]||{};const ou=os&&S.u[op][os.u];const es=ou&&(q.o===0||q.o===1)?ou.sk[os.opts[q.o]]:null;sub=es?Math.round(winP(u,s,ou,es)*100)+'%':'?'}else sub=T('일방','One-sided','一方')}
+   return `<button type="button" class="lb-slot s79 s127 ${cls} ${SEL===j?'sel79':''}" data-rts="${j}"><b>${u.speed}</b><em>${lab}</em>${sub?`<small class="p127 ${p.sl==null&&cls==='atk'?'one':''}">${sub}</small>`:''}</button>`}).join('');
+  return `<div class="lb-fig lb-al ${u.down?'dead':''} ${u.o===st.me?'mine':''}" data-rtau="${u.i}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${uName(u)}</div>${bars(u,false)}</div>`}).join('');
  let dock='';
  if(mine){dock=myIdx.map((j,k)=>{const sl=L[j],u=S.u[me][sl.u],p=PK[k];const who=`${esc(NL(u.n))} · ${T('속도','Spd','速度')} ${u.speed}`;
    const cards=sl.opts.map((si,o)=>{const s=u.sk[si];const c=si+1;const dis=p.o!==o&&used-pickCost(S,me,j,p.o)+c>(S.Lc[st.me]??maxOf(S,t));
@@ -14107,12 +14115,51 @@ function draw_(){if(!ST)return;const st=ST;
  else{const done=(Pt&&Pt.done)||[];const team=st.ph==='p1'?F:oth(F);const owe=(st.bt[team]||[]).map(x=>x.id).filter(id=>st.mem.some(m=>m.id===id));const waitN=owe.filter(id=>!done.includes(id)).map(id=>esc(NL(nmOf(id))));
   info=`<span>${myPhase()?T('내 선택을 냈어요. 동료를 기다리는 중이에요.','Submitted. Waiting for teammates.','提出しました。味方を待っています。'):st.ph==='p1'?T('선공 쪽이 스킬을 고르는 중이에요. (선택은 보이지 않아요)','The first side is choosing. (Hidden from you)','先攻側が選んでいます。(見えません)'):T('후공 쪽이 대응을 고르는 중이에요.','The second side is responding.','後攻側が対応を選んでいます。')}${waitN.length?` · ${T('기다리는 사람','Waiting on','待ち')}: ${waitN.join(', ')}`:''}</span>`}
  const lastT=Math.max(...Object.keys(S.logs).map(Number),0);const lg=lastT?`<div class="rt-log"><b>${T('턴','Turn','ターン')} ${lastT} ${T('결과','result','結果')}</b>${(S.logs[lastT]||[]).map(x=>`<div>${esc(x)}</div>`).join('')}</div>`:'';
- const top=ended?'':`<div class="rt-top"><span class="rt-tn">${T('턴','Turn','ターン')} ${t} · <b>${role}</b> · ${mine?T('내 차례','Your move','自分の番'):T('기다리는 중','Waiting','待機中')}</span>${spec?'':`<span class="rt-light">${T('내 빛','My light','自分の光')} ${coins(maxOf(S,t),used+maxOf(S,t)-(S.Lc[st.me]??maxOf(S,t)))} <b>${(S.Lc[st.me]??maxOf(S,t))-used}</b>/${maxOf(S,t)}${isTeam(S)?`<small class="rt-rf">${t%2===1?T('이번 턴 회복','refilled this turn','このターン回復'):T('다음 턴 회복','refills next turn','次のターン回復')}</small>`:''}</span>`}<span class="rt-tm"><span id="rtT">${Math.max(0,left())}</span>${T('초','s','秒')}</span></div>`;
+ const top=AN?`<div class="rt-top"><span class="rt-tn">${T('턴','Turn','ターン')} ${t} · ${T('진행 중','Resolving','進行中')}</span></div>`:ended?'':`<div class="rt-top"><span class="rt-tn">${T('턴','Turn','ターン')} ${t} · <b>${role}</b> · ${mine?T('내 차례','Your move','自分の番'):T('기다리는 중','Waiting','待機中')}</span>${spec?'':`<span class="rt-light">${T('내 빛','My light','自分の光')} ${coins(maxOf(S,t),used+maxOf(S,t)-(S.Lc[st.me]??maxOf(S,t)))} <b>${(S.Lc[st.me]??maxOf(S,t))-used}</b>/${maxOf(S,t)}${isTeam(S)?`<small class="rt-rf">${t%2===1?T('이번 턴 회복','refilled this turn','このターン回復'):T('다음 턴 회복','refills next turn','次のターン回復')}</small>`:''}</span>`}<span class="rt-tm"><span id="rtT">${Math.max(0,left())}</span>${T('초','s','秒')}</span></div>`;
  panel(vs,`<div class="lb rt139">${top}
-  <div class="lb-stage" id="rtStage"><div class="lb-side l">${allies}</div><div class="lb-mid">VS</div><div class="lb-side r">${enemies}</div></div>
+  <div class="lb-stage" id="rtStage"><svg class="lb-lines" id="rtLines"></svg><div class="lb-side l">${allies}</div><div class="lb-mid">VS</div><div class="lb-side r">${enemies}</div></div>
   <div class="rt-info">${info}</div>${dock?`<div class="lb-dock">${dock}</div>`:''}
   <div class="lb-foot"><div class="row"><button type="button" class="btn ghost small" id="rtLeave">${ended||spec?T('나가기','Leave','退出'):T('기권','Forfeit','棄権')}</button>${mine?`<button type="button" class="btn" id="rtGo">${T('확정','Confirm','確定')} →</button>`:''}</div></div>${lg}</div>`);
- bindM(S,me,myIdx)}
+ if(AN)return;bindM(S,me,myIdx);(window.requestAnimationFrame||setTimeout)(()=>lines(S,me,myIdx))}
+/* 합 승률 (화면 표시용 · 실제 판정과 같은 규칙으로 여러 번 굴려 본다) */
+function winP(a,sa,b,sb){let w=0;const N=240;const fl=(u,k)=>{const h=Math.max(.05,Math.min(.95,.5+u.sp/100));let c=0;for(let i=0;i<k;i++)if(Math.random()<h)c++;return c};
+ for(let n=0;n<N;n++){let ca=sa.coins,cb=sb.coins,g=0;while(ca>0&&cb>0&&g++<40){const x=sa.base+fl(a,ca)*sa.cp,y=sb.base+fl(b,cb)*sb.cp;if(x>y)cb--;else if(y>x)ca--}if(ca>0)w++}return w/N}
+/* 일반 전투처럼 슬롯과 대상을 잇는 선 */
+function lines(S,me,myIdx){const svg=document.getElementById('rtLines'),stg=document.getElementById('rtStage');if(!svg||!stg)return;const R0=stg.getBoundingClientRect();svg.setAttribute('width',R0.width);svg.setAttribute('height',R0.height);
+ const c=(el,top)=>{const r=el.getBoundingClientRect();return [r.left-R0.left+r.width/2,top?r.top-R0.top:r.top-R0.top+r.height/2]};let h='';
+ myIdx.forEach((j,k)=>{const p=PK[k];if(!p||!(p.o===0||p.o===1))return;const a=stg.querySelector(`[data-rts="${j}"]`);if(!a)return;
+  let b=p.sl!=null?stg.querySelector(`[data-rtk="${p.sl}"]`):null;let cls=p.sl!=null?'mid':'atk';if(!b){const f=stg.querySelector(`[data-rteu="${p.u}"]`);b=f&&(f.querySelector('.lb-ev')||f);cls='atk'}if(!b)return;
+  const [x1,y1]=c(a,true),[x2,y2]=c(b,p.sl!=null);const my=Math.min(y1,y2)-40;h+=`<path class="ln ${cls}" d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}"/>`});
+ svg.innerHTML=h}
+/* 턴 결과 재생: 일반 전투처럼 행동마다 띠 · 합은 코인 연출 · 숫자가 떠오른다 */
+function figEl(sd,i,me){const P=document.getElementById('rtStage');if(!P)return null;return sd===me?P.querySelector(`[data-rtau="${i}"]`):P.querySelector(`[data-rteu="${i}"]`)}
+function setBar(f,hp,max,sp,down){if(!f)return;const i=f.querySelector('.lb-bar.hp i'),em=f.querySelector('.lb-bar.hp em');if(i)i.style.width=Math.max(0,hp)/max*100+'%';if(em)em.textContent=Math.max(0,hp);
+ const si=f.querySelector('.lb-bar.sp i'),se=f.querySelector('.lb-bar.sp em');if(si){si.className=sp<0?'neg':'';si.style.cssText=`width:${Math.min(50,Math.abs(sp)/45*50)}%;${sp<0?'right':'left'}:50%`}if(se)se.textContent=(sp>0?'+':'')+sp;f.classList.toggle('dead',!!down)}
+function floatAt(f,txt,cls,k){if(!f)return;const r=(f.querySelector('.lb-av,.lb-ev')||f).getBoundingClientRect();const e=document.createElement('div');e.className='fl59 '+cls;e.textContent=txt;
+ e.style.left=(r.left+r.width/2+(k%2?14:-14)*Math.min(k,3))+'px';e.style.top=(r.top+r.height*.35-k*18)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1500);f.classList.remove('hit59');void f.offsetWidth;if(cls==='dmg')f.classList.add('hit59')}
+async function animate(st,t,me){ASKIP=false;const Sf=sim(st),Sp=sim(st,t);const op=1-me,spec=!st.myTeam;
+ const tA=(st.bt.A||[]).map(x=>esc(NL(x.n))).join(', '),tB=(st.bt.B||[]).map(x=>esc(NL(x.n))).join(', ');
+ try{drawBattle(st,Sp,me,op,spec,me===0?`${tA} vs ${tB}`:`${tB} vs ${tA}`,{t})}catch(e){}
+ const EV=(Sf.ev&&Sf.ev[t])||[];const bn=document.createElement('div');bn.className='act59';bn.innerHTML=`<span class="t"></span><button type="button">${T('건너뛰기','Skip','スキップ')}</button>`;document.body.appendChild(bn);
+ bn.querySelector('button').onclick=()=>{ASKIP=true;try{if(RP)RP.kill()}catch(e){}};
+ const sp=()=>{try{return rpSpeed()}catch(e){return 1}};const wait=ms=>new Promise(r=>{if(ASKIP)return r();setTimeout(r,ms/sp())});
+ let prev=Sp.u.map(L=>L.map(u=>[u.hp,u.sp,u.down?1:0]));
+ const U=(sd,i)=>Sf.u[sd][i],sk=(sd,i,si)=>TRN(U(sd,i).sk[si].n),nm=(sd,i)=>NL(U(sd,i).n);
+ for(const e of EV){if(ASKIP)break;
+  let lab='';if(e.k==='clash'){lab=`${T('합','Clash','マッチ')} — ${nm(e.a[0],e.a[1])}「${sk(...e.a)}」 vs ${nm(e.b[0],e.b[1])}「${sk(...e.b)}」`}else{lab=`${nm(e.att[0],e.att[1])}「${sk(...e.att)}」 → ${nm(e.tg[0],e.tg[1])} (${T('일방 공격','One-sided','一方攻撃')})`}
+  bn.querySelector('.t').textContent=lab;bn.classList.remove('in');void bn.offsetWidth;bn.classList.add('in');
+  if(e.k==='clash'&&typeof playReplay==='function'){const mineA=e.a[0]===me||spec&&e.a[0]===0;const A=mineA?e.a:e.b,E=mineA?e.b:e.a;const ua=U(A[0],A[1]),ue=U(E[0],E[1]),sa=ua.sk[A[2]],se=ue.sk[E[2]];
+   const hpA=mineA?e.hp[0]:e.hp[1],hpE=mineA?e.hp[1]:e.hp[0];
+   const rec={A:{n:NL(ua.n),me:A[0]===me&&ua.o===st.me,sk:TRN(sa.n),coins:sa.coins,b0:sa.base,cp:sa.cp,hp:hpA},E:{n:NL(ue.n),sk:TRN(se.n),coins:se.coins,b0:se.base,cp:se.cp,hp:hpE},
+    rounds:e.rounds.map(r=>mineA?{pc:r.ca,ec:r.cb,ah:r.ah,eh:r.bh,x:r.x,y:r.y}:{pc:r.cb,ec:r.ca,ah:r.bh,eh:r.ah,x:r.y,y:r.x}),
+    win:(e.win==='a')===mineA?'A':'E',left:e.left,dmg:e.hit?e.hit.dmg:0,kill:false,sp:5,spl:5};
+   const lw=rec.win==='A'?E:A;rec.kill=!!(e.after[lw[0]][lw[1]][2]);
+   try{playReplay([rec]);await new Promise(r=>{const iv=setInterval(()=>{if(typeof RP==='undefined'||!RP||ASKIP){clearInterval(iv);r()}},80)})}catch(x){}}
+  else await wait(420);
+  // 숫자 · 막대
+  e.after.forEach((L,sd)=>L.forEach(([hp,spv,dn],i)=>{const [h0,s0]=prev[sd][i];const f=figEl(sd,i,me);let k=0;if(hp<h0)floatAt(f,`${hp-h0}`,'dmg',k++);if(spv!==s0)floatAt(f,`SP ${spv>s0?'+':''}${spv-s0}`,spv>s0?'spu':'spd',k++);setBar(f,hp,U(sd,i).max,spv,dn)}));
+  prev=e.after;await wait(e.k==='clash'?500:820)}
+ bn.remove();ANIM=false;PLAYED=t;draw_()}
 function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return;const op=1-me;
  const cp=P.querySelector('#rtCopy');if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(ROOM);toast(T('코드를 복사했어요.','Code copied.','コードをコピーしました。'))}catch(e){}};
  const lv=P.querySelector('#rtLeave');if(lv)lv.onclick=async()=>{const fight=ST&&ST.myTeam&&(ST.ph==='p1'||ST.ph==='p2'||ST.ph==='toss')&&!(S&&S.end);
@@ -14126,13 +14173,22 @@ function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return
  P.querySelectorAll('[data-rtf]').forEach(b=>b.onclick=async()=>{try{await call('choose',{first:b.dataset.rtf==='1'})}catch(x){toast(errMsg(x))}poll()});
  if(!S||!myIdx)return;const st=ST,t=st.turn;const Pt=st.P&&st.P[t];const fp=(st.myTeam&&st.ph==='p2'&&st.myTeam!==firstOf(st,t)&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
  const pk=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
- P.querySelectorAll('[data-rto]').forEach(c=>c.onclick=()=>{if(c.classList.contains('lock'))return toast(T('빛이 모자라요.','Not enough light.','光が足りません。'));const [j,o]=c.dataset.rto.split(':');const p=pk(+j);if(!p)return;
+ P.querySelectorAll('[data-rto]').forEach(c=>c.onclick=()=>{if(c.dataset.dragged)return;if(c.classList.contains('lock'))return toast(T('빛이 모자라요.','Not enough light.','光が足りません。'));const [j,o]=c.dataset.rto.split(':');const p=pk(+j);if(!p)return;
   if(o==='d'){p.o=p.o==='d'?null:'d';p.u=null;p.sl=null;SEL=null}else{const v=+o;if(p.o===v){p.o=null;p.u=null;p.sl=null;SEL=null}else{p.o=v;if(p.u==null&&p.sl==null){const a=alive(S.u[op])[0];p.u=a?a.i:0}SEL=+j}}draw_()});
  P.querySelectorAll('[data-rts]').forEach(b=>b.onclick=()=>{const j=+b.dataset.rts;if(!pk(j))return;SEL=SEL===j?null:j;draw_()});
  P.querySelectorAll('[data-rteu]').forEach(f=>f.addEventListener('click',ev=>{if(SEL==null||ev.target.closest('[data-rtk]'))return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const i=+f.dataset.rteu;if(S.u[op][i].down)return;p.u=i;p.sl=null;draw_()}));
  P.querySelectorAll('[data-rtk]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();if(SEL==null||!fp)return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const k=+x.dataset.rtk;const q=fp[k]||{};
   const sl=S.slots[me][SEL],u=S.u[me][sl.u],os=S.slots[op][k],ou=S.u[op][os.u];if(!(q.o===0||q.o===1||q.o==='?'))return;
   if(!(q.u===u.i||u.speed>ou.speed))return toast(T('합 불가 — 그 공격이 나를 노리거나, 내가 더 빨라야 해요.','No clash — it must target you, or you must be faster.','マッチ不可 — その攻撃が自分を狙っているか、自分の方が速い必要があります。'));p.sl=k;p.u=os.u;draw_()});
+ P.querySelectorAll('.lb-card[data-rto]').forEach(c=>{const [j,o]=c.dataset.rto.split(':');if(o==='d')return;
+  c.addEventListener('pointerdown',ev=>{if(ev.button>0||c.classList.contains('lock'))return;const x0=ev.clientX,y0=ev.clientY;let gh=null;
+   const mark=on=>{P.querySelectorAll('[data-rteu]').forEach(f=>f.classList.toggle('can',on&&!S.u[op][+f.dataset.rteu].down));P.querySelectorAll('[data-rtk]').forEach(k=>k.classList.toggle('dropok',on))};
+   const mv=e=>{if(!gh){if((e.clientX-x0)**2+(e.clientY-y0)**2<64)return;gh=c.cloneNode(true);gh.classList.add('lb-ghost');gh.style.cssText='position:fixed;pointer-events:none;z-index:9500;transform:translate(-50%,-50%) rotate(-3deg);width:'+c.offsetWidth+'px';document.body.appendChild(gh);mark(true)}gh.style.left=e.clientX+'px';gh.style.top=e.clientY+'px'};
+   const up=e=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);if(!gh)return;gh.remove();mark(false);const el=document.elementFromPoint(e.clientX,e.clientY);const p=pk(+j);if(!p)return;
+    p.o=+o;SEL=+j;const k=el&&el.closest('[data-rtk]'),f=el&&el.closest('[data-rteu]');
+    if(k){k.click();return}if(f&&!S.u[op][+f.dataset.rteu].down){p.u=+f.dataset.rteu;p.sl=null}else if(p.u==null){const a=alive(S.u[op])[0];p.u=a?a.i:0}
+    c.dataset.dragged=1;setTimeout(()=>{delete c.dataset.dragged},50);draw_()};
+   addEventListener('pointermove',mv);addEventListener('pointerup',up)})});
  const g=P.querySelector('#rtGo');if(g)g.onclick=()=>submit(false)}
 window.rt139=()=>{if(B&&!B.done)return toast(T('전투 중에는 할 수 없어요.','Not during a battle.','戦闘中はできません。'));if(ROOM){go();return}lobby()};
 window.rt139sim=sim;window.rt139state=()=>ST;
@@ -14160,6 +14216,8 @@ const css=`
 .rt-mem{margin-top:12px;border:1px solid rgba(244,238,154,.2);padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rt-mem>b{width:100%}.rt-mem span{padding:3px 8px;border:1px solid rgba(244,238,154,.25)}.rt-mem span.me{border-color:#ffd27a;color:#ffd27a}.rt-mem small{margin-left:6px;color:#b9c2bf}.rt-mem .note{width:100%;margin:2px 0 0}
 .rt-tag{color:#c9cfcc;margin:0 0 8px}
 @media (max-width:640px){.rt-mk{grid-template-columns:1fr}}
+.rt139 .lb-int.dropok{box-shadow:0 0 0 2px #7fd69a inset}.rt139 .lb-fo.can .lb-ev{outline:2px dashed #7fd69a;outline-offset:4px}
+.rt139 .lb-stage{position:relative}.rt139 #rtLines{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .rt139 .rt-rf{margin-left:6px;font-size:11px;color:#b9c2bf}
 .rt-set{border:1px solid rgba(244,238,154,.3);padding:8px 10px;margin:8px 0}.rt-set b{color:#f4ee9a}
 .rt-seats{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin:10px 0}.rt-vsb{align-self:center;font-weight:700;color:#ff8f80}
@@ -14172,6 +14230,53 @@ const css=`
 .rt-lobby input,#rtWait input{background:#111;color:#f4ee9a;border:1px solid rgba(244,238,154,.35);padding:6px 8px;font:inherit;width:9em;text-transform:uppercase}
 `;
 try{const st=document.createElement('style');st.id='css139';st.textContent=css;document.head.appendChild(st)}catch(e){}
+})();
+/* ============ v140: 아인·소프·오르를 로비에서 — 출근과 나란히 고르는 모드 ============
+   로비(타이틀)의 [이어서 출근] 옆에 [아인·소프·오르]를 둔다. 고르면 그 기록으로 들어가되,
+   근무(환상체 작업 · 행동 · 퇴근 · 시간 흐름)는 모두 쉬고, 기본 화면이 아인·소프·오르가 된다.
+   직원 확인 · 격리실 도감(E.G.O 추출) · 장비 · 인사(가치관 강화)는 위 탭에서 그대로 쓸 수 있다.
+   (근무 화면의 아인·소프·오르 메뉴는 없앤다) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NAME=()=>T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル');
+const DESC=()=>T('거울 세계의 당신과 마주하여 가능성을 구원하라','Face yourself in the Mirror World and redeem possibility','鏡の世界のあなたと向き合い、可能性を救済せよ');
+let PEND=false;window.MIRMODE140=false;
+const on=()=>!!window.MIRMODE140&&!!G;
+/* 로비: [이어서 출근] 옆에 버튼 */
+function inject(){const app=document.getElementById('app');if(!app||!app.querySelector('.title'))return;
+ app.querySelectorAll('[data-cont],#cont').forEach(b=>{if(b.dataset.mir140)return;b.dataset.mir140=1;const x=document.createElement('button');x.type='button';x.className='btn mir140b';
+  x.innerHTML=`${typeof ic==='function'?ic('sword'):''} ${NAME()}`;x.title=DESC();x.onclick=e=>{e.preventDefault();PEND=true;b.click();setTimeout(()=>{PEND=false},1500)};b.insertAdjacentElement('afterend',x)})}
+try{const mo=new MutationObserver(()=>inject());const go=()=>{inject();mo.observe(document.getElementById('app')||document.body,{childList:true,subtree:true})};if(document.body)go();else addEventListener('DOMContentLoaded',go)}catch(e){}
+/* 기록을 불러온 뒤: 근무 대신 아인·소프·오르로 */
+resumePhase=(f=>function(){if(PEND){PEND=false;window.MIRMODE140=true;enter();return}window.MIRMODE140=false;document.body.classList.remove('mir140');return f.apply(this,arguments)})(resumePhase);
+function enter(){if(G){G.rt=false}document.body.classList.add('mir140');try{TAB='work';renderTabs()}catch(e){}hub()}
+function leave(){window.MIRMODE140=false;document.body.classList.remove('mir140');try{save()}catch(e){}G=null;B=null;try{renderTitle()}catch(e){location.reload()}}
+function toWork(){window.MIRMODE140=false;document.body.classList.remove('mir140');try{render();resumePhase()}catch(e){}}
+function hub(){if(!on())return;
+ setPanel(NAME(),DESC(),[
+  {grp:T('거울 세계','Mirror World','鏡の世界'),l:`${ic('sword')} ${T('덱 편성','Decks','デッキ編成')}`,s:T('공격 덱 · 수비 덱을 짜고 수비 덱을 등록해요','Build attack and defense decks; register the defense deck','攻撃・守備デッキを組み、守備デッキを登録します'),f:()=>window.mirror136('deck')},
+  {grp:T('거울 세계','Mirror World','鏡の世界'),l:T('도전 (비동기)','Challenge (async)','挑戦(非同期)'),s:T('다른 관리직의 수비 덱에 도전해요 · 하루 10번','Challenge other managers\' defense decks · 10 a day','他の管理職の守備デッキに挑戦・1日10回'),f:()=>window.mirror136('find')},
+  {grp:T('거울 세계','Mirror World','鏡の世界'),l:T('순위','Ranking','ランキング'),s:T('상위 20명','Top 20','上位20人'),f:()=>window.mirror136('rank')},
+  {grp:T('친선전','Friendly','親善戦'),l:T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)'),s:T('공개 방 · 초대 코드 방 · 1:1 / 다수 전투','Public or invite rooms · 1v1 / team','公開・招待コード部屋・1対1/多人数'),f:()=>window.rt139&&window.rt139()},
+  {grp:T('친선전','Friendly','親善戦'),l:T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)'),s:T('서로의 수비 덱에 동시에 도전해 기록을 비교해요','Both challenge each other\'s defense decks and compare','互いの守備デッキに同時に挑み記録を比べます'),f:()=>window.mirror136('room')},
+  {grp:T('나가기','Exit','終了'),l:T('출근으로 바꾸기','Switch to work','出勤に切り替える'),s:T('이 기록으로 평소처럼 근무해요','Play this record normally','この記録で通常通り勤務します'),f:toWork},
+  {grp:T('나가기','Exit','終了'),l:T('로비로','Back to lobby','ロビーへ'),s:T('저장하고 처음 화면으로','Save and return to the title','保存してタイトルへ'),f:leave}],
+  `<p class="note mir140n">${T('이 모드에서는 근무(환상체 작업 · 행동 · 퇴근)와 시간이 멈춰 있어요. 직원 확인 · 격리실 도감(E.G.O 추출) · 장비 · 인사(가치관 강화)는 위 탭에서 쓸 수 있어요.','Work (abnormality tasks, actions, clocking out) and time are paused in this mode. Use the tabs above for Staff, Codex (E.G.O extraction), Gear and HR (virtue upgrades).','このモードでは勤務(アブノーマリティ作業・行動・退勤)と時間が止まっています。職員確認・収容室図鑑(E.G.O抽出)・装備・人事(価値観強化)は上のタブで使えます。')}</p>`);
+ CURUI='mir140'}
+window.hub140=hub;
+/* 근무 화면 대신 허브 · 시간과 작업은 멈춘다 */
+workMenu=(f=>function(){if(on())return hub();return f.apply(this,arguments)})(workMenu);
+tick=(f=>function(){if(on())return;return f.apply(this,arguments)})(tick);
+['evening','startDay','pickWork','endDay'].forEach(k=>{try{if(typeof window[k]==='function'||typeof eval(k)==='function'){const o=eval(k);const w=function(){if(on()){hub();return}return o.apply(this,arguments)};eval(k+'=w')}}catch(e){}});
+renderTop=(f=>function(){if(on()&&G)G.rt=false;return f.apply(this,arguments)})(renderTop);
+/* 근무 탭 이름 */
+renderTabs=(f=>function(){const r=f.apply(this,arguments);try{const b=document.querySelector('.tabs button');if(b){if(on()){if(!b.dataset.t140){b.dataset.t140=b.innerHTML}b.textContent=NAME()}else if(b.dataset.t140){b.innerHTML=b.dataset.t140;delete b.dataset.t140}}}catch(e){}return r})(renderTabs);
+const css=`
+.mir140b{margin-left:6px}
+body.mir140 .rt-hud,body.mir140 #daybox .hud-cell:nth-child(2){opacity:.35;pointer-events:none}
+.mir140n{margin-top:10px}
+`;
+try{const st=document.createElement('style');st.id='css140';st.textContent=css;document.head.appendChild(st)}catch(e){}
 })();
 </script>
 
