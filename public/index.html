@@ -10736,6 +10736,7 @@ log=(f=>function(m){const r=f.apply(this,arguments);try{if(typeof m==='string'&&
 
 /* ---------- 16) 로비 외부 링크 ---------- */
 const LINKS=[['설문조사','Survey','アンケート','https://docs.google.com/forms/d/e/1FAIpQLScda6MQOcFxpZ3ta_qsKMDAo8Y9vQ3yk0PSKnNBBzZNd1sxvg/viewform'],
+ ['버그 리포트','Bug Report','バグ報告','https://docs.google.com/forms/d/e/1FAIpQLSdnJKx4eb8sLW3gV5ohUOvptSGcbgF7i7iRwcgqpQsN9nQbVw/viewform?usp=header'],
  ['트위터','X (Twitter)','X (Twitter)','https://x.com/tm_Dreamcatcher/status/2111100095404114215'],
  ['롭갤','LobCorp Gallery','ロブギャラ','https://m.dcinside.com/board/lobotomycorporation/6199718'],
  ['롭챈','LobCorp Channel','ロブチャン','https://arca.live/b/lobotomycoperation/186189088']];
@@ -14410,6 +14411,40 @@ const MIR=()=>window.MIRMODE140?[
 ]:[N(T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'),T('처음 화면에서 [이어하기] 옆의 <b>아인·소프·오르</b>로 들어가면 이 화면 안내를 볼 수 있어요. 규칙은 이 가이드 항목에 정리돼 있어요.','Enter <b>Ain Soph Aur</b> beside [Continue] on the title to see this screen tour. The rules are summarized in this guide entry.','タイトルの[続きから]の横の<b>アイン・ソフ・オウル</b>に入ると、この画面案内が見られます。規則はこのガイド項目にまとめてあります。'),{last:1})];
 try{TUT_TOPIC.mirror=MIR}catch(e){}
 window.tutMir141=function(){try{localStorage.setItem('lcw_tut_mir141','1')}catch(e){}try{if(typeof TUT!=='undefined'&&TUT)return;tutStart(MIR(),'topic')}catch(e){}};
+})();
+/* ============ v142: 조율자 특수 폭주를 확실히 보이게 ============
+   ① 충격파 · 8기둥으로 전투에서 밀려나면, 안내 창을 닫는 즉시(창이 없으면 바로) 근무 화면의 격리실 목록으로 내려가 첫 폭주 격리실을 비춘다.
+   ② 특수 폭주(황금 · 검은 안개 · 파도 · 기둥) 격리실은 밝은 바탕 + 빛나는 맥동 + 종류 표시를 단다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+let PEND=0;
+const LBL={gold:()=>T('황금 폭주','GOLD','黄金暴走'),fog:()=>T('검은 안개 폭주','BLACK FOG','黒い霧暴走'),wave:()=>T('파도 폭주','WAVE','波暴走'),pillar:()=>T('기둥 폭주','PILLAR','柱暴走')};
+const isExit=t=>{const s=String(t||'');return s===T('전투에서 밀려났다','Thrown out of the fight','戦闘から弾き出された')||/전투에서 밀려났다|Thrown out of the fight|戦闘から弾き出された/.test(s)};
+popup=(f=>function(title){if(isExit(title))PEND=Date.now();return f.apply(this,arguments)})(popup);
+function target(){const p=document.getElementById('panel');if(!p)return null;return p.querySelector('.ch.am102')||p.querySelector('.ch.cu.melt')}
+function go(){if(!PEND)return;if(Date.now()-PEND>20000){PEND=0;return}
+ if(typeof POP!=='undefined'&&POP)return;if(typeof B!=='undefined'&&B&&!B.done)return;
+ const el=target();if(!el)return;PEND=0;
+ try{el.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){el.scrollIntoView()}
+ document.querySelectorAll('#panel .ch.am102, #panel .ch.cu.melt').forEach(x=>{x.classList.remove('am142hit');void x.offsetWidth;x.classList.add('am142hit')});
+ setTimeout(()=>document.querySelectorAll('.am142hit').forEach(x=>x.classList.remove('am142hit')),2600)}
+setInterval(go,250);
+/* 종류 표시 달기 */
+setPanel=(f=>function(){const r=f.apply(this,arguments);try{document.querySelectorAll('#panel .ch.am102').forEach(el=>{const k=(el.className.match(/am-(gold|fog|wave|pillar)/)||[])[1];if(!k||el.querySelector('.am142t'))return;
+  el.insertAdjacentHTML('afterbegin',`<span class="am142t">⚠ ${LBL[k]()}</span>`)})}catch(e){}return r})(setPanel);
+const st=document.createElement('style');st.textContent=`
+#panel .ch.am102{overflow:visible;padding-top:22px!important;border-width:3px!important;animation:am142p 1.4s ease-in-out infinite}
+#panel .ch.am102,#panel .ch.am102 b,#panel .ch.am102 small,#panel .ch.am102 span:not(.am142t),#panel .ch.am102 em{color:#141414!important;text-shadow:none!important}
+#panel .ch.am-gold{background:linear-gradient(135deg,#fff3b0,#ffd23f 55%,#ffb703)!important;border-color:#ffe066!important;--g142:255,206,60}
+#panel .ch.am-fog{background:linear-gradient(135deg,#ffffff,#d9dde3 55%,#aab2bd)!important;border-color:#ffffff!important;--g142:225,232,240}
+#panel .ch.am-wave{background:linear-gradient(135deg,#ffd6f5,#ff6ad5 55%,#e03cb8)!important;border-color:#ff9be6!important;--g142:255,90,210}
+#panel .ch.am-pillar{background:linear-gradient(135deg,#e4fbff,#8be3ff 55%,#3bc9f5)!important;border-color:#c5f3ff!important;--g142:110,220,255}
+#panel .ch.am102 .am142t{position:absolute;left:8px;top:-11px;z-index:2;font-size:11px;font-weight:900;letter-spacing:.02em;padding:1px 8px;border-radius:4px;background:#141414;color:rgb(var(--g142))!important;border:2px solid rgb(var(--g142));white-space:nowrap}
+@keyframes am142p{0%,100%{box-shadow:0 0 0 2px rgba(var(--g142),.95),0 0 12px 2px rgba(var(--g142),.55)}50%{box-shadow:0 0 0 3px rgba(var(--g142),1),0 0 28px 8px rgba(var(--g142),.85)}}
+#panel .ch.am142hit{animation:am142h .45s ease-in-out 5!important}
+@keyframes am142h{0%,100%{transform:scale(1);box-shadow:0 0 0 3px rgba(var(--g142,255,90,80),1),0 0 30px 10px rgba(var(--g142,255,90,80),.9)}50%{transform:scale(1.04);box-shadow:0 0 0 4px #fff,0 0 44px 16px rgba(var(--g142,255,90,80),1)}}
+@media (prefers-reduced-motion:reduce){#panel .ch.am102{animation:none;box-shadow:0 0 0 3px rgba(var(--g142),1),0 0 22px 6px rgba(var(--g142),.8)}#panel .ch.am142hit{animation:none!important}}`;
+document.head.appendChild(st);
 })();
 </script>
 
