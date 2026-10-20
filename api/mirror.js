@@ -31,9 +31,29 @@ function cleanDeck(d) {
     const st = m.st || {};
     out.push({
       pl: m.pl ? 1 : 0, n: txt(m.n, 20) || '?', rk: num(m.rk, 1, 5), hp: num(m.hp, 1, 999),
-      st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) }, w, s
+      st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) }, w, s,
+      g: (Array.isArray(m.g) ? m.g : []).map(String).filter(x => ID.test(x)).slice(0, 3), gp: num(m.gp, 0, 5), gs: num(m.gs, 0, 5)
     });
   }
+  return out;
+}
+function cleanMem(x, run) {
+  if (!x || typeof x !== 'object') return null;
+  const st = x.st || {}; const w = String(x.w || 'baton'), s = String(x.s || 'basic');
+  return { n: txt(x.n, 20) || '?', rk: num(x.rk, 1, 5), hp: num(x.hp, 1, 999),
+    st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) },
+    dept: ID.test(String(x.dept || '')) ? String(x.dept) : '', w: ID.test(w) ? w : 'baton', s: ID.test(s) ? s : 'basic',
+    day: num(x.day, 0, 999), alive: x.alive ? 1 : 0, run: txt(run || x.run, 12), at: num(x.at, 0, 9e15), mg: txt(x.mg, 20) };
+}
+function cleanArch(a) {
+  if (!a || typeof a !== 'object') return null;
+  const out = { v: 1, ag: {}, pl: {}, w: [], s: [], g: [] };
+  const KEY = /^[A-Za-z0-9_@~.-]{1,64}$/;
+  for (const t of ['ag', 'pl']) {
+    const E = Object.entries(a[t] || {}).slice(0, t === 'ag' ? 300 : 60);
+    for (const [k, v] of E) { if (!KEY.test(k)) continue; const m = cleanMem(v); if (m) out[t][k] = m; }
+  }
+  for (const t of ['w', 's', 'g']) out[t] = [...new Set((Array.isArray(a[t]) ? a[t] : []).map(String).filter(x => ID.test(x)))].slice(0, 400);
   return out;
 }
 const power = d => d.reduce((a, m) => a + m.rk * 10 + Math.round(m.hp / 10), 0);
@@ -52,6 +72,17 @@ export default async function handler(req, res) {
     const slot = num(req.method === 'GET' ? q(req, 'slot') : b.slot, 0, 3);
     const id = slot ? `${uid}~${slot}` : uid;
 
+    // 보관함: 계정 하나에 하나 (저장소와 무관) — 엔딩을 봐도 남는 직원 · 장비 · 기프트
+    if (op === 'arch') {
+      const k = `m:arch:${uid}`;
+      if (req.method === 'GET') { const raw = await redis('GET', k); return send(res, 200, { arch: raw ? JSON.parse(raw) : null }); }
+      if (req.method === 'PUT' || req.method === 'POST') {
+        if (await limited(req, 'march', 30)) return send(res, 429, { code: 'slow' });
+        const a = cleanArch(b.arch); if (!a) return send(res, 400, { code: 'bad' });
+        const j = JSON.stringify(a); if (j.length > 400000) return send(res, 413, { code: 'big' });
+        await redis('SET', k, j); return send(res, 200, { ok: true });
+      }
+    }
     if (op === 'me') {
       const [def, h, rk] = await pipe([['GET', `m:def:${id}`], ['HGETALL', `m:st:${id}`], ['ZREVRANK', 'm:rank', id]]);
       return send(res, 200, { def: def ? JSON.parse(def) : null, st: stOf(h), rank: rk == null ? null : rk + 1 });

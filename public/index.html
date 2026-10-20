@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.3.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.4.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13726,8 +13726,9 @@ const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with 
 const errMsg=e=>ERR[e&&e.code]||T('문제가 생겼어요: ','Something went wrong: ','問題が発生しました：')+((e&&e.code)||'?');
 
 /* ---------- 덱 ---------- */
-const ags=()=>G.agents.filter(a=>a.alive&&!a.out&&!a.panic);
-const agById=id=>G.agents.find(a=>a.id===id);
+const AR=()=>window.AR146;
+const ags=()=>G.agents.filter(a=>a.alive&&!a.out&&!a.panic&&!a._ar146).concat(AR()?AR().fakes():[]);
+const agById=id=>G.agents.find(a=>a.id===id)||(AR()?AR().fake(id):null);
 function rkOf(id){return id==='player'?rank():(agById(id)?agRank(agById(id)):1)}
 function defW(id){return id==='player'?G.weapon:agWeap(agById(id))}
 function defS(id){return id==='player'?G.suit:agSuit(agById(id))}
@@ -13735,12 +13736,14 @@ function decks(){G.mir136=G.mir136||{};['atk','def'].forEach(k=>{let d=G.mir136[
   G.mir136[k]=d.filter((m,i)=>i===0||(agById(m.id)&&agById(m.id).alive)).slice(0,3)});return G.mir136}
 const wOK=(id,rk)=>{try{return weapOf(id).g<=Math.max(0,rk-1)}catch(e){return false}};
 const sOK=(id,rk)=>{try{return suitOf(id).g<=Math.max(0,rk-1)}catch(e){return false}};
-function ownList(kind){const L=(kind==='w'?G.ownW:G.ownS).slice();const base=kind==='w'?'baton':'basic';if(!L.includes(base))L.unshift(base);return L}
-function countOK(d){const use={};for(const m of d){if(m.w!=='baton')use['w:'+m.w]=(use['w:'+m.w]||0)+1;if(m.s!=='basic')use['s:'+m.s]=(use['s:'+m.s]||0)+1}
- for(const k in use){if(use[k]>Math.max(1,(G.inv&&G.inv[k])||0))return k}return null}
-function fix(d){d.forEach(m=>{const rk=rkOf(m.id);if(!ownList('w').includes(m.w)||!wOK(m.w,rk))m.w=wOK(defW(m.id),rk)?defW(m.id):'baton';if(!ownList('s').includes(m.s)||!sOK(m.s,rk))m.s=sOK(defS(m.id),rk)?defS(m.id):'basic'});return d}
-function snap(d){return fix(d).map(m=>{if(m.id==='player')return {pl:1,n:G.name,rk:rank(),hp:maxHp(),st:{F:stE('F'),P:stE('P'),T:stE('T'),J:stE('J')},w:m.w,s:m.s};
- const a=agById(m.id);return {pl:0,n:a.n,rk:agRank(a),hp:agMax(a),st:Object.assign({},a.st),w:m.w,s:m.s}})}
+function ownList(kind){const L=[...new Set((kind==='w'?G.ownW:G.ownS).concat(AR()?AR().gear(kind):[]))];const base=kind==='w'?'baton':'basic';if(!L.includes(base))L.unshift(base);return L}
+function countOK(d){const use={};for(const m of d){for(const g of m.g||[])use['g:'+g]=(use['g:'+g]||0)+1;if(m.w!=='baton')use['w:'+m.w]=(use['w:'+m.w]||0)+1;if(m.s!=='basic')use['s:'+m.s]=(use['s:'+m.s]||0)+1}
+ for(const k in use){if(use[k]>(k.startsWith('g:')?1:Math.max(1,(G.inv&&G.inv[k])||0)))return k}return null}
+function fixG(m){const A=AR();if(!A){m.g=[];return}const own=A.gifts();const seen={};m.g=(m.g||[]).filter(id=>{const x=A.gInfo(id);if(!x||!own.includes(id)||seen[x.slot])return false;seen[x.slot]=1;return true}).slice(0,3)}
+function fix(d){d.forEach(m=>{fixG(m);const rk=rkOf(m.id);if(!ownList('w').includes(m.w)||!wOK(m.w,rk))m.w=wOK(defW(m.id),rk)?defW(m.id):'baton';if(!ownList('s').includes(m.s)||!sOK(m.s,rk))m.s=sOK(defS(m.id),rk)?defS(m.id):'basic'});return d}
+function gsum(m){return AR()?AR().gSum(m.g):{hp:0,pow:0,spd:0}}
+function snap(d){return fix(d).map(m=>{const q=gsum(m);const gx={g:(m.g||[]).slice(),gp:q.pow,gs:q.spd};if(m.id==='player')return Object.assign({pl:1,n:G.name,rk:rank(),hp:maxHp()-gift('hp')+q.hp,st:{F:stE('F'),P:stE('P'),T:stE('T'),J:stE('J')},w:m.w,s:m.s},gx);
+ const a=agById(m.id);return Object.assign({pl:a._pl?1:0,n:a.n,rk:agRank(a),hp:agMax(a)+q.hp,st:Object.assign({},a.st),w:m.w,s:m.s},gx)})}
 const wN=id=>{try{return TRN(weapOf(id).n)}catch(e){return id}},sN=id=>{try{return TRN(suitOf(id).n)}catch(e){return id}};
 const gr=g=>typeof GR!=='undefined'&&GR[g]?GR[g]:'';
 
@@ -13759,13 +13762,14 @@ lbEnemyFig=(f=>function(u){if(!u||!u.mir136)return f.apply(this,arguments);const
 
 /* ---------- 내 쪽: 공격 덱의 장비로, 가득 찬 상태로 ---------- */
 let MIRD=null;
-mkPlayer=(f=>function(){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id==='player');if(m){a.w=m.w;a.suit=m.s}a.hp=a.max}return a})(mkPlayer);
-mkAgentAlly=(f=>function(ag){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id===ag.id);if(m){a.w=m.w;a.suit=m.s}a.hp=a.max;a.sp=0}return a})(mkAgentAlly);
+function gfx(a,m,pl){const q=gsum(m);const dp=q.pow-(pl?gift('pow'):0),ds=q.spd-(pl?gift('spd'):0),dh=q.hp-(pl?gift('hp'):0);a.pow=(a.pow||0)+dp;if(Array.isArray(a.spd))a.spd=[a.spd[0]+ds,a.spd[1]+ds];a.max=Math.max(1,a.max+dh)}
+mkPlayer=(f=>function(){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id==='player');if(m){a.w=m.w;a.suit=m.s;gfx(a,m,1)}a.hp=a.max}return a})(mkPlayer);
+mkAgentAlly=(f=>function(ag){const a=f.apply(this,arguments);if(MIRD){const m=MIRD.find(x=>x.id===ag.id);if(m){a.w=m.w;a.suit=m.s;gfx(a,m,0)}a.hp=a.max;a.sp=0}return a})(mkAgentAlly);
 let REST=null;
 function fight(foes,meta){if(B&&!B.done)return toast(T('전투 중에는 할 수 없어요.','Not during a battle.','戦闘中はできません。'));
  const d=fix(decks().atk.slice());const mates=d.slice(1).map(m=>agById(m.id)).filter(a=>a&&a.alive&&!a.panic);
  REST={hp:G.hp,sp:G.sp,phase:G.phase,ags:mates.map(a=>[a,a.hp,a.sp,a.st?Object.assign({},a.st):null])};
- G.hp=maxHp();G.sp=0;mates.forEach(a=>{a.sp=0});closePop();MIRD=d;
+ G.hp=maxHp();G.sp=0;mates.forEach(a=>{a.sp=0;if(a._ar146&&!G.agents.includes(a))G.agents.push(a)});window.__ar146busy=1;closePop();MIRD=d;
  try{startBattle('mir136',{grade:Math.max(0,Math.max(...foes.map(m=>m.rk||1))-1),title:`${NAME()} · ${esc(NL(meta.n||'?'))}`,foes,mates,mir:meta,after:()=>{}})}finally{MIRD=null}}
 startBattle=(f=>function(kind,opt){if(kind==='mir136')MIRD=MIRD||fix(decks().atk.slice());const r=f.apply(this,arguments);
  try{if(B&&kind==='mir136'){B.mir136=opt.mir||{};B.allies=B.allies.filter(a=>a.key!=='queen');if(B.opt)B.opt.queenJoined=false;renderBattle()}}catch(e){}return r})(startBattle);
@@ -13775,6 +13779,7 @@ onKill=(f=>function(u){if(B&&B.mir136&&u&&u.mir136){if(u.killed)return;u.killed=
 function end(win,forfeit){const meta=B.mir136,turns=B.turn;B.done=true;
  const al=B.allies;const hp=Math.round(100*al.reduce((s,a)=>s+Math.max(0,a.dead?0:a.hp),0)/Math.max(1,al.reduce((s,a)=>s+a.max,0)));
  B=null;try{LBSEL=null}catch(e){}
+ G.agents=G.agents.filter(a=>!a._ar146);window.__ar146busy=0;
  if(REST){G.hp=REST.hp;G.sp=REST.sp;REST.ags.forEach(([a,h,s,st])=>{a.hp=h;a.sp=s;if(st)a.st=st});G.phase=REST.phase||'work';REST=null}
  try{save()}catch(e){}render();try{workMenu()}catch(e){}
  const sc={win:win?1:0,hp:win?hp:0,t:turns};
@@ -13784,7 +13789,7 @@ battleLose=(f=>function(){if(B&&B.mir136&&!B.done)return end(false);return f.app
 canFlee=(f=>function(){if(B&&!B.done&&B.mir136)return true;return f.apply(this,arguments)})(canFlee);
 battleFlee=(f=>function(){if(B&&B.mir136&&!B.done)return end(false,true);return f.apply(this,arguments)})(battleFlee);
 /* 저장 중에 창을 닫았어도 다음에 불러오면 원래대로 */
-render=(f=>function(){try{if(G&&REST&&!(B&&!B.done&&B.kind==='mir136')){G.hp=REST.hp;G.sp=REST.sp;REST.ags.forEach(([a,h,s,st])=>{a.hp=h;a.sp=s;if(st)a.st=st});REST=null}}catch(e){}return f.apply(this,arguments)})(render);
+render=(f=>function(){try{if(G&&REST&&!(B&&!B.done&&B.kind==='mir136')){G.agents=G.agents.filter(a=>!a._ar146);window.__ar146busy=0;G.hp=REST.hp;G.sp=REST.sp;REST.ags.forEach(([a,h,s,st])=>{a.hp=h;a.sp=s;if(st)a.st=st});REST=null}}catch(e){}return f.apply(this,arguments)})(render);
 
 /* ---------- 결과 보고 ---------- */
 async function report(meta,win,forfeit){let msg='';
@@ -13794,16 +13799,50 @@ async function report(meta,win,forfeit){let msg='';
 
 /* ---------- 화면 ---------- */
 let TAB='deck',ROOM=null,POLL=0;
-function head(){return `<p class="note">${DESC()}</p><div class="m136-tabs">${[['deck',T('덱 편성','Decks','デッキ編成')],['find',T('도전','Challenge','挑戦')],['rank',T('순위','Ranking','ランキング')],['room',T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)')],['rt',T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)')]].map(([k,l])=>`<button type="button" class="btn small ${TAB===k?'':'ghost'}" data-m136t="${k}">${l}</button>`).join('')}</div>`}
+function head(){return `<p class="note">${DESC()}</p><div class="m136-tabs">${[['deck',T('덱 편성','Decks','デッキ編成')],['ar',T('보관함','Archive','保管庫')],['find',T('도전','Challenge','挑戦')],['rank',T('순위','Ranking','ランキング')],['room',T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)')],['rt',T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)')]].map(([k,l])=>`<button type="button" class="btn small ${TAB===k?'':'ghost'}" data-m136t="${k}">${l}</button>`).join('')}</div>`}
 function memLine(m){return `<b>${esc(NL(m.n))}</b> <small>${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,m.rk)-1]} · HP ${m.hp} · ${esc(wN(m.w))} / ${esc(sN(m.s))}</small>`}
-function deckEd(kind){const d=decks()[kind];const used=d.map(m=>m.id);
- const row=(m,i)=>{const rk=rkOf(m.id);const who=i===0?`<b>${T('나','Me','私')} · ${esc(NL(G.name))}</b>`:`<select data-m136a="${kind}:${i}">${ags().filter(a=>a.id===m.id||!used.includes(a.id)).map(a=>`<option value="${a.id}" ${a.id===m.id?'selected':''}>${esc(NL(a.n))} (${['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'][Math.max(1,agRank(a))-1]})</option>`).join('')}</select>`;
-  const ws=ownList('w').filter(id=>wOK(id,rk)),ss=ownList('s').filter(id=>sOK(id,rk));
-  return `<div class="m136-row">${who}<select data-m136w="${kind}:${i}">${ws.map(id=>`<option value="${id}" ${id===m.w?'selected':''}>${esc(wN(id))} ${gr(weapOf(id).g)}</option>`).join('')}</select><select data-m136s="${kind}:${i}">${ss.map(id=>`<option value="${id}" ${id===m.s?'selected':''}>${esc(sN(id))} ${gr(suitOf(id).g)}</option>`).join('')}</select>${i>0?`<button type="button" class="btn ghost small" data-m136x="${kind}:${i}">${T('빼기','Remove','外す')}</button>`:''}</div>`};
- fix(d);const free=ags().filter(a=>!used.includes(a.id));
+const RN=['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ'];
+let PK=null;
+const low=x=>String(x||'').toLowerCase();
+const hit=(q,...xs)=>!q||xs.some(x=>low(x).includes(q));
+function srcOf(a){if(!a)return '';if(!a._ar146)return T('현재 기록','This record','現在の記録');const x=(AR().get().pl[a.id.slice(3)]);return a._pl?T('보관 · 역대 관리직','Archive · past manager','保管・歴代管理職'):T('보관 · 직원','Archive · staff','保管・職員')}
+function gName(id){const x=AR()&&AR().gInfo(id);if(!x)return id;const sl=AR().SLOTS()[x.slot];return `${x.n} · ${TRN(sl||x.slot)}`}
+function pickList(kind,i){const d=decks()[kind];const m=d[i];const q=low(PK.q).trim();const rk=m?rkOf(m.id):1;let L=[];
+ if(PK.t==='m'){const used=d.map(x=>x.id);L=ags().filter(a=>(a.id===m.id||!used.includes(a.id))&&(!PK.rk||agRank(a)===PK.rk)&&(PK.src==='all'||(PK.src==='cur')===!a._ar146)&&hit(q,a.n,NL(a.n)))
+   .sort((x,y)=>agRank(y)-agRank(x)).slice(0,80).map(a=>({v:a.id,on:a.id===m.id,h:`<b>${esc(NL(a.n))}</b> <small>${RN[Math.max(1,agRank(a))-1]} · HP ${agMax(a)} · ${srcOf(a)}</small>`}))}
+ else if(PK.t==='w'||PK.t==='s'){const ok=PK.t==='w'?wOK:sOK,of=PK.t==='w'?weapOf:suitOf,nm=PK.t==='w'?wN:sN;
+  L=ownList(PK.t).filter(id=>{let g=0;try{g=of(id).g}catch(e){}return (!PK.rk||g===PK.rk-1)&&hit(q,nm(id),id)}).map(id=>{const can=ok(id,rk);let g=0;try{g=of(id).g}catch(e){}return {v:id,on:id===(PK.t==='w'?m.w:m.s),dis:!can,g,h:`<b>${esc(nm(id))}</b> <small>${gr(g)}${can?'':` · ${T('등급이 부족해요','Rank too low','等級不足')}`}</small>`}}).sort((x,y)=>(x.dis-y.dis)||(y.g-x.g)).slice(0,120)}
+ else if(PK.t==='g'){const A=AR();const usedAll=d.flatMap(x=>x.g||[]);const mySlots=(m.g||[]).map(id=>A.gInfo(id)&&A.gInfo(id).slot);
+  L=A.gifts().map(id=>A.gInfo(id)).filter(x=>x&&(!PK.rk||x.g===PK.rk-1)&&hit(q,x.n,gName(x.id))).map(x=>{const taken=usedAll.includes(x.id),slot=mySlots.includes(x.slot);const full=(m.g||[]).length>=3;
+   return {v:x.id,dis:taken||slot||full,g:x.g,h:`<b>${esc(gName(x.id))}</b> <small>${gr(x.g)} · ${A.gText(x)}${taken?` · ${T('덱에서 사용 중','In use in this deck','デッキで使用中')}`:slot?` · ${T('같은 부위가 있어요','Same slot taken','同じ部位があります')}`:''}</small>`}}).sort((x,y)=>(x.dis-y.dis)||(y.g-x.g)).slice(0,120)}
+ return L.length?L.map(o=>`<button type="button" class="pk146i ${o.on?'on':''}" data-pkv="${esc(o.v)}" ${o.dis?'disabled':''}>${o.h}</button>`).join(''):`<p class="note">${T('찾는 항목이 없어요.','Nothing found.','該当する項目がありません。')}</p>`}
+function picker(kind,i){const ty={m:T('사람 고르기','Choose a member','メンバーを選ぶ'),w:T('무기 고르기','Choose a weapon','武器を選ぶ'),s:T('슈트 고르기','Choose a suit','スーツを選ぶ'),g:T('기프트 고르기','Choose a gift','ギフトを選ぶ')}[PK.t];
+ const chip=(k,v,l)=>`<button type="button" class="btn small ${PK[k]===v?'':'ghost'}" data-pkf="${k}:${v}">${l}</button>`;
+ return `<div class="pk146"><div class="pk146h"><b>${ty}</b><button type="button" class="btn ghost small" data-pkx>✕</button></div>
+  <input class="pk146q" type="search" placeholder="${T('이름으로 검색','Search by name','名前で検索')}" value="${esc(PK.q)}">
+  <div class="pk146f">${chip('rk',0,T('모든 등급','All grades','全等級'))}${[1,2,3,4,5].map(r=>chip('rk',r,PK.t==='m'?RN[r-1]:gr(r-1)||RN[r-1])).join('')}${PK.t==='m'?`<span class="pk146s"></span>${chip('src','all',T('전체','All','全て'))}${chip('src','cur',T('현재 기록','This record','現在の記録'))}${chip('src','ar',T('보관함','Archive','保管庫'))}`:''}</div>
+  <div class="pk146l">${pickList(kind,i)}</div></div>`}
+function deckEd(kind){const d=decks()[kind];
+ const row=(m,i)=>{const a=i===0?null:agById(m.id);const rk=rkOf(m.id);const open=PK&&PK.k===kind&&PK.i===i;
+  const who=i===0?`<b>${T('나','Me','私')} · ${esc(NL(G.name))}</b>`:`<button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:m">${esc(NL(a?a.n:'?'))} <small>${RN[Math.max(1,rk)-1]}${a&&a._ar146?' · ⧉':''}</small> ▾</button>`;
+  const gifts=(m.g||[]).map(id=>`<button type="button" class="gf146" data-gx="${kind}:${i}:${esc(id)}" title="${T('눌러서 빼기','Tap to remove','押して外す')}">✦ ${esc(gName(id))} ✕</button>`).join('');
+  return `<div class="m136-row m146">${who}<button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:w">${esc(wN(m.w))} ${gr(weapOf(m.w).g)} ▾</button><button type="button" class="btn ghost small pk146b" data-pk="${kind}:${i}:s">${esc(sN(m.s))} ${gr(suitOf(m.s).g)} ▾</button>${i>0?`<button type="button" class="btn ghost small" data-m136x="${kind}:${i}">${T('빼기','Remove','外す')}</button>`:''}
+   <div class="gf146w">${gifts}${(m.g||[]).length<3?`<button type="button" class="btn ghost small" data-pk="${kind}:${i}:g">+ ${T('기프트','Gift','ギフト')}</button>`:''}</div>${open?picker(kind,i):''}</div>`};
+ fix(d);const used=d.map(m=>m.id);const free=ags().filter(a=>!used.includes(a.id));
  return `<div class="m136-deck"><h4>${kind==='atk'?T('공격 덱','Attack deck','攻撃デッキ'):T('수비 덱','Defense deck','守備デッキ')}</h4><p class="note">${kind==='atk'?T('내가 다른 관리직의 수비 덱에 도전할 때 쓰는 팀이에요.','The team you use to challenge other managers\' defense decks.','他の管理職の守備デッキに挑むときのチームです。'):T('다른 관리직이 도전해 오는 팀이에요. 저장하면 서버에 올라가요.','The team others challenge. Saving uploads it to the server.','他の管理職が挑んでくるチームです。保存するとサーバーに登録されます。')}</p>${d.map(row).join('')}
   ${d.length<3&&free.length?`<button type="button" class="btn ghost small" data-m136add="${kind}">+ ${T('직원 추가','Add staff','職員を追加')}</button>`:''}</div>`}
-async function body(){if(TAB==='deck'){const u=user();return `${deckEd('atk')}${deckEd('def')}<div class="row"><button type="button" class="btn" id="m136save">${T('덱 저장 · 수비 덱 등록','Save decks · register defense','デッキ保存・守備デッキ登録')}</button></div>${u?'':`<p class="note">${ERR.auth}</p>`}`}
+/* 보관함 탭 */
+let ARQ={t:'ag',q:''};
+function arList(){const A=AR();if(!A)return '';const X=A.get();const q=low(ARQ.q).trim();let L=[];
+ if(ARQ.t==='ag'||ARQ.t==='pl')L=Object.entries(X[ARQ.t]).map(([k,x])=>({k,x})).filter(o=>hit(q,o.x.n,NL(o.x.n),o.x.mg)).sort((p,r)=>r.x.rk-p.x.rk||r.x.at-p.x.at).slice(0,150).map(({x})=>`<div class="ar146i"><b>${esc(NL(x.n))}</b> <small>${RN[Math.max(1,x.rk)-1]} · HP ${x.hp} · ${esc(wN(x.w))} / ${esc(sN(x.s))} · ${T(`${x.day}일차`,`Day ${x.day}`,`${x.day}日目`)}${ARQ.t==='ag'?` · ${x.alive?'':'✝ '}${T('관리직','Manager','管理職')} ${esc(NL(x.mg||'?'))}`:''}</small></div>`);
+ else if(ARQ.t==='w'||ARQ.t==='s'){const of=ARQ.t==='w'?weapOf:suitOf,nm=ARQ.t==='w'?wN:sN;L=X[ARQ.t].filter(id=>hit(q,nm(id),id)).map(id=>{let g=0;try{g=of(id).g}catch(e){}return [g,`<div class="ar146i"><b>${esc(nm(id))}</b> <small>${gr(g)}</small></div>`]}).sort((p,r)=>r[0]-p[0]).map(x=>x[1])}
+ else L=A.gifts().map(id=>A.gInfo(id)).filter(x=>x&&hit(q,x.n,gName(x.id))).sort((p,r)=>r.g-p.g).map(x=>`<div class="ar146i"><b>${esc(gName(x.id))}</b> <small>${gr(x.g)} · ${A.gText(x)}</small></div>`);
+ return L.length?L.join(''):`<p class="note">${T('아직 없어요.','Nothing yet.','まだありません。')}</p>`}
+function arHtml(){const A=AR();if(!A)return '';const c=A.count();const tb=[['ag',T('직원','Staff','職員'),c.ag],['pl',T('역대 관리직','Past managers','歴代管理職'),c.pl],['w',T('무기','Weapons','武器'),c.w],['s',T('슈트','Suits','スーツ'),c.s],['g',T('기프트','Gifts','ギフト'),c.g]];
+ return `<p class="note">${T('근무하며 만난 직원과 손에 넣은 E.G.O는 엔딩을 봐도 여기 남아요. 덱 편성에서 모두 고를 수 있어요. 로그인하면 다른 기기 · 저장소와 합쳐져요.','Staff you met and E.G.O you obtained stay here even after an ending. You can pick all of them in Decks. Log in to merge across devices and save slots.','勤務で出会った職員と手に入れたE.G.Oは、エンディングを迎えてもここに残ります。デッキ編成ですべて選べます。ログインすると他の端末・保存枠と統合されます。')}</p>
+ <div class="m136-tabs">${tb.map(([k,l,n])=>`<button type="button" class="btn small ${ARQ.t===k?'':'ghost'}" data-art="${k}">${l} ${n}</button>`).join('')}</div>
+ <input class="pk146q" id="arq" type="search" placeholder="${T('이름으로 검색','Search by name','名前で検索')}" value="${esc(ARQ.q)}"><div class="ar146l">${arList()}</div>`}
+async function body(){if(TAB==='ar')return arHtml();if(TAB==='deck'){const u=user();return `${deckEd('atk')}${deckEd('def')}<div class="row"><button type="button" class="btn" id="m136save">${T('덱 저장 · 수비 덱 등록','Save decks · register defense','デッキ保存・守備デッキ登録')}</button></div>${u?'':`<p class="note">${ERR.auth}</p>`}`}
  if(!online())return `<p class="note">${ERR.art}</p>`;if(!user())return `<p class="note">${ERR.auth}</p>`;
  if(TAB==='find'){let me=null,L=[];try{me=await api('?op=me')}catch(e){return `<p class="note">${errMsg(e)}</p>`}
   if(!me.def)return `<p class="note">${T('먼저 [덱 편성]에서 수비 덱을 등록해 주세요. 수비 덱을 올린 관리직만 도전할 수 있어요.','Register a defense deck in [Decks] first. Only managers with a defense deck can challenge.','先に[デッキ編成]で守備デッキを登録してください。守備デッキを登録した管理職だけが挑戦できます。')}</p>`;
@@ -13819,11 +13858,21 @@ async function open(tab){if(tab)TAB=tab;stopPoll();
  popup(NAME(),`${head()}<div id="m136b"><p class="note">${T('불러오는 중…','Loading…','読み込み中…')}</p></div>`,b=>bindHead(b),{wide:1});
  const h=await body();const box=document.getElementById('m136b');if(!box)return;box.innerHTML=h;bind(box);if(TAB==='room'&&ROOM)poll()}
 function bindHead(b){b.querySelectorAll('[data-m136t]').forEach(x=>x.onclick=()=>{if(x.dataset.m136t==='rt'){if(typeof window.rt139==='function'){closePop();window.rt139()}return}open(x.dataset.m136t)})}
+function deckRe(box){box.innerHTML=`${deckEd('atk')}${deckEd('def')}`+box.innerHTML.slice(box.innerHTML.indexOf('<div class="row"><button type="button" class="btn" id="m136save"')>=0?box.innerHTML.indexOf('<div class="row"><button type="button" class="btn" id="m136save"'):box.innerHTML.length);bind(box)}
+function bindPick(box){box.querySelectorAll('[data-pkv]').forEach(x=>x.onclick=()=>{if(!PK)return;const d=decks()[PK.k];const m=d[PK.i];const v=x.dataset.pkv;
+  if(PK.t==='m'){d[PK.i]={id:v,w:defW(v),s:defS(v),g:m.g||[]}}else if(PK.t==='w')m.w=v;else if(PK.t==='s')m.s=v;else if(PK.t==='g'){m.g=(m.g||[]).concat([v]);if(m.g.length>=3)PK=null;else{deckRe(box);return}}
+  if(PK&&PK.t!=='g')PK=null;deckRe(box)})}
 function bind(box){
  const at=s=>{const [k,i]=s.split(':');return [decks()[k],+i,k]};
- box.querySelectorAll('[data-m136a]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136a);d[i]={id:x.value,w:defW(x.value),s:defS(x.value)};open('deck')});
- box.querySelectorAll('[data-m136w]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136w);d[i].w=x.value});
- box.querySelectorAll('[data-m136s]').forEach(x=>x.onchange=()=>{const [d,i]=at(x.dataset.m136s);d[i].s=x.value});
+ const redraw=()=>{const y=box.scrollTop;deckRe(box);box.scrollTop=y};
+ box.querySelectorAll('[data-pk]').forEach(x=>x.onclick=()=>{const [k,i,t]=x.dataset.pk.split(':');PK=(PK&&PK.k===k&&PK.i===+i&&PK.t===t)?null:{k,i:+i,t,q:'',rk:0,src:'all'};redraw();const q=box.querySelector('.pk146q');if(q)q.focus()});
+ box.querySelectorAll('[data-pkx]').forEach(x=>x.onclick=()=>{PK=null;redraw()});
+ box.querySelectorAll('[data-pkf]').forEach(x=>x.onclick=()=>{const [k,v]=x.dataset.pkf.split(':');PK[k]=k==='rk'?+v:v;redraw()});
+ const pq=box.querySelector('.pk146 .pk146q');if(pq)pq.oninput=()=>{PK.q=pq.value;const l=box.querySelector('.pk146l');l.innerHTML=pickList(PK.k,PK.i);bindPick(box)};
+ bindPick(box);
+ box.querySelectorAll('[data-gx]').forEach(x=>x.onclick=()=>{const [k,i,id]=x.dataset.gx.split(':');const m=decks()[k][+i];m.g=(m.g||[]).filter(g=>g!==id);redraw()});
+ box.querySelectorAll('[data-art]').forEach(x=>x.onclick=()=>{ARQ.t=x.dataset.art;open('ar')});
+ const aq=box.querySelector('#arq');if(aq)aq.oninput=()=>{ARQ.q=aq.value;box.querySelector('.ar146l').innerHTML=arList()};
  box.querySelectorAll('[data-m136x]').forEach(x=>x.onclick=()=>{const [d,i]=at(x.dataset.m136x);d.splice(i,1);open('deck')});
  box.querySelectorAll('[data-m136add]').forEach(x=>x.onclick=()=>{const d=decks()[x.dataset.m136add];const used=d.map(m=>m.id);const a=ags().find(a=>!used.includes(a.id));if(a)d.push({id:a.id,w:defW(a.id),s:defS(a.id)});open('deck')});
  const sv=box.querySelector('#m136save');if(sv)sv.onclick=async()=>{const D=decks();for(const k of ['atk','def']){const bad=countOK(fix(D[k]));if(bad){const [t,id]=bad.split(':');return toast(T(`보유 수량보다 많이 넣었어요: ${t==='w'?wN(id):sN(id)}`,`More than you own: ${t==='w'?wN(id):sN(id)}`,`所持数より多く入れています：${t==='w'?wN(id):sN(id)}`))}}
@@ -13867,7 +13916,7 @@ async function roomScore(code,sc){try{await api('',{method:'POST',body:{op:'room
  if(ROOM&&ROOM.code===code){TAB='room';open('room')}}
 
 /* ---------- 메뉴 ---------- */
-window.mirror136=open;window.mirSnap136=d=>snap(d);window.mirDecks136=decks;window.mirApiSlot136=slot;
+window.mirror136=open;window.mirFight136=(f,m)=>fight(f,m||{mode:'test',n:'test'});window.mirSnap136=d=>snap(d);window.mirDecks136=decks;window.mirApiSlot136=slot;
 function lockWhy(){if(G.arc||G.day>50)return T('지금은 들어갈 수 없어요','Not available now','今は入れません');if((G.roam||[]).some(r=>!r.dead)||(G.breachQ||[]).length)return T('경보 중에는 들어갈 수 없어요','Not during an alert','警報中は入れません');return ''}
 panelPre=(f=>function(title,sub,choices){
  try{if(false&&typeof title==='string'&&(title.startsWith('업무 시간')||title==='퇴근 후')&&Array.isArray(choices)&&!(G.flags&&G.flags.tutSand)&&!(typeof TUTSNAP!=='undefined'&&TUTSNAP)){
@@ -13920,7 +13969,7 @@ const FAIR=k=>k==='spar124'||k==='mir136';
 function memOf(u){try{if(u.spar124){const a=G.agents.find(x=>x.id===u.spar124);if(a)return {pl:0,rk:Math.max(1,agRank(a)),hp:agMax(a),st:a.st,w:agWeap(a),s:agSuit(a)}}
  if(u.mir136&&B&&B.opt&&B.opt.foes)return B.opt.foes[u.mir136.i]}catch(e){}return null}
 function fair(u){const m=memOf(u);if(!m)return;let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
- const rk=Math.max(1,Math.min(5,m.rk||1));const pow=m.pl?0:Math.floor(rk/2)-2;const sb=Math.floor(((m.st||{}).J||0)/30);
+ const rk=Math.max(1,Math.min(5,m.rk||1));const pow=(m.pl?0:Math.floor(rk/2)-2)+Math.max(0,Math.min(5,m.gp|0));const sb=Math.floor(((m.st||{}).J||0)/30)+Math.max(0,Math.min(5,m.gs|0));
  u.max=Math.max(1,Math.round(m.hp||80));u.hp=u.max;u.spd=[2+sb,5+sb];u.rk138=rk;u.ag138=!m.pl;u.acts=1;u.deck138=[];
  u.skills=k.skills.map(s=>S(s.n,Math.max(1,s.base+pow),s.cp,s.coins,s.t,k.dc,s.sin,s.on));
  u.cres=Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{});
@@ -13953,7 +14002,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.3.0.261020';
+const VER='Ver. 4.4.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -13977,7 +14026,7 @@ function shuf(R,L){for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[
 /* ---------- 유닛 ---------- */
 const DEFB=[5,6,8,10,12],DEFC=[3,3,4,4,5];
 function mkUnit(m,side,i,o,extra){let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
- const rk=Math.max(1,Math.min(5,m.rk||1)),pow=m.pl?0:Math.floor(rk/2)-2,sb=Math.floor(((m.st||{}).J||0)/30),g=Math.max(0,Math.min(4,su.g||0));
+ const rk=Math.max(1,Math.min(5,m.rk||1)),pow=(m.pl?0:Math.floor(rk/2)-2)+Math.max(0,Math.min(5,m.gp|0)),sb=Math.floor(((m.st||{}).J||0)/30)+Math.max(0,Math.min(5,m.gs|0)),g=Math.max(0,Math.min(4,su.g||0));
  return {side,i,o,extra:!!extra,n:m.n,pl:m.pl,rk,max:m.hp,hp:m.hp,sp:0,spd:[2+sb,5+sb],ag:!m.pl,w:m.w,s:m.s,
   sk:k.skills.slice(0,3).map(s=>({n:s.n,base:Math.max(1,s.base+pow),cp:s.cp||0,coins:Math.max(1,s.coins||1),dc:s.c||k.dc||'RED'})),
   def:{n:(k.def&&k.def.n)||T('수비','Defend','守備'),type:(k.def&&k.def.type)||'guard',base:DEFB[g],cp:DEFC[g]},res:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),
@@ -14067,18 +14116,18 @@ function lobby(){stop();const ok=online()&&user();
  panel('',`<div class="rt-lobby"><p class="note">${T('방장이 1:1 또는 다수(팀) 전투를 정하고, 싸울 사람은 자리에 앉아 [준비]를 눌러요. 앉은 사람이 모두 준비하면 코인 토스로 시작해요. 턴마다 선공 → 후공 순서로 각자 50초 안에 자기 유닛의 스킬을 고르고, 빛(1·2·3스킬 = 1·2·3, 수비 0)은 한 사람이 한 턴 최대치를 넘을 수 없어요. 선공이 고른 스킬의 절반은 ?로 가려져요.','The host picks 1v1 or team battle; fighters take a seat and press [Ready]. When everyone seated is ready, a coin toss starts the match. Each turn the first side, then the second, picks skills for their own units within 50 seconds; light (skills 1·2·3 cost 1·2·3, defense 0) per person cannot exceed the turn maximum. Half of the first side\'s picks are hidden as ?.','部屋主が1対1か多人数(チーム)戦かを決め、戦う人は席に座って[準備]を押します。座った全員が準備するとコイントスで始まります。毎ターン先攻→後攻の順に50秒以内で自分のユニットのスキルを選び、光(1・2・3スキル=1・2・3、守備0)は一人あたりターン上限を超えられません。先攻の選択の半分は?で隠されます。')}</p>
  ${ok?`<div class="rt-mk"><div class="rt-mkc"><b>${T('공개 방','Public room','公開部屋')}</b><small>${T('목록에 올라가 누구나 들어올 수 있어요.','Listed; anyone can join.','一覧に載り、誰でも入れます。')}</small><button type="button" class="btn" data-rtnew="pub">${T('공개 방 만들기','Create public room','公開部屋を作る')}</button></div>
   <div class="rt-mkc"><b>${T('초대 코드 방','Invite-code room','招待コード部屋')}</b><small>${T('코드를 아는 사람만 들어올 수 있어요.','Only people with the code can join.','コードを知っている人だけが入れます。')}</small><button type="button" class="btn" data-rtnew="code">${T('초대 코드 방 만들기','Create invite room','招待コード部屋を作る')}</button></div></div>
-  <div class="row"><input id="rtCode" maxlength="6" placeholder="${T('초대 코드','Invite code','招待コード')}"><button type="button" class="btn ghost" id="rtJoin">${T('코드로 참가','Join by code','コードで参加')}</button></div>
+  <div class="row"><input id="rtCode" maxlength="6" placeholder="${T('초대 코드','Invite code','招待コード')}"><button type="button" class="btn ghost" id="rtJoin">${T('코드로 참가','Join by code','コードで参加')}</button><button type="button" class="btn ghost" id="rtWatch">👁 ${T('코드로 관전','Spectate by code','コードで観戦')}</button></div>
   <div class="rt-list"><div class="rt-lh"><b>${T('공개 방','Public rooms','公開部屋')}</b><button type="button" class="btn ghost small" id="rtRef">${T('새로 고침','Refresh','更新')}</button></div><div id="rtPub"><p class="note">${T('불러오는 중…','Loading…','読み込み中…')}</p></div></div>`
  :`<p class="note">${online()?ERR.auth:T('이 링크(사본)에는 서버가 없어서 쓸 수 없어요. 게임 사이트 주소로 접속해 주세요.','This copy has no server. Please open the game site.','この複製にはサーバーがありません。ゲームサイトで接続してください。')}</p>`}
  <div class="row"><button type="button" class="btn ghost small" id="rtBack">${T('돌아가기','Go back','戻る')}</button></div></div>`);
  const P=document.getElementById('panel');P.querySelector('#rtBack').onclick=close;
  const deck=()=>window.mirSnap136(window.mirDecks136().atk.slice());
  P.querySelectorAll('[data-rtnew]').forEach(b=>b.onclick=async()=>{try{const r=await api('',{method:'POST',body:{op:'new',type:b.dataset.rtnew,name:G.name,deck:deck(),v:VER}});ROOM=r.code;go()}catch(x){toast(errMsg(x))}});
- const join=async c=>{try{await api('',{method:'POST',body:{op:'join',code:c,name:G.name,deck:deck(),v:VER}});ROOM=c;go()}catch(x){toast(errMsg(x))}};
- const jn=P.querySelector('#rtJoin');if(jn)jn.onclick=()=>{const c=(P.querySelector('#rtCode').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));join(c)};
+ const join=async(c,spec)=>{try{await api('',{method:'POST',body:{op:'join',code:c,name:G.name,deck:deck(),v:VER,spec:spec?1:0}});ROOM=c;if(spec)toast(T('관전석으로 들어갔어요.','Joined as a spectator.','観戦席に入りました。'));go()}catch(x){toast(errMsg(x))}};
+ const byCode=spec=>{const c=(P.querySelector('#rtCode').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));join(c,spec)};const jn=P.querySelector('#rtJoin');if(jn)jn.onclick=()=>byCode(0);const wt=P.querySelector('#rtWatch');if(wt)wt.onclick=()=>byCode(1);
  const loadPub=async()=>{const box=P.querySelector('#rtPub');if(!box)return;try{const L=(await api('?op=list')).list||[];
-   box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> · ${r.mode==='team'?T('다수 전투','Team','多人数'):'1:1'} · ${r.n}${T('명','','人')} · ${r.ph==='lobby'?T(`빈자리 ${r.free}`,`${r.free} seats open`,`空席 ${r.free}`):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${r.ph==='lobby'?T('들어가기','Join','入る'):T('관전','Spectate','観戦')}</button></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
-   box.querySelectorAll('[data-rtj]').forEach(b=>b.onclick=()=>join(b.dataset.rtj))}catch(x){box.innerHTML=`<p class="note">${errMsg(x)}</p>`}};
+   box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> · ${r.mode==='team'?T('다수 전투','Team','多人数'):'1:1'} · ${r.n}${T('명','','人')} · ${r.ph==='lobby'?T(`빈자리 ${r.free}`,`${r.free} seats open`,`空席 ${r.free}`):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><span class="rt-btns">${r.ph==='lobby'?`<button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${T('들어가기','Join','入る')}</button>`:''}<button type="button" class="btn small ghost" data-rtv="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>👁 ${T('관전','Spectate','観戦')}</button></span></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
+   box.querySelectorAll('[data-rtj]').forEach(b=>b.onclick=()=>join(b.dataset.rtj));box.querySelectorAll('[data-rtv]').forEach(b=>b.onclick=()=>join(b.dataset.rtv,1))}catch(x){box.innerHTML=`<p class="note">${errMsg(x)}</p>`}};
  const rf=P.querySelector('#rtRef');if(rf)rf.onclick=loadPub;loadPub()}
 function go(){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;PLAYED=null;ANIM=false;pauseRt();poll();clearInterval(TICK);TICK=setInterval(tick,300)}
 async function poll(){clearTimeout(POLL);if(!ROOM)return;
@@ -14118,12 +14167,12 @@ function lobbyRoom(){const st=ST,cap=st.mode==='team'?5:1;const mySeat=(st.mem.f
  return `${codeBox()}<p class="rt-tag">${st.type==='pub'?T('공개 방','Public room','公開部屋'):T('초대 코드 방','Invite-code room','招待コード部屋')}${st.host?` · ${T('내가 방장','You are the host','あなたが部屋主')}`:''}</p>${setting}
   <div class="rt-seats">${seatList('A')}<div class="rt-vsb">VS</div>${seatList('B')}</div>${rule}
   <div class="rt-status">${status}</div>
-  <div class="row">${mySeat?`<button type="button" class="btn ${meR?'ghost':''}" id="rtReady">${meR?T('준비 취소','Cancel ready','準備取消'):T('준비','Ready','準備')}</button><button type="button" class="btn ghost small" id="rtStand">${T('자리 떠나기','Leave seat','席を離れる')}</button>`:''}<button type="button" class="btn ghost small" id="rtLeave">${T('방 나가기','Leave room','退室')}</button></div>
+  <div class="row">${mySeat?`<button type="button" class="btn ${meR?'ghost':''}" id="rtReady">${meR?T('준비 취소','Cancel ready','準備取消'):T('준비','Ready','準備')}</button><button type="button" class="btn ghost small" id="rtStand">${T('관전석으로','To spectator seats','観戦席へ')}</button>`:''}<button type="button" class="btn ghost small" id="rtLeave">${T('방 나가기','Leave room','退室')}</button></div>
   <div class="rt-mem"><b>${T('관전','Spectators','観戦')} ${specs.length}</b>${specs.map(m=>`<span class="${m.id===st.me?'me':''}">${m.host?'♛ ':''}${esc(NL(m.n))}</span>`).join('')||`<small>-</small>`}<p class="note">${T('방장이 나가면 남은 사람 중 가장 먼저 들어온 사람이 방장이 돼요.','If the host leaves, the earliest remaining member becomes host.','部屋主が退出すると、残った人のうち最も早く入った人が部屋主になります。')}</p></div>`}
 function draw_(){if(!ST||ANIM)return;const st=ST;
  if(st.ph==='lobby'){panel('',`<div id="rtWait">${lobbyRoom()}</div>`);return bindM(null,0)}
  const S=sim(st);const me=st.myTeam?SI(st.myTeam):0,op=1-me,spec=!st.myTeam;
- if(S.end&&st.ph!=='end'&&!ENDSENT&&!spec){ENDSENT=1;call('end',{w:S.end}).catch(()=>{})}
+ if(S.end&&st.ph!=='end'&&!spec&&(!ENDSENT||Date.now()-ENDSENT>5000)){ENDSENT=Date.now();call('end',{w:S.end}).catch(()=>{ENDSENT=0})}
  const tA=(st.bt.A||[]).map(x=>esc(NL(x.n))).join(', '),tB=(st.bt.B||[]).map(x=>esc(NL(x.n))).join(', ');const vs=me===0?`${tA} vs ${tB}`:`${tB} vs ${tA}`;
  if(st.ph==='toss'){const won=st.leader===st.me;
   const body=`<div class="rt-coin"><i class="coin"></i> ${T('코인 토스','Coin toss','コイントス')} — ${T('앞면','Heads','表')}: <b>${st.bt.mode==='team'?TEAM(st.tw):esc(NL(nmOf(st.leader)))}</b></div>`+(won?`<div class="row"><button type="button" class="btn" data-rtf="1">${T('선공','Go first','先攻')}</button><button type="button" class="btn ghost" data-rtf="0">${T('후공','Go second','後攻')}</button></div>`:`<p class="note">${esc(NL(nmOf(st.leader)))}${T('이(가) 선공·후공을 고르는 중이에요.',' is choosing first or second.','が先攻・後攻を選んでいます。')}</p>`);
@@ -14160,7 +14209,7 @@ function drawBattle(st,S,me,op,spec,vs,AN){
    return `<div class="lb-grp">${cards}</div>`}).join('')||`<span class="note">${T('이번 턴에 내가 움직일 슬롯이 없어요.','You have no slots this turn.','このターン動かせるスロットがありません。')}</span>`}
  const role=spec?T('관전','Spectating','観戦'):myFirst?T('선공','First','先攻'):T('후공','Second','後攻');
  let info='';
- if(ended){const w=S.end||(st.end&&st.end.w);const win=!spec&&w===st.myTeam;info=`<p class="rt-res ${win?'w':w==='draw'||spec?'':'l'}">${w==='draw'?T('무승부','Draw','引き分け'):spec?`${st.bt.mode==='team'?TEAM(w):esc(NL(nmOf((st.bt[w]||[])[0]&&st.bt[w][0].id)))} ${T('승리','wins','の勝利')}`:win?T('승리','Victory','勝利'):T('패배','Defeat','敗北')}</p>${st.end&&(st.end.by==='leave'||st.end.by==='idle')?`<p class="note">${st.end.who===st.myTeam?T('우리 쪽이 모두 나가 끝났어요.','Our side left.','こちらが全員退出しました。'):T('상대 쪽이 나가 끝났어요.','The other side left.','相手側が退出しました。')}</p>`:''}${st.host?`<div class="row"><button type="button" class="btn" id="rtRe">${T('대기실로 (다음 대전)','Back to lobby (next match)','待機室へ(次の対戦)')}</button></div>`:`<p class="note">${T('방장이 다음 대전을 준비하기를 기다리는 중이에요.','Waiting for the host to set up the next match.','部屋主が次の対戦を準備するのを待っています。')}</p>`}`}
+ if(ended){const w=S.end||(st.end&&st.end.w);const win=!spec&&w===st.myTeam;info=`<p class="rt-res ${win?'w':w==='draw'||spec?'':'l'}">${w==='draw'?T('무승부','Draw','引き分け'):spec?`${st.bt.mode==='team'?TEAM(w):esc(NL(nmOf((st.bt[w]||[])[0]&&st.bt[w][0].id)))} ${T('승리','wins','の勝利')}`:win?T('승리','Victory','勝利'):T('패배','Defeat','敗北')}</p>${st.end&&(st.end.by==='leave'||st.end.by==='idle')?`<p class="note">${st.end.who===st.myTeam?T('우리 쪽이 모두 나가 끝났어요.','Our side left.','こちらが全員退出しました。'):T('상대 쪽이 나가 끝났어요.','The other side left.','相手側が退出しました。')}</p>`:''}${(st.host||st.myTeam)?`<div class="row"><button type="button" class="btn" id="rtRe">${T('대기실로 (다음 대전)','Back to lobby (next match)','待機室へ(次の対戦)')}</button></div>`:`<p class="note">${T('대전한 사람이나 방장이 대기실로 돌아가기를 기다리는 중이에요.','Waiting for a fighter or the host to return to the lobby.','対戦者か部屋主が待機室に戻るのを待っています。')}</p>`}`}
  else if(mine){const vis=fp?S.slots[op].reduce((x,sl,k)=>{const q=fp[k]||{};return x+((q.o===0||q.o===1)?sl.opts[q.o]+1:0)},0):0,hid=fp?fp.filter(q=>q&&q.o==='?').length:0;
   info=`<span>${T('내 카드를 누르고, 상대 몸(일방 공격)이나 상대 슬롯(합)을 눌러 대상을 정해요. 동료의 유닛은 그 사람이 골라요.','Tap your card, then an enemy (one-sided) or enemy slot (clash). Teammates choose for their own units.','自分のカードを押して、相手の体(一方攻撃)か相手のスロット(マッチ)を押します。味方のユニットはその人が選びます。')}</span>${fp?`<span class="rt-est">${T(`상대: 보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 한 사람 최대 ${maxOf(S,t)}`,`Opponents: visible light ${vis} · hidden ${hid} · max ${maxOf(S,t)} each`,`相手：見えている光 ${vis}・隠れた選択 ${hid}・一人最大 ${maxOf(S,t)}`)}</span>`:''}`}
  else if(spec)info=`<span>${T('관전 중이에요. 이번 턴의 선택은 턴이 끝나야 보여요.','Spectating. This turn\'s picks appear once the turn ends.','観戦中です。このターンの選択はターン終了後に見えます。')}</span>`;
@@ -14221,7 +14270,7 @@ function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return
  P.querySelectorAll('[data-rtsit]').forEach(b=>b.onclick=async()=>{try{await call('sit',{team:b.dataset.rtsit})}catch(x){toast(errMsg(x))}poll()});
  const sd=P.querySelector('#rtStand');if(sd)sd.onclick=async()=>{try{await call('stand')}catch(x){}poll()};
  const rd=P.querySelector('#rtReady');if(rd)rd.onclick=async()=>{const on=!(ST.mem.find(m=>m.id===ST.me)||{}).ready;try{await call('ready',{on})}catch(x){toast(errMsg(x))}poll()};
- const re=P.querySelector('#rtRe');if(re)re.onclick=async()=>{try{await call('rematch')}catch(x){toast(errMsg(x))}poll()};
+ const re=P.querySelector('#rtRe');if(re)re.onclick=async()=>{re.disabled=true;try{const st=ST;let w=null;try{const S2=sim(st);w=S2.end||(st.end&&st.end.w)}catch(e){}await call('rematch',{w:w||'draw'})}catch(x){toast(errMsg(x))}re.disabled=false;poll()};
  P.querySelectorAll('[data-rtf]').forEach(b=>b.onclick=async()=>{try{await call('choose',{first:b.dataset.rtf==='1'})}catch(x){toast(errMsg(x))}poll()});
  if(!S||!myIdx)return;const st=ST,t=st.turn;const Pt=st.P&&st.P[t];const fp=(st.myTeam&&st.ph==='p2'&&st.myTeam!==firstOf(st,t)&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
  const pk=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
@@ -14264,7 +14313,7 @@ const css=`
 .rt139 .rt-log{font-size:13px;line-height:1.6;border:1px solid rgba(244,238,154,.18);padding:8px 10px;margin-top:10px;max-height:220px;overflow:auto}
 .rt-mk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.rt-mkc{border:1px solid rgba(244,238,154,.3);padding:10px;display:flex;flex-direction:column;gap:6px}.rt-mkc b{color:#f4ee9a}.rt-mkc small{color:#b9c2bf}
 .rt-list{margin-top:12px;border-top:1px dashed rgba(244,238,154,.25);padding-top:8px}.rt-lh{display:flex;justify-content:space-between;align-items:center}
-.rt-room{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(244,238,154,.2);margin:6px 0}.rt-room em{color:#ff8f80;font-style:normal}
+.rt-btns{display:flex;gap:6px;flex-wrap:wrap}.rt-room{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(244,238,154,.2);margin:6px 0}.rt-room em{color:#ff8f80;font-style:normal}
 .rt-mem{margin-top:12px;border:1px solid rgba(244,238,154,.2);padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rt-mem>b{width:100%}.rt-mem span{padding:3px 8px;border:1px solid rgba(244,238,154,.25)}.rt-mem span.me{border-color:#ffd27a;color:#ffd27a}.rt-mem small{margin-left:6px;color:#b9c2bf}.rt-mem .note{width:100%;margin:2px 0 0}
 .rt-tag{color:#c9cfcc;margin:0 0 8px}
 @media (max-width:640px){.rt-mk{grid-template-columns:1fr}}
@@ -15072,6 +15121,88 @@ window.nb143=function(tab){V0(tab);try{if(!document.querySelector('.nbt [data-nt
 
 const st=document.createElement('style');st.textContent=`.epi145{margin:14px 0;padding:10px 12px;border:1px solid var(--line2,#555);border-left:4px solid var(--accent,#e8b04a);border-radius:var(--r,6px);background:var(--panel2,#1d1d1d)}.epi145 p{margin:4px 0;line-height:1.6}`;document.head.appendChild(st);
 })();
+/* ============ v146: 아인·소프·오르 보관함 — 엔딩을 봐도 남는 것들 ============
+   · 근무하며 만난 직원(떠난 사람 포함) · 역대 관리직 · E.G.O 무기 · 슈트 · 기프트를 보관함에 모은다.
+     저장할 때마다, 하루가 시작될 때, 어떤 엔딩이든 기록 화면이 열리기 전에 갱신된다.
+   · 보관함은 이 브라우저(계정별)에 두고, 로그인했으면 서버에도 올려 다른 기기 · 다른 저장소와 합친다.
+   · 아인·소프·오르의 덱 편성은 지금 기록 + 보관함 전체에서 고른다. 검색 · 등급 · 출처 거르기를 쓴다.
+   · 기프트: 덱의 한 사람당 부위가 겹치지 않게 3개까지. 거울 세계에서만 쓰이고, 관리직은 근무 중 기프트 대신 덱 기프트가 적용된다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const TRN=n=>(typeof tr80==='function'?tr80(n):n);
+const H=s=>(typeof esc==='function'?esc(s):String(s));
+const MAXA=300,MAXP=60;
+const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
+const uidOf=()=>{const u=user();return u?String(u.id||u.uid||u.name||u):'local'};
+const KEY=()=>'lcw_ar146:'+uidOf();
+const empty=()=>({v:1,ag:{},pl:{},w:[],s:[],g:[]});
+function load(k){try{const x=JSON.parse(localStorage.getItem(k)||'null');return x&&x.v?Object.assign(empty(),x):empty()}catch(e){return empty()}}
+function store(A){try{localStorage.setItem(KEY(),JSON.stringify(A))}catch(e){}}
+function merge(a,b){const o=empty();o.w=[...new Set([...(a.w||[]),...(b.w||[])])];o.s=[...new Set([...(a.s||[]),...(b.s||[])])];o.g=[...new Set([...(a.g||[]),...(b.g||[])])];
+ for(const t of ['ag','pl']){Object.assign(o[t],a[t]||{});for(const [k,v] of Object.entries(b[t]||{})){const p=o[t][k];if(!p||(v.at||0)>=(p.at||0))o[t][k]=v}}
+ const cap=(m,n)=>{const E=Object.entries(m);if(E.length<=n)return m;E.sort((x,y)=>(y[1].at||0)-(x[1].at||0));return Object.fromEntries(E.slice(0,n))};o.ag=cap(o.ag,MAXA);o.pl=cap(o.pl,MAXP);return o}
+let AR=null;const get=()=>{if(!AR){AR=load(KEY());if(uidOf()!=='local')AR=merge(AR,load('lcw_ar146:local'))}return AR};
+let LASTU=null;function syncUser(){const u=uidOf();if(u!==LASTU){LASTU=u;AR=null;get();pull()}}
+
+/* ---------- 모으기 ---------- */
+function runId(){if(!G.run146)G.run146=Math.random().toString(36).slice(2,8);return G.run146}
+function rankOfAg(a){try{return agRank(a)}catch(e){return 1}}
+function collect(){if(!G||!G.agents)return;const A=get();const run=runId();const now=Date.now();
+ for(const a of G.agents){if(a._ar146||a._mir136||!a.n||!a.st)continue;const k=a.id+'@'+run;let hp=80;try{hp=agMax(a)}catch(e){}
+  let w='baton',s='basic';try{w=agWeap(a);s=agSuit(a)}catch(e){}
+  A.ag[k]={n:a.n,rk:rankOfAg(a),hp,st:{F:a.st.F|0,P:a.st.P|0,T:a.st.T|0,J:a.st.J|0},dept:a.dept||'',w,s,co:a.co||null,day:G.day,alive:!!a.alive,run,at:now,mg:G.name}}
+ try{A.pl['pl@'+run]={n:G.name,rk:rank(),hp:(maxHp()-(typeof gift==='function'?gift('hp'):0)),st:{F:G.st.F|0,P:G.st.P|0,T:G.st.T|0,J:G.st.J|0},dept:G.dept||'',w:G.weapon,s:G.suit,day:G.day,run,at:now,end:G.endId134||null}}catch(e){}
+ const add=(L,x)=>{for(const id of x||[])if(id&&!L.includes(id))L.push(id)};
+ add(A.w,G.ownW);add(A.w,[G.weapon]);add(A.s,G.ownS);add(A.s,[G.suit]);
+ try{add(A.g,(typeof giftsOwned==='function'?giftsOwned():[]).concat(Object.values(G.gifts||{})))}catch(e){}
+ A.w=A.w.filter(x=>x!=='baton');A.s=A.s.filter(x=>x!=='basic');store(A);DIRTY=1}
+let DIRTY=0,T0=0;
+function soon(){clearTimeout(T0);T0=setTimeout(()=>{try{collect();push()}catch(e){}},1500)}
+save=(f=>function(){let tmp=null;try{if(G&&G.agents&&G.agents.some(a=>a._ar146)){tmp=G.agents;G.agents=G.agents.filter(a=>!a._ar146)}}catch(e){}
+ try{return f.apply(this,arguments)}finally{if(tmp)G.agents=tmp;soon()}})(save);
+startDay=(f=>function(){const r=f.apply(this,arguments);try{collect()}catch(e){}return r})(startDay);
+endRecord=(f=>function(){try{collect();push(true)}catch(e){}return f.apply(this,arguments)})(endRecord);
+try{badEnding=(f=>function(){try{collect();push(true)}catch(e){}return f.apply(this,arguments)})(badEnding)}catch(e){}
+
+/* ---------- 서버 ---------- */
+const online=()=>typeof api74==='function'&&!!user();
+async function pull(){if(!online())return;try{const r=await api74('/mirror?op=arch');if(r&&r.arch){AR=merge(get(),r.arch);store(AR)}}catch(e){}}
+let PUSHT=0;async function push(now){if(!online()||!DIRTY)return;if(!now&&Date.now()-PUSHT<20000)return;PUSHT=Date.now();DIRTY=0;try{await api74('/mirror',{method:'PUT',body:{op:'arch',arch:get()}})}catch(e){DIRTY=1}}
+setInterval(()=>{try{syncUser()}catch(e){}},3000);
+
+/* ---------- 덱에서 쓰는 가짜 직원 ---------- */
+const CACHE={};
+function fake(id){if(!id||!String(id).startsWith('ar:'))return null;const k=id.slice(3);const A=get();const x=A.ag[k]||A.pl[k];if(!x)return null;
+ let a=CACHE[id];if(!a){a=CACHE[id]={id,_ar146:1}}Object.assign(a,{n:x.n,st:Object.assign({},x.st),dept:(typeof DEPT!=='undefined'&&DEPT[x.dept])?x.dept:(G&&G.dept)||'control',alive:true,out:false,panic:null,co:null,hp:x.hp,sp:0,_hp:x.hp,_w:x.w||'baton',_s:x.s||'basic',_pl:k.startsWith('pl@'),_rk:x.rk||1,_run:x.run,hired:1,kills:0});return a}
+function fakes(){const A=get();const run=G&&G.run146;const L=[];
+ for(const k of Object.keys(A.ag)){const x=A.ag[k];if(x.run===run&&G.agents.some(a=>a.id+'@'+run===k&&a.alive))continue;L.push(fake('ar:'+k))}
+ for(const k of Object.keys(A.pl)){if(A.pl[k].run===run)continue;L.push(fake('ar:'+k))}return L.filter(Boolean)}
+agMax=(f=>function(a){if(a&&a._ar146)return a._hp;return f.apply(this,arguments)})(agMax);
+agRank=(f=>function(a){if(a&&a._ar146)return a._rk;return f.apply(this,arguments)})(agRank);
+agWeap=(f=>function(a){if(a&&a._ar146)return a._w;return f.apply(this,arguments)})(agWeap);
+agSuit=(f=>function(a){if(a&&a._ar146)return a._s;return f.apply(this,arguments)})(agSuit);
+// 혹시 남은 가짜 직원은 근무로 돌아오면 치운다
+render=(f=>function(){try{if(G&&G.agents&&!window.__ar146busy&&!(typeof B!=='undefined'&&B&&!B.done)&&G.agents.some(a=>a._ar146))G.agents=G.agents.filter(a=>!a._ar146)}catch(e){}return f.apply(this,arguments)})(render);
+
+/* ---------- 기프트 ---------- */
+function gInfo(id){try{const a=ABM[id];if(!a||!a.gift)return null;return {id,n:TRN((a.eq&&a.eq.wn)||a.n),slot:a.slot,g:a.g,e:a.gift.e||{},d:a.gift.d}}catch(e){return null}}
+function gSum(ids){const s={hp:0,pow:0,spd:0};for(const id of ids||[]){const x=gInfo(id);if(!x)continue;s.hp+=x.e.hp||0;s.pow+=x.e.pow||0;s.spd+=x.e.spd||0}return s}
+const SLOTS=()=>typeof SLOTN!=='undefined'?SLOTN:{};
+function gText(x){const N={hp:T('최대 체력','Max HP','最大体力'),pow:T('공격 위력','Attack power','攻撃威力'),spd:T('전투 속도','Speed','戦闘速度'),pr:T('정신 피해 감소%','Mental damage -%','精神ダメージ減少%'),succ:T('작업 성공률%','Work success %','作業成功率%')};
+ return Object.entries(x.e).map(([k,v])=>`${N[k]||k} +${v}`).join(', ')+((x.e.pr||x.e.succ)?` <small>(${T('거울 세계에선 체력 · 위력 · 속도만','Only HP · power · speed count in the Mirror World','鏡の世界では体力・威力・速度のみ')})</small>`:'')}
+
+window.AR146={get,collect,fake,fakes,gInfo,gSum,gText,SLOTS,push,pull,
+ gear:k=>(get()[k]||[]).slice(),gifts:()=>get().g.filter(id=>gInfo(id)),
+ count:()=>{const A=get();return {ag:Object.keys(A.ag).length,pl:Object.keys(A.pl).length,w:A.w.length,s:A.s.length,g:A.g.filter(id=>gInfo(id)).length}}};
+try{collect()}catch(e){}
+})();
+(function(){const st=document.createElement('style');st.textContent=`
+.m146{flex-wrap:wrap}.pk146b small{opacity:.75}.gf146w{display:flex;flex-wrap:wrap;gap:4px;width:100%;margin-top:2px}.gf146{font:inherit;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--accent,#e8b04a);background:transparent;color:var(--accent,#e8b04a);cursor:pointer}
+.pk146{width:100%;margin-top:6px;padding:8px;border:1px solid var(--line2,#555);border-radius:var(--r,6px);background:var(--panel2,#1d1d1d);display:grid;gap:6px}.pk146h{display:flex;justify-content:space-between;align-items:center}
+.pk146q{width:100%;padding:7px 10px;font:inherit;color:inherit;background:var(--bg,#111);border:1px solid var(--line2,#555);border-radius:var(--r,6px)}.pk146f{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.pk146s{width:8px}
+.pk146l,.ar146l{display:grid;gap:4px;max-height:44vh;overflow:auto}.pk146i{text-align:left;font:inherit;color:inherit;padding:6px 10px;border:1px solid var(--line,#444);border-radius:var(--r,6px);background:var(--panel,#151515);cursor:pointer}.pk146i.on{border-color:var(--accent,#e8b04a)}.pk146i[disabled]{opacity:.45;cursor:not-allowed}.pk146i small,.ar146i small{color:var(--muted,#9aa)}
+.ar146i{padding:6px 10px;border:1px solid var(--line,#444);border-radius:var(--r,6px);background:var(--panel2,#1d1d1d)}`;document.head.appendChild(st)})();
 </script>
 
 </body></html>

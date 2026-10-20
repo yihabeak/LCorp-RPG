@@ -42,7 +42,8 @@ function cleanDeck(d) {
     if (!ID.test(w) || !ID.test(s)) return null;
     const st = m.st || {};
     out.push({ pl: m.pl ? 1 : 0, n: txt(m.n, 20) || '?', rk: num(m.rk, 1, 5), hp: num(m.hp, 1, 999),
-      st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) }, w, s });
+      st: { F: num(st.F, 0, 999), P: num(st.P, 0, 999), T: num(st.T, 0, 999), J: num(st.J, 0, 999) }, w, s,
+      g: (Array.isArray(m.g) ? m.g : []).map(String).filter(x => ID.test(x)).slice(0, 3), gp: num(m.gp, 0, 5), gs: num(m.gs, 0, 5) });
   }
   return out;
 }
@@ -235,7 +236,10 @@ export default async function handler(req, res) {
       await save(); return send(res, 200, { ok: true });
     }
     if (op === 'rematch' && req.method === 'POST') {
-      if (!isHost) return send(res, 403, { code: 'host' });
+      // 방장 또는 이번 대전에 싸운 사람이면 누구나 대기실로 되돌릴 수 있다
+      if (!isHost && !teamOf(r, id)) return send(res, 403, { code: 'host' });
+      // 시뮬레이션은 끝났는데 서버에 끝이 기록되지 않았으면 (end 요청 유실) 여기서 마무리한다
+      if (r.ph !== 'end' && (r.ph === 'toss' || fighting(r)) && teamOf(r, id)) { r.ph = 'end'; r.end = { w: ['A', 'B', 'draw'].includes(b.w) ? b.w : 'draw', by: 'sim' }; }
       if (r.ph !== 'end') return send(res, 409, { code: 'turn' });
       toLobby(r); await save(); return send(res, 200, { ok: true });
     }
