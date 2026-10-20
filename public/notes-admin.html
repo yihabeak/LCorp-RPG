@@ -2,6 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>패치노트 작성</title>
+<script src="/pnfmt.js"></script>
 <style>
 :root{--bg:#12181a;--pn:#1a2326;--ln:#2c3a3e;--tx:#dfe7e4;--mu:#8fa19c;--ac:#e8b04a;--ok:#5fc48a;--bad:#ff5a4f}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.6 system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif}
@@ -20,6 +21,15 @@ button.pri{background:var(--ac);color:#12181a;border-color:var(--ac);font-weight
 .it{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .it h3{margin:0;font-size:15px}.it pre{white-space:pre-wrap;font:inherit;margin:6px 0 8px;color:var(--tx)}
 .ok{color:var(--ok)}.err{color:var(--bad)}[hidden]{display:none!important}
+.tb{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;background:#141c1e;border:1px solid var(--ln);border-radius:6px;position:sticky;top:0;z-index:5}
+.tb button,.tb select{padding:4px 9px;min-width:34px;font-size:13px;border-radius:5px}.tb .sep{width:1px;height:22px;background:var(--ln);margin:0 3px}
+.tb select{background:#2a3a3f;color:var(--tx);border:1px solid var(--ln);cursor:pointer}
+.pane{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pane.one{grid-template-columns:1fr}.pane.one #pv{display:none}
+#pv{min-height:240px;max-height:70vh;overflow:auto;background:#0e1416;border:1px dashed var(--ln);border-radius:6px;padding:8px 12px}
+#pv:empty::before{content:'미리보기';color:var(--mu)}
+@media (max-width:720px){.pane{grid-template-columns:1fr}}
+.help{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;font-size:13px}.help table{border-collapse:collapse;width:100%}.help td{border-top:1px solid var(--ln);padding:4px 6px;vertical-align:top}.help code{background:#0e1416;padding:1px 5px;border-radius:4px;white-space:pre}
+.it .body{margin:6px 0 8px}
 </style></head><body><main>
 <h1>패치노트 작성</h1>
 <div class="mu">관리자 키가 있는 사람만 쓰고 고치고 지울 수 있어요. 쓴 글은 게임 타이틀 화면의 「패치노트」에 바로 나타나요.</div>
@@ -32,9 +42,26 @@ button.pri{background:var(--ac);color:#12181a;border-color:var(--ac);font-weight
 <section id="tool" hidden>
   <h2 id="mode">새 패치노트</h2>
   <div class="ed">
-    <input id="t" maxlength="120" placeholder="제목 (예: Ver. 3.17.0 — 코어 억제 경고음 정리)">
-    <textarea id="x" maxlength="20000" placeholder="내용 — 줄바꿈은 그대로 표시돼요"></textarea>
-    <div class="row"><span class="sp mu" id="cnt">0 / 20000</span><button id="cancel" hidden>고치기 취소</button><button id="save" class="pri">올리기</button></div>
+    <input id="t" maxlength="120" placeholder="제목 (예: Ver. 4.0.0 — 튜토리얼 개편)">
+    <div class="tb" id="tb" role="toolbar" aria-label="서식">
+      <button data-w="**" title="굵게 (Ctrl+B)"><b>B</b></button><button data-w="*" title="기울임 (Ctrl+I)"><i>I</i></button><button data-w="__" title="밑줄 (Ctrl+U)"><u>U</u></button><button data-w="~~" title="취소선"><s>S</s></button><button data-w="==" title="형광펜"><mark style="background:#ffe066;color:#111;padding:0 3px">형광</mark></button><button data-w="`" title="코드">&lt;/&gt;</button>
+      <span class="sep"></span>
+      <select id="col" title="글자 색"><option value="">글자 색</option><option>빨강</option><option>주황</option><option>노랑</option><option>초록</option><option>청록</option><option>파랑</option><option>보라</option><option>분홍</option><option>회색</option><option value="RED">RED 피해</option><option value="WHITE">WHITE 피해</option><option value="BLACK">BLACK 피해</option><option value="PALE">PALE 피해</option><option value="#">직접 입력…</option></select>
+      <select id="sz" title="글자 크기"><option value="">크기</option><option>작은</option><option>큰</option><option>아주큰</option></select>
+      <select id="bd" title="배지"><option value="">배지</option><option>신규</option><option>수정</option><option>밸런스</option><option>버그</option><option>삭제</option><option value="?">직접 입력…</option></select>
+      <span class="sep"></span>
+      <button data-l="# " title="큰 제목">H1</button><button data-l="## " title="중간 제목">H2</button><button data-l="### " title="작은 제목">H3</button>
+      <button data-l="- " title="글머리 목록">• 목록</button><button data-l="1. " title="번호 목록">1. 목록</button>
+      <button data-l="> " title="인용">❝ 인용</button><button data-l="+> " title="새 기능 상자" style="border-left:4px solid #69db7c">새 기능</button><button data-l="i> " title="안내 상자" style="border-left:4px solid #74c0fc">안내</button><button data-l="!> " title="주의 상자" style="border-left:4px solid #ff6b5e">주의</button>
+      <span class="sep"></span>
+      <button data-c title="가운데 정렬">가운데</button><button data-r title="오른쪽 정렬">오른쪽</button>
+      <button data-i="hr" title="구분선">─ 선</button><button data-i="table" title="표">표</button><button data-i="fold" title="접기">▸ 접기</button><button data-i="link" title="링크">🔗 링크</button>
+      <span class="sep"></span>
+      <button data-i="tpl" title="패치노트 틀 넣기">틀 넣기</button><button id="pvT" title="미리보기 켜기/끄기">미리보기</button><button id="hlp" title="서식 도움말">?</button>
+    </div>
+    <div class="help" id="help" hidden></div>
+    <div class="pane" id="pane"><textarea id="x" maxlength="20000" placeholder="내용 — 위 도구 막대로 서식을 넣거나 직접 표시를 써요"></textarea><div id="pv" class="pnf"></div></div>
+    <div class="row"><label class="mu"><input id="fmt" type="checkbox" checked style="min-width:0"> 서식 사용 (끄면 글자 그대로)</label><span class="sp mu" id="cnt">0 / 20000</span><button id="cancel" hidden>고치기 취소</button><button id="save" class="pri">올리기</button></div>
   </div>
   <h2>올린 글</h2>
   <div id="list"></div>
@@ -52,19 +79,85 @@ const say=(m,c)=>{$('#msg').className=c||'mu';$('#msg').textContent=m};
 const ERR={auth:'관리자 키가 맞지 않아요.',nokey:'Vercel 환경 변수 ADMIN_KEY(또는 STATS_KEY)를 8자 이상으로 넣고 다시 배포해 주세요.',nodb:'저장소(Upstash)가 연결되지 않았어요.','too-many':'시도가 너무 많아요. 15분 뒤 다시 해 주세요.',empty:'제목을 입력해 주세요.',none:'이미 지워진 글이에요.'};
 async function api(method,data){const r=await fetch('/api/notes',{method,headers:{'Content-Type':'application/json','x-admin-key':KEY},body:data?JSON.stringify(data):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(ERR[j.code]||('오류 '+r.status));return j}
 async function refresh(){const j=await api('GET');NOTES=j.notes||[];
-  $('#list').innerHTML=NOTES.length?NOTES.map(n=>`<div class="it"><h3>${esc(n.t)}</h3><div class="mu">${when(n.at)}${n.up?` · 고침 ${when(n.up)}`:''}</div><pre>${esc(n.x)}</pre><div class="row"><button data-e="${n.id}">고치기</button><button class="del" data-d="${n.id}">지우기</button></div></div>`).join(''):'<div class="mu">아직 올린 글이 없어요.</div>';
-  $('#list').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const n=NOTES.find(x=>x.id===b.dataset.e);EDIT=n.id;$('#t').value=n.t;$('#x').value=n.x;$('#mode').textContent='패치노트 고치기';$('#save').textContent='고친 내용 저장';$('#cancel').hidden=false;count();$('#t').focus();scrollTo({top:0,behavior:'smooth'})});
+  $('#list').innerHTML=NOTES.length?NOTES.map(n=>`<div class="it"><h3>${esc(n.t)}</h3><div class="mu">${when(n.at)}${n.up?` · 고침 ${when(n.up)}`:''}</div><div class="body ${n.f?'pnf':''}">${n.f?PNF.render(n.x):`<pre>${esc(n.x)}</pre>`}</div><div class="row"><button data-e="${n.id}">고치기</button><button class="del" data-d="${n.id}">지우기</button></div></div>`).join(''):'<div class="mu">아직 올린 글이 없어요.</div>';
+  $('#list').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const n=NOTES.find(x=>x.id===b.dataset.e);EDIT=n.id;$('#t').value=n.t;$('#x').value=n.x;$('#fmt').checked=!!n.f;pv();$('#mode').textContent='패치노트 고치기';$('#save').textContent='고친 내용 저장';$('#cancel').hidden=false;count();$('#t').focus();scrollTo({top:0,behavior:'smooth'})});
   $('#list').querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(!confirm('이 글을 지울까요? 되돌릴 수 없어요.'))return;try{await api('DELETE',{id:b.dataset.d});say('지웠어요.','ok');if(EDIT===b.dataset.d)reset();refresh()}catch(e){say(e.message,'err')}})}
-function reset(){EDIT=null;$('#t').value='';$('#x').value='';$('#mode').textContent='새 패치노트';$('#save').textContent='올리기';$('#cancel').hidden=true;count()}
+function reset(){EDIT=null;$('#t').value='';$('#x').value='';$('#fmt').checked=true;pv();$('#mode').textContent='새 패치노트';$('#save').textContent='올리기';$('#cancel').hidden=true;count()}
 function count(){$('#cnt').textContent=$('#x').value.length+' / 20000'}
-$('#x').oninput=count;$('#cancel').onclick=reset;
+$('#x').oninput=()=>{count();pv()};$('#cancel').onclick=reset;
 $('#load').onclick=async()=>{KEY=$('#key').value.trim();if($('#keep').checked){ls.s('pn_key',KEY)}else{ls.s('pn_key',null);ss.s('pn_key',KEY)}
   // 키 확인: 존재하지 않는 글을 지우려 해 본다 (맞으면 404, 틀리면 401)
   try{await api('DELETE',{id:'-'})}catch(e){if(!/지워진/.test(e.message)){$('#tool').hidden=true;return say(e.message,'err')}}
   say('확인됐어요.','ok');$('#tool').hidden=false;refresh().catch(e=>say(e.message,'err'))};
 $('#key').onkeydown=e=>{if(e.key==='Enter')$('#load').click()};
 $('#save').onclick=async()=>{const t=$('#t').value.trim(),x=$('#x').value;if(!t)return say('제목을 입력해 주세요.','err');$('#save').disabled=true;
-  try{if(EDIT){await api('PUT',{id:EDIT,t,x});say('고친 내용을 저장했어요.','ok')}else{await api('POST',{t,x});say('올렸어요.','ok')}reset();refresh()}catch(e){say(e.message,'err')}finally{$('#save').disabled=false}};
+  try{if(EDIT){await api('PUT',{id:EDIT,t,x,f:$('#fmt').checked?1:0});say('고친 내용을 저장했어요.','ok')}else{await api('POST',{t,x,f:$('#fmt').checked?1:0});say('올렸어요.','ok')}reset();refresh()}catch(e){say(e.message,'err')}finally{$('#save').disabled=false}};
+
+/* ---- 서식 도구 ---- */
+(function(){const st=document.createElement('style');st.textContent=PNF.css;document.head.appendChild(st)})();
+const X=$('#x');
+function pv(){const on=$('#fmt').checked;$('#pane').classList.toggle('one',!PVON);$('#pv').innerHTML=on?PNF.render(X.value):`<pre style="white-space:pre-wrap;font:inherit;margin:0">${esc(X.value)}</pre>`}
+let PVON=ls.g('pn_pv')!=='0';
+function put(a,b,ph){const s=X.selectionStart,e=X.selectionEnd,v=X.value,sel=v.slice(s,e)||ph||'';X.focus();X.setRangeText(a+sel+b,s,e,'end');if(sel){X.selectionStart=s+a.length;X.selectionEnd=s+a.length+sel.length}count();pv()}
+function lines(fn){const v=X.value;let s=X.selectionStart,e=X.selectionEnd;s=v.lastIndexOf('\n',s-1)+1;const ee=v.indexOf('\n',e===s?e:e-(v[e-1]==='\n'?1:0));e=ee<0?v.length:ee;
+  const out=v.slice(s,e).split('\n').map(fn).join('\n');X.focus();X.setRangeText(out,s,e,'select');count();pv()}
+const PFX=/^(#{1,3} |[-*] |\d+\. |> |\+> |i> |!> |-> )/;
+function block(t){const s=X.selectionStart,v=X.value;const pre=(s>0&&v[s-1]!=='\n'?'\n':'')+(s>0?'\n':'');X.focus();X.setRangeText(pre+t+'\n',s,X.selectionEnd,'end');count();pv()}
+$('#tb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;e.preventDefault();
+  if(b.dataset.w!=null){const w=b.dataset.w;put(w,w,'글자')}
+  else if(b.dataset.l!=null){const p=b.dataset.l;let n=0;lines(l=>{const bare=l.replace(PFX,'');if(l.startsWith(p)&&p!=='1. ')return bare;return (p==='1. '?(++n)+'. ':p)+bare})}
+  else if(b.dataset.c!=null)lines(l=>/^->.*<-\s*$/.test(l)?l.replace(/^->\s*/,'').replace(/\s*<-\s*$/,''):'-> '+l.replace(/^->\s*/,'')+' <-')
+  else if(b.dataset.r!=null)lines(l=>/^->/.test(l)&&!/<-\s*$/.test(l)?l.replace(/^->\s*/,''):'-> '+l.replace(/^->\s*/,'').replace(/\s*<-\s*$/,''))
+  else if(b.dataset.i==='hr')block('---')
+  else if(b.dataset.i==='table')block('| 항목 | 내용 |\n|---|---|\n| 예시 | 설명 |')
+  else if(b.dataset.i==='fold'){const sel=X.value.slice(X.selectionStart,X.selectionEnd);block('::: 자세히 보기\n'+(sel||'접힌 내용')+'\n:::')}
+  else if(b.dataset.i==='link'){const u=prompt('링크 주소 (https://…)','https://');if(!u||!/^https?:\/\//.test(u))return;put('[',']('+u+')','링크 글자')}
+  else if(b.dataset.i==='tpl'){if(X.value.trim()&&!confirm('지금 커서 위치에 틀을 넣을까요?'))return;block(TPL)}
+});
+function sel3(id,fn){$(id).onchange=e=>{const v=e.target.value;e.target.value='';if(!v)return;fn(v)}}
+sel3('#col',v=>{if(v==='#'){v=prompt('색 코드 (#ff8800 같은 형식)','#');if(!v||!/^#[0-9a-fA-F]{3,6}$/.test(v))return}put('{'+v+':','}','글자')});
+sel3('#sz',v=>put('{'+v+':','}','글자'));
+sel3('#bd',v=>{if(v==='?'){v=prompt('배지 글자 (24자 이하)','');if(!v)return;v=v.slice(0,24)}put('[['+v+']] ','','')});
+X.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();const m={b:'**',i:'*',u:'__'}[k];if(m){e.preventDefault();put(m,m,'글자')}});
+$('#fmt').onchange=pv;
+$('#pvT').onclick=e=>{e.preventDefault();PVON=!PVON;ls.s('pn_pv',PVON?'1':'0');pv()};
+$('#hlp').onclick=e=>{e.preventDefault();const h=$('#help');h.hidden=!h.hidden};
+$('#help').innerHTML='<table>'+[
+ ['**굵게** · *기울임* · __밑줄__ · ~~취소선~~ · ==형광==','글자 꾸미기 (Ctrl+B / I / U)'],
+ ['{빨강:글자} · {#ff8800:글자}','글자 색 (빨강 주황 노랑 초록 청록 파랑 보라 분홍 회색 · RED WHITE BLACK PALE)'],
+ ['{큰:글자} · {아주큰:글자} · {작은:글자}','글자 크기'],
+ ['[[신규]] [[수정]] [[밸런스]] [[버그]] [[삭제]]','배지 (낱말에 따라 색이 정해져요)'],
+ ['# 큰 제목\n## 중간 제목\n### 작은 제목','제목'],
+ ['- 항목\n  - 하위 항목\n1. 번호 항목','목록 (두 칸 들여 쓰면 하위 항목)'],
+ ['> 인용\n+> 새 기능 상자\ni> 안내 상자\n!> 주의 상자','인용 · 강조 상자'],
+ ['-> 가운데 <-\n-> 오른쪽','정렬'],
+ ['| 칸 | 칸 |\n|---|---|\n| 값 | 값 |','표 (둘째 줄 |---| 위가 머리글)'],
+ ['::: 제목\n접힌 내용\n:::','접기'],
+ ['---','구분선'],['[글자](https://주소)','링크'],['`코드`','코드 글씨']
+].map(r=>'<tr><td><code>'+esc(r[0])+'</code></td><td>'+r[1]+'</td></tr>').join('')+'</table>';
+const TPL=`# Ver. 0.0.0 — 업데이트 제목
+-> {작은:2026.00.00} <-
+
++> 이번 업데이트의 핵심을 한두 줄로 적어요.
+
+## [[신규]] 추가된 기능
+- **기능 이름** — 설명
+  - 세부 사항
+
+## [[수정]] 바뀐 점
+- 바뀐 내용
+
+## [[버그]] 고친 문제
+- 고친 내용
+
+!> 알려진 문제나 주의할 점
+
+::: 자세한 수치
+| 항목 | 이전 | 이후 |
+|---|---|---|
+| 예시 | 1 | 2 |
+:::`;
+pv();
 if(KEY)$('#load').click();
 </script>
 </body></html>
