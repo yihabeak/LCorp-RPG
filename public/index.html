@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.36.1.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.0.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13901,7 +13901,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 3.36.1.261020';
+const VER='Ver. 4.0.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -14249,18 +14249,18 @@ function inject(){const app=document.getElementById('app');if(!app||!app.querySe
 try{const mo=new MutationObserver(()=>inject());const go=()=>{inject();mo.observe(document.getElementById('app')||document.body,{childList:true,subtree:true})};if(document.body)go();else addEventListener('DOMContentLoaded',go)}catch(e){}
 /* 기록을 불러온 뒤: 근무 대신 아인·소프·오르로 */
 resumePhase=(f=>function(){if(PEND){PEND=false;window.MIRMODE140=true;enter();return}window.MIRMODE140=false;document.body.classList.remove('mir140');return f.apply(this,arguments)})(resumePhase);
-function enter(){if(G){G.rt=false}document.body.classList.add('mir140');try{TAB='work';renderTabs()}catch(e){}hub()}
+function enter(){if(G){G.rt=false}document.body.classList.add('mir140');try{TAB='work';renderTabs()}catch(e){}hub();try{if(!localStorage.getItem('lcw_tut_mir141')&&typeof window.tutMir141==='function')setTimeout(window.tutMir141,350)}catch(e){}}
 function leave(){window.MIRMODE140=false;document.body.classList.remove('mir140');try{save()}catch(e){}G=null;B=null;try{renderTitle()}catch(e){location.reload()}}
 function toWork(){window.MIRMODE140=false;document.body.classList.remove('mir140');try{render();resumePhase()}catch(e){}}
 function hub(){if(!on())return;
  setPanel(NAME(),DESC(),[
-  {grp:T('거울 세계','Mirror World','鏡の世界'),l:`${ic('sword')} ${T('덱 편성','Decks','デッキ編成')}`,s:T('공격 덱 · 수비 덱을 짜고 수비 덱을 등록해요','Build attack and defense decks; register the defense deck','攻撃・守備デッキを組み、守備デッキを登録します'),f:()=>window.mirror136('deck')},
-  {grp:T('거울 세계','Mirror World','鏡の世界'),l:T('도전 (비동기)','Challenge (async)','挑戦(非同期)'),s:T('다른 관리직의 수비 덱에 도전해요 · 하루 10번','Challenge other managers\' defense decks · 10 a day','他の管理職の守備デッキに挑戦・1日10回'),f:()=>window.mirror136('find')},
-  {grp:T('거울 세계','Mirror World','鏡の世界'),l:T('순위','Ranking','ランキング'),s:T('상위 20명','Top 20','上位20人'),f:()=>window.mirror136('rank')},
-  {grp:T('친선전','Friendly','親善戦'),l:T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)'),s:T('공개 방 · 초대 코드 방 · 1:1 / 다수 전투','Public or invite rooms · 1v1 / team','公開・招待コード部屋・1対1/多人数'),f:()=>window.rt139&&window.rt139()},
-  {grp:T('친선전','Friendly','親善戦'),l:T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)'),s:T('서로의 수비 덱에 동시에 도전해 기록을 비교해요','Both challenge each other\'s defense decks and compare','互いの守備デッキに同時に挑み記録を比べます'),f:()=>window.mirror136('room')},
-  {grp:T('나가기','Exit','終了'),l:T('출근으로 바꾸기','Switch to work','出勤に切り替える'),s:T('이 기록으로 평소처럼 근무해요','Play this record normally','この記録で通常通り勤務します'),f:toWork},
-  {grp:T('나가기','Exit','終了'),l:T('로비로','Back to lobby','ロビーへ'),s:T('저장하고 처음 화면으로','Save and return to the title','保存してタイトルへ'),f:leave}],
+  {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-deck',l:`${ic('sword')} ${T('덱 편성','Decks','デッキ編成')}`,s:T('공격 덱 · 수비 덱을 짜고 수비 덱을 등록해요','Build attack and defense decks; register the defense deck','攻撃・守備デッキを組み、守備デッキを登録します'),f:()=>window.mirror136('deck')},
+  {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-find',l:T('도전 (비동기)','Challenge (async)','挑戦(非同期)'),s:T('다른 관리직의 수비 덱에 도전해요 · 하루 10번','Challenge other managers\' defense decks · 10 a day','他の管理職の守備デッキに挑戦・1日10回'),f:()=>window.mirror136('find')},
+  {grp:T('거울 세계','Mirror World','鏡の世界'),cls:'mh-rank',l:T('순위','Ranking','ランキング'),s:T('상위 20명','Top 20','上位20人'),f:()=>window.mirror136('rank')},
+  {grp:T('친선전','Friendly','親善戦'),cls:'mh-live',l:T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)'),s:T('공개 방 · 초대 코드 방 · 1:1 / 다수 전투','Public or invite rooms · 1v1 / team','公開・招待コード部屋・1対1/多人数'),f:()=>window.rt139&&window.rt139()},
+  {grp:T('친선전','Friendly','親善戦'),cls:'mh-rec',l:T('기록 친선전 (베타)','Record Friendly (Beta)','記録親善戦(ベータ)'),s:T('서로의 수비 덱에 동시에 도전해 기록을 비교해요','Both challenge each other\'s defense decks and compare','互いの守備デッキに同時に挑み記録を比べます'),f:()=>window.mirror136('room')},
+  {grp:T('나가기','Exit','終了'),cls:'mh-work',l:T('출근으로 바꾸기','Switch to work','出勤に切り替える'),s:T('이 기록으로 평소처럼 근무해요','Play this record normally','この記録で通常通り勤務します'),f:toWork},
+  {grp:T('나가기','Exit','終了'),cls:'mh-lobby',l:T('로비로','Back to lobby','ロビーへ'),s:T('저장하고 처음 화면으로','Save and return to the title','保存してタイトルへ'),f:leave}],
   `<p class="note mir140n">${T('이 모드에서는 근무(환상체 작업 · 행동 · 퇴근)와 시간이 멈춰 있어요. 직원 확인 · 격리실 도감(E.G.O 추출) · 장비 · 인사(가치관 강화)는 위 탭에서 쓸 수 있어요.','Work (abnormality tasks, actions, clocking out) and time are paused in this mode. Use the tabs above for Staff, Codex (E.G.O extraction), Gear and HR (virtue upgrades).','このモードでは勤務(アブノーマリティ作業・行動・退勤)と時間が止まっています。職員確認・収容室図鑑(E.G.O抽出)・装備・人事(価値観強化)は上のタブで使えます。')}</p>`);
  CURUI='mir140'}
 window.hub140=hub;
@@ -14277,6 +14277,90 @@ body.mir140 .rt-hud,body.mir140 #daybox .hud-cell:nth-child(2){opacity:.35;point
 .mir140n{margin-top:10px}
 `;
 try{const st=document.createElement('style');st.id='css140';st.textContent=css;document.head.appendChild(st)}catch(e){}
+})();
+/* ============ v141: 4.0 — 튜토리얼 · 가이드 개편 ============
+   ① 근무 튜토리얼: 모의 전투(체력·정신력 그대로) · 멀티 엔딩과 수집 · 로비의 아인·소프·오르 안내를 끝부분에 더한다.
+   ② 전투 튜토리얼: 처음 만난 상황 선택지는 결과가 가려진다 · 모의 전투/거울 세계 상대도 같은 슬롯 규칙.
+   ③ 가이드에 '아인·소프·오르' · '엔딩' 항목, 아인·소프·오르 화면 안내(처음 들어가면 한 번 자동). */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const S=(sel,t,b,x)=>Object.assign({sel,t,b},x||{});
+const N=(t,b,x)=>Object.assign({t,b},x||{});
+const before=(arr,items)=>{const i=arr.findIndex(s=>s&&s.last);arr.splice(i<0?arr.length:i,0,...items)};
+
+/* ① 근무 튜토리얼 */
+try{before(TUT_STEPS,[
+ N(T('모의 전투','Mock battles','模擬戦闘'),T('직원 탭에서 직원끼리 <b>모의 전투</b>를 열 수 있어요. 연습이라 끝나면 <b>체력과 정신력이 그대로</b> 돌아와요. 상대도 아군과 같은 규칙(1칸에서 시작하는 슬롯 · 같은 체력과 무기)으로 싸워요.','From the Staff tab you can hold <b>mock battles</b> between employees. It is practice, so <b>HP and SP return as they were</b>. Opponents follow the same rules as allies (slots start at one, same HP and weapons).','職員タブから職員同士の<b>模擬戦闘</b>ができます。練習なので終わると<b>体力と精神力は元通り</b>です。相手も味方と同じ規則(1枠から増えるスロット・同じ体力と武器)で戦います。')),
+ N(T('여러 갈래의 결말','Many endings','いくつもの結末'),T('결말은 하나가 아니에요. 동료와의 관계, 세피라와의 신뢰, 직원을 잃은 수, 시설에서 마주친 선택에 따라 <b>20가지 결말</b> 중 하나로 이어져요. 본 결말은 <b>기록</b> 화면에 모여요.','There is more than one ending. Bonds with coworkers, trust with the Sephirah, how many you lost and the choices you meet lead to one of <b>20 endings</b>. Endings you reach are collected on the <b>Records</b> screen.','結末は一つではありません。同僚との関係、セフィラとの信頼、失った職員の数、施設で出会う選択によって<b>20種類の結末</b>のいずれかに続きます。見た結末は<b>記録</b>画面に集まります。')),
+ N(T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'),T('처음 화면에서 [이어하기] 옆의 <b>아인·소프·오르</b>로 들어가면, 근무 대신 거울 세계의 다른 관리직과 겨루는 화면이 열려요. 직원과 장비로 덱을 짜서 도전하거나, 친선전 방에서 실시간으로 싸울 수 있어요.','From the title, <b>Ain Soph Aur</b> beside [Continue] opens a screen where you face managers of the mirror world instead of working. Build decks from your staff and gear to challenge them, or fight live in friendly rooms.','タイトルの[続きから]の横の<b>アイン・ソフ・オウル</b>に入ると、勤務の代わりに鏡の世界の管理職と競う画面が開きます。職員と装備でデッキを組んで挑むか、親善戦の部屋でリアルタイムに戦えます。'))
+])}catch(e){}
+
+/* ② 전투 튜토리얼 */
+try{before(TUT_BATTLE,[
+ N(T('처음 보는 상황','Unknown situations','初めての状況'),T('전투 중 고르는 <b>상황 선택지</b>는 처음 만났을 때 결과가 가려져 있어요. 한 번 겪고 나면 다음부터는 결과가 보여요.','<b>Situation choices</b> in battle hide their results the first time you meet them. Once experienced, the results show from then on.','戦闘中の<b>状況選択肢</b>は、初めて出会った時は結果が隠れています。一度経験すると次からは結果が見えます。')),
+ N(T('같은 규칙의 상대','Opponents on equal rules','同じ規則の相手'),T('모의 전투와 아인·소프·오르의 상대는 우리와 <b>똑같은 규칙</b>으로 싸워요.<br>· 슬롯은 1턴 1칸에서 시작해 등급순으로 늘어나요.<br>· 스킬은 1·2·3스킬을 3·2·1장 섞은 덱에서 차례로 나와요.<br>· 직원 출신 상대가 주는 피해는 아군 직원처럼 60%예요.','In mock battles and Ain Soph Aur, opponents fight on <b>exactly our rules</b>.<br>· Slots start at one on turn 1 and grow in rank order.<br>· Skills are drawn in turn from a deck of skills 1·2·3 at 3·2·1 copies.<br>· Employee opponents deal 60% damage, like allied employees.','模擬戦闘とアイン・ソフ・オウルの相手は私たちと<b>同じ規則</b>で戦います。<br>・スロットは1ターン目1枠から等級順に増えます。<br>・スキルは1・2・3スキルを3・2・1枚混ぜたデッキから順に出ます。<br>・職員出身の相手が与えるダメージは味方職員と同じく60%です。'))
+])}catch(e){}
+
+/* ③ 가이드 항목 */
+try{
+GUIDE.push({k:'mirror',t:T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'),b:T(
+`<p>거울 세계의 당신과 마주하여 가능성을 구원하는 모드예요. 처음 화면의 <b>아인·소프·오르</b>로 들어가면 근무는 잠기고 이 화면이 기본이 돼요. [출근으로 바꾸기]로 언제든 평소처럼 일할 수 있어요.</p>
+<ol class="steps"><li><b>덱 편성</b> — 관리직과 직원 최대 2명, 보유한 무기·방어구(등급 제한 안)로 공격 덱과 수비 덱을 짜요. 수비 덱을 등록해야 다른 사람이 도전할 수 있어요.</li>
+<li><b>도전 (비동기)</b> — 다른 관리직의 수비 덱과 싸워요. 하루 10번, 이기면 +20 · 지면 -8점. 같은 상대는 하루 한 번만 점수에 들어가요.</li>
+<li><b>순위</b> — 점수 상위 20명이 보여요. 저장소마다 기록이 따로예요.</li>
+<li><b>기록 친선전 (베타)</b> — 초대 코드로 서로의 수비 덱에 도전해 결과를 비교해요.</li>
+<li><b>실시간 친선전 (베타)</b> — 공개 방 또는 초대 코드 방(최대 12명). 참여할 사람은 자리에 앉아 <b>준비</b>를 눌러요. 1:1 또는 다수(팀당 최대 5명) 전투. 코인 토스로 선공을 정하고, 선공 팀이 스킬 절반(반올림)을 공개하지 않을지 정해요. 턴마다 선후공이 바뀌고 한 턴은 50초예요.</li></ol>
+<p class="tip">빛: 1:1은 첫 턴 6에서 턴마다 1씩 늘고(최대 10) 매 턴 가득 차요. 다수 전투는 각자 3에서 시작해 턴마다 1씩 늘고, 두 턴에 한 번 회복해요. 스킬 비용은 1·2·3스킬이 1·2·3, 수비는 0.</p>
+<p class="tip">모든 전투는 체력과 정신력에 영향이 없어요. 상대도 아군과 같은 규칙으로 싸워요.</p>`,
+`<p>Face yourself in the mirror world and redeem possibility. Enter <b>Ain Soph Aur</b> from the title: work is locked and this screen becomes home. [Switch to work] returns to normal play anytime.</p>
+<ol class="steps"><li><b>Decks</b> — The manager plus up to 2 staff, with owned weapons and suits (within grade limits), form an attack deck and a defense deck. Register the defense deck so others can challenge it.</li>
+<li><b>Challenge (async)</b> — Fight other managers' defense decks. 10 a day; a win is +20, a loss -8. Each opponent scores once a day.</li>
+<li><b>Ranking</b> — Shows the top 20. Each save slot has its own record.</li>
+<li><b>Record Friendly (Beta)</b> — Use an invite code to challenge each other's defense decks and compare.</li>
+<li><b>Live Friendly (Beta)</b> — Public or invite-code rooms (up to 12). Fighters take a seat and press <b>Ready</b>. 1v1 or team battles (up to 5 per team). A coin toss decides who goes first; that team chooses whether to hide half (rounded) of the skills. Turn order swaps each turn; a turn lasts 50 seconds.</li></ol>
+<p class="tip">Light: in 1v1 it starts at 6, grows by 1 per turn (max 10) and refills every turn. In team battles each player starts at 3, grows by 1 per turn and refills every other turn. Skills 1·2·3 cost 1·2·3; defense costs 0.</p>
+<p class="tip">No battle here affects HP or SP. Opponents follow the same rules as allies.</p>`,
+`<p>鏡の世界のあなたと向き合い、可能性を救済するモードです。タイトルの<b>アイン・ソフ・オウル</b>から入ると勤務はロックされ、この画面が基本になります。[出勤に切り替える]でいつでも通常通り働けます。</p>
+<ol class="steps"><li><b>デッキ編成</b> — 管理職と職員最大2人、所有する武器・防具(等級制限内)で攻撃デッキと守備デッキを組みます。守備デッキを登録すると他の人が挑戦できます。</li>
+<li><b>挑戦(非同期)</b> — 他の管理職の守備デッキと戦います。1日10回、勝てば+20・負ければ-8点。同じ相手は1日1回だけ点数に入ります。</li>
+<li><b>ランキング</b> — 上位20人を表示します。保存枠ごとに記録は別です。</li>
+<li><b>記録親善戦(ベータ)</b> — 招待コードで互いの守備デッキに挑み、結果を比べます。</li>
+<li><b>リアルタイム親善戦(ベータ)</b> — 公開部屋または招待コード部屋(最大12人)。参加する人は席に着いて<b>準備</b>を押します。1対1または多人数(チーム最大5人)。コイントスで先攻を決め、先攻チームがスキルの半分(四捨五入)を非公開にするか決めます。ターンごとに先攻・後攻が入れ替わり、1ターンは50秒です。</li></ol>
+<p class="tip">光:1対1は初ターン6から毎ターン1ずつ増え(最大10)、毎ターン満タンになります。多人数戦は各自3から始まり毎ターン1ずつ増え、2ターンに1回回復します。スキル1・2・3のコストは1・2・3、守備は0です。</p>
+<p class="tip">ここでの戦闘は体力と精神力に影響しません。相手も味方と同じ規則で戦います。</p>`)});
+GUIDE.push({k:'endings',t:T('엔딩','Endings','エンディング'),b:T(
+`<p>근무가 끝나는 방식은 하나가 아니에요. 지금까지의 선택이 모여 <b>20가지 결말</b> 중 하나로 이어져요.</p>
+<ul><li>날을 다 채운 뒤의 결말은 시설에 남은 사람들, 동료와의 관계, 잃은 직원의 수에 따라 갈려요.</li>
+<li>세피라와 깊이 신뢰를 쌓았다면 그 세피라와의 결말이 열릴 수 있어요.</li>
+<li>죽음이나 정신의 붕괴가 곧 끝은 아니에요. 그 과정에서 쌓인 것이 다른 결말이 되기도 해요.</li>
+<li>10일차부터 저녁 시간에는 시설의 다른 면을 살펴볼 수 있어요.</li></ul>
+<p class="tip">본 결말은 <b>기록</b> 화면에 모여요. 어떤 조건으로 열리는지는 직접 찾아보세요.</p>`,
+`<p>Your work can end in more than one way. Your choices add up to one of <b>20 endings</b>.</p>
+<ul><li>Endings after the final day depend on who is left in the facility, your bonds with coworkers and how many you lost.</li>
+<li>Deep trust with a Sephirah may open an ending with them.</li>
+<li>Death or a broken mind is not always the end. What built up along the way can become another ending.</li>
+<li>From day 10, evenings let you look at another side of the facility.</li></ul>
+<p class="tip">Endings you reach gather on the <b>Records</b> screen. Find out for yourself what opens each one.</p>`,
+`<p>勤務の終わり方は一つではありません。これまでの選択が<b>20種類の結末</b>のいずれかにつながります。</p>
+<ul><li>最終日を迎えた後の結末は、施設に残った人々、同僚との関係、失った職員の数で分かれます。</li>
+<li>セフィラと深い信頼を築けば、そのセフィラとの結末が開くかもしれません。</li>
+<li>死や精神の崩壊が必ずしも終わりではありません。その過程で積み重なったものが別の結末になることもあります。</li>
+<li>10日目からは、夕方に施設の別の顔を探れます。</li></ul>
+<p class="tip">見た結末は<b>記録</b>画面に集まります。何で開くかは自分で探してみてください。</p>`)});
+}catch(e){}
+
+/* 아인·소프·오르 화면 안내 */
+const MIR=()=>window.MIRMODE140?[
+ N(T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'),T('거울 세계에 들어왔어요. 여기서는 근무가 잠기고, 다른 관리직과 겨루는 일만 할 수 있어요. 이곳의 전투는 <b>체력과 정신력에 영향이 없어요</b>.','You have entered the mirror world. Work is locked here; you can only compete with other managers. Battles here <b>do not affect HP or SP</b>.','鏡の世界に入りました。ここでは勤務がロックされ、他の管理職と競うことだけができます。ここでの戦闘は<b>体力と精神力に影響しません</b>。')),
+ S('#panel .ch.mh-deck',T('① 덱 편성','① Decks','① デッキ編成'),T('가장 먼저 여기서 <b>공격 덱과 수비 덱</b>을 짜요. 관리직과 직원 최대 2명, 보유한 장비로 꾸리고, 수비 덱은 <b>등록</b>해야 다른 사람이 도전할 수 있어요.','Start here: build an <b>attack deck and a defense deck</b> from the manager, up to 2 staff and owned gear. <b>Register</b> the defense deck so others can challenge it.','まずここで<b>攻撃デッキと守備デッキ</b>を組みます。管理職と職員最大2人、所有する装備で組み、守備デッキは<b>登録</b>すると他の人が挑戦できます。')),
+ S('#panel .ch.mh-find',T('② 도전','② Challenge','② 挑戦'),T('비슷한 전력의 수비 덱 셋 중 하나에 도전해요. 하루 10번, 이기면 +20 · 지면 -8점이에요.','Challenge one of three defense decks near your strength. 10 a day; +20 for a win, -8 for a loss.','近い戦力の守備デッキ3つから一つに挑みます。1日10回、勝てば+20・負ければ-8点です。')),
+ S('#panel .ch.mh-rank',T('③ 순위','③ Ranking','③ ランキング'),T('점수 상위 20명이에요. 저장소마다 기록이 따로예요.','The top 20 by points. Each save slot has its own record.','点数上位20人です。保存枠ごとに記録は別です。')),
+ S('#panel .ch.mh-live',T('④ 실시간 친선전','④ Live Friendly','④ リアルタイム親善戦'),T('공개 방이나 초대 코드 방에서 실시간으로 싸워요. 자리에 앉아 <b>준비</b>를 누르고, 모두 준비되면 시작해요. 1:1과 다수(팀당 5명) 전투가 있어요. 전투 중인 방에 들어가면 관전해요.','Fight live in public or invite-code rooms. Take a seat and press <b>Ready</b>; it starts when everyone is ready. 1v1 and team (5 per team) battles. Joining a room mid-battle lets you spectate.','公開部屋や招待コード部屋でリアルタイムに戦います。席に着いて<b>準備</b>を押し、全員揃うと始まります。1対1と多人数(チーム5人)があります。戦闘中の部屋に入ると観戦します。')),
+ S('#panel .ch.mh-rec',T('⑤ 기록 친선전','⑤ Record Friendly','⑤ 記録親善戦'),T('초대 코드로 서로의 수비 덱에 도전해 기록을 비교해요.','Use an invite code to challenge each other\'s defense decks and compare records.','招待コードで互いの守備デッキに挑み、記録を比べます。')),
+ S('#panel .ch.mh-work',T('나가기','Leaving','終了'),T('<b>출근으로 바꾸기</b>는 이 기록으로 평소처럼 근무해요. <b>로비로</b>는 저장하고 처음 화면으로 돌아가요. 이 안내는 가이드의 <b>아인·소프·오르</b>에서 다시 볼 수 있어요.','<b>Switch to work</b> plays this record normally. <b>Back to lobby</b> saves and returns to the title. See this again under <b>Ain Soph Aur</b> in the guide.','<b>出勤に切り替える</b>はこの記録で通常通り勤務します。<b>ロビーへ</b>は保存してタイトルに戻ります。この案内はガイドの<b>アイン・ソフ・オウル</b>でまた見られます。'),{last:1})
+]:[N(T('아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'),T('처음 화면에서 [이어하기] 옆의 <b>아인·소프·오르</b>로 들어가면 이 화면 안내를 볼 수 있어요. 규칙은 이 가이드 항목에 정리돼 있어요.','Enter <b>Ain Soph Aur</b> beside [Continue] on the title to see this screen tour. The rules are summarized in this guide entry.','タイトルの[続きから]の横の<b>アイン・ソフ・オウル</b>に入ると、この画面案内が見られます。規則はこのガイド項目にまとめてあります。'),{last:1})];
+try{TUT_TOPIC.mirror=MIR}catch(e){}
+window.tutMir141=function(){try{localStorage.setItem('lcw_tut_mir141','1')}catch(e){}try{if(typeof TUT!=='undefined'&&TUT)return;tutStart(MIR(),'topic')}catch(e){}};
 })();
 </script>
 
