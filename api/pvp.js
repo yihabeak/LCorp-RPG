@@ -1,31 +1,36 @@
-// 실시간 친선전 (베타) — 서버는 방 상태와 각 턴의 선택만 보관한다. 전투 계산은 두 브라우저가 같은 시드로 똑같이 한다.
-// 방 종류: 'pub'(공개 방 · 목록에서 누구나 들어온다) / 'code'(초대 코드 방 · 코드를 아는 사람만).
-// 방에는 최대 6명. 들어온 순서대로 앞의 두 사람이 대전하고, 나머지는 관전한다. 방장은 언제나 가장 먼저 들어와 남아 있는 사람이다.
-// 흐름: 방 만들기 → 두 번째 사람 입장 → 코인 토스(앞면이 선/후공 선택) → 턴마다 [선공 50초 → 후공 50초] → 다음 턴 선후공 교대.
-// 선공이 고른 스킬의 절반(반올림)은 후공에게 ?로 숨겨진다. 끝난 턴은 모두에게 공개된다.
+// 실시간 친선전 (베타) — 서버는 방 · 자리 · 각 턴의 선택만 보관한다. 전투 계산은 모든 브라우저가 같은 시드로 똑같이 한다.
+// 방 종류: 'pub'(공개 · 목록에서 누구나) / 'code'(초대 코드). 방에는 최대 12명. 방장은 남아 있는 사람 중 가장 먼저 들어온 사람.
+// 전투 방식(방장 설정): '1v1'(자리 2개) / 'team'(A팀 · B팀 각 5자리). 자리에 앉아 [준비]를 누르고, 앉은 사람이 모두 준비하면 시작.
+// 흐름: 코인 토스(앞면 팀의 첫 사람이 선/후공 선택) → 턴마다 [선공 팀 50초 → 후공 팀 50초] → 다음 턴 선후공 교대.
+// 선공 팀이 고른 스킬의 절반(반올림)은 후공 팀에게 ?로 숨겨진다. 끝난 턴은 모두에게 공개된다.
 //
 // POST /api/pvp { op:'new', slot, type, name, deck, v }   → { code }
-// GET  /api/pvp?op=list&slot=n                            → { list:[{code,host,n,ph}] }   공개 방 목록
-// POST /api/pvp { op:'join', slot, code, name, deck, v }  → { ok }
-// GET  /api/pvp?op=get&code=XXXXXX&slot=n                 → { st }   (보는 사람에 맞춰 숨긴 상태)
-// POST /api/pvp { op:'choose', slot, code, first }        → 토스 승자가 선공(true)/후공(false)
-// POST /api/pvp { op:'pick', slot, code, turn, picks }     → 지금 차례인 사람의 선택
-// POST /api/pvp { op:'timeout', slot, code }               → 제한 시간이 지났으면 빈 선택으로 넘긴다
-// POST /api/pvp { op:'end', slot, code, w }                → 끝남 ('h' | 'g' | 'draw')
-// POST /api/pvp { op:'rematch', slot, code }               → (방장) 다음 대전
-// POST /api/pvp { op:'leave', slot, code }                 → 나가기 (대전 중이면 기권)
+// GET  /api/pvp?op=list&slot=n                            → { list }   공개 방 목록
+// POST /api/pvp { op:'join', slot, code, name, deck, v }  → { ok }     (자리 없이 들어온다 = 관전)
+// GET  /api/pvp?op=get&code=XXXXXX&slot=n                 → { st }
+// POST /api/pvp { op:'mode', code, mode }                 → (방장 · 대기 중) '1v1' | 'team'
+// POST /api/pvp { op:'sit', code, team }                  → 'A' | 'B' 자리에 앉기
+// POST /api/pvp { op:'stand', code }                      → 자리에서 일어나기
+// POST /api/pvp { op:'ready', code, on }                  → 준비 / 취소 (모두 준비되면 시작)
+// POST /api/pvp { op:'choose', code, first }              → 토스에 이긴 팀의 첫 사람이 선공(true)/후공(false)
+// POST /api/pvp { op:'pick', code, turn, picks }          → 내 유닛들의 선택
+// POST /api/pvp { op:'timeout', code }                    → 시간이 지났으면 안 낸 사람은 빈 선택으로 넘긴다
+// POST /api/pvp { op:'end', code, w }                     → 끝남 ('A' | 'B' | 'draw')
+// POST /api/pvp { op:'rematch', code }                    → (방장) 대기실로
+// POST /api/pvp { op:'leave', code }                      → 나가기
 import crypto from 'node:crypto';
 import { hasDb, redis, sessionUser, send, body, limited } from './_lib.js';
 
-const TTL = 7200, PICK_MS = 50000, GRACE = 3000, MAX_MEM = 6, IDLE = 45000;
+const TTL = 7200, PICK_MS = 50000, GRACE = 3000, MAX_MEM = 12, IDLE = 45000;
 const ID = /^[A-Za-z0-9_]{1,32}$/;
 const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v) || 0)));
 const txt = (v, n) => String(v || '').replace(/[<>&"']/g, '').slice(0, n);
 const q = (req, k) => req.query?.[k] ?? new URL(req.url, 'http://x').searchParams.get(k);
-const other = s => (s === 'h' ? 'g' : 'h');
+const other = s => (s === 'A' ? 'B' : 'A');
 const code6 = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s = ''; for (const x of crypto.randomBytes(6)) s += A[x % A.length]; return s; };
 const firstOf = r => (r.turn % 2 === 1 ? r.f1 : other(r.f1));
-const inBattle = r => ['toss', 'p1', 'p2'].includes(r.ph);
+const cap = r => (r.mode === 'team' ? 5 : 1);
+const fighting = r => r.ph === 'p1' || r.ph === 'p2';
 
 function cleanDeck(d) {
   if (!Array.isArray(d) || d.length < 1 || d.length > 3) return null;
@@ -45,50 +50,76 @@ function cleanPicks(p) {
   return p.map(x => {
     x = x || {};
     const o = x.o === 0 || x.o === 1 ? x.o : x.o === 'd' ? 'd' : null;
-    return { o, u: x.u == null ? null : num(x.u, 0, 2), sl: x.sl == null ? null : num(x.sl, 0, 11) };
+    return { o, u: x.u == null ? null : num(x.u, 0, 9), sl: x.sl == null ? null : num(x.sl, 0, 40) };
   });
 }
-function hideIdx(p) {
-  const used = p.map((x, i) => (x.o !== null ? i : -1)).filter(i => i >= 0);
+const seatOf = (r, id) => (r.seats.A.includes(id) ? 'A' : r.seats.B.includes(id) ? 'B' : null);
+const teamOf = (r, id) => (r.bt ? (r.bt.A.some(x => x.id === id) ? 'A' : r.bt.B.some(x => x.id === id) ? 'B' : null) : null);
+const present = (r, id) => r.mem.some(m => m.id === id);
+// 이번 단계에 선택을 내야 하는 사람들: 그 팀에서 아직 방에 있는 사람
+const owed = (r, team) => r.bt[team].map(x => x.id).filter(id => present(r, id));
+function hideAll(f) {
+  const used = [];
+  for (const id of Object.keys(f)) f[id].forEach((p, i) => { if (p.o !== null) used.push([id, i]); });
   const n = Math.round(used.length / 2);
   for (let i = used.length - 1; i > 0; i--) { const j = crypto.randomInt(i + 1); [used[i], used[j]] = [used[j], used[i]]; }
-  return used.slice(0, n).sort((a, b) => a - b);
+  const hid = {}; used.slice(0, n).forEach(([id, i]) => { (hid[id] = hid[id] || []).push(i); });
+  return hid;
 }
-function advance(r) {
-  const t = r.turn, P = r.P[t] = r.P[t] || {};
-  if (r.ph === 'p1') { if (!P.f) P.f = []; P.hid = hideIdx(P.f); r.ph = 'p2'; r.dl = Date.now() + PICK_MS; }
-  else if (r.ph === 'p2') { if (!P.s) P.s = []; r.turn = t + 1; r.ph = 'p1'; r.dl = Date.now() + PICK_MS + 6000; }
+function advance(r, force) {
+  const t = r.turn, P = r.P[t] = r.P[t] || { f: {}, s: {} };
+  const team = r.ph === 'p1' ? firstOf(r) : other(firstOf(r)), box = r.ph === 'p1' ? P.f : P.s;
+  const left = owed(r, team).filter(id => !box[id]);
+  if (left.length && !force) return;
+  left.forEach(id => { box[id] = []; });
+  if (r.ph === 'p1') { P.hid = hideAll(P.f); r.ph = 'p2'; r.dl = Date.now() + PICK_MS; }
+  else { r.turn = t + 1; r.ph = 'p1'; r.dl = Date.now() + PICK_MS + 6000; r.P[r.turn] = { f: {}, s: {} }; }
 }
-// 앞의 두 사람으로 새 대전을 준비한다 (두 명이 안 되면 대기)
-function seat(r) {
-  const [a, b] = r.mem;
-  Object.assign(r, { h: a ? a.id : null, hn: a ? a.n : null, hd: a ? a.d : null, g: b ? b.id : null, gn: b ? b.n : null, gd: b ? b.d : null,
-    seed: crypto.randomInt(1, 2 ** 31 - 1), f1: null, turn: 0, P: {}, end: null, dl: 0 });
-  if (a && b) { r.tw = crypto.randomInt(2) ? 'h' : 'g'; r.ph = 'toss'; } else { r.tw = null; r.ph = 'wait'; }
+function toLobby(r) {
+  Object.assign(r, { ph: 'lobby', bt: null, seed: null, tw: null, f1: null, turn: 0, P: {}, end: null, dl: 0, ready: {} });
+  r.seats.A = r.seats.A.filter(id => present(r, id)); r.seats.B = r.seats.B.filter(id => present(r, id));
 }
-// 사람이 빠질 때: 대전 중인 사람이면 기권 처리, 아니면 자리만 다시 정한다
+function tryStart(r) {
+  const S = [...r.seats.A, ...r.seats.B];
+  if (r.ph !== 'lobby' || !r.seats.A.length || !r.seats.B.length || !S.every(id => r.ready[id])) return;
+  const pick = id => { const m = r.mem.find(x => x.id === id); return { id, n: m.n, d: m.d }; };
+  r.bt = { A: r.seats.A.map(pick), B: r.seats.B.map(pick), mode: r.mode };
+  r.seed = crypto.randomInt(1, 2 ** 31 - 1); r.tw = crypto.randomInt(2) ? 'A' : 'B'; r.ph = 'toss'; r.turn = 0; r.P = {}; r.end = null;
+}
 function drop(r, id, why) {
   const i = r.mem.findIndex(m => m.id === id); if (i < 0) return;
-  const side = r.h === id ? 'h' : r.g === id ? 'g' : null;
   r.mem.splice(i, 1);
-  if (side && (r.ph === 'p1' || r.ph === 'p2')) { r.ph = 'end'; r.end = { w: other(side), by: why || 'leave', who: side }; }
-  else if (side && (r.ph === 'toss' || r.ph === 'wait')) seat(r);
+  r.seats.A = r.seats.A.filter(x => x !== id); r.seats.B = r.seats.B.filter(x => x !== id); delete r.ready[id];
+  const team = teamOf(r, id);
+  if (team && (r.ph === 'toss' || fighting(r))) {
+    // 1:1이거나 그 팀에 남은 사람이 없으면 끝. 아니면 계속 (그 사람 유닛은 이후 행동 없음)
+    if (r.bt.mode === '1v1' || !owed(r, team).length) { r.ph = 'end'; r.end = { w: other(team), by: why || 'leave', who: team }; }
+    else if (r.ph === 'toss' && r.tw === team && r.bt[team][0].id === id) { /* 토스 승자가 떠나면 그 팀의 다음 사람이 고른다 */ }
+    else if (fighting(r)) advance(r, false);
+  }
 }
-function prune(r) {
-  const now = Date.now();
-  for (const m of r.mem.slice()) if (now - (m.seen || 0) > IDLE) drop(r, m.id, 'idle');
-}
-function view(r, side, me) {
-  const P = {};
+function prune(r) { const now = Date.now(); for (const m of r.mem.slice()) if (now - (m.seen || 0) > IDLE) drop(r, m.id, 'idle'); }
+function leaderOf(r, team) { return r.bt[team].map(x => x.id).find(id => present(r, id)); }
+function view(r, me) {
+  const myTeam = teamOf(r, me), P = {};
   for (const k of Object.keys(r.P)) {
     const t = +k, x = r.P[k];
     if (t < r.turn || r.ph === 'end') { P[k] = x; continue; }
     const first = firstOf(r);
-    if (side === first) P[k] = { f: x.f || null };
-    else if (side === other(first) && r.ph === 'p2' && x.f) P[k] = { f: x.f.map((p, i) => (x.hid.includes(i) ? { o: p.o === null ? null : '?', u: p.u, sl: null } : p)), hid: x.hid };
+    if (myTeam === first) P[k] = { f: x.f, done: Object.keys(x.f) };
+    else if (myTeam === other(first)) {
+      if (r.ph === 'p2') {
+        const f = {}; for (const id of Object.keys(x.f)) f[id] = x.f[id].map((p, i) => ((x.hid[id] || []).includes(i) ? { o: p.o === null ? null : '?', u: p.u, sl: null } : p));
+        P[k] = { f, s: x.s[me] ? { [me]: x.s[me] } : {}, done: Object.keys(x.s) };
+      } else P[k] = { done: [] };
+    } else P[k] = { done: Object.keys(r.ph === 'p1' ? x.f : x.s) };
   }
-  return { side, type: r.type, host: r.mem[0] ? r.mem[0].id === me : false, mem: r.mem.map((m, i) => ({ n: m.n, me: m.id === me, role: i === 0 ? 'host' : i < 2 ? 'p' : 'x' })),
-    hn: r.hn, gn: r.gn, hd: r.hd, gd: r.gd, seed: r.seed, tw: r.tw, f1: r.f1, turn: r.turn, ph: r.ph, dl: r.dl, now: Date.now(), end: r.end || null, v: r.v, P };
+  return {
+    me, type: r.type, mode: r.mode, host: r.mem[0] ? r.mem[0].id === me : false,
+    mem: r.mem.map((m, i) => ({ id: m.id, n: m.n, seat: seatOf(r, m.id), ready: !!r.ready[m.id], host: i === 0 })),
+    seats: r.seats, bt: r.bt, myTeam, leader: r.bt && r.tw ? leaderOf(r, r.tw) : null,
+    seed: r.seed, tw: r.tw, f1: r.f1, turn: r.turn, ph: r.ph, dl: r.dl, now: Date.now(), end: r.end || null, v: r.v, P
+  };
 }
 
 export default async function handler(req, res) {
@@ -107,8 +138,8 @@ export default async function handler(req, res) {
       const type = b.type === 'pub' ? 'pub' : 'code';
       let code = code6();
       for (let i = 0; i < 4 && await redis('EXISTS', `rt:${code}`); i++) code = code6();
-      const r = { type, v: txt(b.v, 20), mem: [{ id, n: txt(b.name, 20) || uid, d: deck, seen: Date.now() }], P: {}, at: Date.now() };
-      seat(r);
+      const r = { type, mode: '1v1', v: txt(b.v, 20), mem: [{ id, n: txt(b.name, 20) || uid, d: deck, seen: Date.now() }], seats: { A: [], B: [] }, ready: {}, P: {}, at: Date.now() };
+      toLobby(r);
       await redis('SET', `rt:${code}`, JSON.stringify(r), 'EX', TTL);
       if (type === 'pub') await redis('SADD', 'rt:pub', code);
       return send(res, 200, { code });
@@ -123,10 +154,11 @@ export default async function handler(req, res) {
         const r = JSON.parse(raw[i]); if (r.type !== 'pub') return;
         const live = r.mem.filter(m => Date.now() - (m.seen || 0) <= IDLE);
         if (!live.length) { gone.push(c); return; }
-        list.push({ code: c, host: live[0].n, n: live.length, ph: r.ph, v: r.v, at: r.at });
+        list.push({ code: c, host: live[0].n, n: live.length, ph: r.ph, mode: r.mode, v: r.v, at: r.at,
+          free: r.ph === 'lobby' ? 2 * cap(r) - r.seats.A.length - r.seats.B.length : 0 });
       });
       if (gone.length) await redis('SREM', 'rt:pub', ...gone);
-      list.sort((x, y) => (x.ph === 'wait' ? 0 : 1) - (y.ph === 'wait' ? 0 : 1) || y.at - x.at);
+      list.sort((x, y) => (x.ph === 'lobby' ? 0 : 1) - (y.ph === 'lobby' ? 0 : 1) || y.at - x.at);
       return send(res, 200, { list: list.slice(0, 20) });
     }
     const code = String((req.method === 'GET' ? q(req, 'code') : b.code) || '').toUpperCase();
@@ -147,46 +179,66 @@ export default async function handler(req, res) {
         if (r.v && txt(b.v, 20) !== r.v) return send(res, 409, { code: 'ver', v: r.v });
         const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
         r.mem.push({ id, n: txt(b.name, 20) || uid, d: deck, seen: Date.now() });
-        if (r.ph === 'wait' && r.mem.length >= 2) seat(r);
       } else have.seen = Date.now();
       await save(); return send(res, 200, { ok: true });
     }
     const meM = r.mem.find(m => m.id === id);
     if (!meM) { await save(); return send(res, 403, { code: 'notin' }); }
     meM.seen = Date.now();
-    const side = r.h === id ? 'h' : r.g === id ? 'g' : 'x';
+    const isHost = r.mem[0].id === id;
 
-    if (op === 'get') { await save(); return send(res, 200, { st: view(r, side, id) }); }
+    if (op === 'get') { if (fighting(r) && Date.now() > r.dl + GRACE + 2000) advance(r, true); await save(); return send(res, 200, { st: view(r, id) }); }
+    if (op === 'mode' && req.method === 'POST') {
+      if (!isHost || r.ph !== 'lobby') return send(res, 403, { code: 'host' });
+      r.mode = b.mode === 'team' ? 'team' : '1v1'; r.seats = { A: [], B: [] }; r.ready = {};
+      await save(); return send(res, 200, { ok: true });
+    }
+    if (op === 'sit' && req.method === 'POST') {
+      if (r.ph !== 'lobby') return send(res, 409, { code: 'turn' });
+      const team = b.team === 'B' ? 'B' : 'A';
+      if (r.seats[team].includes(id)) { await save(); return send(res, 200, { ok: true }); }
+      if (r.seats[team].length >= cap(r)) return send(res, 409, { code: 'seatfull' });
+      r.seats.A = r.seats.A.filter(x => x !== id); r.seats.B = r.seats.B.filter(x => x !== id); r.seats[team].push(id); delete r.ready[id];
+      await save(); return send(res, 200, { ok: true });
+    }
+    if (op === 'stand' && req.method === 'POST') {
+      if (r.ph !== 'lobby') return send(res, 409, { code: 'turn' });
+      r.seats.A = r.seats.A.filter(x => x !== id); r.seats.B = r.seats.B.filter(x => x !== id); delete r.ready[id];
+      tryStart(r); await save(); return send(res, 200, { ok: true });
+    }
+    if (op === 'ready' && req.method === 'POST') {
+      if (r.ph !== 'lobby' || !seatOf(r, id)) return send(res, 409, { code: 'seat' });
+      if (b.on) r.ready[id] = true; else delete r.ready[id];
+      tryStart(r); await save(); return send(res, 200, { ok: true });
+    }
     if (op === 'choose' && req.method === 'POST') {
-      if (r.ph !== 'toss' || r.tw !== side) return send(res, 409, { code: 'turn' });
-      r.f1 = b.first ? side : other(side); r.turn = 1; r.ph = 'p1'; r.dl = Date.now() + PICK_MS + 4000;
+      if (r.ph !== 'toss' || leaderOf(r, r.tw) !== id) return send(res, 409, { code: 'turn' });
+      r.f1 = b.first ? r.tw : other(r.tw); r.turn = 1; r.ph = 'p1'; r.dl = Date.now() + PICK_MS + 4000; r.P = { 1: { f: {}, s: {} } };
       await save(); return send(res, 200, { ok: true });
     }
     if (op === 'pick' && req.method === 'POST') {
-      if (num(b.turn, 0, 999) !== r.turn) return send(res, 409, { code: 'turn' });
-      const first = firstOf(r);
-      const mine = (r.ph === 'p1' && side === first) || (r.ph === 'p2' && side === other(first));
+      if (!fighting(r) || num(b.turn, 0, 999) !== r.turn) return send(res, 409, { code: 'turn' });
+      const team = teamOf(r, id), first = firstOf(r);
+      const mine = (r.ph === 'p1' && team === first) || (r.ph === 'p2' && team === other(first));
       if (!mine) return send(res, 409, { code: 'turn' });
-      const P = r.P[r.turn] = r.P[r.turn] || {};
-      P[r.ph === 'p1' ? 'f' : 's'] = cleanPicks(b.picks);
-      advance(r); await save(); return send(res, 200, { ok: true });
+      const P = r.P[r.turn] = r.P[r.turn] || { f: {}, s: {} };
+      (r.ph === 'p1' ? P.f : P.s)[id] = cleanPicks(b.picks);
+      advance(r, false); await save(); return send(res, 200, { ok: true });
     }
     if (op === 'timeout' && req.method === 'POST') {
-      if ((r.ph === 'p1' || r.ph === 'p2') && Date.now() > r.dl + GRACE) advance(r);
+      if (fighting(r) && Date.now() > r.dl + GRACE) advance(r, true);
       await save(); return send(res, 200, { ok: true });
     }
     if (op === 'end' && req.method === 'POST') {
-      if (inBattle(r) && side !== 'x') { r.ph = 'end'; r.end = { w: ['h', 'g', 'draw'].includes(b.w) ? b.w : 'draw', by: 'sim' }; }
+      if ((r.ph === 'toss' || fighting(r)) && teamOf(r, id)) { r.ph = 'end'; r.end = { w: ['A', 'B', 'draw'].includes(b.w) ? b.w : 'draw', by: 'sim' }; }
       await save(); return send(res, 200, { ok: true });
     }
     if (op === 'rematch' && req.method === 'POST') {
-      if (r.mem[0].id !== id) return send(res, 403, { code: 'host' });
+      if (!isHost) return send(res, 403, { code: 'host' });
       if (r.ph !== 'end') return send(res, 409, { code: 'turn' });
-      seat(r); await save(); return send(res, 200, { ok: true });
+      toLobby(r); await save(); return send(res, 200, { ok: true });
     }
-    if (op === 'leave' && req.method === 'POST') {
-      drop(r, id, 'leave'); await save(); return send(res, 200, { ok: true });
-    }
+    if (op === 'leave' && req.method === 'POST') { drop(r, id, 'leave'); await save(); return send(res, 200, { ok: true }); }
     return send(res, 400, { code: 'bad' });
   } catch (e) {
     console.error(e);

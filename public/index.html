@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 3.34.2.261020';window.GAME_VER=V;
+(function(){const V='Ver. 3.35.1.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13901,7 +13901,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 3.34.2.261020';
+const VER='Ver. 3.35.1.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -13909,8 +13909,12 @@ const api=(path,opt)=>{opt=opt||{};if(opt.body)opt.body=Object.assign({slot:slot
 const ERR={auth:T('사원증으로 로그인해야 해요.','Please log in with your ID badge.','社員証でログインしてください。'),noroom:T('방을 찾을 수 없어요.','Room not found.','部屋が見つかりません。'),full:T('이미 두 사람이 있는 방이에요.','That room is full.','すでに満員です。'),self:T('내가 만든 방이에요.','That is your own room.','自分が作った部屋です。'),ver:T('게임 버전이 달라요. 둘 다 새로고침해 주세요.','Game versions differ. Both of you, please refresh.','ゲームのバージョンが違います。二人とも再読み込みしてください。'),noapi:T('서버에서 대전 기능(/api/pvp)을 찾지 못했어요.','The server has no /api/pvp.','サーバーに /api/pvp が見つかりません。'),net:T('연결할 수 없어요.','Cannot connect.','接続できません。'),turn:T('지금은 내 차례가 아니에요.','It is not your turn.','今は自分の番ではありません。')};
 const errMsg=e=>ERR[e&&e.code]||T('문제가 생겼어요: ','Something went wrong: ','問題が発生しました：')+((e&&e.code)||'?');
 const LMAX=t=>Math.min(10,5+t);
-const oth=s=>s==='h'?'g':'h';
-const SI=s=>s==='g'?1:0;
+/* 빛: 1:1은 첫 턴 6 · 턴마다 +1 · 매 턴 가득 회복. 다수 전투는 사람마다 첫 턴 3 · 턴마다 최대 +1 · 2턴에 한 번(홀수 턴)만 가득 회복, 그 사이엔 남은 빛을 이어 쓴다 */
+const TMAX=t=>Math.min(10,2+t);
+const isTeam=S=>S.mode==='team';
+const maxOf=(S,t)=>isTeam(S)?TMAX(t):LMAX(t);
+const oth=s=>s==='A'?'B':'A';
+const SI=s=>s==='B'?1:0;
 
 /* ---------- 결정적 난수 ---------- */
 function rng(seed){let a=seed>>>0;return ()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
@@ -13920,13 +13924,18 @@ function shuf(R,L){for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[
 
 /* ---------- 유닛 ---------- */
 const DEFB=[5,6,8,10,12],DEFC=[3,3,4,4,5];
-function mkUnit(m,side,i){let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
+function mkUnit(m,side,i,o,extra){let k=null,su=null;try{k=weapOf(m.w)}catch(e){}if(!k||!k.skills)k=weapOf('baton');try{su=suitOf(m.s)}catch(e){}if(!su)su=suitOf('basic');
  const rk=Math.max(1,Math.min(5,m.rk||1)),pow=m.pl?0:Math.floor(rk/2)-2,sb=Math.floor(((m.st||{}).J||0)/30),g=Math.max(0,Math.min(4,su.g||0));
- return {side,i,n:m.n,pl:m.pl,rk,max:m.hp,hp:m.hp,sp:0,spd:[2+sb,5+sb],ag:!m.pl,w:m.w,s:m.s,
+ return {side,i,o,extra:!!extra,n:m.n,pl:m.pl,rk,max:m.hp,hp:m.hp,sp:0,spd:[2+sb,5+sb],ag:!m.pl,w:m.w,s:m.s,
   sk:k.skills.slice(0,3).map(s=>({n:s.n,base:Math.max(1,s.base+pow),cp:s.cp||0,coins:Math.max(1,s.coins||1),dc:s.c||k.dc||'RED'})),
   def:{n:(k.def&&k.def.n)||T('수비','Defend','守備'),type:(k.def&&k.def.type)||'guard',base:DEFB[g],cp:DEFC[g]},res:Object.assign({RED:1,WHITE:1,BLACK:1,PALE:1},su.r||{}),
   deck:[],panic:0,down:false,speed:0,guard:null}}
-function build(st){return [(st.hd||[]).map((m,i)=>mkUnit(m,0,i)),(st.gd||[]).map((m,i)=>mkUnit(m,1,i))]}
+/* 편성: 1:1은 각자 덱 전체 · 다수는 사람마다 관리직 하나. 인원이 모자란 팀은 그 팀 사람들이 가진 직원으로 채운다 (가진 사람이 조작) */
+function roster(bt){const R=[[],[]];if(!bt)return R;['A','B'].forEach((tm,sd)=>(bt[tm]||[]).forEach(x=>{if(bt.mode==='team')R[sd].push({m:x.d.find(z=>z.pl)||x.d[0],o:x.id});else x.d.forEach(m=>R[sd].push({m,o:x.id}))}));
+ if(bt.mode==='team'){const diff=R[0].length-R[1].length;if(diff){const sd=diff>0?1:0,tm=sd?'B':'A';const pool=(bt[tm]||[]).map(x=>({id:x.id,L:x.d.filter(z=>!z.pl).slice().sort((a,b)=>b.rk-a.rk)}));
+  for(let k=0;k<Math.abs(diff);k++){const c=pool.filter(p=>p.L.length).sort((a,b)=>R[sd].filter(u=>u.o===a.id).length-R[sd].filter(u=>u.o===b.id).length)[0];if(!c)break;R[sd].push({m:c.L.shift(),o:c.id,extra:1})}}}
+ return R}
+function build(st){const R=roster(st.bt);return R.map((L,sd)=>L.map((x,i)=>mkUnit(x.m,sd,i,x.o,x.extra)))}
 const alive=L=>L.filter(u=>!u.down);
 function wantN(L,t){const act=L.filter(u=>!u.down&&!(u.panic>0)).slice().sort((x,y)=>(y.rk-x.rk)||(x.i-y.i));const cap1=act.length,cap2=act.filter(u=>u.rk>=4).length;
  let extra=Math.min(Math.max(0,t-1),cap1+cap2);const W=new Map(act.map(u=>[u,1]));for(const u of act){if(extra<=0)break;W.set(u,2);extra--}for(const u of act){if(extra<=0)break;if(u.rk>=4){W.set(u,3);extra--}}return W}
@@ -13935,15 +13944,19 @@ const costOf=(u,o)=>o===0||o===1?null:0;
 
 /* ---------- 턴 준비 · 해결 ---------- */
 function setup(S,t){const R=rng(hsh(S.seed,'s',t));S.slots=[[],[]];
+ for(const ow of Object.keys(S.Lc)){if(!isTeam(S)||t%2===1)S.Lc[ow]=maxOf(S,t);else S.Lc[ow]=Math.min(S.Lc[ow],maxOf(S,t))}
  for(const sd of [0,1]){const L=S.u[sd];const W=wantN(L,t);for(const u of L){if(u.down)continue;u.speed=ri(R,u.spd[0],u.spd[1]);if(u.panic>0)continue;const n=W.get(u)||0;
-  for(let k=0;k<n;k++){const a=draw(u,R),b=draw(u,R);S.slots[sd].push({u:u.i,opts:[a,b]})}}}}
+  for(let k=0;k<n;k++){const a=draw(u,R),b=draw(u,R);S.slots[sd].push({u:u.i,o:u.o,opts:[a,b]})}}}}
 function pickCost(S,sd,j,o){const sl=S.slots[sd][j];if(!sl||!(o===0||o===1))return 0;return sl.opts[o]+1}
-function sanitize(S,sd,P,t){const out=[];let used=0;const L=S.slots[sd];for(let j=0;j<L.length;j++){const p=Object.assign({o:null,u:null,sl:null},(P||[])[j]||{});
-  if(p.o!=='d'&&p.o!==0&&p.o!==1)p.o=null;const c=pickCost(S,sd,j,p.o);if(used+c>LMAX(t)){p.o=null}else used+=c;out.push(p)}return out}
+/* 빛은 사람마다 따로: 한 사람이 한 턴에 최대 빛을 넘을 수 없다 */
+function sanitize(S,sd,P,t){const out=[];const used={};const L=S.slots[sd];for(let j=0;j<L.length;j++){const p=Object.assign({o:null,u:null,sl:null},(P||[])[j]||{});const ow=L[j].o;
+  if(p.o!=='d'&&p.o!==0&&p.o!==1)p.o=null;const c=pickCost(S,sd,j,p.o);if((used[ow]||0)+c>(S.Lc[ow]??maxOf(S,t))){p.o=null}else used[ow]=(used[ow]||0)+c;out.push(p)}S.used=Object.assign(S.used||{},used);return out}
+/* 사람별 선택 → 그 편 슬롯 순서로 */
+function combine(S,sd,box){const cnt={};return S.slots[sd].map(sl=>{const k=cnt[sl.o]=(cnt[sl.o]||0);cnt[sl.o]++;return ((box||{})[sl.o]||[])[k]||{o:null}})}
 function heads(R,u,n){const h=Math.max(.05,Math.min(.95,.5+u.sp/100));let k=0;for(let i=0;i<n;i++)if(R()<h)k++;return k}
 function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const L=[];S.logs[t]=L;
  const nm=u=>NL(u.n);const sk=(u,i)=>TRN(u.sk[i].n);
- pf=sanitize(S,F,pf,t);ps=sanitize(S,Sd,ps,t);
+ S.used={};pf=sanitize(S,F,pf,t);ps=sanitize(S,Sd,ps,t);for(const ow of Object.keys(S.used))S.Lc[ow]=Math.max(0,(S.Lc[ow]||0)-S.used[ow]);
  const U=(sd,i)=>S.u[sd][i];
  const fixT=(sd,i)=>{const E=S.u[1-sd];const x=E[i];if(x&&!x.down)return x.i;const a=alive(E)[0];return a?a.i:null};
  [[F,pf],[Sd,ps]].forEach(([sd,P])=>P.forEach((p,j)=>{if(p.o==='d'){const u=U(sd,S.slots[sd][j].u);u.guard={type:u.def.type,used:false};L.push(T(`${nm(u)}: 수비 자세 (${u.def.type==='guard'?'가드':'회피'})`,`${nm(u)}: defense stance (${u.def.type==='guard'?'Guard':'Evade'})`,`${nm(u)}：守備の構え(${u.def.type==='guard'?'ガード':'回避'})`))}}));
@@ -13976,26 +13989,27 @@ function resolve(S,t,F,pf,ps){const R=rng(hsh(S.seed,'r',t));const Sd=1-F;const 
   else if(canAct(au))hit(au,a.s,au.sk[a.s].coins,a.tg);
   if(over(S))break}
  [0,1].forEach(sd=>S.u[sd].forEach(u=>{u.guard=null;u.shield=0;if(u.panic>0){u.panic--;if(u.panic===0&&!u.down){u.sp=0}}}));
- const o=over(S);if(!o&&t>=20){const r=[0,1].map(sd=>S.u[sd].reduce((x,u)=>x+u.hp,0)/S.u[sd].reduce((x,u)=>x+u.max,0));S.end=r[0]>r[1]?'h':r[1]>r[0]?'g':'draw';L.push(T('20턴 — 남은 체력 비율로 판정','Turn 20 — decided by remaining HP','20ターン — 残り体力の割合で判定'))}else if(o)S.end=o}
-function over(S){const a=alive(S.u[0]).length,b=alive(S.u[1]).length;return !a&&!b?'draw':!a?'g':!b?'h':null}
+ const o=over(S);if(!o&&t>=20){const r=[0,1].map(sd=>S.u[sd].reduce((x,u)=>x+u.hp,0)/S.u[sd].reduce((x,u)=>x+u.max,0));S.end=r[0]>r[1]?'A':r[1]>r[0]?'B':'draw';L.push(T('20턴 — 남은 체력 비율로 판정','Turn 20 — decided by remaining HP','20ターン — 残り体力の割合で判定'))}else if(o)S.end=o}
+function over(S){const a=alive(S.u[0]).length,b=alive(S.u[1]).length;return !a&&!b?'draw':!a?'B':!b?'A':null}
 const firstOf=(st,t)=>t%2===1?st.f1:oth(st.f1);
-function sim(st){const S={seed:st.seed,u:build(st),logs:{},end:null,slots:[[],[]],t:0};if(!st.f1)return S;
- for(let t=1;t<=Math.max(1,st.turn);t++){S.t=t;setup(S,t);const P=st.P&&st.P[t];if(P&&P.s){const F=SI(firstOf(st,t));resolve(S,t,F,P.f||[],P.s);if(S.end)return S}else break}return S}
+function sim(st){const S={seed:st.seed,u:build(st),logs:{},end:null,slots:[[],[]],t:0,mode:st.bt&&st.bt.mode,Lc:{}};S.u.forEach(L=>L.forEach(u=>{S.Lc[u.o]=0}));if(!st.f1||!st.bt)return S;
+ for(let t=1;t<=Math.max(1,st.turn);t++){S.t=t;setup(S,t);const P=st.P&&st.P[t];if(t<st.turn&&P){const F=SI(firstOf(st,t));resolve(S,t,F,combine(S,F,P.f),combine(S,1-F,P.s));if(S.end)return S}else break}return S}
 
 /* ---------- 화면: 일반 전투 화면과 같은 틀 (#panel) ---------- */
-let ROOM=null,ST=null,FETCHED=0,POLL=0,TICK=0,PK=[],SENT=-1,TO_SENT=0,ENDSENT=0,SEL=null,RT0=null,LASTKEY='';
+let ROOM=null,ST=null,FETCHED=0,POLL=0,TICK=0,PK=[],SENT=-1,TO_SENT=0,ENDSENT=0,SEL=null,RT0=null;
 const TTL_=()=>T('실시간 친선전 (베타)','Live Friendly (Beta)','リアルタイム親善戦(ベータ)');
+const TEAM=tm=>tm==='A'?T('A팀','Team A','Aチーム'):T('B팀','Team B','Bチーム');
 function pauseRt(){if(RT0===null&&G){RT0=G.rt!==false;G.rt=false;try{renderTop()}catch(e){}}}
 function resumeRt(){if(RT0!==null&&G){G.rt=RT0;RT0=null;try{renderTop()}catch(e){}}}
 function close(){stop();ROOM=null;ST=null;SEL=null;resumeRt();try{CURUI=null;TAB='work';renderTabs();workMenu()}catch(e){}}
 function stop(){clearTimeout(POLL);clearInterval(TICK);POLL=0;TICK=0}
 function left(){if(!ST)return 0;return Math.ceil((ST.dl-(ST.now+(Date.now()-FETCHED)))/1000)}
 function panel(sub,html){try{if(TAB!=='work'){TAB='work';renderTabs()}}catch(e){}setPanel(TTL_(),sub||'',[],html);CURUI='rt139'}
-const codeBox=()=>ROOM&&ST&&ST.type==='code'&&(ST.ph==='wait'||ST.ph==='toss')?`<div class="rt-codebox"><span>${T('방 초대 코드','Room invite code','部屋の招待コード')}</span><b>${ROOM}</b><button type="button" class="btn ghost small" id="rtCopy">${T('복사','Copy','コピー')}</button></div>`:'';
-function roomTag(){if(!ST)return '';return `<p class="rt-tag">${ST.type==='pub'?T('공개 방','Public room','公開部屋'):T('초대 코드 방','Invite-code room','招待コード部屋')}${ST.host?` · ${T('내가 방장','You are the host','あなたが部屋主')}`:''}</p>`}
-function members(){if(!ST||!ST.mem)return '';return `<div class="rt-mem"><b>${T('방 인원','Members','メンバー')} ${ST.mem.length}/6</b>${ST.mem.map((m,i)=>`<span class="${m.me?'me':''}">${i===0?'♛ ':''}${esc(NL(m.n))}<small>${i===0?T('방장','Host','部屋主'):''}${i<2?(i===0?' · ':'')+T('대전','Player','対戦'):T('관전','Spectator','観戦')}</small></span>`).join('')}<p class="note">${T('방장이 나가면 남은 사람 중 가장 먼저 들어온 사람이 방장이 돼요.','If the host leaves, the earliest remaining member becomes host.','部屋主が退出すると、残った人のうち最も早く入った人が部屋主になります。')}</p></div>`}
+const call=(op,x)=>api('',{method:'POST',body:Object.assign({op,code:ROOM},x||{})});
+const nmOf=id=>{const m=ST&&ST.mem.find(x=>x.id===id);if(m)return m.n;const b=ST&&ST.bt;if(b)for(const tm of ['A','B']){const y=(b[tm]||[]).find(x=>x.id===id);if(y)return y.n}return '?'};
+const codeBox=()=>ROOM&&ST&&ST.type==='code'&&(ST.ph==='lobby'||ST.ph==='toss')?`<div class="rt-codebox"><span>${T('방 초대 코드','Room invite code','部屋の招待コード')}</span><b>${ROOM}</b><button type="button" class="btn ghost small" id="rtCopy">${T('복사','Copy','コピー')}</button></div>`:'';
 function lobby(){stop();const ok=online()&&user();
- panel('',`<div class="rt-lobby"><p class="note">${T('공격 덱으로 겨뤄요. 코인 토스로 앞면이 나온 사람이 선공·후공을 정해요. 턴마다 선공 → 후공 순서로 각자 50초 안에 스킬을 고르고, 빛(1·2·3스킬 = 1·2·3, 수비 0)은 한 턴 최대치를 넘을 수 없어요. 선공이 고른 스킬의 절반은 ?로 가려진 채 후공에게 보여요. 다음 턴엔 선후공이 바뀌어요.','You fight with your attack deck. A coin toss decides who picks first or second. Each turn the first player, then the second, picks skills within 50 seconds; light (skills 1·2·3 cost 1·2·3, defense 0) cannot exceed the turn maximum. Half of the first player\'s picks are hidden as ? from the second player. Roles swap every turn.','攻撃デッキで戦います。コイントスで表が出た人が先攻・後攻を決めます。毎ターン先攻→後攻の順に50秒以内でスキルを選び、光(1・2・3スキル=1・2・3、守備0)はターン上限を超えられません。先攻が選んだスキルの半分は後攻に?で隠されます。次のターンは先後攻が入れ替わります。')}</p>
+ panel('',`<div class="rt-lobby"><p class="note">${T('방장이 1:1 또는 다수(팀) 전투를 정하고, 싸울 사람은 자리에 앉아 [준비]를 눌러요. 앉은 사람이 모두 준비하면 코인 토스로 시작해요. 턴마다 선공 → 후공 순서로 각자 50초 안에 자기 유닛의 스킬을 고르고, 빛(1·2·3스킬 = 1·2·3, 수비 0)은 한 사람이 한 턴 최대치를 넘을 수 없어요. 선공이 고른 스킬의 절반은 ?로 가려져요.','The host picks 1v1 or team battle; fighters take a seat and press [Ready]. When everyone seated is ready, a coin toss starts the match. Each turn the first side, then the second, picks skills for their own units within 50 seconds; light (skills 1·2·3 cost 1·2·3, defense 0) per person cannot exceed the turn maximum. Half of the first side\'s picks are hidden as ?.','部屋主が1対1か多人数(チーム)戦かを決め、戦う人は席に座って[準備]を押します。座った全員が準備するとコイントスで始まります。毎ターン先攻→後攻の順に50秒以内で自分のユニットのスキルを選び、光(1・2・3スキル=1・2・3、守備0)は一人あたりターン上限を超えられません。先攻の選択の半分は?で隠されます。')}</p>
  ${ok?`<div class="rt-mk"><div class="rt-mkc"><b>${T('공개 방','Public room','公開部屋')}</b><small>${T('목록에 올라가 누구나 들어올 수 있어요.','Listed; anyone can join.','一覧に載り、誰でも入れます。')}</small><button type="button" class="btn" data-rtnew="pub">${T('공개 방 만들기','Create public room','公開部屋を作る')}</button></div>
   <div class="rt-mkc"><b>${T('초대 코드 방','Invite-code room','招待コード部屋')}</b><small>${T('코드를 아는 사람만 들어올 수 있어요.','Only people with the code can join.','コードを知っている人だけが入れます。')}</small><button type="button" class="btn" data-rtnew="code">${T('초대 코드 방 만들기','Create invite room','招待コード部屋を作る')}</button></div></div>
   <div class="row"><input id="rtCode" maxlength="6" placeholder="${T('초대 코드','Invite code','招待コード')}"><button type="button" class="btn ghost" id="rtJoin">${T('코드로 참가','Join by code','コードで参加')}</button></div>
@@ -14008,90 +14022,115 @@ function lobby(){stop();const ok=online()&&user();
  const join=async c=>{try{await api('',{method:'POST',body:{op:'join',code:c,name:G.name,deck:deck(),v:VER}});ROOM=c;go()}catch(x){toast(errMsg(x))}};
  const jn=P.querySelector('#rtJoin');if(jn)jn.onclick=()=>{const c=(P.querySelector('#rtCode').value||'').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))return toast(T('코드는 6자리예요.','The code has 6 characters.','コードは6文字です。'));join(c)};
  const loadPub=async()=>{const box=P.querySelector('#rtPub');if(!box)return;try{const L=(await api('?op=list')).list||[];
-   box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> ${T('의 방','\'s room','の部屋')} · ${r.n}/6 · ${r.ph==='wait'?T('상대 모집 중','Looking for an opponent','対戦相手募集中'):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${r.ph==='wait'?T('들어가기','Join','入る'):T('관전','Spectate','観戦')}</button></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
+   box.innerHTML=L.length?L.map(r=>`<div class="rt-room"><span><b>${esc(NL(r.host))}</b> · ${r.mode==='team'?T('다수 전투','Team','多人数'):'1:1'} · ${r.n}${T('명','','人')} · ${r.ph==='lobby'?T(`빈자리 ${r.free}`,`${r.free} seats open`,`空席 ${r.free}`):r.ph==='end'?T('대전 끝','Finished','対戦終了'):T('대전 중 (관전)','In battle (spectate)','対戦中(観戦)')}${r.v&&r.v!==VER?` · <em>${T('버전 다름','Version differs','バージョン違い')}</em>`:''}</span><button type="button" class="btn small" data-rtj="${r.code}" ${r.v&&r.v!==VER?'disabled':''}>${r.ph==='lobby'?T('들어가기','Join','入る'):T('관전','Spectate','観戦')}</button></div>`).join(''):`<p class="note">${T('열려 있는 공개 방이 없어요. 직접 만들어 보세요.','No public rooms open. Create one!','公開部屋がありません。作ってみましょう。')}</p>`;
    box.querySelectorAll('[data-rtj]').forEach(b=>b.onclick=()=>join(b.dataset.rtj))}catch(x){box.innerHTML=`<p class="note">${errMsg(x)}</p>`}};
  const rf=P.querySelector('#rtRef');if(rf)rf.onclick=loadPub;loadPub()}
-function go(){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;LASTKEY='';pauseRt();poll();clearInterval(TICK);TICK=setInterval(tick,300)}
+function go(){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null;pauseRt();poll();clearInterval(TICK);TICK=setInterval(tick,300)}
 async function poll(){clearTimeout(POLL);if(!ROOM)return;
- try{const r=await api(`?op=get&code=${ROOM}`);const prev=ST&&JSON.stringify(Object.assign({},ST,{now:0}));if(ST&&r.st&&ST.seed!==r.st.seed){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null}ST=r.st;FETCHED=Date.now();
+ try{const r=await api(`?op=get&code=${ROOM}`);if(ST&&r.st&&ST.seed!==r.st.seed){PK=[];SENT=-1;TO_SENT=0;ENDSENT=0;SEL=null}
+  const prev=ST&&JSON.stringify(Object.assign({},ST,{now:0}));ST=r.st;FETCHED=Date.now();
   const lost=!document.getElementById('rtStage')&&!document.getElementById('rtWait');
   if(JSON.stringify(Object.assign({},ST,{now:0}))!==prev||(lost&&TAB==='work'&&!POP))draw_()}
- catch(x){if(x&&x.code==='noroom'){toast(ERR.noroom);return close()}if(!(x&&x.code))console.error('rt139',x)}
+ catch(x){if(x&&(x.code==='noroom'||x.code==='notin')){toast(ERR.noroom);return close()}if(!(x&&x.code))console.error('rt139',x)}
  if(ROOM)POLL=setTimeout(poll,1500)}
+function myPhase(){if(!ST||!ST.myTeam||!(ST.ph==='p1'||ST.ph==='p2'))return false;const F=firstOf(ST,ST.turn);return (ST.ph==='p1'&&ST.myTeam===F)||(ST.ph==='p2'&&ST.myTeam!==F)}
+function iDone(){const P=ST&&ST.P&&ST.P[ST.turn];return !!(P&&P.done&&P.done.includes(ST.me))}
 function tick(){const t=document.getElementById('rtT');if(!ST)return;const s=left();if(t){t.textContent=Math.max(0,s);t.classList.toggle('low',s<=10)}
- if(!(ST.ph==='p1'||ST.ph==='p2'))return;const myTurn=ST.side!=='x'&&((ST.ph==='p1'&&ST.side===firstOf(ST,ST.turn))||(ST.ph==='p2'&&ST.side!==firstOf(ST,ST.turn)));const key=ST.turn*10+(ST.ph==='p1'?1:2);
- if(myTurn&&s<=0&&SENT!==key)submit(true);
- if(!myTurn&&ST.side!=='x'&&s<=-4&&TO_SENT!==key){TO_SENT=key;api('',{method:'POST',body:{op:'timeout',code:ROOM}}).catch(()=>{})}}
+ if(!(ST.ph==='p1'||ST.ph==='p2'))return;const key=ST.turn*10+(ST.ph==='p1'?1:2);
+ if(myPhase()&&!iDone()&&SENT!==key){const S=sim(ST);const mine=S.slots[SI(ST.myTeam)].filter(x=>x.o===ST.me).length;if(!mine||s<=0)submit(s<=0&&mine>0)}
+ if(s<=-4&&TO_SENT!==key){TO_SENT=key;call('timeout').catch(()=>{})}}
 async function submit(auto){if(!ST)return;const key=ST.turn*10+(ST.ph==='p1'?1:2);if(SENT===key)return;SENT=key;
- try{await api('',{method:'POST',body:{op:'pick',code:ROOM,turn:ST.turn,picks:PK}});if(auto)toast(T('시간이 다 되어 지금까지 고른 것으로 확정했어요.','Time ran out; your current picks were submitted.','時間切れのため、今の選択で確定しました。'))}catch(x){if(!(x&&x.code==='turn'))toast(errMsg(x));SENT=-1}
+ try{await call('pick',{turn:ST.turn,picks:PK});if(auto)toast(T('시간이 다 되어 지금까지 고른 것으로 확정했어요.','Time ran out; your current picks were submitted.','時間切れのため、今の選択で確定しました。'))}catch(x){if(!(x&&x.code==='turn'))toast(errMsg(x));SENT=-1}
  PK=[];SEL=null;poll()}
-/* 그림: 일반 전투와 같은 사람 아바타 (상대는 붉은 테 · 마주 보게) */
 function fig(u,enemy){const fake={id:'rt_'+u.side+'_'+u.i,n:u.n,dept:'',sp:u.sp,alive:true,st:{F:0,P:0,T:0,J:0},_mir136:1,_mw:u.w,_ms:u.s,panic:u.panic>0};
  try{if(enemy)return lbEnemyFig({uid:'rt'+u.side+u.i,n:u.n,hp:u.hp,max:u.max,sp:u.sp,human:true,mir136:{n:u.n,w:u.w,s:u.s,i:u.i},skills:[]});return lbAllyFig({key:'ag',ag:fake,sp:u.sp,n:u.n})}catch(e){return ''}}
-function bars(u){const sp=u.sp;return `<div class="lb-bar hp ${u.side!==SI(ST.side)?'lbfo':''}"><i style="width:${Math.max(0,u.hp)/u.max*100}%"></i><em>${Math.max(0,u.hp)}</em></div>
+function bars(u,foe){const sp=u.sp;return `<div class="lb-bar hp ${foe?'lbfo':''}"><i style="width:${Math.max(0,u.hp)/u.max*100}%"></i><em>${Math.max(0,u.hp)}</em></div>
  <div class="lb-bar sp"><i class="${sp<0?'neg':''}" style="width:${Math.min(50,Math.abs(sp)/45*50)}%;${sp<0?'right':'left'}:50%"></i><em>${sp>0?'+':''}${sp}</em></div>
  <div class="lb-tags">${u.panic>0?`<span class="t">${T('패닉','Panic','パニック')}</span>`:''}${u.down?`<span class="t">${T('쓰러짐','Down','戦闘不能')}</span>`:''}</div>`}
 function coins(n,used){let h='';for(let i=0;i<n;i++)h+=`<i class="coin rt-lc ${i<n-used?'':'gone'}"></i>`;return h}
-function skRange(s){return `${s.base}~${s.base+s.cp*s.coins}`}
-function draw_(){if(!ST)return;const st=ST,me=SI(st.side),op=1-me;const S=sim(st);
- if(S.end&&st.ph!=='end'&&!ENDSENT){ENDSENT=1;api('',{method:'POST',body:{op:'end',code:ROOM,w:S.end}}).catch(()=>{})}
- const myN=esc(NL((me===0?st.hn:st.gn)||'…')),opN=esc(NL((me===0?st.gn:st.hn)||'…'));
- // 기다림 · 토스 · 끝
- if(st.ph==='wait'||st.ph==='toss'){let body='';
-  if(st.ph==='wait')body=`<p class="note">${st.type==='code'?T('상대를 기다리는 중이에요. 위의 초대 코드를 상대에게 알려 주세요.','Waiting for an opponent. Share the invite code above.','相手を待っています。上の招待コードを伝えてください。'):T('공개 방 목록에 올라가 있어요. 누군가 들어오면 바로 시작해요.','Your room is listed publicly. It starts as soon as someone joins.','公開部屋一覧に載っています。誰かが入るとすぐ始まります。')}</p>`;
-  else{const won=st.side!=='x'&&st.tw===st.side;body=`<div class="rt-coin"><i class="coin"></i> ${T('코인 토스','Coin toss','コイントス')} — ${T('앞면','Heads','表')}: <b>${esc(NL(st.tw==='h'?st.hn:st.gn))}</b></div>`+(won?`<div class="row"><button type="button" class="btn" data-rtf="1">${T('선공','Go first','先攻')}</button><button type="button" class="btn ghost" data-rtf="0">${T('후공','Go second','後攻')}</button></div>`:`<p class="note">${st.side==='x'?T('토스에서 이긴 사람이 선공·후공을 고르는 중이에요.','The toss winner is choosing first or second.','トスの勝者が先攻・後攻を選んでいます。'):T('상대가 선공·후공을 고르는 중이에요.','Your opponent is choosing first or second.','相手が先攻・後攻を選んでいます。')}</p>`)}
-  panel(`${myN} vs ${opN}`,`<div id="rtWait">${codeBox()}${roomTag()}${body}${members()}<div class="row"><button type="button" class="btn ghost small" id="rtLeave">${T('나가기','Leave','退出')}</button></div></div>`);return bindM(S,me)}
- const ended=st.ph==='end'||S.end;const t=st.turn,F=firstOf(st,t),iFirst=st.side===F;const spec=st.side==='x';const mine=!ended&&!spec&&((st.ph==='p1'&&iFirst)||(st.ph==='p2'&&!iFirst));
- const L=S.slots[me]||[];while(PK.length<L.length)PK.push({o:null,u:null,sl:null});const used=mine?PK.reduce((x,p,j)=>x+pickCost(S,me,j,p.o),0):0;
- const fp=(!spec&&st.ph==='p2'&&!iFirst&&st.P[t]&&st.P[t].f)||null;
- // 상대 슬롯 (보이는 것만)
- const oppSlots=sd=>S.slots[op].map((sl,k)=>({sl,k})).filter(x=>x.sl.u===sd);
- const enemies=S.u[op].map(u=>{const its=oppSlots(u.i).map(({sl,k})=>{const q=fp?fp[k]||{o:null}:null;
+const skRange=s=>`${s.base}~${s.base+s.cp*s.coins}`;
+const uName=u=>`${esc(NL(u.n))}${u.extra||(ST.bt&&ST.bt.mode==='team'&&!u.pl)?` <small>(${esc(NL(nmOf(u.o)))})</small>`:''}`;
+/* 대기실: 방장 설정 · 자리 · 준비 */
+function lobbyRoom(){const st=ST,cap=st.mode==='team'?5:1;const mySeat=(st.mem.find(m=>m.id===st.me)||{}).seat;const meR=(st.mem.find(m=>m.id===st.me)||{}).ready;
+ const seatList=tm=>{const L=st.seats[tm].map(id=>st.mem.find(m=>m.id===id)).filter(Boolean);let h=L.map(m=>`<div class="rt-seat on ${m.id===st.me?'me':''}">${m.host?'♛ ':''}${esc(NL(m.n))}<span class="${m.ready?'rdy':''}">${m.ready?T('준비 완료','Ready','準備完了'):T('준비 중','Not ready','準備中')}</span></div>`).join('');
+  for(let i=L.length;i<cap;i++)h+=`<div class="rt-seat">${T('빈자리','Empty','空席')}</div>`;
+  const can=mySeat!==tm&&L.length<cap;return `<div class="rt-team-box ${tm}"><b>${st.mode==='team'?TEAM(tm):(tm==='A'?T('자리 1','Seat 1','席1'):T('자리 2','Seat 2','席2'))} <small>${L.length}/${cap}</small></b>${h}${can?`<button type="button" class="btn small" data-rtsit="${tm}">${st.mode==='team'?T(`${TEAM(tm)} 참여`,`Join ${TEAM(tm)}`,`${TEAM(tm)}に参加`):T('전투 참여','Join battle','戦闘参加')}</button>`:''}</div>`};
+ const specs=st.mem.filter(m=>!m.seat);
+ const setting=st.host?`<div class="rt-set"><b>${T('방 설정','Room settings','部屋設定')}</b><div class="row"><button type="button" class="btn small ${st.mode==='1v1'?'':'ghost'}" data-rtmode="1v1">1:1 ${T('전투','battle','戦闘')}</button><button type="button" class="btn small ${st.mode==='team'?'':'ghost'}" data-rtmode="team">${T('다수 전투 (팀당 최대 5명)','Team battle (up to 5 each)','多人数戦(各チーム最大5人)')}</button></div><p class="note">${T('바꾸면 모든 자리가 비워져요.','Changing it clears all seats.','変更すると全ての席が空きます。')}</p></div>`:`<p class="rt-tag">${st.mode==='team'?T('다수 전투 · 팀당 최대 5명','Team battle · up to 5 each','多人数戦・各チーム最大5人'):T('1:1 전투','1v1 battle','1対1戦')}</p>`;
+ const rule=st.mode==='team'?`<p class="note">${T('다수 전투에서는 사람마다 관리직 한 명으로 싸워요. 팀 인원이 다르면 적은 팀에 그 팀 사람들이 가진 직원이 차이만큼 들어가고, 그 직원은 가진 사람만 조작해요. 스킬은 자기 유닛만 고를 수 있어요. 빛은 사람마다 첫 턴 3에서 턴마다 최대치가 1씩 늘고, 2턴에 한 번만 가득 회복돼요. 그 사이엔 남은 빛을 이어 써요.','In team battles each person fights with their manager. If team sizes differ, the smaller team adds employees owned by its members to even it out; only the owner controls them. You can only pick skills for your own units. Light is per person: max 3 on turn 1, +1 each turn, and it refills only every 2 turns — in between you carry over what is left.','多人数戦では一人につき管理職一人で戦います。チーム人数が違うと、少ないチームにメンバーが持つ職員が差の分だけ加わり、その職員は持ち主だけが操作します。スキルは自分のユニットだけ選べます。光は一人ごとに1ターン目3、ターンごとに最大+1、2ターンに1回だけ全回復し、その間は残りを持ち越します。')}</p>`:'';
+ const all=[...st.seats.A,...st.seats.B];const waitWho=all.filter(id=>!(st.mem.find(m=>m.id===id)||{}).ready).length;
+ const status=!st.seats.A.length||!st.seats.B.length?T('양쪽에 한 명 이상 앉아야 시작할 수 있어요.','Both sides need at least one person.','両側に一人以上必要です。'):waitWho?T(`준비를 기다리는 중 (${waitWho}명)`,`Waiting for ${waitWho} to be ready`,`準備待ち(${waitWho}人)`):T('곧 시작해요…','Starting…','まもなく開始…');
+ return `${codeBox()}<p class="rt-tag">${st.type==='pub'?T('공개 방','Public room','公開部屋'):T('초대 코드 방','Invite-code room','招待コード部屋')}${st.host?` · ${T('내가 방장','You are the host','あなたが部屋主')}`:''}</p>${setting}
+  <div class="rt-seats">${seatList('A')}<div class="rt-vsb">VS</div>${seatList('B')}</div>${rule}
+  <div class="rt-status">${status}</div>
+  <div class="row">${mySeat?`<button type="button" class="btn ${meR?'ghost':''}" id="rtReady">${meR?T('준비 취소','Cancel ready','準備取消'):T('준비','Ready','準備')}</button><button type="button" class="btn ghost small" id="rtStand">${T('자리 떠나기','Leave seat','席を離れる')}</button>`:''}<button type="button" class="btn ghost small" id="rtLeave">${T('방 나가기','Leave room','退室')}</button></div>
+  <div class="rt-mem"><b>${T('관전','Spectators','観戦')} ${specs.length}</b>${specs.map(m=>`<span class="${m.id===st.me?'me':''}">${m.host?'♛ ':''}${esc(NL(m.n))}</span>`).join('')||`<small>-</small>`}<p class="note">${T('방장이 나가면 남은 사람 중 가장 먼저 들어온 사람이 방장이 돼요.','If the host leaves, the earliest remaining member becomes host.','部屋主が退出すると、残った人のうち最も早く入った人が部屋主になります。')}</p></div>`}
+function draw_(){if(!ST)return;const st=ST;
+ if(st.ph==='lobby'){panel('',`<div id="rtWait">${lobbyRoom()}</div>`);return bindM(null,0)}
+ const S=sim(st);const me=st.myTeam?SI(st.myTeam):0,op=1-me,spec=!st.myTeam;
+ if(S.end&&st.ph!=='end'&&!ENDSENT&&!spec){ENDSENT=1;call('end',{w:S.end}).catch(()=>{})}
+ const tA=(st.bt.A||[]).map(x=>esc(NL(x.n))).join(', '),tB=(st.bt.B||[]).map(x=>esc(NL(x.n))).join(', ');const vs=me===0?`${tA} vs ${tB}`:`${tB} vs ${tA}`;
+ if(st.ph==='toss'){const won=st.leader===st.me;
+  const body=`<div class="rt-coin"><i class="coin"></i> ${T('코인 토스','Coin toss','コイントス')} — ${T('앞면','Heads','表')}: <b>${st.bt.mode==='team'?TEAM(st.tw):esc(NL(nmOf(st.leader)))}</b></div>`+(won?`<div class="row"><button type="button" class="btn" data-rtf="1">${T('선공','Go first','先攻')}</button><button type="button" class="btn ghost" data-rtf="0">${T('후공','Go second','後攻')}</button></div>`:`<p class="note">${esc(NL(nmOf(st.leader)))}${T('이(가) 선공·후공을 고르는 중이에요.',' is choosing first or second.','が先攻・後攻を選んでいます。')}</p>`);
+  panel(vs,`<div id="rtWait">${codeBox()}${body}<div class="row"><button type="button" class="btn ghost small" id="rtLeave">${T('나가기','Leave','退出')}</button></div></div>`);return bindM(S,me)}
+ const ended=st.ph==='end'||!!S.end;const t=st.turn,F=firstOf(st,t),myFirst=st.myTeam===F;const mine=!ended&&myPhase()&&!iDone();
+ const L=S.slots[me]||[];const myIdx=L.map((sl,j)=>sl.o===st.me?j:-1).filter(j=>j>=0);while(PK.length<myIdx.length)PK.push({o:null,u:null,sl:null});
+ const pkOf=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
+ const used=mine?myIdx.reduce((x,j,k)=>x+pickCost(S,me,j,PK[k].o),0):0;
+ const Pt=st.P&&st.P[t];const fp=(!spec&&st.ph==='p2'&&!myFirst&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
+ const enemies=S.u[op].map(u=>{const its=S.slots[op].map((sl,k)=>({sl,k})).filter(x=>x.sl.u===u.i).map(({sl,k})=>{const q=fp?fp[k]:null;
    if(!q)return `<div class="lb-int i79 rt-hid"><b>${u.speed}</b><span class="rt-qm">…</span></div>`;
-   if(q.o===null)return `<div class="lb-int i79 rt-none"><b>${u.speed}</b><small class="tg">-</small></div>`;
+   if(q.o===null)return `<div class="lb-int i79 rt-none"><b>${u.speed}</b><span class="rt-qm">-</span></div>`;
    const tg=q.u!=null&&S.u[me][q.u]?esc(NL(S.u[me][q.u].n)):'-';const clk=mine&&(q.o===0||q.o===1||q.o==='?');
-   if(q.o==='d')return `<div class="lb-int i79 def" data-rtk="${k}"><b>${u.speed}</b><small class="tg">${T('수비','Defend','守備')}</small></div>`;
+   if(q.o==='d')return `<div class="lb-int i79 def"><b>${u.speed}</b><span class="rt-qm">${T('수비','Def','守')}</span></div>`;
    if(q.o==='?')return `<div class="lb-int i79 rt-q ${clk?'can':''}" data-rtk="${k}"><b>${u.speed}</b><span class="rt-qm">?</span><i class="lb-adv">? → ${tg}</i></div>`;
    const s=u.sk[sl.opts[q.o]];return `<div class="lb-int i79 ${clk?'can':''}" data-rtk="${k}"><b>${u.speed}</b><span class="cd">${'<i></i>'.repeat(s.coins)}</span><i class="lb-adv">${esc(TRN(s.n))} · ${T('빛','L','光')}${sl.opts[q.o]+1} · ${skRange(s)} → ${tg}</i></div>`}).join('');
-  return `<div class="lb-fig lb-fo ${u.down?'dead':''}" data-rteu="${u.i}"><div class="lb-slots">${its||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('행동 없음','No action','行動なし')}</span>`)}</div>${fig(u,true)}<div class="lb-nm">${esc(NL(u.n))}</div>${bars(u)}</div>`}).join('');
- const allies=S.u[me].map(u=>{const sls=L.map((sl,j)=>({sl,j})).filter(x=>x.sl.u===u.i).map(({sl,j})=>{const p=PK[j];let lab=T('대기','Idle','待機'),cls='none',sub='';
-   if(p.o==='d'){lab=T('수비','Defend','守備');cls='def'}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];const tg=p.sl!=null?`${T('합','Clash','マッチ')} · ${T('슬롯','Slot','スロット')}${p.sl+1}`:(p.u!=null&&S.u[op][p.u]?esc(NL(S.u[op][p.u].n)):'');lab=esc(TRN(s.n));cls=p.sl!=null?'clash':'atk';sub=tg}
+  return `<div class="lb-fig lb-fo ${u.down?'dead':''}" data-rteu="${u.i}"><div class="lb-slots">${its||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('행동 없음','No action','行動なし')}</span>`)}</div>${fig(u,true)}<div class="lb-nm">${uName(u)}</div>${bars(u,true)}</div>`}).join('');
+ const allies=S.u[me].map(u=>{const sls=L.map((sl,j)=>({sl,j})).filter(x=>x.sl.u===u.i).map(({sl,j})=>{const p=pkOf(j);
+   if(!p)return `<div class="lb-slot s79 none rt-mate"><b>${u.speed}</b><em>${spec?'':T('동료','Ally','味方')}</em></div>`;
+   let lab=T('대기','Idle','待機'),cls='none',sub='';
+   if(p.o==='d'){lab=T('수비','Defend','守備');cls='def'}else if(p.o===0||p.o===1){const s=u.sk[sl.opts[p.o]];lab=esc(TRN(s.n));cls=p.sl!=null?'clash':'atk';sub=p.sl!=null?`${T('합','Clash','マッチ')} · ${T('슬롯','Slot','スロット')}${p.sl+1}`:(p.u!=null&&S.u[op][p.u]?esc(NL(S.u[op][p.u].n)):'')}
    return `<button type="button" class="lb-slot s79 ${cls} ${SEL===j?'sel79':''}" data-rts="${j}"><b>${u.speed}</b><em>${lab}</em>${sub?`<small class="p127">${sub}</small>`:''}</button>`}).join('');
-  return `<div class="lb-fig lb-al ${u.down?'dead':''}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${esc(NL(u.n))}</div>${bars(u)}</div>`}).join('');
- // 카드 (내 차례일 때)
+  return `<div class="lb-fig lb-al ${u.down?'dead':''} ${u.o===st.me?'mine':''}"><div class="lb-slots">${sls||(u.down?'':`<span class="lb-x">${u.panic>0?T('패닉','Panic','パニック'):T('대기','Idle','待機')}</span>`)}</div>${fig(u,false)}<div class="lb-nm">${uName(u)}</div>${bars(u,false)}</div>`}).join('');
  let dock='';
- if(mine){dock=L.map((sl,j)=>{const u=S.u[me][sl.u];const p=PK[j];const who=`${esc(NL(u.n))} · ${T('속도','Spd','速度')} ${u.speed}`;
-   const cards=sl.opts.map((si,o)=>{const s=u.sk[si];const c=si+1;const dis=p.o!==o&&used-pickCost(S,me,j,p.o)+c>LMAX(t);
+ if(mine){dock=myIdx.map((j,k)=>{const sl=L[j],u=S.u[me][sl.u],p=PK[k];const who=`${esc(NL(u.n))} · ${T('속도','Spd','速度')} ${u.speed}`;
+   const cards=sl.opts.map((si,o)=>{const s=u.sk[si];const c=si+1;const dis=p.o!==o&&used-pickCost(S,me,j,p.o)+c>(S.Lc[st.me]??maxOf(S,t));
     return `<div class="lb-card ${p.o===o?'on':''} ${dis?'lock':''}" data-rto="${j}:${o}"><span class="who">${who}</span><b>${esc(TRN(s.n))}</b><small>${skRange(s)} · ${'◆'.repeat(s.coins)}</small><small class="rt-cost">${coins(c,0)} ${T('빛','Light','光')} ${c}</small></div>`}).join('')+
     `<div class="lb-card def ${p.o==='d'?'on':''}" data-rto="${j}:d"><span class="who">${who}</span><b>${esc(TRN(u.def.n))}</b><small>${u.def.type==='guard'?T('가드','Guard','ガード'):T('회피','Evade','回避')}</small><small class="rt-cost">${T('빛','Light','光')} 0</small></div>`;
-   return `<div class="lb-grp">${cards}</div>`}).join('')||`<span class="note">${T('이번 턴에 움직일 수 있는 슬롯이 없어요.','No slots can act this turn.','このターン動けるスロットがありません。')}</span>`}
- const role=spec?T('관전','Spectating','観戦'):iFirst?T('선공','First','先攻'):T('후공','Second','後攻');
+   return `<div class="lb-grp">${cards}</div>`}).join('')||`<span class="note">${T('이번 턴에 내가 움직일 슬롯이 없어요.','You have no slots this turn.','このターン動かせるスロットがありません。')}</span>`}
+ const role=spec?T('관전','Spectating','観戦'):myFirst?T('선공','First','先攻'):T('후공','Second','後攻');
  let info='';
- if(ended){const w=S.end||(st.end&&st.end.w);info=`<p class="rt-res ${w===st.side?'w':w==='draw'?'':'l'}">${w==='draw'?T('무승부','Draw','引き分け'):w===st.side?T('승리','Victory','勝利'):T('패배','Defeat','敗北')}</p>${st.end&&(st.end.by==='leave'||st.end.by==='idle')?`<p class="note">${st.end.who===st.side?T('기권했어요.','You forfeited.','棄権しました。'):st.end.by==='idle'?T('상대의 연결이 끊겨 끝났어요.','Your opponent disconnected.','相手の接続が切れました。'):T('상대가 기권했어요.','Your opponent forfeited.','相手が棄権しました。')}</p>`:''}${st.host?`<div class="row"><button type="button" class="btn" id="rtRe">${T('다음 대전','Next match','次の対戦')}</button></div>`:`<p class="note">${T('방장이 다음 대전을 시작하기를 기다리는 중이에요.','Waiting for the host to start the next match.','部屋主が次の対戦を始めるのを待っています。')}</p>`}${members()}`}
+ if(ended){const w=S.end||(st.end&&st.end.w);const win=!spec&&w===st.myTeam;info=`<p class="rt-res ${win?'w':w==='draw'||spec?'':'l'}">${w==='draw'?T('무승부','Draw','引き分け'):spec?`${st.bt.mode==='team'?TEAM(w):esc(NL(nmOf((st.bt[w]||[])[0]&&st.bt[w][0].id)))} ${T('승리','wins','の勝利')}`:win?T('승리','Victory','勝利'):T('패배','Defeat','敗北')}</p>${st.end&&(st.end.by==='leave'||st.end.by==='idle')?`<p class="note">${st.end.who===st.myTeam?T('우리 쪽이 모두 나가 끝났어요.','Our side left.','こちらが全員退出しました。'):T('상대 쪽이 나가 끝났어요.','The other side left.','相手側が退出しました。')}</p>`:''}${st.host?`<div class="row"><button type="button" class="btn" id="rtRe">${T('대기실로 (다음 대전)','Back to lobby (next match)','待機室へ(次の対戦)')}</button></div>`:`<p class="note">${T('방장이 다음 대전을 준비하기를 기다리는 중이에요.','Waiting for the host to set up the next match.','部屋主が次の対戦を準備するのを待っています。')}</p>`}`}
  else if(mine){const vis=fp?S.slots[op].reduce((x,sl,k)=>{const q=fp[k]||{};return x+((q.o===0||q.o===1)?sl.opts[q.o]+1:0)},0):0,hid=fp?fp.filter(q=>q&&q.o==='?').length:0;
-  info=`<span>${T('카드를 누르고, 상대 몸(일방 공격)이나 상대 슬롯(합)을 눌러 대상을 정해요.','Tap a card, then tap an enemy (one-sided) or an enemy slot (clash) to set the target.','カードを押して、相手の体(一方攻撃)か相手のスロット(マッチ)を押して対象を決めます。')}</span>${fp?`<span class="rt-est">${T(`상대: 보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 최대 ${LMAX(t)}`,`Opponent: visible light ${vis} · hidden ${hid} · max ${LMAX(t)}`,`相手：見えている光 ${vis}・隠れた選択 ${hid}・最大 ${LMAX(t)}`)}</span>`:''}`}
+  info=`<span>${T('내 카드를 누르고, 상대 몸(일방 공격)이나 상대 슬롯(합)을 눌러 대상을 정해요. 동료의 유닛은 그 사람이 골라요.','Tap your card, then an enemy (one-sided) or enemy slot (clash). Teammates choose for their own units.','自分のカードを押して、相手の体(一方攻撃)か相手のスロット(マッチ)を押します。味方のユニットはその人が選びます。')}</span>${fp?`<span class="rt-est">${T(`상대: 보이는 빛 ${vis} · 숨겨진 선택 ${hid}개 · 한 사람 최대 ${maxOf(S,t)}`,`Opponents: visible light ${vis} · hidden ${hid} · max ${maxOf(S,t)} each`,`相手：見えている光 ${vis}・隠れた選択 ${hid}・一人最大 ${maxOf(S,t)}`)}</span>`:''}`}
  else if(spec)info=`<span>${T('관전 중이에요. 이번 턴의 선택은 턴이 끝나야 보여요.','Spectating. This turn\'s picks appear once the turn ends.','観戦中です。このターンの選択はターン終了後に見えます。')}</span>`;
- else info=`<span>${st.ph==='p1'?T('선공이 스킬을 고르는 중이에요. (선택은 보이지 않아요)','The first player is choosing. (Hidden from you)','先攻がスキルを選んでいます。(見えません)'):T('후공이 대응을 고르는 중이에요.','The second player is responding.','後攻が対応を選んでいます。')}</span>`;
+ else{const done=(Pt&&Pt.done)||[];const team=st.ph==='p1'?F:oth(F);const owe=(st.bt[team]||[]).map(x=>x.id).filter(id=>st.mem.some(m=>m.id===id));const waitN=owe.filter(id=>!done.includes(id)).map(id=>esc(NL(nmOf(id))));
+  info=`<span>${myPhase()?T('내 선택을 냈어요. 동료를 기다리는 중이에요.','Submitted. Waiting for teammates.','提出しました。味方を待っています。'):st.ph==='p1'?T('선공 쪽이 스킬을 고르는 중이에요. (선택은 보이지 않아요)','The first side is choosing. (Hidden from you)','先攻側が選んでいます。(見えません)'):T('후공 쪽이 대응을 고르는 중이에요.','The second side is responding.','後攻側が対応を選んでいます。')}${waitN.length?` · ${T('기다리는 사람','Waiting on','待ち')}: ${waitN.join(', ')}`:''}</span>`}
  const lastT=Math.max(...Object.keys(S.logs).map(Number),0);const lg=lastT?`<div class="rt-log"><b>${T('턴','Turn','ターン')} ${lastT} ${T('결과','result','結果')}</b>${(S.logs[lastT]||[]).map(x=>`<div>${esc(x)}</div>`).join('')}</div>`:'';
- const top=ended?'':`<div class="rt-top"><span class="rt-tn">${T('턴','Turn','ターン')} ${t} · <b>${role}</b> · ${mine?T('내 차례','Your move','自分の番'):T('상대 차례','Their move','相手の番')}</span><span class="rt-light" title="${T('빛','Light','光')}">${T('빛','Light','光')} ${coins(LMAX(t),used)} <b>${LMAX(t)-used}</b>/${LMAX(t)}</span><span class="rt-tm"><span id="rtT">${Math.max(0,left())}</span>${T('초','s','秒')}</span></div>`;
- panel(`${myN} vs ${opN}`,`${codeBox()}<div class="lb rt139">${top}
+ const top=ended?'':`<div class="rt-top"><span class="rt-tn">${T('턴','Turn','ターン')} ${t} · <b>${role}</b> · ${mine?T('내 차례','Your move','自分の番'):T('기다리는 중','Waiting','待機中')}</span>${spec?'':`<span class="rt-light">${T('내 빛','My light','自分の光')} ${coins(maxOf(S,t),used+maxOf(S,t)-(S.Lc[st.me]??maxOf(S,t)))} <b>${(S.Lc[st.me]??maxOf(S,t))-used}</b>/${maxOf(S,t)}${isTeam(S)?`<small class="rt-rf">${t%2===1?T('이번 턴 회복','refilled this turn','このターン回復'):T('다음 턴 회복','refills next turn','次のターン回復')}</small>`:''}</span>`}<span class="rt-tm"><span id="rtT">${Math.max(0,left())}</span>${T('초','s','秒')}</span></div>`;
+ panel(vs,`<div class="lb rt139">${top}
   <div class="lb-stage" id="rtStage"><div class="lb-side l">${allies}</div><div class="lb-mid">VS</div><div class="lb-side r">${enemies}</div></div>
   <div class="rt-info">${info}</div>${dock?`<div class="lb-dock">${dock}</div>`:''}
   <div class="lb-foot"><div class="row"><button type="button" class="btn ghost small" id="rtLeave">${ended||spec?T('나가기','Leave','退出'):T('기권','Forfeit','棄権')}</button>${mine?`<button type="button" class="btn" id="rtGo">${T('확정','Confirm','確定')} →</button>`:''}</div></div>${lg}</div>`);
- bindM(S,me)}
-function bindM(S,me){const P=document.getElementById('panel');if(!P)return;const op=1-me;
+ bindM(S,me,myIdx)}
+function bindM(S,me,myIdx){const P=document.getElementById('panel');if(!P)return;const op=1-me;
  const cp=P.querySelector('#rtCopy');if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(ROOM);toast(T('코드를 복사했어요.','Code copied.','コードをコピーしました。'))}catch(e){}};
- const lv=P.querySelector('#rtLeave');if(lv)lv.onclick=async()=>{const fight=ST&&ST.side!=='x'&&(ST.ph==='p1'||ST.ph==='p2')&&!sim(ST).end;
-  if(fight&&!window.confirm(T('기권하고 나갈까요? 상대의 승리로 끝나요.','Forfeit and leave? Your opponent will win.','棄権して退出しますか?相手の勝利になります。')))return;
-  try{await api('',{method:'POST',body:{op:'leave',code:ROOM}})}catch(x){}close()};
- const re=P.querySelector('#rtRe');if(re)re.onclick=async()=>{try{await api('',{method:'POST',body:{op:'rematch',code:ROOM}})}catch(x){toast(errMsg(x))}poll()};
- P.querySelectorAll('[data-rtf]').forEach(b=>b.onclick=async()=>{try{await api('',{method:'POST',body:{op:'choose',code:ROOM,first:b.dataset.rtf==='1'}})}catch(x){toast(errMsg(x))}poll()});
- const st=ST;if(!st)return;const t=st.turn;const fp=(st.ph==='p2'&&st.side!==firstOf(st,t)&&st.P[t]&&st.P[t].f)||null;
- P.querySelectorAll('[data-rto]').forEach(c=>c.onclick=()=>{if(c.classList.contains('lock'))return toast(T('빛이 모자라요.','Not enough light.','光が足りません。'));const [j,o]=c.dataset.rto.split(':');const p=PK[+j];
+ const lv=P.querySelector('#rtLeave');if(lv)lv.onclick=async()=>{const fight=ST&&ST.myTeam&&(ST.ph==='p1'||ST.ph==='p2'||ST.ph==='toss')&&!(S&&S.end);
+  if(fight&&!window.confirm(T('나가면 내 유닛은 더 이상 행동하지 않아요. (1:1이거나 우리 편이 모두 나가면 기권) 나갈까요?','If you leave, your units stop acting (forfeit in 1v1 or if your whole side leaves). Leave?','退出すると自分のユニットは行動しなくなります(1対1か味方が全員退出すると棄権)。退出しますか?')))return;
+  try{await call('leave')}catch(x){}close()};
+ P.querySelectorAll('[data-rtmode]').forEach(b=>b.onclick=async()=>{try{await call('mode',{mode:b.dataset.rtmode})}catch(x){toast(errMsg(x))}poll()});
+ P.querySelectorAll('[data-rtsit]').forEach(b=>b.onclick=async()=>{try{await call('sit',{team:b.dataset.rtsit})}catch(x){toast(errMsg(x))}poll()});
+ const sd=P.querySelector('#rtStand');if(sd)sd.onclick=async()=>{try{await call('stand')}catch(x){}poll()};
+ const rd=P.querySelector('#rtReady');if(rd)rd.onclick=async()=>{const on=!(ST.mem.find(m=>m.id===ST.me)||{}).ready;try{await call('ready',{on})}catch(x){toast(errMsg(x))}poll()};
+ const re=P.querySelector('#rtRe');if(re)re.onclick=async()=>{try{await call('rematch')}catch(x){toast(errMsg(x))}poll()};
+ P.querySelectorAll('[data-rtf]').forEach(b=>b.onclick=async()=>{try{await call('choose',{first:b.dataset.rtf==='1'})}catch(x){toast(errMsg(x))}poll()});
+ if(!S||!myIdx)return;const st=ST,t=st.turn;const Pt=st.P&&st.P[t];const fp=(st.myTeam&&st.ph==='p2'&&st.myTeam!==firstOf(st,t)&&Pt&&Pt.f)?combine(S,op,Pt.f):null;
+ const pk=j=>{const k=myIdx.indexOf(j);return k>=0?PK[k]:null};
+ P.querySelectorAll('[data-rto]').forEach(c=>c.onclick=()=>{if(c.classList.contains('lock'))return toast(T('빛이 모자라요.','Not enough light.','光が足りません。'));const [j,o]=c.dataset.rto.split(':');const p=pk(+j);if(!p)return;
   if(o==='d'){p.o=p.o==='d'?null:'d';p.u=null;p.sl=null;SEL=null}else{const v=+o;if(p.o===v){p.o=null;p.u=null;p.sl=null;SEL=null}else{p.o=v;if(p.u==null&&p.sl==null){const a=alive(S.u[op])[0];p.u=a?a.i:0}SEL=+j}}draw_()});
- P.querySelectorAll('[data-rts]').forEach(b=>b.onclick=()=>{const j=+b.dataset.rts;SEL=SEL===j?null:j;draw_()});
- P.querySelectorAll('[data-rteu]').forEach(f=>f.addEventListener('click',ev=>{if(SEL==null||ev.target.closest('[data-rtk]'))return;const p=PK[SEL];if(!(p&&(p.o===0||p.o===1)))return;const i=+f.dataset.rteu;if(S.u[op][i].down)return;p.u=i;p.sl=null;draw_()}));
- P.querySelectorAll('[data-rtk]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();if(SEL==null||!fp)return;const p=PK[SEL];if(!(p&&(p.o===0||p.o===1)))return;const k=+x.dataset.rtk;const q=fp[k]||{};
+ P.querySelectorAll('[data-rts]').forEach(b=>b.onclick=()=>{const j=+b.dataset.rts;if(!pk(j))return;SEL=SEL===j?null:j;draw_()});
+ P.querySelectorAll('[data-rteu]').forEach(f=>f.addEventListener('click',ev=>{if(SEL==null||ev.target.closest('[data-rtk]'))return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const i=+f.dataset.rteu;if(S.u[op][i].down)return;p.u=i;p.sl=null;draw_()}));
+ P.querySelectorAll('[data-rtk]').forEach(x=>x.onclick=ev=>{ev.stopPropagation();if(SEL==null||!fp)return;const p=pk(SEL);if(!(p&&(p.o===0||p.o===1)))return;const k=+x.dataset.rtk;const q=fp[k]||{};
   const sl=S.slots[me][SEL],u=S.u[me][sl.u],os=S.slots[op][k],ou=S.u[op][os.u];if(!(q.o===0||q.o===1||q.o==='?'))return;
   if(!(q.u===u.i||u.speed>ou.speed))return toast(T('합 불가 — 그 공격이 나를 노리거나, 내가 더 빨라야 해요.','No clash — it must target you, or you must be faster.','マッチ不可 — その攻撃が自分を狙っているか、自分の方が速い必要があります。'));p.sl=k;p.u=os.u;draw_()});
  const g=P.querySelector('#rtGo');if(g)g.onclick=()=>submit(false)}
@@ -14121,6 +14160,14 @@ const css=`
 .rt-mem{margin-top:12px;border:1px solid rgba(244,238,154,.2);padding:8px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rt-mem>b{width:100%}.rt-mem span{padding:3px 8px;border:1px solid rgba(244,238,154,.25)}.rt-mem span.me{border-color:#ffd27a;color:#ffd27a}.rt-mem small{margin-left:6px;color:#b9c2bf}.rt-mem .note{width:100%;margin:2px 0 0}
 .rt-tag{color:#c9cfcc;margin:0 0 8px}
 @media (max-width:640px){.rt-mk{grid-template-columns:1fr}}
+.rt139 .rt-rf{margin-left:6px;font-size:11px;color:#b9c2bf}
+.rt-set{border:1px solid rgba(244,238,154,.3);padding:8px 10px;margin:8px 0}.rt-set b{color:#f4ee9a}
+.rt-seats{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin:10px 0}.rt-vsb{align-self:center;font-weight:700;color:#ff8f80}
+.rt-team-box{border:1px solid rgba(244,238,154,.3);padding:8px;display:flex;flex-direction:column;gap:6px}.rt-team-box.B{border-color:rgba(232,67,58,.55)}.rt-team-box>b small{color:#b9c2bf;margin-left:6px}
+.rt-seat{padding:6px 8px;border:1px dashed rgba(244,238,154,.2);color:#8a918f;display:flex;justify-content:space-between;gap:6px}.rt-seat.on{border-style:solid;color:#ece8dd}.rt-seat.me{border-color:#ffd27a}.rt-seat span{font-size:12px;color:#ff8f80}.rt-seat span.rdy{color:#7fd69a}
+.rt-status{margin:6px 0;color:#ffd27a}
+.rt139 .lb-al.mine .lb-nm{color:#ffd27a}.rt139 .rt-mate{opacity:.6}
+@media (max-width:640px){.rt-seats{grid-template-columns:1fr}.rt-vsb{text-align:center}}
 .rt-coin{font-size:18px;margin:6px 0 10px;display:flex;align-items:center;gap:8px}.rt-coin .coin{display:inline-block;width:22px;height:22px;background:#f4ee9a}
 .rt-lobby input,#rtWait input{background:#111;color:#f4ee9a;border:1px solid rgba(244,238,154,.35);padding:6px 8px;font:inherit;width:9em;text-transform:uppercase}
 `;
