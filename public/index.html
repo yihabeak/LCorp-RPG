@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.6.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.7.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11016,7 +11016,7 @@ dispatchTo=function(r){const want=r.thr>=9?4:r.thr>=6?3:2;const busy=G.agents.fi
 // 교전 정리: 감당 못 하는 직원은 물러나고, 더 강한 직원이 오면 약한 직원과 교대
 roamStep=(f=>function(m){const res=f.apply(this,arguments);try{(G.roam||[]).forEach(r=>{if(r.dead)return;const want=r.thr>=9?4:r.thr>=6?3:2;
     let F=G.agents.filter(a=>a.alive&&!a.panic&&a.task&&a.task.k==='fight'&&a.task.r===r.uid);
-    F.forEach(a=>{const low=a.hp<agMax(a)*.4||a.sp<-25;const unfit=agRank(a)+1<Math.max(1,thrG(r.thr||0));if(low||unfit){a.task={k:'rest',until:G.min+40};a.loc=null;
+    F.forEach(a=>{const low=a.hp<agMax(a)*.4||a.sp<-25;const unfit=agRank(a)+1<Math.max(1,thrG(r.thr||0));if(window.AI149?AI149.retreat(a,r,low,unfit):(low||unfit)){a.task={k:'rest',until:G.min+40};a.loc=null;
       log(T(`${a.n}이(가) ${r.n}에게서 물러났다. ${low?'더 버티기 어렵다.':'감당할 수 없는 상대다.'}`,`${a.n} pulled back from ${r.n}. ${low?'They cannot hold on.':'It is beyond them.'}`,`${a.n}が${r.n}から退いた。${low?'もう持ちこたえられない。':'手に負えない相手だ。'}`),'npc')}});
     F=F.filter(a=>a.task&&a.task.k==='fight');if(F.length>want){F.sort((x,y)=>agPow103(x)-agPow103(y)).slice(0,F.length-want).forEach(a=>{a.task={k:'rest',until:G.min+20};a.loc=null;
       log(T(`더 강한 직원이 도착해 ${a.n}이(가) 교대했다.`,`A stronger employee arrived; ${a.n} swapped out.`,`より強い職員が到着し、${a.n}が交代した。`),'npc')})}})}catch(e){}return res})(roamStep);
@@ -11557,7 +11557,7 @@ tick=(f=>function(){const r=f.apply(this,arguments);try{
 })();
 /* ============ v114: 붉은 안개(1·2페이즈)·조율자·발톱 합 위력 상향 ============ */
 (function(){
-window.BK114=window.BK114||{rm:1.2,ar:1.2,claw:2.2}; // 시뮬레이션(최고 능력치·ALEPH 장비·자동 배정, 30회) 클리어율 목표 10% 안팎
+window.BK114=window.BK114||{rm:1.16,ar:0.78,claw:2.2}; // 시뮬레이션(최고 능력치·ALEPH 장비·자동 배정, 30회) 클리어율 목표 10% 안팎
 function sc(u,k){(u.skills||[]).forEach(s=>{if(!s||!(s.coins>0)||s._k114)return;s._k114=1;s.base=Math.max(1,Math.round(s.base*k));if(s.cp>0)s.cp=Math.max(1,Math.round(s.cp*k))})}
 function apply(u){if(!u||u.ally||u.hp<=0||u.finalArb)return;
   if(u.lcBoss==='붉은 안개'){if((u.phase||1)<=2)sc(u,BK114.rm)}
@@ -14004,7 +14004,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.6.0.261020';
+const VER='Ver. 4.7.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -15383,6 +15383,105 @@ document.head.appendChild(st);
 
 /* 가이드: 설정 되돌리기 안내 */
 try{const g=GUIDE.find(x=>x.k==='work');if(g)g.b+=T('<p class="tip">작업이 끝나면 상자마다 d100 주사위를 굴려요. 목표값(성공률) 이하가 나오면 성공이에요. 주사위 연출을 껐다면, 이 가이드의 버튼으로 다시 켤 수 있어요. <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'주사위 연출을 다시 켰어요.\')}catch(e){}">주사위 연출 다시 켜기</button></p>','<p class="tip">When work ends, a d100 is rolled for each box. At or below the target (success rate) is a success. If you turned the dice off, turn them back on here. <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'Dice animation is back on.\')}catch(e){}">Turn dice back on</button></p>','<p class="tip">作業が終わると箱ごとにd100を振ります。目標値(成功率)以下なら成功です。サイコロ演出を切った場合は、ここで戻せます。 <button class="btn small ghost" type="button" onclick="try{localStorage.removeItem(\'lcw_dice148\');toast(\'サイコロ演出を戻しました。\')}catch(e){}">サイコロ演出を戻す</button></p>')}catch(e){}
+})();
+/* ============ v149: 직원 AI — 상황을 읽고, 사람처럼 판단한다 (틀리기도 한다) ============
+   상황(시설 전체, 1분마다 한 번 읽음)
+   · 생존: 오늘 죽은 사람이 둘 이상 · 위협이 큼 · 폭주 단계 높음 → 쉬는 기준이 오르고, 위험한 격리실을 피하고, 전투에서 일찍 물러난다
+   · 교전: 탈출 · 시련이 둘 이상 → 건강한 직원이 더 많이 나서고, 버티는 쪽으로 기운다
+   · 평소: 결과가 좋았던 환산체로 손이 가고, 다친 곳은 피하고, 카운터가 낮은 곳을 걱정하고, 연달아 일하면 쉰다
+   사람 같은 판단
+   · 직원마다 고정된 성향(가장 높은 가치관)과 판단 버릇(낙관 · 비관 치우침)이 있다
+   · 체력 · 위협은 늘 어림으로 본다 (±15% 오차), 7%는 그냥 손에 잡히는 대로 한다
+   난이도: 30일차까지는 그대로, 31일차부터 50일차까지 서서히 오른다 (D: 0 → 1)
+   · 탈출 · 시련이 직원에게 주는 피해 최대 +40%, 직원의 진압 속도 최대 -20%
+   · 직접 싸우는 환상체 · 시련 전투의 적 체력 최대 +30% · 위력 최대 +1
+   · 폭주 게이지가 차는 속도 최대 +30% */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const D=()=>G?cl((G.day-30)/20,0,1):0;
+window.D149=D;
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function mind(a){if(!a.ai149){let top='T';try{top=topSt(a.st)}catch(e){}a.ai149={b:+(gauss()*.08).toFixed(3),top,mem:{},run:0}}return a.ai149}
+const fuzzy=(a,v)=>v*(1+gauss()*.15+mind(a).b);           // 어림짐작
+const slip=()=>chance(.07);                                 // 그냥 손에 잡히는 대로
+const hpR=a=>a.hp/Math.max(1,agMax(a));
+
+/* ---------- 상황 읽기 ---------- */
+let SIT=null;
+function sit(){if(SIT&&SIT.t===G.min&&SIT.d===G.day)return SIT;const R=(G.roam||[]).filter(r=>!r.dead&&r.e&&r.e.type!=='panic');
+ const thr=R.reduce((s,r)=>s+(r.thr||2),0)+(G.breachQ||[]).filter(e=>e.type==='ab'||e.type==='ordeal').length*3;
+ let deaths=0;try{deaths=(G.log||[]).filter(l=>l.d===G.day&&/사망 —|died —|死亡 —/.test(String(l.t||''))).length}catch(e){}
+ const melt=contained().filter(a=>!a.tool&&G.ab[a.id].melt>0).length;
+ const survive=deaths>=2||thr>=14||(G.mLevel||1)>=7||(thr>=9&&D()>.5);
+ const combat=!survive&&(R.length>=2||thr>=8);
+ SIT={t:G.min,d:G.day,thr,deaths,melt,n:R.length,mode:survive?'survive':combat?'combat':'work'};return SIT}
+window.sit149=sit;
+
+/* ---------- 쉬기 · 작업 고르기 ---------- */
+function restLine(a,m){const base=m==='survive'?.6:m==='combat'?.45:.4;const t=mind(a).top;return base+(t==='T'?.05:t==='F'?-.05:0)}
+agentStep=(f=>function(ag,now,pAb,notes,count){
+ try{const Tk=ag.task||{k:'idle',until:0};
+  if(ag.alive&&!ag.panic&&now>=Tk.until&&(Tk.k==='idle'||Tk.k==='rest'||Tk.k==='work')){const S=sit();const M=mind(ag);
+   const lowHp=fuzzy(ag,hpR(ag))<restLine(ag,S.mode),lowSp=fuzzy(ag,ag.sp+45)/90<(S.mode==='survive'?.4:.25);
+   const tired=M.run>=3&&chance(.6);
+   const melting=deptAbs(ag.dept).some(a=>!a.tool&&G.ab[a.id].melt>0);
+   // 폭주가 있으면 J 성향은 웬만하면 간다 · 아니면 쉬어야 할 때 쉰다 (가끔은 무리한다)
+   if(Tk.k!=='work'&&(lowHp||lowSp||tired)&&!(melting&&M.top==='J'&&hpR(ag)>.3)&&!slip()){M.run=0;ag.task={k:'rest',until:now+(S.mode==='survive'?40:R(20,35))};return}
+  }}catch(e){}
+ const before=ag.task&&ag.task.k;const r=f.apply(this,arguments);
+ try{const t=ag.task;
+  if(before==='work'&&t&&t.k==='rest')mind(ag).run++;
+  if(t&&t.k==='move'&&t.ab&&!slip())rechoose(ag,t,now)}catch(e){}
+ return r})(agentStep);
+function danger(ag,a,mode){let d=0;const gap=(a.g||0)+1-agRank(ag);if(gap>0)d+=gap*.35;if((a.dt==='WHITE'||a.dt==='BLACK')&&ag.sp<0)d+=.3;if(G.ab[a.id].cnt<=1&&!G.ab[a.id].melt)d+=.15;
+ return d*(mode==='survive'?2:1)*(mind(ag).top==='F'?.7:mind(ag).top==='P'?1.2:1)}
+function rechoose(ag,t,now){const S=sit();const M=mind(ag);const cur=ABM[t.ab];if(!cur)return;
+ const L=deptAbs(ag.dept).filter(a=>!a.tool&&(!G.ab[a.id].busy||G.ab[a.id].busy===ag.id));if(L.length<2)return;
+ const w=a=>{const s=G.ab[a.id];let x=1;if(s.melt>0)x+=6;if(s.cnt<=1)x+=(M.top==='J'||M.top==='P')?2:.8;const m=M.mem[a.id]||0;x*=Math.pow(1.3,cl(m,-3,3));x*=Math.max(.05,1-fuzzy(ag,danger(ag,a,S.mode)));return x};
+ // 지금 고른 곳이 그럭저럭 괜찮으면 그대로 간다
+ const W=L.map(a=>[a,w(a)]);const total=W.reduce((s,x)=>s+x[1],0);const mine=(W.find(x=>x[0].id===cur.id)||[0,0])[1];if(mine>=total/L.length*.8)return;
+ let r=Math.random()*total,pickA=cur;for(const [a,x] of W){r-=x;if(r<=0){pickA=a;break}}if(pickA.id===cur.id)return;
+ if(G.ab[cur.id].busy===ag.id)G.ab[cur.id].busy=null;G.ab[pickA.id].busy=ag.id;t.ab=pickA.id}
+// 작업 결과를 기억한다 (좋았던 곳 +, 다친 곳 -)
+npcWork=(f=>function(ag,a){const h0=ag?ag.hp:0,s0=ag?ag.sp:0;const r=f.apply(this,arguments);try{if(ag&&a&&ag.alive){const M=mind(ag);const lost=(h0-ag.hp)/Math.max(1,agMax(ag))+(s0-ag.sp)/90;const res=(ag.wlog&&ag.wlog[0]&&ag.wlog[0].ab===a.id)?ag.wlog[0].res:null;
+  M.mem[a.id]=cl((M.mem[a.id]||0)+(res==='good'?1:res==='bad'?-1:0)+(lost>.25?-1:0),-3,3)}}catch(e){}return r})(npcWork);
+
+/* ---------- 대응 인원: 어림짐작으로 나선다 ---------- */
+const TG=[2,3.5,6,9,15];const thrG=t=>{let g=0;TG.forEach((v,i)=>{if(t>=v-.01)g=i});return g};
+function pow(a){const w=agWeap(a);return agRank(a)+(w!=='baton'&&w!=='fixer'?((weapOf(w)||{}).g||0)*.4:0)+hpR(a)*.5}
+function willGo(a,r,S){const g=thrG(r.thr||0);const M=mind(a);const need=Math.max(1,g)-(S.mode==='combat'?1:0)-(M.top==='F'?1:0)+(S.mode==='survive'?0:0);
+ const hpNeed=S.mode==='survive'?.65:S.mode==='combat'?.5:.6;if(fuzzy(a,hpR(a))<hpNeed)return false;if(a.sp<(S.mode==='combat'?-25:-20))return false;
+ if(agRank(a)<need)return slip();                               // 원래는 안 나서지만, 가끔은 무리해서 나선다
+ return !(S.mode==='survive'&&agRank(a)<=g&&chance(.4))}         // 생존 국면엔 겨우 맞먹는 상대면 망설인다
+dispatchTo=function(r){const S=sit();let want=r.thr>=9?4:r.thr>=6?3:2;if(S.mode==='combat')want++;
+ const busy=G.agents.filter(a=>a.task&&(a.task.k==='respond'||a.task.k==='fight')&&a.task.r===r.uid).length;if(busy>=want)return;
+ const pool=G.agents.filter(a=>a.alive&&!a.out&&!a.panic&&!(a.task&&(a.task.k==='respond'||a.task.k==='fight'))&&willGo(a,r,S))
+  .map(a=>[a,dist(agLoc(a),r.node)*(1+gauss()*.2)-fuzzy(a,pow(a))*.6]).sort((x,y)=>x[1]-y[1]).slice(0,want-busy).map(x=>x[0]);
+ pool.forEach(a=>{if(a.task&&a.task.ab&&G.ab[a.task.ab]&&G.ab[a.task.ab].busy===a.id)G.ab[a.task.ab].busy=null;a.loc=agLoc(a);a.task={k:'respond',r:r.uid,until:0}})};
+// 물러날지: 정확한 계산 대신 상황 · 성향 · 어림짐작
+window.AI149={retreat(a,r,low,unfit){const S=sit();const M=mind(a);const h=fuzzy(a,hpR(a));
+ const line=S.mode==='survive'?.42:S.mode==='combat'?.3:.38;let go=h<line+(M.top==='T'?.05:M.top==='F'?-.07:0)||a.sp<(S.mode==='survive'?-20:-28);
+ if(unfit)go=go||chance(S.mode==='combat'?.25:.6);if(slip())go=!go&&h>.2;return go}};
+
+/* ---------- 난이도 (31일차 ~) ---------- */
+roamStep=(f=>function(m){const d=D();if(!d||!G.roam||!G.roam.length)return f.apply(this,arguments);
+ const H={},Sv={};G.agents.forEach(a=>{if(a.alive){H[a.id]=a.hp;Sv[a.id]=a.sp}});
+ const K=window.K149||{sup:.15,dmg:.25};const sc=1/(1+K.sup*d);const RS=[];(G.roam||[]).forEach(r=>{if(r.dead||!r.e||(r.e.type!=='ab'&&r.e.type!=='ordeal')||r.player)return;RS.push(r);r.hp=r.hp/sc});
+ let res;try{res=f.apply(this,arguments)}finally{RS.forEach(r=>{if(!r.dead)r.hp=Math.max(0,r.hp*sc)})}
+ try{G.agents.forEach(a=>{if(!a.alive||H[a.id]==null)return;const dh=H[a.id]-a.hp,ds=Sv[a.id]-a.sp;if(dh>0)a.hp-=Math.round(dh*K.dmg*d);if(ds>0)a.sp-=Math.round(ds*K.dmg*d);
+  if(a.hp<=0){a.task=null;a.loc=null;agentDie(a,T('진압 중','during suppression','鎮圧中'))}else if(a.sp<=-45&&!a.panic){a.sp=-45;try{startPanic(a)}catch(e){}}})}catch(e){}
+ return res})(roamStep);
+startBattle=(f=>function(kind,opt){const r=f.apply(this,arguments);try{const d=D();if(d&&B&&!B.done&&opt&&(opt.ab||opt.ordeal)&&!opt.boss&&!B.d149){B.d149=1;
+  B.units.forEach(u=>{if(u.lcBoss||u.mir136||u.spar124)return;u.max=Math.round(u.max*(1+.3*d));u.hp=Math.round(u.hp*(1+.3*d));const p=Math.round(d);if(p)(u.skills||[]).forEach(s=>{if(s&&s.coins>0&&!s._d149){s._d149=1;s.base+=p}})});
+  if(d>=.25)blog(T('시설이 깊어질수록 적도 단단해진다.','The deeper the facility, the tougher the foe.','施設が深まるほど敵も手強くなる。'),'b');renderBattle()}}catch(e){}return r})(startBattle);
+gaugeNeed=(f=>function(){const n=f.apply(this,arguments);const d=D();return d?Math.max(4,Math.round(n/(1+.3*d))):n})(gaugeNeed);
+
+/* 아침에 한 줄: 난이도가 오르기 시작할 때 */
+startDay=(f=>function(){const r=f.apply(this,arguments);try{if(G&&G.day===31&&!G.flags.d149){G.flags.d149=1;log(T('31일차. 시설 깊은 곳의 기류가 바뀌었다. 탈출과 시련이 더 거칠어질 것이다.','Day 31. The air deep in the facility has changed. Escapes and Ordeals will grow rougher.','31日目。施設の深部の空気が変わった。脱走と試練はより荒くなるだろう。'),'warn')}}catch(e){}return r})(startDay);
+
+/* 가이드 */
+try{const g=GUIDE.find(x=>x.k==='people')||GUIDE.find(x=>x.k==='staff');const add=T('<p class="tip">직원들은 상황을 보고 움직여요. 사람이 죽어 나가거나 위협이 크면 몸을 사리고, 탈출이 여럿이면 더 많이 나서요. 평소엔 결과가 좋았던 곳으로 손이 가고, 다친 곳은 피해요. 다만 사람이라 늘 옳게 판단하지는 않아요. 31일차부터는 시설이 점점 더 거칠어져요.</p>','<p class="tip">Staff read the situation. When people are dying or threats are high they play safe; when several things escape, more of them step up. Normally they gravitate to units that went well and avoid ones that hurt them. Being human, they are not always right. From Day 31 the facility grows harsher.</p>','<p class="tip">職員は状況を見て動きます。死者が出たり脅威が大きいと身を守り、脱走が重なるとより多く立ち向かいます。普段は結果が良かった所へ手が伸び、傷ついた所は避けます。ただ人間なので、いつも正しく判断するとは限りません。31日目からは施設が次第に荒くなります。</p>');if(g)g.b+=add;else GUIDE.push({k:'ai149',t:T('직원의 판단','How staff decide','職員の判断'),b:add})}catch(e){}
 })();
 </script>
 
