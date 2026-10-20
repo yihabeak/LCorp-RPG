@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.2.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.3.0.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13474,7 +13474,7 @@ try{const W=CM.welfare.st[2];W.n=2;W.d='사망자 3명 이하로 퇴근 2일';W.
 
 /* ---------- 4) 환상체 탈출 빈도 소폭 상향: 결과 '보통'에도 낮은 확률로 카운터가 준다 ---------- */
 const SKIP=new Set(['freischutz','redhood','luna','queen','pbird','judge','bigbird','apoc','whitenight','plague','wolf']);
-const P_NORMAL=.12;
+const P_NORMAL=.18;
 function slip(a,res){try{if(!a||res!=='normal'||!a.breach||a.tool||SKIP.has(a.id))return;const s=G.ab[a.id];if(!s||!(s.cnt>0)||!chance(P_NORMAL))return;
  s.cnt=Math.max(0,s.cnt-1);
  log(T3(`${NL(a.n)}의 격리실 안에서 무언가 뒤척인다. 카운터 감소 (${s.cnt}).`,`Something stirs inside ${NL(a.n)}'s containment unit. Counter down (${s.cnt}).`,`${NL(a.n)}の収容室の中で何かが身じろぐ。カウンター減少(${s.cnt})。`),'warn');
@@ -13953,7 +13953,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.2.0.261020';
+const VER='Ver. 4.3.0.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -14943,6 +14943,134 @@ window.nb143=function(tab){V0(tab);try{if((tab||'')!=='story'&&!document.querySe
  body.closest('.pop')?.querySelectorAll('[data-nt]').forEach(b=>b.onclick=()=>{closePop();window.nb143(b.dataset.nt)})}catch(e){}};
 
 const st=document.createElement('style');st.textContent=`.rls144{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.rl144{font-size:11px;padding:0 7px;border-radius:999px;border:1px solid;line-height:1.6}.rl144.wm{color:#69db7c;border-color:#69db7c}.rl144.cd{color:#ff8a7a;border-color:#ff8a7a}.rl144.q{color:var(--muted,#9aa);border-style:dashed}`;document.head.appendChild(st);
+})();
+/* ============ v145: 살아 움직이는 시설 — 3단계 · 균형 ============
+   ① 이야기 실 3개 더: 이름 없는 신입 · 오래된 녹음 · 둘만의 날
+   ② 세피라와 교차: 부서의 분위기 · 소문 · 손상에 소속 세피라가 반응한다. 녹음 이야기는 세피라와 함께 끝난다.
+   ③ 엔딩과 교차: 어떤 결말이든 기록 화면에 「남은 것들」 — 그 판에서 이어진 이야기들의 끝맺음이 함께 적힌다.
+   ④ 엔딩 2개: 감사팀으로 간 사람 · 등불지기 (저녁 시간, 조건을 갖추면 고를 수 있다)
+   ⑤ 균형: 작업 결과 '보통'일 때 카운터가 줄 확률 12% → 18%. 직원들의 진압 속도 약 55% 감소(탈출 환상체 · 시련).
+      진압 감속은 체력을 비례로 늘렸다 줄이는 방식이라, 쓰러지는 시점까지 정확히 같은 비율로 늦어진다. */
+(function(){
+const L=window.L143;if(!L)return;
+const T=(k,e,j)=>i80(k,e,j);const tx=a=>Array.isArray(a)?T(a[0],a[1],a[2]):a;const L3=(k,e,j)=>[k,e,j];
+const NL=n=>(typeof nameL==='function'?nameL(n):n);const H=s=>(typeof esc==='function'?esc(s):String(s));
+const {W,wv,give,take,has,IT,RT,relsOf,agById,ok,note,WN,fx,O,nm,pickOk,agSp,addR,bondOf,MINE}=L;
+const EV=window.EV119||[];const good=r=>r==='ok'||r==='crit';
+const P3=(id,d)=>{MINE.add(id);EV.push(Object.assign({id,big:0,prio:0,story:0},d))};
+const sephOf=()=>{try{return G.dept&&SEPH[G.dept]&&G.depts&&G.depts[G.dept]?G.dept:null}catch(e){return null}};
+const SN=k=>NL(SEPH[k].n);
+const sa=(k,v)=>{try{saAdd(k,v)}catch(e){}return `${SN(k)} ${v>=0?'+':''}${v}`};
+
+/* ---------- ⑤ 균형: 진압 속도 ---------- */
+const SUP=.45;
+roamStep=(f=>function(m){const S=[];try{(G.roam||[]).forEach(r=>{if(r.dead||!r.e||(r.e.type!=='ab'&&r.e.type!=='ordeal')||r.player)return;S.push([r,r.hp]);r.hp=r.hp/SUP})}catch(e){}
+ try{return f.apply(this,arguments)}finally{for(const [r] of S){if(!r.dead)r.hp=Math.max(0,r.hp*SUP)}}})(roamStep);
+
+/* ---------- 새 물건 ---------- */
+IT.recorder={ic:'📼',n:L3('고장 난 녹음기','Broken recorder','壊れた録音機'),d:L3('테이프가 들어 있다. 고치면 들을 수 있을 것 같다. 저녁에 손볼 수 있다.','There is a tape inside. Fix it and you might hear it. You can work on it in the evening.','テープが入っている。直せば聞けそうだ。夕方に手を入れられる。'),k:'clue'};
+IT.whistle={ic:'📯',n:L3('호루라기','Whistle','ホイッスル'),d:L3('신입이 건넨 것. 용기 판정에 +1 (닳지 않음).','A gift from the recruit. +1 to Fortitude checks (never used up).','新人から渡されたもの。勇気の判定に+1(減らない)。'),k:'tool',bon:{v:1,s:'F'}};
+
+/* ---------- ① 이름 없는 신입 ---------- */
+P3('l145_rec1',{cond(){const w=W();if(!w||w.th.rec||G.day<4)return null;const L2=G.agents.filter(a=>ok(a)&&a.hired>1&&G.day-a.hired<=3&&!a.co);return L2.length?{a:pick(L2)}:null},
+ t:c=>T(`새로 온 ${nm(c.a)}은(는) 어디서 왔느냐는 물음에 웃기만 한다. 신상 서류의 출신 칸은 비어 있다.`,`The new hire ${nm(c.a)} only smiles when asked where they came from. The origin field on their file is blank.`,`新しく来た${nm(c.a)}は、どこから来たのかと聞かれても笑うだけだ。身上書類の出身欄は空白だ。`),
+ opts:()=>[O(L3('캐묻지 않는다','Don\'t press','問い詰めない'),'T',10,{soothe:1}),O(L3('같이 밥을 먹는다','Eat together','一緒にご飯を食べる'),'F',11),O(L3('서류를 다시 확인한다','Check the file again','書類を確認し直す'),'P',12,{k:'doc'})],
+ res(c,r,o){const w=W();if(good(r)||r==='part'){w.th.rec={s:1,id:c.a.id,d:G.day};addR(c.a,o.k==='doc'?2:6);note([`${nm(c.a)}이(가) 부서에 들어왔다. 출신은 말하지 않는다.`,`${nm(c.a)} joined the department. They won't say where they're from.`,`${nm(c.a)}が部署に入った。出身は言わない。`]);
+   return o.k==='doc'?T('서류 뒷면에 지워진 주소가 비친다. 연필 자국만 남았다.','An erased address shows through on the back of the file. Only pencil marks remain.','書類の裏に消された住所が透けて見える。鉛筆の跡だけが残っている。'):T(`${nm(c.a)}이(가) 처음으로 소리 내어 웃었다.`,`${nm(c.a)} laughed out loud for the first time.`,`${nm(c.a)}が初めて声を出して笑った。`)}
+  w.th.rec={s:9,id:c.a.id,d:G.day,end:'wall'};return T(`${nm(c.a)}은(는) 고개를 숙이고 자리를 떴다. 그 뒤로 말을 걸 틈을 주지 않는다.`,`${nm(c.a)} bowed and left. Since then, they give you no chance to talk.`,`${nm(c.a)}は頭を下げて席を立った。それ以来、話しかける隙を与えない。`)}});
+P3('l145_rec2',{big:1,story:1,cond(){const w=W();const R=w&&w.th.rec;if(!R||R.s!==1||G.day<R.d+3)return null;const a=agById(R.id);if(!a||!a.alive){R.s=9;R.end='gone';return null}return ok(a)?{a,R}:null},
+ t:c=>G.origin==='back'?T(`밤 근무 중, ${nm(c.a)}이(가) 환기구 아래에서 숨을 죽이고 있다. 당신을 보고 놀라지 않는다. "선배도 뒷골목이죠. 걷는 법이 같아요. 밤이 오면 숨는 법도."`,`On the night shift, ${nm(c.a)} is holding their breath beneath a vent. They aren't surprised to see you. "You're from the Backstreets too. You walk the same way. You know how to hide when the Night comes."`,`夜勤中、${nm(c.a)}が換気口の下で息を潜めている。あなたを見ても驚かない。「先輩も路地裏ですよね。歩き方が同じです。夜が来たら隠れる方法も」`)
+  :T(`밤 근무 중, ${nm(c.a)}이(가) 환기구 아래에서 숨을 죽이고 있다. "…여기 오기 전엔 매일 이렇게 숨었어요. 이제 안 그래도 되는데, 몸이 기억해요."`,`On the night shift, ${nm(c.a)} is holding their breath beneath a vent. "…Before I came here, I hid like this every day. I don't have to anymore, but my body remembers."`,`夜勤中、${nm(c.a)}が換気口の下で息を潜めている。「…ここに来る前は毎日こうして隠れていました。もうその必要はないのに、体が覚えているんです」`),
+ opts:()=>[O(L3('옆에 같이 앉는다','Sit down beside them','隣に一緒に座る'),'T',12,{soothe:1}),O(L3('여기선 지켜 줄 사람이 있다고 말한다','Tell them there are people to protect them here','ここには守ってくれる人がいると言う'),'J',13),O(L3('숨는 법을 묻는다','Ask how they hide','隠れ方を尋ねる'),'P',13,{k:'ask'})],
+ res(c,r,o){const R=c.R;R.s=9;if(good(r)||r==='part'){R.end='trust';addR(c.a,15);agSp(c.a,10);const n=[T(`${nm(c.a)} 유대 +15`,`${nm(c.a)} Bond +15`,`${nm(c.a)} 絆 +15`)];
+   if(!has('whistle')){give('whistle',1,true);n.push(`${IT.whistle.ic} ${tx(IT.whistle.n)}`)}
+   if(o.k==='ask'&&good(r)&&(G.esc134||0)<3){G.esc134=(G.esc134||0)+1;n.push(T(`탈출 단서 ${G.esc134}/3`,`Escape clue ${G.esc134}/3`,`脱出の手がかり ${G.esc134}/3`))}
+   note([`${nm(c.a)}이(가) 당신을 믿기 시작했다.`,`${nm(c.a)} began to trust you.`,`${nm(c.a)}があなたを信じ始めた。`]);
+   return fx(n,o.k==='ask'&&good(r)?T(`${nm(c.a)}은(는) 순찰이 비는 시간과, 소리가 울리지 않는 통로를 알려 주었다. 그리고 호루라기 하나를 건넸다. "위험하면 불어요. 제가 갈게요."`,`${nm(c.a)} told you when the patrols thin out and which tunnels don't echo. Then handed you a whistle. "Blow it if you're in danger. I'll come."`,`${nm(c.a)}は巡回が途切れる時間と、音の響かない通路を教えてくれた。そしてホイッスルを一つ渡した。「危なかったら吹いてください。行きますから」`)
+    :T(`한참 뒤 ${nm(c.a)}이(가) 숨을 내쉬었다. 그리고 호루라기 하나를 건넸다. "위험하면 불어요. 이번엔 제가 갈게요."`,`After a long while ${nm(c.a)} let out a breath, then handed you a whistle. "Blow it if you're in danger. This time, I'll come."`,`しばらくして${nm(c.a)}は息を吐いた。そしてホイッスルを一つ渡した。「危なかったら吹いてください。今度は私が行きます」`))}
+  R.end='alone';agSp(c.a,-8);return T(`${nm(c.a)}은(는) "괜찮아요"라고만 했다. 다음 날부터 밤 근무를 혼자 서겠다고 자원했다.`,`${nm(c.a)} only said, "I'm fine." From the next day they volunteered to work nights alone.`,`${nm(c.a)}は「大丈夫です」とだけ言った。翌日から夜勤を一人でやると志願した。`)}});
+
+/* ---------- ② 오래된 녹음 (세피라와 함께) ---------- */
+P3('l145_tape0',{cond(){const w=W();if(!w||w.th.tape||has('recorder')||G.day<5||!chance(.4))return null;const a=pickOk();return a?{a}:null},
+ t:c=>T(`${nm(c.a)}이(가) 폐기물 수거함에서 손바닥만 한 녹음기를 건져 왔다. 테이프 라벨에는 날짜도 이름도 없다.`,`${nm(c.a)} fished a palm-sized recorder out of the disposal bin. The tape label has no date and no name.`,`${nm(c.a)}が廃棄物回収箱から手のひらほどの録音機を拾ってきた。テープのラベルには日付も名前もない。`),
+ opts:()=>[O(L3('받아 둔다','Keep it','受け取っておく'),'P',8),O(L3('규정대로 폐기하자고 한다','Say to dispose of it by the rules','規定通り廃棄しようと言う'),'J',8,{k:'no'})],
+ res(c,r,o){const w=W();if(o.k==='no'){w.th.tape={s:9,end:'bin',d:G.day};return T('녹음기는 다시 수거함으로 들어갔다.','The recorder went back into the bin.','録音機はまた回収箱に戻された。')}
+  give('recorder',1,true);w.th.tape={s:1,d:G.day};note(L3('주인 모를 녹음기를 손에 넣었다.','Got hold of a recorder no one claims.','持ち主不明の録音機を手に入れた。'));return fx([`${IT.recorder.ic} ${tx(IT.recorder.n)}`],T('흔들어 보니 안에서 테이프가 덜그럭거린다.','You shake it. A tape rattles inside.','振ってみると中でテープがカタカタ鳴る。'))}});
+P3('l145_tape',{big:1,story:1,cond(){const w=W();const R=w&&w.th.tape;const k=sephOf();if(!R||R.s!==2||!k)return null;return {k,R}},
+ t:c=>T(`고친 녹음기를 틀자 잡음 너머로 목소리가 흘러나왔다. 오래전 이 부서에서 일했던 누군가가, 다음에 올 사람에게 남긴 인사다. 옆에서 ${SN(c.k)}이(가) 움직임을 멈췄다. 이 목소리를 아는 것 같다.`,`When you play the fixed recorder, a voice comes through the static: someone who worked in this department long ago, leaving a greeting for whoever came next. Beside you, ${SN(c.k)} has gone still. It seems to know this voice.`,`直した録音機を再生すると、雑音の向こうから声が流れてきた。昔この部署で働いていた誰かが、次に来る人へ残した挨拶だ。隣で${SN(c.k)}が動きを止めた。この声を知っているようだ。`),
+ opts:()=>[O(L3('끝까지 함께 듣는다','Listen to the end together','最後まで一緒に聞く'),'T',12,{soothe:1}),O(L3('누구의 목소리인지 묻는다','Ask whose voice it is','誰の声か尋ねる'),'P',14,{k:'ask'}),O(L3('테이프를 세피라에게 건넨다','Give the tape to the Sephirah','テープをセフィラに渡す'),'J',10,{k:'give'})],
+ res(c,r,o){const R=c.R;R.s=9;R.k=c.k;
+  if(o.k==='give'){take('recorder');R.end='given';note([`녹음 테이프를 ${SN(c.k)}에게 건넸다.`,`Gave the tape to ${SN(c.k)}.`,`録音テープを${SN(c.k)}に渡した。`]);return fx([sa(c.k,6)],T(`${SN(c.k)}은(는) 테이프를 받아 들고 한동안 아무것도 기록하지 않았다.`,`${SN(c.k)} took the tape and, for a while, recorded nothing at all.`,`${SN(c.k)}はテープを受け取り、しばらく何も記録しなかった。`))}
+  if(good(r)||r==='part'){R.end='heard';note([`${SN(c.k)}와(과) 오래된 녹음을 끝까지 들었다.`,`Listened to the old recording to the end with ${SN(c.k)}.`,`${SN(c.k)}と古い録音を最後まで聞いた。`]);
+   return fx([sa(c.k,o.k==='ask'?(r==='crit'?10:7):5),WN('morale',2)],o.k==='ask'?T(`${SN(c.k)}은(는) 이름을 말하지 않았다. 대신 그 사람이 커피를 어떻게 마셨는지, 어느 복도를 좋아했는지를 오래 이야기했다.`,`${SN(c.k)} did not say the name. Instead it spoke for a long time about how that person took their coffee and which corridor they liked.`,`${SN(c.k)}は名前を言わなかった。代わりに、その人がコーヒーをどう飲んだか、どの廊下が好きだったかを長く話した。`)
+    :T('테이프가 끝나고도 둘은 한동안 그대로 앉아 있었다.','Even after the tape ended, the two of you sat there a while.','テープが終わっても、二人はしばらくそのまま座っていた。'))}
+  R.end='static';return fx([sa(c.k,-2)],T('중간에 테이프가 늘어나 소리가 일그러졌다. 끝은 영영 들을 수 없게 되었다.','The tape stretched halfway through and the sound warped. The ending is lost for good.','途中でテープが伸び、音が歪んだ。最後は永遠に聞けなくなった。'))}});
+
+/* ---------- ③ 둘만의 날 ---------- */
+P3('l145_anniv',{cond(){const w=W();if(!w||!chance(.35))return null;const L2=Object.entries(w.rel).filter(([k,r])=>r.kn>=2&&(r.t==='lover'||r.t==='friend'||r.t==='kin')&&(!r.an||G.day-r.an>=10)).map(([k,r])=>({k,r,x:k.split('|').map(agById)})).filter(o=>ok(o.x[0])&&ok(o.x[1]));if(!L2.length)return null;const o=pick(L2);return {a:o.x[0],b:o.x[1],r:o.r}},
+ t:c=>T(`${nm(c.a)}이(가) 슬쩍 다가와 묻는다. 오늘이 ${nm(c.b)}와(과) 처음 같은 조로 일한 날이라고. 근무표를 조금만 바꿔 줄 수 있느냐고.`,`${nm(c.a)} sidles up and asks: today is the day they first worked on the same team as ${nm(c.b)}. Could you shuffle the roster just a little?`,`${nm(c.a)}がそっと近づいて尋ねる。今日は${nm(c.b)}と初めて同じ班で働いた日なのだと。勤務表を少しだけ変えてもらえないかと。`),
+ opts:()=>{const L2=[O(L3('근무표를 바꿔 준다','Shuffle the roster','勤務表を変えてあげる'),'J',12),O(L3('작은 축하를 준비해 준다','Set up a little celebration','ささやかなお祝いを用意する'),'T',11)];if(has('candy'))L2.unshift(O(L3('🍬 사탕 봉지를 건넨다','🍬 Hand over the candy','🍬 飴の袋を渡す'),'T',8,{k:'candy'}));return L2},
+ res(c,r,o){c.r.an=G.day;if(o.k==='candy')take('candy');if(good(r)||r==='part'||o.k==='candy'){agSp(c.a,8);agSp(c.b,8);addR(c.a,4);addR(c.b,4);return fx([WN('morale',1),T(`${nm(c.a)} · ${nm(c.b)} 정신력 +8`,`${nm(c.a)} · ${nm(c.b)} Sanity +8`,`${nm(c.a)}・${nm(c.b)} 精神力 +8`)],T('둘은 그날 점심을 나란히 먹었다. 별일 아닌 하루가 조금 특별해졌다.','They ate lunch side by side that day. An ordinary day became a little special.','二人はその日の昼食を並んで食べた。何でもない一日が少し特別になった。'))}
+  return T('근무표는 꿈쩍하지 않았다. 둘은 서로에게 미안하다는 쪽지만 주고받았다.','The roster wouldn\'t budge. They only exchanged notes saying sorry.','勤務表はびくともしなかった。二人は互いにごめんねというメモを交わしただけだった。')}});
+
+/* ---------- 정전 성공 횟수 (등불지기 조건) ---------- */
+try{const ev=EV.find(e=>e.id==='l143_outage');if(ev){const r0=ev.res;ev.res=function(c,r){const t=r0.apply(this,arguments);try{if(r==='ok'||r==='crit'){const w=W();w.outOK=(w.outOK||0)+1}}catch(e){}return t}}}catch(e){}
+
+/* ---------- 저녁: 녹음기 · 엔딩 선택 ---------- */
+const GRP='저녁 시간 · 하나를 고르면 하루가 끝난다';
+const fin=()=>{try{save()}catch(e){}endDay()};
+function fixRec(){const w=W();let p=.5;try{p=Math.min(.9,.35+lv(stE('P'))*.1)}catch(e){}if(chance(p)){w.th.tape.s=2;log(T('녹음기의 헤드를 닦고 벨트를 갈았다. 버튼을 누르자 바퀴가 돌기 시작했다. 내일, 부서에서 틀어 보자.','You cleaned the head and replaced the belt. When you press play, the reels turn. Tomorrow, play it in the department.','録音機のヘッドを拭き、ベルトを替えた。ボタンを押すとリールが回り始めた。明日、部署で再生してみよう。'),'q')}else{try{addSp(-2)}catch(e){}log(T('나사 하나가 끝내 맞지 않았다. 다음에 다시 해 보자.','One screw just wouldn\'t fit. Try again another time.','ネジが一本どうしても合わなかった。また今度やってみよう。'),'q')}fin()}
+const promoOK=()=>{const w=W();return G.day>=15&&w.w.audit<=20&&has('manual')&&((w.th.inf&&w.th.inf.end==='rep')||(w.th.doc&&w.th.doc.end==='ask'))};
+const lampOK=()=>{const w=W();return G.day>=15&&(w.outOK||0)>=2&&has('master_key')};
+panelPre=(f=>function(title,sub,choices){try{if(title==='퇴근 후'&&Array.isArray(choices)&&G&&!G.arc&&G.day<50&&W()){const w=W(),X=[];
+  if(has('recorder')&&w.th.tape&&w.th.tape.s===1)X.push({grp:GRP,l:`${IT.recorder.ic} ${T('녹음기를 고친다','Fix the recorder','録音機を直す')}`,s:T('지혜가 높을수록 잘 고친다','Higher Prudence helps','知恵が高いほど直しやすい'),f:fixRec});
+  if(promoOK())X.push({grp:GRP,l:T('감사팀의 제안을 받아들인다','Accept the audit team\'s offer','監査チームの提案を受け入れる'),s:T('되돌릴 수 없어요 · 엔딩','Cannot be undone · ending','取り消せません・エンディング'),cls:'melt',f:()=>confirmEnd(promoEnd)});
+  if(lampOK())X.push({grp:GRP,l:T('정비팀에 남겠다고 한다','Ask to stay with the maintenance crew','整備チームに残ると言う'),s:T('되돌릴 수 없어요 · 엔딩','Cannot be undone · ending','取り消せません・エンディング'),cls:'melt',f:()=>confirmEnd(lampEnd)});
+  choices=choices.concat(X)}}catch(e){}return f.call(this,title,sub,choices)})(panelPre);
+function confirmEnd(go){popup(T('정말 이 길로 갈까요?','Take this path for real?','本当にこの道を行きますか?'),`<p>${T('이 선택으로 근무가 끝나요. 되돌릴 수 없어요.','This choice ends your service. It cannot be undone.','この選択で勤務が終わります。取り消せません。')}</p><div class="row"><button class="btn" data-y>${T('간다','Go','行く')}</button><button class="btn ghost" data-n>${T('돌아간다','Go back','戻る')}</button></div>`,el=>{el.querySelector('[data-n]').onclick=closePop;el.querySelector('[data-y]').onclick=()=>{closePop();go()}})}
+
+/* ---------- ④ 엔딩 2개 ---------- */
+try{window.END134.push(['promo',()=>T('감사팀으로 간 사람','The One Who Joined Audit','監査チームへ行った者')],['lamp',()=>T('등불지기','The Lamplighter','灯守り')])}catch(e){}
+const P=(t,b)=>({title:t,t:b});const ME=()=>H(NL(G.name));
+function promoEnd(){const me=ME();G.phase='ending';pages([P(T('제안','The Offer','提案'),T(`감사팀장이 ${me}의 보고서 묶음을 책상 위에 올려놓았다. "정확하고, 빠짐없고, 감정이 없군요. 우리 쪽에 자리가 하나 비었습니다."`,`The audit chief set ${me}'s stack of reports on the desk. "Accurate, complete, and without sentiment. We have an opening on our side."`,`監査チーム長が${me}の報告書の束を机に置いた。「正確で、漏れがなく、感情がない。こちらに一つ席が空いています」`)),
+  P(T('새 자리','The New Desk','新しい席'),T(`새 책상에서는 부서들이 숫자로 보였다. 어느 날 옛 부서의 파일이 올라왔다. ${me}은(는) 오래 들여다보다가, 규정대로 도장을 찍었다.`,`From the new desk, departments looked like numbers. One day a file from the old department came up. ${me} stared at it a long while, then stamped it by the book.`,`新しい机からは、部署が数字に見えた。ある日、古い部署のファイルが上がってきた。${me}は長く見つめてから、規定通りに判を押した。`))],
+  ()=>window.finish134('promo',`${T('감사팀으로 간 사람','The One Who Joined Audit','監査チームへ行った者')} · ${T('이동 엔딩','Transfer Ending','異動エンディング')}`,T(`${G.day}일째, 감사팀으로 자리를 옮겼다. 규정은 지켜졌다.`,`Day ${G.day}: transferred to the audit team. The rules were kept.`,`${G.day}日目、監査チームへ異動した。規定は守られた。`)))}
+function lampEnd(){const me=ME();G.phase='ending';pages([P(T('정비 계단','The Maintenance Stairs','整備階段'),T(`정비팀 반장이 열쇠 꾸러미를 흔들었다. "불 꺼질 때마다 먼저 뛰어온 사람이 누군지 다들 알아. 관리직 자리는 다른 사람이 맡아도 되지만, 이건 아니야."`,`The maintenance foreman jingled the key ring. "Everyone knows who ran in first every time the lights went out. Someone else can take the manager's desk. Not this."`,`整備チームの班長が鍵束を鳴らした。「明かりが消えるたびに真っ先に駆けつけたのが誰か、みんな知ってる。管理職の席は他の誰かでもいい。でもこれは違う」`)),
+  P(T('등불','The Lamps','灯り'),T(`그 뒤로 ${me}은(는) 시설의 가장 어두운 곳을 돌며 불을 갈았다. 누군가 길을 잃으면, 복도 끝에서 깜빡이는 불빛 하나가 언제나 먼저 와 있었다.`,`After that, ${me} walked the darkest parts of the facility, changing the lights. Whenever someone was lost, a single blinking light at the end of the hall was always there first.`,`その後、${me}は施設の最も暗い場所を巡って明かりを替えた。誰かが道に迷うと、廊下の端で瞬く一つの灯りがいつも先に来ていた。`))],
+  ()=>window.finish134('lamp',`${T('등불지기','The Lamplighter','灯守り')} · ${T('잔류 엔딩','Remain Ending','残留エンディング')}`,T(`${G.day}일째, 관리직을 내려놓고 시설의 불을 지키기로 했다.`,`Day ${G.day}: set down the manager's post to keep the facility's lights.`,`${G.day}日目、管理職を降り、施設の灯りを守ることにした。`)))}
+
+/* ---------- ② 세피라의 반응 ---------- */
+startDay=(f=>function(){const r=f.apply(this,arguments);try{const w=W();const k=sephOf();if(!w||!k||G.ended||w.sd145===G.day)return r;w.sd145=G.day;const v=w.w;
+  if(v.morale>=75){sa(k,1);log(T(`${SN(k)}이(가) 오늘 아침 부서 분위기를 따로 기록해 두었다. (${SN(k)} +1)`,`${SN(k)} made a separate note of the department's mood this morning. (${SN(k)} +1)`,`${SN(k)}が今朝の部署の雰囲気を別に記録しておいた。(${SN(k)} +1)`),'q')}
+  else if(v.rumor>=70){sa(k,-1);log(T(`${SN(k)}이(가) 소문의 출처를 묻는다. 대답할 수 있는 사람이 없다. (${SN(k)} -1)`,`${SN(k)} asks where the rumors started. No one can answer. (${SN(k)} -1)`,`${SN(k)}が噂の出どころを尋ねる。答えられる者はいない。(${SN(k)} -1)`),'q')}
+  else if(v.damage>=75){sa(k,-1);log(T(`${SN(k)}의 화면에 손상 보고가 쌓여 간다. (${SN(k)} -1)`,`Damage reports pile up on ${SN(k)}'s screen. (${SN(k)} -1)`,`${SN(k)}の画面に損傷報告が積み上がっていく。(${SN(k)} -1)`),'q')}}catch(e){}return r})(startDay);
+
+/* ---------- ③ 남은 것들 (모든 엔딩의 기록 화면) ---------- */
+function epilogue(){const w=G&&G.w143;if(!w)return '';const L2=[];const nmI=id=>{const a=agById(id);return a?H(nm(a)):null};
+ for(const [k,g] of Object.entries(w.th||{})){if(!k.startsWith('grief:'))continue;const p=nmI(k.slice(6));if(!p)continue;const d=H(NL(g.dead));
+  if(g.end==='healed')L2.push(T(`${p}은(는) ${d}을(를) 품은 채 끝까지 걸었다.`,`${p} carried ${d} with them to the end.`,`${p}は${d}を胸に、最後まで歩いた。`));
+  else if(g.end==='lost')L2.push(T(`${p}은(는) 끝내 그날에 머물렀다.`,`${p} never left that day.`,`${p}は最後まであの日に留まった。`))}
+ const R=w.th.rec;if(R&&R.end==='trust'){const p=nmI(R.id);if(p)L2.push(T(`${p}은(는) 당신이 처음 믿어 준 사람이었고, 끝까지 당신의 등을 지켰다.`,`${p} was the first person you trusted, and guarded your back to the end.`,`${p}はあなたが初めて信じた人であり、最後まであなたの背中を守った。`))}
+ const tp=w.th.tape;if(tp&&tp.k&&(tp.end==='heard'||tp.end==='given'))L2.push(T(`${H(SN(tp.k))}은(는) 그 녹음을 지우지 않았다.`,`${H(SN(tp.k))} never deleted that recording.`,`${H(SN(tp.k))}はあの録音を消さなかった。`));
+ const C=w.th.club;if(C&&C.s===1)L2.push(T('목요일의 휴게실 불은 마지막 날까지 꺼지지 않았다.','The Thursday break room light stayed on until the very last day.','木曜日の休憩室の明かりは、最後の日まで消えなかった。'));
+ const I=w.th.inf;if(I&&I.end==='meet')L2.push(T('악연이던 두 사람은 끝내 서로의 일지를 바꿔 읽는 사이가 되었다.','The two with bad blood ended up reading each other\'s logs.','因縁の二人は、最後には互いの日誌を読み交わす仲になった。'));
+ const pairs=Object.entries(w.rel||{}).filter(([k,r])=>r.kn>=2&&RT[r.t]&&RT[r.t].warm).map(([k])=>k.split('|').map(agById)).filter(x=>x[0]&&x[1]&&x[0].alive&&x[1].alive).slice(0,3);
+ if(pairs.length)L2.push(T(`끝까지 서로의 곁에 남은 사람들 — ${pairs.map(x=>`${H(nm(x[0]))}와(과) ${H(nm(x[1]))}`).join(', ')}.`,`Those who stayed by each other to the end — ${pairs.map(x=>`${H(nm(x[0]))} and ${H(nm(x[1]))}`).join(', ')}.`,`最後まで互いのそばに残った人々 — ${pairs.map(x=>`${H(nm(x[0]))}と${H(nm(x[1]))}`).join('、')}。`));
+ if((w.it||{}).letter)L2.push(T('주머니 속 편지는 끝내 부쳐지지 않았지만, 버려지지도 않았다.','The letter in your pocket was never sent, but never thrown away.','ポケットの手紙は最後まで出されなかったが、捨てられもしなかった。'));
+ if((w.ks||[]).length)L2.push(T(`간직한 이름 ${w.ks.length}개.`,`${w.ks.length} names kept.`,`胸に留めた名前、${w.ks.length}つ。`));
+ return L2.length?`<div class="epi145"><div class="lbl">${T('남은 것들','What Remained','残ったもの')}</div>${L2.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
+renderRecord=(f=>function(){const r=f.apply(this,arguments);try{const rec=document.querySelector('#app .rec');if(rec&&!rec.querySelector('.epi145')&&G&&G.ended){const h=epilogue();if(h){const dl=rec.querySelector('dl');dl?dl.insertAdjacentHTML('beforebegin',h):rec.insertAdjacentHTML('beforeend',h)}}}catch(e){}return r})(renderRecord);
+
+/* 이야기 탭 */
+const ST={rec:[L3('이름 없는 신입','The Nameless Recruit','名もなき新人'),{wall:L3('끝내 마음을 열지 않았다.','Never opened up.','最後まで心を開かなかった。'),trust:L3('당신을 믿게 되었다.','Came to trust you.','あなたを信じるようになった。'),alone:L3('혼자 밤을 서기로 했다.','Chose to stand the nights alone.','一人で夜を過ごすことにした。'),gone:L3('그 사람은 이제 없다.','That person is gone.','その人はもういない。')},L3('출신을 말하지 않는 신입이 들어왔다.','A recruit who won\'t say where they\'re from has joined.','出身を言わない新人が入った。')],
+ tape:[L3('오래된 녹음','The Old Recording','古い録音'),{bin:L3('녹음기는 폐기되었다.','The recorder was discarded.','録音機は廃棄された。'),heard:L3('세피라와 끝까지 들었다.','Heard it to the end with the Sephirah.','セフィラと最後まで聞いた。'),given:L3('테이프를 세피라에게 건넸다.','Gave the tape to the Sephirah.','テープをセフィラに渡した。'),static:L3('끝부분은 영영 들을 수 없게 되었다.','The ending was lost for good.','最後は永遠に聞けなくなった。')},L3('주인 모를 녹음기가 있다. 고치면 들을 수 있다.','There is an unclaimed recorder. Fix it to listen.','持ち主不明の録音機がある。直せば聞ける。')]};
+const V0=window.nb143;
+window.nb143=function(tab){V0(tab);try{if(!document.querySelector('.nbt [data-nt="story"].on'))return;const body=document.querySelector('.nbbody');if(!body)return;const w=W();const add=[];
+ for(const k of ['rec','tape']){const g=w.th[k];if(!g)continue;const D=ST[k];const open=g.s<9;add.push(`<div class="nbs ${open?'open':''}"><b>${tx(D[0])}</b><span>${open?T('진행 중','Ongoing','進行中'):T('끝남','Closed','終了')}</span><p>${open?(k==='tape'&&g.s===2?T('녹음기를 고쳤다. 부서의 세피라와 함께 들을 수 있다.','The recorder is fixed. You can listen with your department\'s Sephirah.','録音機を直した。部署のセフィラと一緒に聞ける。'):tx(D[2])):tx((D[1][g.end])||D[0])}</p></div>`)}
+ if(add.length){const p=body.querySelector(':scope > p.sub');if(p&&!body.querySelector('.nbs'))p.remove();const f=body.querySelector('.lbl');if(f)f.insertAdjacentHTML('beforebegin',add.join(''));else body.insertAdjacentHTML('beforeend',add.join(''))}
+ body.closest('.pop')?.querySelectorAll('[data-nt]').forEach(b=>b.onclick=()=>{closePop();window.nb143(b.dataset.nt)})}catch(e){}};
+
+const st=document.createElement('style');st.textContent=`.epi145{margin:14px 0;padding:10px 12px;border:1px solid var(--line2,#555);border-left:4px solid var(--accent,#e8b04a);border-radius:var(--r,6px);background:var(--panel2,#1d1d1d)}.epi145 p{margin:4px 0;line-height:1.6}`;document.head.appendChild(st);
 })();
 </script>
 
