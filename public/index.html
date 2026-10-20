@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 4.9.0.261020';window.GAME_VER=V;
+(function(){const V='Ver. 4.9.2.261020';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11936,6 +11936,7 @@ function runEvent(ev,c,cost){const stage=(e)=>{const opts=e.opts(c);
           box.innerHTML=`${res.notes.length?`<p class="note">${res.notes.join(' · ')}</p>`:''}<button class="btn" data-n>${nx?T('계속','Continue','続ける'):T('마친다','Finish','終える')}</button>`;
           box.querySelector('[data-n]').onclick=()=>{if(nx)return stage(nx);closePop();try{save()}catch(e){}act(null,workMenu,cost)}})})},{wide:true})};
   stage(ev)}
+window.ev119run=function(id,force){const ev=EV.find(x=>x.id===id);if(!ev)return 'none';let c=null;try{c=ev.cond&&ev.cond()}catch(e){}if(!c&&force){const L=G.agents.filter(a=>a.alive&&!a.out&&!a.panic);c={a:L[0],b:L[1]||L[0]}}if(!c)return 'cond';try{runEvent(ev,c,0)}catch(e){console.error(e);return 'err'}return 'ok'};
 window.ev119=function(id){const ev=EV.find(x=>x.id===id);const c=ev&&ev.cond&&ev.cond();if(ev&&c)runEvent(ev,c,ev.big?30:15);return !!c};
 
 /* ---------- 언제 일어나나: 근무 시간 매시 정각 무렵 판정 (큰 사건 하루 2번 · 작은 사건 하루 3번까지) ---------- */
@@ -14004,7 +14005,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 4.9.0.261020';
+const VER='Ver. 4.9.2.261020';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -14661,7 +14662,7 @@ function daily(){const w=W();if(!w||w.dd===G.day)return;w.dd=G.day;for(const k o
   else if(r.kn===1&&age>=6){reveal(k,2);log(`${NL(x.n)} · ${NL(y.n)} — ${tx(RT[r.t].n)}. ${T('이제 둘의 사이를 알 것 같다.','You think you understand them now.','二人の仲が分かった気がする。')}`,'q')}
   if(RT[r.t].day&&ok(x)&&ok(y)){agSp(x,RT[r.t].day);agSp(y,RT[r.t].day)}}
  // 시설 상태의 자연스러운 흐름
- const v=w.w;wv('damage',w.br*5+((G.mLevel||1)>=5?3:0)-2);w.br=0;
+ const v=w.w;wv('damage',Math.min(w.br,4)*2+((G.mLevel||1)>=6?1:0)-4);w.br=0;
  wv('rumor',-3);wv('audit',v.rumor>=50?4:-2);wv('morale',v.morale>52?-1:v.morale<48?1:0);
  if(v.morale>=70)A.forEach(a=>agSp(a,3));else if(v.morale<25){A.forEach(a=>agSp(a,-4));log(T('사기가 바닥이다. 직원들의 정신력이 아침부터 깎여 있다.','Morale is broken. The staff start the day already worn down.','士気がどん底だ。職員たちの精神力が朝から削れている。'),'hurt')}
  if(v.damage>=75){try{addSp(-3)}catch(e){}log(T('갈라진 벽 사이로 바람 소리가 들린다. 잠을 설쳤다. (정신력 -3)','Wind whistles through the cracked walls. You slept badly. (Sanity -3)','ひび割れた壁から風の音がする。よく眠れなかった。(精神力-3)'),'hurt')}
@@ -14759,14 +14760,14 @@ EV.push({id:'l143_audit',big:1,prio:1,cond(){const w=W();if(!w||w.w.audit<60||(w
   return fx([WN('audit',10),'LOB -5',a?T(`${nm(a)} 정신력 -10`,`${nm(a)} Sanity -10`,`${nm(a)} 精神力 -10`):''].filter(Boolean),T(`감사관이 ${a?nm(a)+'을(를)':'직원 한 명을'} 따로 불러 한 시간을 붙잡아 두었다. 돌아온 얼굴이 하얗다.`,`The auditors kept ${a?nm(a):'an employee'} for an hour. They came back pale.`,`監査官が${a?nm(a):'職員一人'}を別室に呼び一時間引き止めた。戻ってきた顔は真っ青だ。`))}});
 
 // 정전
-EV.push({id:'l143_outage',big:1,story:1,cond(){const w=W();if(!w||w.w.damage<50||(w.outD!=null&&G.day-w.outD<2))return null;return {}},
+EV.push({id:'l143_outage',big:1,story:1,cond(){const w=W();if(!w||w.w.damage<60||(w.outD!=null&&G.day-w.outD<3))return null;return {}},
  t:()=>T('불이 나갔다. 비상등마저 꺼진 복도 저편에서 격리실 경보가 울리다 끊긴다. 누군가 당신의 이름을 부른다.','The lights die. Even the emergency lamps go out; down the hall a containment alarm sounds and cuts off. Someone calls your name.','明かりが消えた。非常灯まで消えた廊下の向こうで収容室の警報が鳴っては途切れる。誰かがあなたの名前を呼んでいる。'),
  opts:()=>{const L=[O(L3('어둠 속을 더듬어 간다','Feel your way through the dark','暗闇を手探りで進む'),'F',13),O(L3('직원들을 한곳에 모은다','Gather the staff in one place','職員を一か所に集める'),'J',13)];if(has('flashlight'))L.unshift(O(L3('🔦 손전등으로 길을 비춘다','🔦 Light the way with the flashlight','🔦 懐中電灯で道を照らす'),'P',10,{k:'fl'}));return L},
  res(c,r,o){const w=W();w.outD=G.day;if(good(r)){const n=[WN('damage',-15),WN('morale',3)];if(!has('master_key')&&(r==='crit'||o.k==='fl')){give('master_key',1,true);n.push(`${IT.master_key.ic} ${tx(IT.master_key.n)}`)}
    note(L3('정전 속에서 직원들을 지켜 냈다.','Kept the staff safe through the outage.','停電の中、職員たちを守り抜いた。'));
    return fx(n,T(`배전반을 찾아 차단기를 올렸다. 불이 돌아오자 발치에 정비공이 떨어뜨린 열쇠 꾸러미가 보였다.${n.length>2?'':' 하지만 이미 누가 주워 간 뒤였다.'}`,`You found the panel and threw the breaker. When the light returned, a mechanic's dropped key ring lay at your feet.${n.length>2?'':' But someone had already picked it up.'}`,`配電盤を見つけてブレーカーを上げた。明かりが戻ると、足元に整備士が落とした鍵束が見えた。${n.length>2?'':'だが、もう誰かが拾った後だった。'}`))}
   const a=pickOk();if(a)a.hp=Math.max(1,a.hp-Math.round(agMax(a)*.2));note(L3('정전 속에서 다친 사람이 나왔다.','Someone was hurt in the outage.','停電の中でけが人が出た。'));
-  return fx([WN('damage',5),WN('morale',-3),a?T(`${nm(a)} 체력 -20%`,`${nm(a)} HP -20%`,`${nm(a)} 体力 -20%`):''].filter(Boolean),T('어둠 속에서 누군가 계단을 헛디뎠다. 불은 한 시간 뒤에야 돌아왔다.','Someone missed a step in the dark. The lights came back an hour later.','暗闇の中で誰かが階段を踏み外した。明かりが戻ったのは一時間後だった。'))}});
+  return fx([WN('damage',3),WN('morale',-3),a?T(`${nm(a)} 체력 -20%`,`${nm(a)} HP -20%`,`${nm(a)} 体力 -20%`):''].filter(Boolean),T('어둠 속에서 누군가 계단을 헛디뎠다. 불은 한 시간 뒤에야 돌아왔다.','Someone missed a step in the dark. The lights came back an hour later.','暗闇の中で誰かが階段を踏み外した。明かりが戻ったのは一時間後だった。'))}});
 
 /* ---------- 기존 사건과 잇기 · 모순 막기 ---------- */
 const MINE=new Set(['l143_sign','l143_clash','l143_grief','l143_grief2','l143_doc','l143_doc2','l143_audit','l143_outage']);
@@ -14791,7 +14792,7 @@ function walk(){const w=W();const L=Object.entries(w.rel).filter(([k,r])=>{const
  if(L.length){const [k,r]=L[0];const [x,y]=k.split('|').map(agById);reveal(k,r.kn+1);log(r.kn>=2?`${nm(x)} · ${nm(y)} — ${tx(RT[r.t].n)}. ${T('숙소 복도에서 둘의 사이를 알게 됐다.','In the dorm hall you learned what they are to each other.','宿舎の廊下で二人の仲を知った。')}`:tx(hintLine(r,x,y)),'q')}
  else log(T('숙소는 조용했다. 다들 일찍 불을 껐다.','The dorms were quiet. Everyone turned in early.','宿舎は静かだった。皆早めに明かりを消した。'),'q');
  wv('morale',2);try{addSp(3)}catch(e){}fin()}
-function repair(){wv('damage',-12);try{addHp(-Math.round(maxHp()*.05))}catch(e){}log(T('정비팀과 함께 배관을 조였다. 손이 기름투성이가 됐다.','You tightened pipes with the maintenance crew. Your hands are black with grease.','整備チームと配管を締めた。手が油まみれになった。'),'q');fin()}
+function repair(){wv('damage',-18);try{addHp(-Math.round(maxHp()*.05))}catch(e){}log(T('정비팀과 함께 배관을 조였다. 손이 기름투성이가 됐다.','You tightened pipes with the maintenance crew. Your hands are black with grease.','整備チームと配管を締めた。手が油まみれになった。'),'q');fin()}
 function hush(){let d=-10;try{d=-Math.round(8+lv(stE('J'))*2)}catch(e){}wv('rumor',d);log(T('소문의 출처를 찾아 하나씩 바로잡았다.','You tracked the rumors to their source and set them straight, one by one.','噂の出どころを探り、一つずつ正した。'),'q');fin()}
 function play(){wv('morale',5);try{addSp(5)}catch(e){}G.agents.filter(ok).forEach(a=>agSp(a,2));log(T('휴게실에서 카드 한 판이 벌어졌다. 진 사람이 내일 커피를 사기로 했다.','A card game broke out in the break room. The loser buys coffee tomorrow.','休憩室でカード勝負が始まった。負けた人が明日コーヒーをおごることに。'),'q');fin()}
 function store(){const w=W();w.keyD=G.day;const n=[];for(let i=0;i<2;i++)n.push(loot());wv('damage',-5);fin()}
@@ -14799,7 +14800,7 @@ function stairs(){take('master_key');G.esc134=(G.esc134||0)+1;log(T('정비 열�
 function code(){take('seal_code');G.esc134=(G.esc134||0)+1;W().th.doc&&(W().th.doc.s=9);log(T('봉인 해제 코드를 문에 입력했다. 짧은 신호음과 함께 잠금이 풀렸다가, 다시 잠겼다. 길은 진짜다.','You entered the release code. The lock clicked open with a short tone, then locked again. The way is real.','封印解除コードを扉に入力した。短い信号音とともにロックが外れ、また掛かった。道は本物だ。'),'q');log(T(`탈출 단서 ${G.esc134}/3`,`Escape clue ${G.esc134}/3`,`脱出の手がかり ${G.esc134}/3`),'warn');fin()}
 panelPre=(f=>function(title,sub,choices){try{if(title==='퇴근 후'&&Array.isArray(choices)&&G&&!G.arc&&G.day<50&&W()){const w=W(),v=w.w,X=[];
   X.push({grp:GRP,l:T('숙소를 한 바퀴 돈다','Walk the dorms','宿舎をひと回りする'),s:T('직원들 사이의 낌새를 살핀다 · 사기 +2 · 정신력 +3','Notice what is between people · Morale +2 · Sanity +3','職員同士の気配を探る・士気+2・精神力+3'),f:walk});
-  if(v.damage>=20)X.push({grp:GRP,l:T('시설 정비를 돕는다','Help with repairs','施設の整備を手伝う'),s:`${tx(WV.damage.n)} -12 · ${T('체력','HP','体力')} -5%`,f:repair});
+  if(v.damage>=10)X.push({grp:GRP,cls:'rep153',l:T('시설 정비를 돕는다','Help with repairs','施設の整備を手伝う'),s:`${tx(WV.damage.n)} -18 · ${T('체력','HP','体力')} -5%`,f:repair});
   if(v.rumor>=25)X.push({grp:GRP,l:T('소문을 잠재운다','Quiet the rumors','噂を鎮める'),s:`${tx(WV.rumor.n)} − · ${T('정의가 높을수록 크게','more with higher Justice','正義が高いほど大きく')}`,f:hush});
   if(has('cards'))X.push({grp:GRP,l:`${IT.cards.ic} ${T('카드를 꺼낸다','Bring out the cards','トランプを出す')}`,s:`${tx(WV.morale.n)} +5 · ${T('모두 정신력 +','everyone Sanity +','皆の精神力+')}`,f:play});
   if(has('master_key')&&w.keyD!==G.day&&(w.keyD==null||G.day-w.keyD>=3))X.push({grp:GRP,l:`${IT.master_key.ic} ${T('잠긴 창고를 연다','Open a locked storeroom','鍵のかかった倉庫を開ける')}`,s:T('물건 두 개 · 3일에 한 번','Two items · once every 3 days','アイテム2つ・3日に1回'),f:store});
@@ -15888,6 +15889,423 @@ const st=document.createElement('style');st.textContent=`
 .u151r{min-height:32px!important;padding:4px 12px!important;font-size:16px!important}.u151r[disabled]{opacity:.35}`;
 document.head.appendChild(st);
 apply();
+})();
+/* ============ v152: 튜토리얼 개편 (4.9.1) — 장(章)으로 나눈 상세하고 깔끔한 안내 ============
+   근무 튜토리얼 6장 · 전투 튜토리얼 6장으로 다시 쓴다.
+   · 말풍선 위에 「몇 장 · 장 이름」과 전체 진행 막대를 보여 준다
+   · 본문은 핵심 한 줄 → 글머리 목록 → 짧은 팁 순서로 통일한다
+   · 지난 버전에서 덧붙인 단계(모의 전투 · 수첩 · 저녁 · 결말 · 아인·소프·오르 · 온기 · 주사위 · 동료 돕기 · 설정)를 제자리에 넣는다
+   · 직접 눌러 보는 단계(격리실 → 작업 고르기)는 그대로 둔다 */
+(function(){
+const LI=i80(0,1,2);
+const x=(k,e,j)=>[k,e,j][LI];
+// 본문: 핵심 한 줄 + 목록 + 팁
+const body=(lead,li,tip)=>`<p class="co-lead">${x(...lead)}</p>${li&&li.length?`<ul class="co-ul">${li.map(a=>`<li>${x(...a)}</li>`).join('')}</ul>`:''}${tip?`<p class="co-tip">${x(...tip)}</p>`:''}`;
+const S=(sel,t,lead,li,tip,o)=>Object.assign({sel,t:x(...t),b:body(lead,li,tip)},o||{});
+const N=(t,lead,li,tip,o)=>Object.assign({t:x(...t),b:body(lead,li,tip)},o||{});
+const CH=(name,steps)=>{steps.forEach((s,i)=>{s.ch=x(...name);s.chi=i+1;s.chn=steps.length});return steps};
+
+/* ================= 근무 튜토리얼 ================= */
+const C0=['시작','Start','はじめに'],C1=['1장 · 화면 읽기','Ch.1 · Reading the screen','第1章・画面の見方'],C2=['2장 · 나','Ch.2 · You','第2章・あなた'],C3=['3장 · 작업','Ch.3 · Work','第3章・作業'],C4=['4장 · 시설과 동료','Ch.4 · Facility & coworkers','第4章・施設と同僚'],C5=['5장 · 하루의 끝','Ch.5 · End of the day','第5章・一日の終わり'],C6=['6장 · 더 알아보기','Ch.6 · Going further','第6章・さらに'];
+const MAIN=[].concat(
+CH(C0,[
+ N(['L사 근무 안내','Welcome to L Corp','L社 勤務案内'],['실제 화면을 비추며 여섯 장에 걸쳐 안내해 드릴게요. 5분쯤 걸려요.','I will walk you through the real screen in six chapters. It takes about 5 minutes.','実際の画面を照らしながら、6章に分けて案内します。5分ほどかかります。'],[
+  ['안내 중에는 <b>밝게 표시된 곳</b>과 이 말풍선만 누를 수 있어요.','While the guide runs, only the <b>highlighted spot</b> and this bubble respond.','案内中は<b>明るく示された場所</b>とこの吹き出しだけ押せます。'],
+  ['시간은 멈춰 있어요. 끝나면 다시 흘러요.','Time is paused and resumes when the guide ends.','時間は止まっています。終わると再び流れます。'],
+  ['<b>[건너뛰기]</b>나 Esc로 언제든 끝내고, 가이드에서 다시 볼 수 있어요.','End anytime with <b>[Skip]</b> or Esc; replay it from the Guide.','<b>[スキップ]</b>かEscでいつでも終われ、ガイドから見直せます。']])
+]),
+CH(C1,[
+ S('#daybox .hud-cell:nth-child(1)',['일차','Day','日数'],['근무 며칠째인지 보여 줘요.','Shows which workday it is.','勤務何日目かを示します。'],[
+  ['날이 지날수록 할당량이 늘어요.','The quota grows each day.','日が進むほどノルマが増えます。'],
+  ['더 위험한 환상체와 <b>시련</b>이 찾아와요.','More dangerous abnormalities and <b>Ordeals</b> arrive.','より危険なアブノーマリティと<b>試練</b>が来ます。']]),
+ S('#daybox .hud-cell:nth-child(2)',['시각','Time','時刻'],['업무는 <b>09:00</b>에 시작해 실시간으로 흘러요.','Work starts at <b>09:00</b> and runs in real time.','業務は<b>09:00</b>に始まり、リアルタイムで流れます。'],[
+  ['작업 · 행동마다 시간이 들어요.','Every task and action takes time.','作業・行動ごとに時間がかかります。'],
+  ['오른쪽 숫자가 정시 퇴근 시각이에요.','The number on the right is regular clock-out.','右の数字が定時退勤の時刻です。']]),
+ S('#daybox .hud-cell:nth-child(3)',['에너지 할당량','Energy quota','エネルギーノルマ'],['막대는 오늘 모은 <b>에너지</b>, 숫자는 <b>할당량</b>이에요.','The bar is today\'s <b>energy</b>; the number is the <b>quota</b>.','バーは今日の<b>エネルギー</b>、数字は<b>ノルマ</b>です。'],[
+  ['할당량을 채워야 제대로 퇴근할 수 있어요.','Meet it to clock out properly.','満たせば正式に退勤できます。'],
+  ['채우면 <b>LOB 포인트</b>를 받아요.','Meeting it pays <b>LOB points</b>.','満たすと<b>LOBポイント</b>がもらえます。']]),
+ S('#daybox .hud-cell:nth-child(4)',['클리포트 폭주','Qliphoth meltdown','クリフォト暴走'],['에너지가 쌓일수록 단계가 올라요.','The level rises as energy builds.','エネルギーが貯まるほど段階が上がります。'],[
+  ['단계가 오르면 격리실 몇 곳이 <b>폭주</b>해요. 제한 시간 안에 작업하세요.','Each rise sets some units into <b>meltdown</b>; work them before time runs out.','段階が上がると収容室がいくつか<b>暴走</b>します。制限時間内に作業してください。'],
+  ['놓치면 그 환상체의 카운터가 0이 돼요.','Miss it and that unit\'s counter drops to 0.','逃すとそのカウンターが0になります。'],
+  ['6일차부터는 <b>시련</b>도 와요.','From day 6, <b>Ordeals</b> come too.','6日目からは<b>試練</b>も来ます。']]),
+ S('#daybox .hud-cell:nth-child(5)',['LOB 포인트','LOB points','LOBポイント'],['할당량과 미션 보상으로 쌓이는 포인트예요.','Points earned from quotas and missions.','ノルマとミッション報酬で貯まるポイントです。'],[
+  ['<b>장비 · 인사</b> 탭에서 가치관을 올리는 데 써요.','Spend them on virtues in the <b>Gear · HR</b> tab.','<b>装備・人事</b>タブで価値観の強化に使います。']]),
+ S('.rt-hud, #rtBtn',['실시간 · 일시정지','Real time · Pause','リアルタイム・一時停止'],['생각할 시간이 필요하면 멈추세요.','Pause whenever you need to think.','考える時間が必要なら止めてください。'],[
+  ['이 버튼이나 <b>스페이스바</b>로 멈추고 다시 흘려요.','Toggle with this button or the <b>Space bar</b>.','このボタンか<b>スペースキー</b>で切り替えます。'],
+  ['무언가 행동하면 저절로 다시 흘러요.','Taking any action resumes time.','何か行動すると自動で再開します。'],
+  ['고를 것이 있는 창이 떠 있는 동안에도 멈춰 있어요.','It also stays paused while a choice window is open.','選択肢の窓が開いている間も止まっています。']])
+]),
+CH(C2,[
+ S('.pcard .pc-bars',['체력 · 정신력','HP · Sanity','体力・精神力'],['당신이 버틸 수 있는 한계예요.','How much you can take.','あなたが耐えられる限界です。'],[
+  ['<b>체력</b>이 0이 되면 죽어요.','At 0 <b>HP</b> you die.','<b>体力</b>が0になると死にます。'],
+  ['<b>정신력</b>이 -45가 되면 패닉에 빠져요.','At -45 <b>Sanity</b> you panic.','<b>精神力</b>が-45になるとパニックになります。'],
+  ['둘 다 작업 · 전투에서 깎이고 <b>휴식</b>으로 회복해요.','Both drop in work and battle and recover by <b>resting</b>.','どちらも作業・戦闘で減り、<b>休憩</b>で回復します。']],
+  ['정신력이 높을수록 작업 성공률이 오르고, 전투에서 코인 앞면이 잘 나와요.','Higher Sanity improves work success and coin heads in battle.','精神力が高いほど作業成功率が上がり、戦闘でコインの表が出やすくなります。']),
+ S('.pcard .pc-stats, .pcard .ps',['가치관과 등급','Virtues & rank','価値観と等級'],['용기 · 지혜 · 절제 · 정의, 네 가지 가치관이에요.','Four virtues: Fortitude, Prudence, Temperance, Justice.','勇気・知恵・節制・正義の四つの価値観です。'],[
+  ['작업할 때마다 그 작업의 가치관이 자라요.','Each work grows its matching virtue.','作業ごとにその作業の価値観が育ちます。'],
+  ['합계가 오르면 <b>등급</b>이 올라 위험한 환상체 앞에서 덜 겁먹어요.','A higher total raises your <b>rank</b>, so dangerous units scare you less.','合計が上がると<b>等級</b>が上がり、危険なアブノーマリティを前にしても怯えにくくなります。'],
+  ['가장 높은 가치관에 따라 후배들이 당신을 부르는 말이 달라져요.','Your top virtue changes how juniors address you.','最も高い価値観で後輩の呼び方が変わります。']]),
+ S('.pcard .pc-eq, .pcard',['무기와 슈트','Weapon & suit','武器とスーツ'],['피해에는 네 가지 색이 있어요: RED · WHITE · BLACK · PALE.','Damage comes in four colors: RED · WHITE · BLACK · PALE.','ダメージには四つの色があります:RED・WHITE・BLACK・PALE。'],[
+  ['<b>무기</b>의 색이 내 공격 속성이에요.','Your <b>weapon</b>\'s color is your attack type.','<b>武器</b>の色が攻撃属性です。'],
+  ['<b>슈트</b>가 색마다 받는 피해를 줄여요.','Your <b>suit</b> reduces damage per color.','<b>スーツ</b>が色ごとの被ダメージを減らします。'],
+  ['전투에서는 무기 색과 <b>넥타이 색</b>으로 속성을 알아봐요.','In battle, weapon and <b>tie colors</b> show these.','戦闘では武器と<b>ネクタイの色</b>で見分けます。']])
+]),
+CH(C3,[
+ S('.cats',['할 일은 세 갈래','Three kinds of action','やることは三つ'],['하루는 이 세 타일로 움직여요.','Your day runs on these three tiles.','一日はこの三つのタイルで動きます。'],[
+  ['<b>작업</b> — 격리실에 들어가 에너지를 모아요.','<b>Work</b> — enter units to gather energy.','<b>作業</b> — 収容室でエネルギーを集めます。'],
+  ['<b>행동</b> — 쉬고, 단련하고, 동료를 돕고, 이야기해요.','<b>Actions</b> — rest, train, help and talk.','<b>行動</b> — 休み、鍛え、手伝い、話します。'],
+  ['<b>퇴근</b> — 할당량을 채우면 하루를 끝내요.','<b>Clock out</b> — end the day once the quota is met.','<b>退勤</b> — ノルマを満たしたら一日を終えます。']]),
+ S('#panel .choices .ch.cu:not([hidden])',['격리실에 들어가 볼까요','Enter a containment unit','収容室に入ってみましょう'],['이 카드가 <b>환상체</b>가 갇힌 격리실이에요.','This card is a unit holding an <b>abnormality</b>.','このカードが<b>アブノーマリティ</b>の収容室です。'],[
+  ['등급 · 피해 색 · <b>카운터</b>(인내심) · 관찰 단계가 적혀 있어요.','It shows grade, damage color, <b>counter</b> (patience) and observation.','等級・ダメージ色・<b>カウンター</b>(忍耐)・観察段階が書かれています。']],
+  ['<b>직접 눌러 보세요.</b>','<b>Press it yourself.</b>','<b>押してみてください。</b>'],{act:1,until:()=>!!document.querySelector('.pop .ch')}),
+ S('.pop .choices .ch:not([disabled])',['작업 고르기','Choose a work type','作業を選ぶ'],['네 가지 작업 중 하나를 골라요.','Pick one of four work types.','四つの作業から一つ選びます。'],[
+  ['환상체마다 좋아하는 작업이 달라요.','Each abnormality prefers different work.','好む作業はアブノーマリティごとに違います。'],
+  ['상자마다 <b>d100</b>을 굴려 성공률 이하면 성공이에요. 주사위가 얼마나 찼는지가 성공률이에요.','Each box rolls <b>d100</b>; at or under the success rate succeeds. The die\'s fill shows the rate.','箱ごとに<b>d100</b>を振り、成功率以下なら成功。サイコロの埋まり具合が成功率です。'],
+  ['관찰을 쌓으면 선호와 정확한 성공률이 보여요.','Observation reveals preferences and exact rates.','観察を重ねると好みと正確な成功率が見えます。']],
+  ['<b>아무 작업이나 눌러 보세요.</b>','<b>Press any work.</b>','<b>どれか押してみてください。</b>'],{act:1,all:1,until:()=>!document.querySelector('.pop .choices .ch')||CURUI!=='work'}),
+ {hint:x('작업 중에 선택지가 나오면 마음에 드는 것을 골라 주세요. 결과는 아래 기록에 남아요.','If choices appear during work, pick whichever you like. The result goes into the log below.','作業中に選択肢が出たら、好きなものを選んでください。結果は下の記録に残ります。'),until:()=>CURUI==='work'&&!POP&&/업무 시간|Work Hours|業務時間/.test(($('#panel h3')||{}).textContent||'')},
+ S('#daybox .hud-cell:nth-child(3)',['결과 읽기','Reading the result','結果の見方'],['성공한 상자만큼 에너지가 들어왔어요.','You gained energy for each successful box.','成功した箱の分だけエネルギーが入りました。'],[
+  ['성공 비율 70% 이상 <b>좋음</b> · 40% 이상 <b>보통</b> · 그 아래 <b>나쁨</b>.','70%+ boxes is <b>Good</b>, 40%+ <b>Normal</b>, below that <b>Bad</b>.','成功70%以上で<b>良好</b>・40%以上<b>普通</b>・それ未満<b>不良</b>。'],
+  ['<b>나쁨</b>이면 카운터가 줄어요.','<b>Bad</b> lowers the counter.','<b>不良</b>だとカウンターが減ります。'],
+  ['카운터가 0이 되면 환상체가 <b>탈출</b>해요. 전투로 막아야 해요.','At 0 it <b>breaches</b> and must be stopped in battle.','0になると<b>脱走</b>し、戦闘で止める必要があります。']])
+]),
+CH(C4,[
+ S('.strip.live, .strip',['시설 현황','Facility status','施設状況'],['동료 직원들도 스스로 일해요.','Your coworkers act on their own.','同僚職員も自分で動きます。'],[
+  ['각자 경험으로 어떤 작업이 잘 맞는지 배우며 작업 · 휴식 · 대응해요.','They learn which work suits each unit, and work, rest and respond.','経験から合う作業を学び、作業・休憩・対応をします。'],
+  ['탈출 · 경보와 누가 무엇을 하는지가 여기 보여요.','Breaches, alerts and who does what show here.','脱走・警報と誰が何をしているかがここに出ます。'],
+  ['정신력이 바닥난 직원은 <b>패닉</b>해요. 근무 화면에서 직접 진압할 수 있어요.','Staff with no Sanity left <b>panic</b>; you can suppress them from the work screen.','精神力が尽きた職員は<b>パニック</b>になり、勤務画面から鎮圧できます。']]),
+ S('.cats .cat[data-cat="act"]',['행동','Actions','行動'],['일 말고 할 수 있는 것들이에요.','Everything besides work.','作業以外にできることです。'],[
+  ['<b>휴식</b> — 체력 · 정신력 회복.','<b>Rest</b> — recover HP and Sanity.','<b>休憩</b> — 体力・精神力の回復。'],
+  ['<b>동료 돕기</b> — 작업 중인 동료는 함께 작업(성공률 +15%), 쉬는 동료는 다독이기(정신력 +15).','<b>Help</b> — work alongside a working coworker (+15%), or encourage a resting one (+15 Sanity).','<b>同僚を手伝う</b> — 作業中なら一緒に作業(+15%)、休憩中なら励ます(精神力+15)。'],
+  ['<b>순찰 · 단련 · 대화</b>, 하루 한 번 <b>모의 전투</b>(아무도 죽지 않아요).','<b>Patrol, training, talks</b>, and a daily <b>mock battle</b> (no one dies).','<b>巡回・鍛錬・会話</b>、一日一回の<b>模擬戦</b>(誰も死にません)。']]),
+ S('#side .b150, #side .card:nth-child(3)',['유대와 마음의 온기','Bonds & Warmth','絆と心の温もり'],['함께 일하고 이야기할수록 유대가 쌓여요.','Bonds grow as you work and talk together.','一緒に働き話すほど絆が深まります。'],[
+  ['유대 60 · 80에서 ★이 붙고 새 이야기가 열려요.','Stars appear at 60 and 80, opening new stories.','絆60・80で★が付き、新しい話が開きます。'],
+  ['<b>마음의 온기</b>는 당신이 아직 사람으로 남은 정도예요. 돕고 들어 주면 오르고, 사람을 도구처럼 쓰면 내려가요.','<b>Warmth</b> is how human you still are: helping raises it, using people lowers it.','<b>心の温もり</b>はまだ人間でいられる度合い。助けると上がり、人を道具扱いすると下がります。'],
+  ['동료를 잃으면 온기가 크게 떨어져요.','Losing a coworker drops it sharply.','同僚を失うと大きく下がります。']]),
+ S('#nb143',['수첩','Notebook','手帳'],['시설이 지금 어떤지가 적혀 있어요.','It records how the facility is doing.','施設の今の様子が書かれています。'],[
+  ['<b>시설</b> — 사기 · 소문 · 감사 · 손상.','<b>Facility</b> — morale, rumors, audit, damage.','<b>施設</b> — 士気・噂・監査・損傷。'],
+  ['<b>소지품</b> — 사건에서 얻은 물건. 판정을 돕거나 새 선택지를 열어요.','<b>Items</b> — help checks or open new choices.','<b>所持品</b> — 判定を助け、新しい選択肢を開きます。'],
+  ['<b>관계</b> — 직원들 사이의 사이. 처음엔 숨겨져 있다가 낌새를 거쳐 드러나요.','<b>Relations</b> — hidden at first, then hinted, then known.','<b>関係</b> — 最初は隠れていて、気配を経て明らかになります。']]),
+ S('#logcard',['최근 기록','Recent log','最近の記録'],['일어난 일이 시간 순서로 쌓여요.','Events pile up in order.','起きたことが順に積もります。'],[
+  ['<b>[전체 보기]</b>로 펼쳐요.','Open it with <b>[View all]</b>.','<b>[すべて表示]</b>で広げます。'],
+  ['아래 가장자리를 끌어 높이를 바꾸고, 두 번 누르면 돌아가요.','Drag the bottom edge to resize; double-click to reset.','下の端をドラッグで高さ変更、ダブルクリックで戻ります。']])
+]),
+CH(C5,[
+ S('.cats .cat[data-cat="leave"]',['퇴근','Clock out','退勤'],['할당량을 채우면 이 타일이 <b>초록색</b>이 돼요.','This tile turns <b>green</b> once the quota is met.','ノルマを満たすとこのタイルが<b>緑</b>になります。'],[
+  ['퇴근하면 하루의 결과가 정리돼요.','Clocking out tallies the day.','退勤すると一日の結果がまとまります。'],
+  ['L사 직원은 시설 밖으로 나갈 수 없어요. 저녁은 <b>시설 안 기숙사</b>에서 보내요.','L Corp staff never leave; evenings are spent in the <b>in-facility dorm</b>.','L社の職員は外に出られず、夜は<b>施設内の寮</b>で過ごします。']]),
+ N(['저녁 시간','Evenings','夕方の時間'],['퇴근 뒤에는 하나를 골라 하루를 마쳐요.','After work, pick one thing to end the day.','退勤後は一つ選んで一日を終えます。'],[
+  ['숙소를 돌며 직원들 사이의 낌새를 살피거나, 정비를 돕거나, 소문을 잠재워요.','Check on the dorms, help with repairs, or quiet rumors.','寮を回って気配を探り、整備を手伝い、噂を鎮めます。'],
+  ['사건의 판정은 <b>d20 + 보정 ≥ 난이도</b>예요. 물건을 쓰거나 마음을 쓰면(정신력 5) 보탤 수 있어요.','Checks roll <b>d20 + modifiers ≥ DC</b>; items or pouring your heart (5 Sanity) add to it.','判定は<b>d20+補正 ≥ 難易度</b>。アイテムや心を注ぐ(精神力5)で上乗せできます。']]),
+ N(['세피라와 미션','Sephirot & missions','セフィラとミッション'],['부서마다 그 부서를 맡은 <b>세피라</b>가 있어요.','Each department has its own <b>Sephirah</b>.','部署ごとに担当の<b>セフィラ</b>がいます。'],[
+  ['세피라의 <b>부탁</b>은 그날 안에 끝내는 작은 미션이에요.','Their <b>requests</b> are small same-day missions.','<b>頼み</b>はその日のうちに終える小さなミッションです。'],
+  ['<b>코어 미션</b>은 여러 날에 걸친 목표예요. 끝내면 LOB와 신뢰를 얻어요.','<b>Core missions</b> span days and pay LOB and trust.','<b>コアミッション</b>は数日にわたる目標で、LOBと信頼が得られます。']]),
+ N(['여러 갈래의 결말','Many endings','いくつもの結末'],['결말은 하나가 아니에요. 스무 가지가 넘어요.','There are over twenty endings.','結末は二十を超えます。'],[
+  ['동료와의 관계, 세피라의 신뢰, 잃은 사람의 수, 마음의 온기, 시설에서 고른 선택이 결말을 정해요.','Bonds, Sephirah trust, the lost, Warmth and your choices decide it.','同僚との関係、セフィラの信頼、失った人数、心の温もり、選択が結末を決めます。'],
+  ['본 결말은 <b>기록</b> 화면에 모여요.','Endings you reach collect on the <b>Records</b> screen.','見た結末は<b>記録</b>画面に集まります。']])
+]),
+CH(C6,[
+ S('#tabs, .tabs',['다른 화면','Other screens','他の画面'],['위쪽 탭에서 시설의 다른 일을 해요.','The top tabs handle everything else.','上のタブで他のことを行います。'],[
+  ['<b>직원</b> — 동료 카드 · 관계 · 모의 전투.','<b>Staff</b> — cards, relations, mock battles.','<b>職員</b> — カード・関係・模擬戦。'],
+  ['<b>시설 · 부서</b> — 부서 배치와 연구.','<b>Facility · Depts</b> — placement and research.','<b>施設・部署</b> — 配置と研究。'],
+  ['<b>격리실 도감</b> — 환상체 정보 해금 · E.G.O 추출.','<b>Codex</b> — unlock info, extract E.G.O.','<b>収容室図鑑</b> — 情報解禁・E.G.O抽出。'],
+  ['<b>장비 · 인사</b> — 장비 장착 · 가치관 올리기.','<b>Gear · HR</b> — equip gear, raise virtues.','<b>装備・人事</b> — 装備・価値観の強化。']]),
+ N(['아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'],['처음 화면의 <b>아인·소프·오르</b>는 다른 관리직과 겨루는 곳이에요.','<b>Ain Soph Aur</b> on the title screen is where you face other managers.','タイトル画面の<b>アイン・ソフ・オウル</b>は他の管理職と競う場所です。'],[
+  ['보관함의 직원 · 장비로 덱을 짜서 도전하거나 실시간 친선전을 해요.','Build decks from your archive, challenge, or play live friendlies.','保管庫の職員・装備でデッキを組み、挑戦やリアルタイム親善戦をします。'],
+  ['체력 · 정신력에는 영향이 없어요.','It never affects HP or Sanity.','体力・精神力には影響しません。']]),
+ S('#setBtn',['설정','Settings','設定'],['보기 편하게 바꿀 수 있어요.','Make it comfortable to look at.','見やすく変えられます。'],[
+  ['<b>화면 · 글자</b> — UI 스타일(로보토미식 · 모던 · 클래식), 색, 글꼴, 글자 크기.','<b>Display & text</b> — UI style, colors, font, size.','<b>表示・文字</b> — UIスタイル、色、書体、文字サイズ。'],
+  ['작업 결과 카드 · 주사위 연출 · 움직임 줄이기, 저장 파일 관리도 여기 있어요.','Result card, dice animation, reduced motion and save files too.','結果カード・サイコロ演出・動きの軽減、セーブ管理もここです。']]),
+ S('#guideBtn',['막히면 여기','Stuck? Look here','困ったらここ'],['용어와 규칙은 언제든 <b>가이드</b>에서 다시 봐요.','Terms and rules are always in the <b>Guide</b>.','用語とルールはいつでも<b>ガイド</b>で見直せます。'],[
+  ['항목마다 <b>[▶ 이 항목 직접 해 보기]</b>로 따라 해 볼 수 있어요.','Each entry has <b>[▶ Try this yourself]</b>.','各項目の<b>[▶ この項目を実際にやってみる]</b>で試せます。'],
+  ['첫 전투에서는 전투 방법을 짚어 드릴게요.','Combat is explained in your first battle.','最初の戦闘では戦い方を案内します。']],
+  ['수고하셨어요. 이제 실시간 진행이 다시 시작돼요.','Well done. Real time resumes now.','お疲れさまでした。リアルタイム進行が再開します。'],{last:1})
+]));
+
+/* ================= 전투 튜토리얼 ================= */
+const B0=['전투 · 흐름','Battle · Flow','戦闘・流れ'],B1=['전투 · 적 읽기','Battle · Reading the enemy','戦闘・敵を読む'],B2=['전투 · 아군','Battle · Your side','戦闘・味方'],B3=['전투 · 카드 놓기','Battle · Placing cards','戦闘・カードを置く'],B4=['전투 · 합','Battle · Clashes','戦闘・マッチ'],B5=['전투 · 마무리','Battle · Wrapping up','戦闘・仕上げ'];
+const BAT=[].concat(
+CH(B0,[
+ N(['전투는 이렇게 흘러가요','How a battle flows','戦闘の流れ'],['한 턴은 세 단계예요.','Each turn has three steps.','1ターンは三段階です。'],[
+  ['① 적의 슬롯을 읽고','① Read the enemy slots','① 敵のスロットを読み'],
+  ['② 아군 슬롯에 카드를 놓고','② Place cards on your slots','② 味方スロットにカードを置き'],
+  ['③ <b>[전투 개시]</b> — 속도가 빠른 슬롯부터 차례로 움직여요.','③ <b>[Start]</b> — the fastest slots act first.','③ <b>[戦闘開始]</b> — 速いスロットから順に動きます。']],
+  ['적의 체력을 0으로 만들면 이겨요. <b>[건너뛰기]</b>로 언제든 끝낼 수 있어요.','Bring enemy HP to 0 to win. <b>[Skip]</b> anytime.','敵の体力を0にすれば勝ち。<b>[スキップ]</b>でいつでも終われます。'])
+]),
+CH(B1,[
+ S('#panel .lb-fo .lb-slots',['적의 슬롯','Enemy slots','敵のスロット'],['적 머리 위 칸 하나가 이번 턴 공격 하나예요.','Each box above an enemy is one attack this turn.','敵の頭上の枠一つが今ターンの攻撃一つです。'],[
+  ['숫자 = <b>속도</b> (클수록 먼저)','Number = <b>speed</b> (higher goes first)','数字 = <b>速度</b>(大きいほど先)'],
+  ['점 = <b>코인 수</b>','Dots = <b>coins</b>','点 = <b>コイン数</b>'],
+  ['아래 화살표 = 노리는 대상','Arrow below = its target','下の矢印 = 狙う相手'],
+  ['아무도 막지 않은 공격은 <b>빨간 테두리</b>예요.','Unanswered attacks have a <b>red border</b>.','誰も防いでいない攻撃は<b>赤枠</b>です。']]),
+ S('#panel .lb-fo .lb-bar.hp',['체력과 흐트러짐','HP & stagger','体力と乱れ'],['막대 위 세로선까지 깎으면 적이 <b>흐트러져요</b>.','Cut past the line on the bar to <b>stagger</b> it.','バーの縦線まで削ると敵が<b>乱れ</b>ます。'],[
+  ['흐트러진 적은 다음 턴 행동하지 못해요.','A staggered enemy loses its next turn.','乱れた敵は次のターン行動できません。'],
+  ['받는 피해가 2배가 돼요.','It takes double damage.','受けるダメージが2倍になります。']]),
+ S('#panel .lb-fo .eu-i',['적 정보','Enemy info','敵情報'],['적의 스킬 · 패시브 · 내성을 한 번에 봐요.','See all skills, passives and resistances.','スキル・パッシブ・耐性をまとめて見ます。'],[
+  ['처음 만나는 적이면 먼저 열어 보세요.','Open it first against a new enemy.','初めての敵ならまず開いてください。'],
+  ['적 슬롯이나 몸을 눌러도 볼 수 있어요.','Tapping a slot or the body works too.','スロットや体を押しても見られます。']])
+]),
+CH(B2,[
+ S('#panel .lb-al .lb-slots',['아군의 슬롯','Your slots','味方のスロット'],['아군 머리 위 칸이 그 아군의 행동이에요.','Boxes above allies are their actions.','味方の頭上の枠がその行動です。'],[
+  ['카드를 놓으면 코인 수 · 위력 범위 · 승률이 바로 보여요.','Placing a card shows coins, power range and odds.','カードを置くとコイン数・威力範囲・勝率が出ます。'],
+  ['상태: <b>합</b> / <b>일방</b> / <b>수비</b> / <b>일방 수비</b>.','States: <b>clash</b> / <b>one-sided</b> / <b>defend</b> / <b>one-sided defense</b>.','状態:<b>マッチ</b>/<b>一方</b>/<b>守備</b>/<b>一方守備</b>。']]),
+ S('#panel .lb-al .lb-av, #panel .lb-al',['아군의 모습','Ally portraits','味方の姿'],['자세로 정신력 상태를 알 수 있어요.','Their pose shows their Sanity.','姿勢で精神状態が分かります。'],[
+  ['평온 — 반짝임 · 걱정 — 「…」 · 압박 — 땀 · 패닉 — 달아남','Calm — sparkle · Worried — "…" · Pressed — sweat · Panic — fleeing','平穏 — きらめき・不安 — 「…」・圧迫 — 汗・パニック — 逃走'],
+  ['무기 색 = 공격 속성, 넥타이 색 = 슈트 속성.','Weapon color = attack, tie color = suit.','武器色 = 攻撃属性、ネクタイ色 = スーツ属性。']]),
+ S('#panel .lb-al .lb-bar.sp',['정신력','Sanity','精神力'],['아래 작은 막대예요. 높을수록 코인 앞면이 잘 나와요.','The small bar below; higher means more heads.','下の小さなバー。高いほど表が出やすい。'],[
+  ['합에서 이기면 올라요.','Winning clashes raises it.','マッチに勝つと上がります。'],
+  ['지거나 맞으면 내려가요. -45면 패닉이에요.','Losing or being hit lowers it; -45 is panic.','負けたり当たると下がり、-45でパニックです。']])
+]),
+CH(B3,[
+ S('#lbDock .lb-tabs',['아군 고르기','Choose an ally','味方を選ぶ'],['카드를 낼 아군을 골라요.','Pick who plays cards.','カードを出す味方を選びます。'],[
+  ['이름 아래에 속도와 위력 보정이 보여요.','Speed and power bonus show under the name.','名前の下に速度と威力補正が出ます。']]),
+ S('#lbDock .lb-grp:not([hidden]) .lb-card[data-lbc]',['스킬 카드','Skill cards','スキルカード'],['카드를 한 번 눌러 집고, 놓을 곳을 눌러요. 끌어도 돼요.','Tap a card to pick it up, then tap where to put it. Dragging works too.','カードを一度押して持ち、置く場所を押します。ドラッグでもOK。'],[
+  ['<b>적 슬롯</b>에 놓으면 합 — 그 공격이 나를 노리거나 내가 더 빠를 때.','On an <b>enemy slot</b>: a clash, if it targets you or you are faster.','<b>敵スロット</b>に置くとマッチ — 自分が狙われているか、自分が速い時。'],
+  ['합이 안 되면 일방 공격으로 바뀌어요.','Otherwise it becomes one-sided.','マッチにならなければ一方攻撃になります。'],
+  ['<b>적 몸</b>에 놓으면 일방 공격이에요.','On the <b>enemy body</b>: one-sided attack.','<b>敵の体</b>に置くと一方攻撃です。']]),
+ S('#lbDock .lb-card.def',['수비 카드','Defense cards','守備カード'],['합 없이 막는 카드예요. 가드는 보호막, 회피는 코인마다 피할 기회.','Block without clashing: Guard shields, Evade dodges per coin.','マッチなしで防ぐカード。ガードは盾、回避はコインごとの回避。'],[
+  ['나를 노리는 슬롯 → <b>수비</b>','Slot targeting you → <b>defend</b>','自分を狙うスロット → <b>守備</b>'],
+  ['동료를 노리는 슬롯 + 내가 더 빠름 → <b>감싸기</b>(대신 맞아요)','Slot targeting an ally + you are faster → <b>cover</b> (take it for them)','同僚を狙うスロット+自分が速い → <b>かばう</b>(代わりに受ける)'],
+  ['적 몸에 놓으면 → <b>일방 수비</b>','On the body → <b>one-sided defense</b>','敵の体に置く → <b>一方守備</b>']]),
+ S('#lbDock .lb-card .lb-i',['스킬 정보','Skill details','スキル情報'],['카드의 <b>[상세]</b>로 코인 효과와 키워드를 펼쳐요.','<b>[Details]</b> opens coin effects and keywords.','<b>[詳細]</b>でコイン効果とキーワードを開きます。'],[]),
+ N(['슬롯 정보 창','Slot info window','スロット情報'],['슬롯을 누르면 위쪽에 짧은 비교 창이 떠요.','Tapping a slot opens a short comparison above.','スロットを押すと上に比較窓が出ます。'],[
+  ['왼쪽 아군 스킬 · 오른쪽 적 스킬 (이름 · 위력 · 코인)','Left: your skill · right: theirs (name, power, coins)','左:味方スキル・右:敵スキル(名前・威力・コイン)'],
+  ['가운데 우세도와 승률 — 매우 우세 ~ 매우 불리','Middle: advantage and odds — very favorable to very unfavorable','中央:優勢度と勝率 — 非常に優勢〜非常に不利'],
+  ['아래 버튼으로 카드를 바꾸거나 풀어요.','Buttons below swap or remove the card.','下のボタンでカードを替えたり外したり。']])
+]),
+CH(B4,[
+ N(['합의 규칙','Clash rules','マッチのルール'],['서로 코인을 던져 위력이 높은 쪽이 이겨요.','Both flip coins; higher power wins.','互いにコインを投げ、威力が高い方が勝ちます。'],[
+  ['진 쪽은 코인을 하나 잃어요.','The loser loses a coin.','負けた方はコインを一つ失います。'],
+  ['한쪽 코인이 다 떨어질 때까지 반복해요.','Repeat until one side runs out.','どちらかのコインが尽きるまで繰り返します。'],
+  ['이긴 쪽만 남은 코인으로 공격해요.','Only the winner attacks with what remains.','勝った方だけが残りのコインで攻撃します。']]),
+ S('#cb77',['합 현황','Clash overview','マッチ状況'],['이번 턴의 모든 대결을 진행 순서대로 펼쳐 봐요.','Lists every match-up this turn in order.','今ターンの対決を進行順に一覧します。'],[
+  ['오른쪽 숫자 = 막지 않은 공격 · 불리한 합의 수','Numbers on the right = unanswered attacks and bad clashes','右の数字 = 防いでいない攻撃・不利なマッチの数']]),
+ N(['적도 강해져요','Enemies escalate','敵も強くなる'],['싸움이 길어지면 적의 슬롯이 늘어요.','Enemy slots grow as fights drag on.','戦いが長引くと敵のスロットが増えます。'],[
+  ['체력이 절반 이하로 몰리면 +1','+1 when pushed under half HP','体力が半分以下で+1'],
+  ['WAW 이상은 4턴을 넘기면 +1','WAW+ gain +1 after turn 4','WAW以上は4ターン超で+1'],
+  ['보스는 페이즈마다 행동이 늘어요','Bosses gain actions each phase','ボスはフェーズごとに行動が増えます']],
+  ['늘기 전에 흐트러뜨리거나 끝내는 게 좋아요.','Stagger or finish them before that.','増える前に乱すか倒しましょう。']),
+ N(['상황 선택지 · 같은 규칙의 상대','Situations · mirrored rules','状況選択・同じルールの相手'],['전투 중 고르는 <b>상황 선택지</b>는 처음엔 결과가 가려져요.','<b>Situation choices</b> hide results the first time.','戦闘中の<b>状況選択肢</b>は初回は結果が隠れています。'],[
+  ['한 번 겪으면 다음부터 결과가 보여요.','Once seen, results show next time.','一度経験すると次から結果が見えます。'],
+  ['모의 전투 · 아인·소프·오르의 상대는 우리와 같은 규칙으로 싸워요 (1칸에서 시작하는 슬롯 · 같은 덱 구조).','Mock battle and Ain Soph Aur foes use your rules (slots start at 1, same deck structure).','模擬戦・アイン・ソフ・オウルの相手は同じルール(1枠から始まるスロット・同じデッキ構造)。']])
+]),
+CH(B5,[
+ S('#autoBtn',['자동 배정','Auto-assign','自動配置'],['헷갈리면 맡겨도 돼요.','Let it decide if you are unsure.','迷ったら任せても大丈夫です。'],[
+  ['이길 확률이 높은 쪽으로 놓아요. 그다음 불리한 슬롯만 손보세요.','It places for the best odds; then fix only bad slots.','勝率が高い方に置きます。不利なスロットだけ直してください。']]),
+ S('#fleeBtn',['전투 이탈','Retreat','戦闘離脱'],['물러날 수 있는 전투에서 빠져나와요.','Leave battles that allow it.','離脱できる戦闘から抜けます。'],[
+  ['모의 전투에서는 기권이에요.','In mock battles it is a forfeit.','模擬戦では棄権です。'],
+  ['패닉 진압은 나중에 이어서 할 수 있어요.','Panic suppression can be resumed later.','パニック鎮圧は後で続けられます。']]),
+ S('.lb-top .bguide',['전투 방법','Battle guide','戦い方'],['규칙이 헷갈리면 언제든 여기서 다시 봐요.','Revisit the rules here anytime.','ルールはいつでもここで見直せます。'],[]),
+ S('#goBtn',['전투 개시','Start the turn','戦闘開始'],['준비가 끝나면 눌러요.','Press when ready.','準備ができたら押します。'],[
+  ['행동이 속도 순서대로 하나씩 재생돼요.','Actions play one by one in speed order.','行動が速度順に一つずつ再生されます。'],
+  ['결과는 아래 전투 기록에 남아요.','Results go into the battle log below.','結果は下の戦闘記録に残ります。']],
+  ['행운을 빌어요.','Good luck.','幸運を。'],{last:1})
+]));
+
+try{TUT_STEPS.length=0;TUT_STEPS.push(...MAIN)}catch(e){console.error(e)}
+try{TUT_BATTLE.length=0;TUT_BATTLE.push(...BAT)}catch(e){console.error(e)}
+
+/* ---------- 말풍선: 장 표시 · 진행 막대 ---------- */
+tutRender=(f=>function(){const r=f.apply(this,arguments);try{if(!TUT)return r;const st=TUT.list[TUT.i];const b=document.querySelector('#coach .co-bub');if(!b||st.hint)return r;
+ const n=b.querySelector('.co-n');if(n&&st.ch){n.innerHTML=`<span class="co-ch152">${st.ch}</span><span class="co-cn152">${st.chi} / ${st.chn}</span>`}
+ if(!b.querySelector('.co-pg152')){const p=Math.round((TUT.i+1)/TUT.list.length*100);b.insertAdjacentHTML('afterbegin',`<div class="co-pg152" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><i style="width:${p}%"></i></div>`)}}catch(e){}return r})(tutRender);
+
+const st=document.createElement('style');st.textContent=`
+#coach .co-bub{max-width:min(420px,calc(100vw - 24px))!important}
+#coach .co-pg152{height:3px;margin:-2px 0 10px;background:rgba(255,255,255,.12)}#coach .co-pg152 i{display:block;height:100%;background:var(--accent,#f0a830);transition:width .2s}
+#coach .co-n{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+#coach .co-ch152{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--accent2,#f6c262)}
+#coach .co-cn152{font-size:12px;color:var(--muted)}
+#coach .co-t{display:block;font-size:17px;margin:6px 0 4px}
+#coach .co-lead{margin:0 0 6px;line-height:1.55}
+#coach .co-ul{margin:0 0 6px;padding:0 0 0 2px;list-style:none;display:grid;gap:5px}
+#coach .co-ul li{position:relative;padding-left:14px;line-height:1.5;font-size:14px;color:var(--fg2,#d4d8df)}
+#coach .co-ul li::before{content:'';position:absolute;left:2px;top:.62em;width:5px;height:5px;background:var(--accent,#f0a830)}
+#coach .co-tip{margin:6px 0 2px;padding:6px 9px;font-size:13.5px;line-height:1.5;border-left:3px solid var(--accent,#f0a830);background:rgba(240,168,48,.08)}
+#coach .co-bub p{margin-top:0}#coach .co-bub>p:empty{display:none}`;
+document.head.appendChild(st);
+})();
+/* ============ v153: 시설 손상 알아보기 쉽게 · 복구 튜토리얼 · 관리자 이야기 도구 (4.9.2) ============
+   ① 시설 손상 난이도 하향 (v143에서 수치 조정): 탈출 1체당 +2(하루 최대 +8) · 폭주 6단계 이상 +1 · 매일 -4 회복 · 정전 사건 60부터 · 실패 +3 · 정비 -18 · 정비 선택지는 10부터
+   ② 상단 상태 칸에 「시설」 칸: 손상 수치 · 막대 · 단계. 단계가 오르면 알림과 깜빡임, 75부터 붉게 맥박. 누르면 설명과 고치는 법
+   ③ 복구 튜토리얼: 손상이 처음 10을 넘으면 한 번 · 저녁에 정비 선택지가 처음 보이면 그 칸을 직접 눌러 보게 한다 · 가이드 항목 · 근무 튜토리얼 1장에 한 단계
+   ④ 관리자 탭: 시설 상태 · 아이템 · 관계도 · 사건(시나리오) · 이야기 갈래 · 엔딩 조작 */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const tx=a=>Array.isArray(a)?T(a[0],a[1],a[2]):a;
+const L=()=>window.L143;const W=()=>{try{return L().W()}catch(e){return null}};
+const LS={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const LV=[[0,['양호','Sound','良好']],[25,['군데군데','Patchy','ところどころ']],[50,['불안정','Unstable','不安定']],[75,['위태로움','Critical','危うい']],[90,['붕괴 직전','On the brink','崩壊寸前']]];
+const lvOf=v=>{let i=0;LV.forEach((l,k)=>{if(v>=l[0])i=k});return i};
+
+/* ---------------- 상단 「시설」 칸 ---------------- */
+function cell(){const w=W();if(!w)return '';const v=Math.round(w.w.damage||0),i=lvOf(v);
+ return `<button type="button" class="hud-cell dmg153 l${i}" id="dmg153" aria-label="${T('시설 손상','Facility damage','施設の損傷')} ${v} · ${tx(LV[i][1])}"><span class="hl">${T('시설 손상','Facility','施設損傷')}</span><b>${v}</b><span class="dmg153b"><i style="width:${v}%"></i></span><small>${tx(LV[i][1])}</small></button>`}
+function place(){try{if(!G||G.ended)return;const d=document.getElementById('daybox');if(!d)return;const w=W();if(!w)return;
+ const old=document.getElementById('dmg153');const h=cell();if(old){const v=Math.round(w.w.damage||0);if(old.querySelector('b').textContent!==String(v)||!old.classList.contains('l'+lvOf(v))){old.outerHTML=h;bindCell()}}
+ else{const c5=d.querySelector('.hud-cell:nth-child(5)');(c5||d.lastElementChild||d).insertAdjacentHTML(c5?'afterend':'beforeend',h);bindCell()}
+ watch(w)}catch(e){}}
+function bindCell(){const b=document.getElementById('dmg153');if(b)b.onclick=info}
+renderTop=(f=>function(){const r=f.apply(this,arguments);place();return r})(renderTop);
+setInterval(place,1500);
+
+// 단계가 오르면 알린다 · 처음 10을 넘으면 튜토리얼
+function watch(w){const v=w.w.damage||0,i=lvOf(v);const p=w.dl153==null?i:w.dl153;
+ if(i>p){const b=document.getElementById('dmg153');if(b){b.classList.remove('fl153');void b.offsetWidth;b.classList.add('fl153')}
+  try{toast(`${T('시설 손상','Facility damage','施設の損傷')} · ${tx(LV[i][1])} — ${T('저녁에 「시설 정비를 돕는다」로 고칠 수 있어요','repair it in the evening with "Help with repairs"','夕方の「施設の整備を手伝う」で直せます')}`,'warn')}catch(e){}}
+ w.dl153=i;
+ if(v>=10&&!LS.g('lcw_tut_dmg153')&&G.phase==='work'&&!(typeof TUT!=='undefined'&&TUT)&&!(typeof POP!=='undefined'&&POP)&&!(typeof B!=='undefined'&&B&&!B.done)&&!(G.flags&&G.flags.tutSand)){LS.s('lcw_tut_dmg153','1');setTimeout(()=>tutStart(TUT_TOPIC.dmg153(),'topic'),300)}}
+
+/* ---------------- 설명 창 ---------------- */
+const ROWS=()=>[
+ ['0~24',tx(LV[0][1]),T('영향 없음','No effect','影響なし')],
+ ['25~',tx(LV[1][1]),T('분위기 묘사만','Atmosphere only','雰囲気の描写のみ')],
+ ['40~','',T('「야근하는 직원」 이야기가 시작될 수 있어요','The "overtime" story may begin','「残業する職員」の話が始まることがあります')],
+ ['60~',tx(LV[2][1]),T('「정전」 사건이 생겨요','"Outage" incidents occur','「停電」事件が起きます')],
+ ['75~',tx(LV[3][1]),T('매일 아침 내 정신력 -3 · 세피라 신뢰 -1','Each morning: your Sanity -3 · Sephirah trust -1','毎朝 精神力-3・セフィラの信頼-1')],
+ ['100','',T('<b>붕괴 엔딩</b>으로 이어져요','Leads to the <b>Collapse ending</b>','<b>崩壊エンディング</b>につながります')]];
+function info(){const w=W();if(!w)return;const v=Math.round(w.w.damage||0);
+ popup(T('시설 손상','Facility damage','施設の損傷'),`<div class="dmg153p"><div class="dmg153big l${lvOf(v)}"><b>${v}</b><span>/ 100 · ${tx(LV[lvOf(v)][1])}</span><span class="dmg153b"><i style="width:${v}%"></i></span></div>
+ <p>${T('환상체가 탈출해 돌아다닐수록 시설이 상해요. 쌓이면 사건이 생기고, 100이 되면 시설이 무너져요.','Each breach wears the facility down. Damage brings incidents, and at 100 the facility collapses.','アブノーマリティが脱走するほど施設が傷みます。溜まると事件が起き、100で施設が崩壊します。')}</p>
+ <h4>${T('고치는 법','How to repair','直し方')}</h4><ul class="dmg153l">
+  <li><b>${T('저녁 「시설 정비를 돕는다」','Evening: "Help with repairs"','夕方「施設の整備を手伝う」')}</b> — ${T('손상 -18 · 내 체력 -5% (손상 10 이상이면 나와요)','damage -18 · your HP -5% (appears at 10+)','損傷-18・体力-5%(損傷10以上で出ます)')}</li>
+  <li><b>${T('그냥 하루 보내기','Just get through the day','一日を過ごす')}</b> — ${T('매일 아침 -4씩 저절로 줄어요','drops by 4 every morning on its own','毎朝4ずつ自然に減ります')}</li>
+  <li><b>${T('「정전」 사건 판정 성공','Succeed at the "Outage" check','「停電」事件の判定に成功')}</b> — ${T('손상 -15','damage -15','損傷-15')}</li>
+  <li><b>${T('탈출을 빨리 막기','Stop breaches fast','脱走を早く止める')}</b> — ${T('탈출 1체당 다음 날 +2 (하루 최대 +8)','+2 per breach next morning (max +8 a day)','脱走1体につき翌朝+2(一日最大+8)')}</li></ul>
+ <h4>${T('단계','Stages','段階')}</h4><table class="dmg153t">${ROWS().map(r=>`<tr><th>${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table>
+ <div class="row"><button type="button" class="btn ghost small" id="dmg153tut">${T('튜토리얼 다시 보기','Replay the tutorial','チュートリアルを再表示')}</button></div></div>`,el=>{el.querySelector('#dmg153tut').onclick=()=>{closePop();if(G&&G.phase==='work')tutStart(TUT_TOPIC.dmg153(),'topic')}},{wide:true})}
+window.dmgInfo153=info;
+
+/* ---------------- 튜토리얼 ---------------- */
+const x=(k,e,j)=>T(k,e,j);
+const body=(lead,li,tip)=>`<p class="co-lead">${x(...lead)}</p>${li&&li.length?`<ul class="co-ul">${li.map(a=>`<li>${x(...a)}</li>`).join('')}</ul>`:''}${tip?`<p class="co-tip">${x(...tip)}</p>`:''}`;
+const S=(sel,t,lead,li,tip,o)=>Object.assign({sel,t:x(...t),b:body(lead,li,tip)},o||{});
+const N=(t,lead,li,tip,o)=>Object.assign({t:x(...t),b:body(lead,li,tip)},o||{});
+const CH=(name,st)=>{st.forEach((s,i)=>{s.ch=x(...name);s.chi=i+1;s.chn=st.length});return st};
+const CN=['시설 복구','Facility repair','施設の復旧'];
+TUT_TOPIC.dmg153=()=>CH(CN,[
+ S('#dmg153',['시설이 상하고 있어요','The facility is getting damaged','施設が傷んでいます'],['이 칸이 <b>시설 손상</b>이에요. 0~100이고, 막대와 단계로 보여요.','This cell is <b>facility damage</b>, 0–100, shown as a bar and stage.','この枠が<b>施設の損傷</b>です。0〜100で、バーと段階で示されます。'],[
+  ['양호 → 군데군데 → 불안정 → 위태로움 → 붕괴 직전','Sound → Patchy → Unstable → Critical → Brink','良好 → ところどころ → 不安定 → 危うい → 崩壊寸前'],
+  ['단계가 오르면 알림이 뜨고 칸이 깜빡여요.','When the stage rises you get an alert and the cell flashes.','段階が上がると通知が出て枠が点滅します。'],
+  ['칸을 누르면 언제든 자세한 설명을 봐요.','Tap it anytime for details.','押せばいつでも詳しい説明が見られます。']]),
+ N(['왜 상하나요','What damages it','なぜ傷むのか'],['환상체가 <b>탈출</b>하면 시설이 상해요.','<b>Breaches</b> damage the facility.','アブノーマリティが<b>脱走</b>すると施設が傷みます。'],[
+  ['탈출 1체당 다음 날 아침 +2 (하루 최대 +8)','+2 per breach the next morning (max +8 a day)','脱走1体につき翌朝+2(一日最大+8)'],
+  ['클리포트 폭주 6단계 이상까지 간 날 +1','+1 on days meltdown reaches level 6+','クリフォト暴走が6段階以上の日+1'],
+  ['「정전」 사건 판정에 실패하면 +3','+3 if you fail the "Outage" check','「停電」事件の判定に失敗すると+3']],
+  ['작업 결과를 「좋음」으로 유지해 카운터를 지키면 탈출이 줄어요.','Keeping work results Good protects counters and prevents breaches.','作業結果を「良好」に保ってカウンターを守れば脱走が減ります。']),
+ N(['고치는 법','How to repair','直し方'],['손상은 다시 줄일 수 있어요.','Damage can be undone.','損傷は減らせます。'],[
+  ['<b>저녁 「시설 정비를 돕는다」</b> — 손상 -18 · 내 체력 -5%. 손상이 10 이상이면 저녁 선택지에 나와요.','<b>Evening "Help with repairs"</b> — damage -18, your HP -5%. Appears in the evening at 10+.','<b>夕方「施設の整備を手伝う」</b> — 損傷-18・体力-5%。損傷10以上で夕方の選択肢に出ます。'],
+  ['<b>매일 아침 -4</b> — 탈출이 없으면 저절로 회복돼요.','<b>-4 every morning</b> — it heals itself if nothing breaks out.','<b>毎朝-4</b> — 脱走がなければ自然に回復します。'],
+  ['<b>「정전」 사건 성공</b> — -15, 만능 열쇠를 얻을 때도 있어요.','<b>Succeed at "Outage"</b> — -15, sometimes a master key.','<b>「停電」成功</b> — -15、マスターキーが手に入ることも。'],
+  ['<b>「야근하는 직원」 이야기</b> — -12~-15, 대신 그 직원이 지쳐요.','<b>The "overtime" story</b> — -12 to -15, but that employee wears out.','<b>「残業する職員」の話</b> — -12〜-15、代わりにその職員が疲れます。']]),
+ N(['위험 단계','Danger stages','危険段階'],['높아질수록 불편이 커져요.','Higher damage hurts more.','高くなるほど不便が増えます。'],[
+  ['60부터 「정전」 사건','60+: "Outage" incidents','60から「停電」事件'],
+  ['75부터 매일 아침 정신력 -3 · 세피라 신뢰 -1','75+: each morning Sanity -3, Sephirah trust -1','75から毎朝 精神力-3・セフィラの信頼-1'],
+  ['100이 되면 <b>붕괴 엔딩</b>','At 100: the <b>Collapse ending</b>','100で<b>崩壊エンディング</b>']],
+  ['50을 넘기 전에 한 번 정비해 두면 거의 문제가 없어요.','One repair before 50 usually keeps you safe.','50を超える前に一度整備すれば、ほぼ問題ありません。']),
+ S('#nb143',['수첩에서도 볼 수 있어요','Also in the Notebook','手帳でも見られます'],['수첩의 「시설」 칸에 사기 · 소문 · 감사와 함께 적혀 있어요.','The Notebook\'s Facility section lists it with morale, rumors and audit.','手帳の「施設」欄に士気・噂・監査と一緒に書かれています。'],[],
+  ['저녁에 정비 선택지가 처음 보이면, 그 자리에서 한 번 더 짚어 드릴게요.','When the repair option first appears in the evening, I will point it out there.','夕方に整備の選択肢が初めて出たら、そこでもう一度案内します。'],{last:1})]);
+// 저녁: 정비 칸을 직접 눌러 보기
+setPanel=(f=>function(){const r=f.apply(this,arguments);try{const b=document.querySelector('#panel .ch.rep153');if(b&&!LS.g('lcw_tut_rep153')&&!(typeof TUT!=='undefined'&&TUT)){LS.s('lcw_tut_rep153','1');
+ setTimeout(()=>{if(!document.querySelector('#panel .ch.rep153'))return;tutStart(CH(CN,[S('#panel .ch.rep153',['여기서 고쳐요','Repair here','ここで直します'],['정비팀을 도와 시설을 고쳐요. 손상 -18, 내 체력 -5%.','Help maintenance fix the facility: damage -18, your HP -5%.','整備チームを手伝って施設を直します。損傷-18、体力-5%。'],[
+  ['저녁 선택은 하루 하나예요. 손상이 낮으면 다른 걸 골라도 괜찮아요.','You get one evening choice a day; if damage is low, something else is fine.','夕方の選択は一日一つ。損傷が低ければ他を選んでも大丈夫です。'],
+  ['고치고 나면 위쪽 「시설」 칸의 수치가 줄어요.','Afterwards the Facility cell at the top goes down.','直すと上の「施設」枠の数値が下がります。']],
+  ['<b>직접 눌러 보세요.</b> 지금은 다른 걸 고르고 싶다면 [건너뛰기]를 눌러요.','<b>Press it yourself.</b> Or press [Skip] to choose something else.','<b>押してみてください。</b>他を選ぶなら[スキップ]を押します。'],{act:1,until:()=>!document.querySelector('#panel .ch.rep153'),last:1})]),'topic')},250)}}catch(e){}return r})(setPanel);
+// 가이드 · 근무 튜토리얼
+try{GUIDE.push({k:'dmg153',t:T('시설 손상과 복구','Facility damage & repair','施設の損傷と復旧'),b:T('<p>환상체 탈출로 쌓이는 시설 상태(0~100)예요. 위쪽 「시설」 칸에서 보고, 눌러서 자세히 봐요.</p><p><b>고치기</b> — 저녁 「시설 정비를 돕는다」(-18) · 매일 아침 -4 · 「정전」 사건 성공(-15).</p><p><b>위험</b> — 60 정전 · 75 매일 정신력 -3 · 100 붕괴 엔딩.</p>','<p>Facility condition (0–100) that builds up from breaches. See it in the Facility cell at the top; tap for details.</p><p><b>Repair</b> — evening "Help with repairs" (-18), -4 every morning, succeed at "Outage" (-15).</p><p><b>Danger</b> — 60 outages · 75 Sanity -3 daily · 100 Collapse ending.</p>','<p>脱走で溜まる施設の状態(0〜100)。上の「施設」枠で確認し、押すと詳細が見られます。</p><p><b>直す</b> — 夕方「施設の整備を手伝う」(-18)・毎朝-4・「停電」成功(-15)。</p><p><b>危険</b> — 60 停電・75 毎朝精神力-3・100 崩壊エンディング。</p>')})}catch(e){}
+try{const i=TUT_STEPS.findIndex(s=>s&&s.sel==='#daybox .hud-cell:nth-child(5)');if(i>=0){const ref=TUT_STEPS[i];
+ TUT_STEPS.splice(i+1,0,Object.assign(S('#dmg153',['시설 손상','Facility damage','施設の損傷'],['환상체가 탈출하면 시설이 상해요.','Breaches damage the facility.','脱走すると施設が傷みます。'],[
+  ['저녁 「시설 정비를 돕는다」나 매일 아침 회복으로 줄어요.','Evening repairs and daily recovery bring it down.','夕方の整備や毎朝の回復で減ります。'],
+  ['100이 되면 붕괴 엔딩이에요. 칸을 누르면 자세히 봐요.','At 100 it is the Collapse ending; tap for details.','100で崩壊エンディング。押すと詳細が見られます。']]),{ch:ref.ch}));
+ const g={};TUT_STEPS.forEach(s=>{if(s&&s.ch){g[s.ch]=(g[s.ch]||0)+1;s.chi=g[s.ch]}});TUT_STEPS.forEach(s=>{if(s&&s.ch)s.chn=g[s.ch]})}}catch(e){}
+
+/* ---------------- 관리자 탭: 이야기 도구 ---------------- */
+let EVSEL=null,RA=null,RB=null,ENDARM=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ags=()=>G.agents.filter(a=>!a._ar146&&!a._mir136);
+const agN=a=>`${a.alive?'':'✝ '}${a.n}`;
+function admHtml(){const l=L(),w=W();if(!l||!w)return `<details class="fold"><summary><span class="lbl">이야기 · 시설</span></summary><div class="fold-b"><p class="note">이 기록에는 시설 상태가 아직 없다.</p></div></details>`;
+ const B=(a,t,c)=>`<button type="button" class="btn ghost small ${c||''}" data-a153="${a}">${t}</button>`;
+ const inp=(id,v,t)=>`<label class="ain"><span>${t}</span><input id="${id}" type="number" value="${v}"></label>`;
+ const AG=ags();RA=RA&&AG.find(a=>a.id===RA)?RA:(AG[0]&&AG[0].id);RB=RB&&AG.find(a=>a.id===RB)&&RB!==RA?RB:((AG.find(a=>a.id!==RA)||{}).id);
+ const sel=(id,opts,cur)=>`<select id="${id}">${opts.map(([v,t])=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(t)}</option>`).join('')}</select>`;
+ const nmA=id=>{const a=G.agents.find(x=>x.id===id);return a?agN(a):id};
+ const rels=Object.entries(w.rel||{});const KN=['숨김','낌새','알려짐'];
+ const EVS=(window.EV119||[]);EVSEL=EVSEL&&EVS.find(e=>e.id===EVSEL)?EVSEL:(EVS[0]&&EVS[0].id);
+ const ok=id=>{const e=EVS.find(x=>x.id===id);try{return e&&e.cond&&!!e.cond()}catch(_){return false}};
+ const th=Object.entries(w.th||{}).filter(([k,v])=>v&&typeof v==='object'&&'s' in v);
+ const seen=(()=>{try{return JSON.parse(localStorage.getItem('lcw_end134')||'[]')}catch(e){return []}})();
+ const ENDS=window.END134||[];
+ return `
+ <details class="fold" open><summary><span class="lbl">시설 상태</span><small>사기 ${w.w.morale} · 소문 ${w.w.rumor} · 감사 ${w.w.audit} · 손상 ${w.w.damage}</small></summary><div class="fold-b">
+  <div class="agrid2">${inp('w153morale',w.w.morale,'사기')}${inp('w153rumor',w.w.rumor,'소문')}${inp('w153audit',w.w.audit,'감사')}${inp('w153damage',w.w.damage,'시설 손상')}</div>
+  <div class="row">${B('wApply','적용','prim')}${B('wFix','시설 완전 복구 (손상 0)')}${B('wHit','100 도달 기록 지우기')}${B('wNorm','모두 기본값')}</div>
+  <p class="note">100 도달 기록 ${w.hit?Object.keys(w.hit).filter(k=>w.hit[k]).join(', ')||'없음':'없음'} · 이 기록이 있으면 다음 날 해당 엔딩이 열린다.</p></div></details>
+ <details class="fold"><summary><span class="lbl">아이템</span><small>${Object.keys(w.it||{}).length}종 보유</small></summary><div class="fold-b">
+  <div class="row">${B('itAll','모든 아이템 1개씩')}${B('itClear','모두 비우기','bad')}</div>
+  <div class="admlist">${Object.keys(l.IT).map(k=>`<div class="admrow"><b>${l.IT[k].ic} ${esc(tx(l.IT[k].n))}</b><span class="code">${esc(k)} · 보유 ${w.it[k]||0}</span><span class="row">${B('itAdd:'+k,'+1')}${B('itSub:'+k,'-1')}</span></div>`).join('')}</div>
+  <div class="row">기념품 ${(w.ks||[]).length}개 ${Object.keys(l.KS).map(k=>B('ksAdd:'+k,`${l.KS[k].ic} ${tx(l.KS[k].n)} 추가`)).join('')}${B('ksClear','기념품 비우기')}</div></div></details>
+ <details class="fold"><summary><span class="lbl">관계도</span><small>${rels.length}쌍</small></summary><div class="fold-b">
+  <div class="row">${sel('r153a',AG.map(a=>[a.id,agN(a)]),RA)}${sel('r153b',AG.map(a=>[a.id,agN(a)]),RB)}${sel('r153t',[['none','관계 없음 (지우기)']].concat(Object.keys(l.RT).map(k=>[k,tx(l.RT[k].n)])),'friend')}${sel('r153k',[['2','알려짐'],['1','낌새'],['0','숨김']],'2')}${B('relSet','설정','prim')}</div>
+  <div class="row">${B('relShow','모두 공개')}${B('relHide','모두 숨김')}${B('relRoll','무작위로 새 관계 굴리기')}${B('relClear','모든 관계 지우기','bad')}</div>
+  <div class="admlist">${rels.length?rels.map(([k,r])=>{const [a,b]=k.split('|');return `<div class="admrow"><b>${esc(nmA(a))} ↔ ${esc(nmA(b))}</b><span class="code">${esc(l.RT[r.t]?tx(l.RT[r.t].n):r.t)} · ${KN[r.kn|0]||r.kn} · D${r.d||'?'}</span><span class="row">${B('relKn:'+k,'공개 단계 +1')}${B('relDel:'+k,'삭제')}</span></div>`}).join(''):'<p class="note">아직 관계가 없다.</p>'}</div></div></details>
+ <details class="fold"><summary><span class="lbl">사건 · 시나리오</span><small>${EVS.length}개</small></summary><div class="fold-b">
+  <div class="row">${sel('e153',EVS.map(e=>[e.id,`${ok(e.id)?'● ':'○ '}${e.id}${e.story?' · 이야기':e.big?' · 큰 사건':' · 작은 사건'}`]),EVSEL)}${B('evRun','조건 맞으면 실행','prim')}${B('evForce','강제 실행')}</div>
+  <p class="note">● = 지금 조건이 맞는 사건. 강제 실행은 직원을 임의로 넣어 시작하며, 이야기 사건은 앞 단계가 없으면 어색하거나 열리지 않을 수 있다.</p>
+  <div class="lbl" style="margin-top:8px">이야기 갈래 (진행 상태)</div>
+  <div class="row">${B('thAllDone','모두 완료 처리')}${B('thClear','모든 갈래 초기화','bad')}</div>
+  <div class="admlist">${th.length?th.map(([k,v])=>`<div class="admrow"><b>${esc(k)}</b><span class="code">단계 ${v.s}${v.s===9?' (끝)':''}${v.end?` · 결말 ${esc(v.end)}`:''}${v.d?` · D${v.d}`:''}</span><span class="row">${B('thUp:'+k,'단계 +1')}${B('thDone:'+k,'완료')}${B('thDel:'+k,'삭제')}</span></div>`).join(''):'<p class="note">진행 중인 갈래가 없다.</p>'}</div></div></details>
+ <details class="fold"><summary><span class="lbl">엔딩</span><small>수집 ${ENDS.filter(e=>seen.includes(e[0])).length}/${ENDS.length}</small></summary><div class="fold-b">
+  <div class="row">${B('endAll','수집 전부 해금')}${B('endReset','수집 초기화','bad')}</div>
+  <p class="note">「보기」는 지금 기록을 그 엔딩으로 끝낸다. 두 번 눌러야 실행된다.</p>
+  <div class="admlist">${ENDS.map(e=>`<div class="admrow"><b>${esc(e[1]())}</b><span class="code">${esc(e[0])} · ${seen.includes(e[0])?'수집함':'미수집'}</span><span class="row">${B('endGo:'+e[0],ENDARM===e[0]?'한 번 더 눌러 확인':'보기',ENDARM===e[0]?'bad':'')}${B('endMark:'+e[0],seen.includes(e[0])?'수집 해제':'수집 표시')}</span></div>`).join('')}</div></div></details>`}
+function admAct(act,root){const [k,id]=act.split(/:(.+)/);const l=L(),w=W();if(!l||!w)return;const v=i=>{const e=root.querySelector('#'+i);return e?e.value:null};const num=i=>{const n=parseFloat(v(i));return isNaN(n)?null:n};
+ const seenL=()=>{try{return JSON.parse(localStorage.getItem('lcw_end134')||'[]')}catch(e){return []}};const seenS=a=>{try{localStorage.setItem('lcw_end134',JSON.stringify(a))}catch(e){}};
+ const F={
+  wApply:()=>{for(const n of ['morale','rumor','audit','damage']){const x=num('w153'+n);if(x!=null)w.w[n]=Math.max(0,Math.min(100,x))}toast('시설 상태 적용')},
+  wFix:()=>{w.w.damage=0;if(w.hit)w.hit.damage=0;w.dl153=0},wHit:()=>{w.hit={}},wNorm:()=>{Object.assign(w.w,{morale:55,rumor:0,audit:0,damage:0});w.hit={};w.dl153=0},
+  itAll:()=>{Object.keys(l.IT).forEach(k=>{w.it[k]=Math.max(1,w.it[k]||0)})},itClear:()=>{w.it={}},
+  itAdd:()=>{w.it[id]=(w.it[id]||0)+1},itSub:()=>{if(w.it[id]>0)w.it[id]--;if(!w.it[id])delete w.it[id]},
+  ksAdd:()=>{w.ks=w.ks||[];w.ks.push({k:id,d:G.day,n:'관리자'})},ksClear:()=>{w.ks=[]},
+  relSet:()=>{RA=v('r153a');RB=v('r153b');if(!RA||!RB||RA===RB)return toast('서로 다른 두 사람을 고른다','warn');const key=l.pk(RA,RB);const t=v('r153t');if(t==='none')delete w.rel[key];else w.rel[key]={t,kn:+v('r153k'),d:G.day,kd:G.day}},
+  relShow:()=>{Object.values(w.rel).forEach(r=>{r.kn=2;r.kd=G.day})},relHide:()=>{Object.values(w.rel).forEach(r=>{r.kn=0})},relClear:()=>{w.rel={};w.rr={}},
+  relRoll:()=>{w.rr={};toast('다음 아침에 직원 쌍마다 관계를 다시 굴린다')},
+  relKn:()=>{const r=w.rel[id];if(r){r.kn=Math.min(2,(r.kn|0)+1);r.kd=G.day}},relDel:()=>{delete w.rel[id]},
+  evRun:()=>{EVSEL=v('e153');const r=window.ev119run?window.ev119run(EVSEL,false):'none';if(r==='cond')toast('지금은 조건이 맞지 않는다 — 강제 실행을 쓴다','warn');else if(r!=='ok')toast('실행하지 못했다','bad');return r==='ok'?'keep':0},
+  evForce:()=>{EVSEL=v('e153');const r=window.ev119run?window.ev119run(EVSEL,true):'none';if(r!=='ok')toast('이 사건은 강제로 열 수 없다','bad');return r==='ok'?'keep':0},
+  thAllDone:()=>{Object.values(w.th).forEach(t=>{if(t&&typeof t==='object'&&'s' in t){t.s=9;t.end=t.end||'admin'}})},thClear:()=>{w.th={}},
+  thUp:()=>{const t=w.th[id];if(t)t.s=Math.min(9,(t.s|0)+1)},thDone:()=>{const t=w.th[id];if(t){t.s=9;t.end=t.end||'admin'}},thDel:()=>{delete w.th[id]},
+  endAll:()=>{seenS((window.END134||[]).map(e=>e[0]))},endReset:()=>{seenS([])},
+  endMark:()=>{const s=seenL();const i=s.indexOf(id);if(i>=0)s.splice(i,1);else s.push(id);seenS(s)},
+  endGo:()=>{if(ENDARM!==id){ENDARM=id;return}ENDARM=null;const e=(window.END134||[]).find(x=>x[0]===id);if(!e)return;
+   if(/^b4[789]$/.test(id)&&typeof badEnding==='function'){badEnding(+id.slice(1));return 'keep'}
+   window.finish134(id,`${e[1]()} · 관리자 확인`,'관리자 탭에서 연 엔딩이다.');return 'keep'}};
+ const f=F[k];if(!f)return;let r;try{r=f()}catch(e){console.error(e);toast('오류: '+e.message,'bad')}
+ if(k!=='endGo')ENDARM=null;try{save()}catch(e){}
+ if(r!=='keep'){try{render()}catch(e){}if(TAB==='admin')renderTabs()}}
+renderTabs=(f=>function(){const r=f.apply(this,arguments);try{if(TAB==='admin'&&typeof ADM!=='undefined'&&ADM&&G){const card=document.querySelector('#tabview .adm');if(card&&!card.querySelector('.a153')){card.insertAdjacentHTML('beforeend',`<div class="a153">${admHtml()}</div>`);
+ card.querySelectorAll('[data-a153]').forEach(b=>b.onclick=()=>admAct(b.dataset.a153,card));
+ const s=card.querySelector('#e153');if(s)s.onchange=()=>{EVSEL=s.value};['r153a','r153b'].forEach(i=>{const e=card.querySelector('#'+i);if(e)e.onchange=()=>{if(i==='r153a')RA=e.value;else RB=e.value}})}}}catch(e){console.error(e)}return r})(renderTabs);
+
+/* ---------------- 스타일 ---------------- */
+const st=document.createElement('style');st.textContent=`
+.dmg153{display:grid!important;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:8px;row-gap:3px;align-items:center;cursor:pointer;font:inherit;color:inherit;text-align:left;min-width:132px}
+.dmg153 .hl{grid-column:1;font-size:12px;color:var(--muted)}.dmg153 b{grid-column:2;justify-self:end;font-family:var(--f-num,inherit);font-size:17px}
+.dmg153b{grid-column:1/-1;display:block;height:5px;background:rgba(255,255,255,.1);overflow:hidden}.dmg153b i{display:block;height:100%;background:#5fcf8a;transition:width .3s}
+.dmg153 small{display:none}
+.dmg153.l1 .dmg153b i{background:#e6cf5a}.dmg153.l2 .dmg153b i{background:#f09a4c}.dmg153.l3 .dmg153b i,.dmg153.l4 .dmg153b i{background:#ef5b51}
+.dmg153.l2 b{color:#f6b06a}.dmg153.l3 b,.dmg153.l4 b{color:#ff7a70}
+.dmg153.l3,.dmg153.l4{box-shadow:0 0 0 1px #ef5b51 inset;animation:dmg153p 1.6s ease-in-out infinite}
+@keyframes dmg153p{50%{box-shadow:0 0 0 2px #ef5b51 inset,0 0 14px rgba(239,91,81,.45)}}
+.dmg153.fl153{animation:dmg153f .5s ease-out 3}@keyframes dmg153f{50%{background:rgba(239,91,81,.35)}}
+.dmg153:focus-visible{outline:2px solid var(--accent)}
+.dmg153p{display:grid;gap:10px}.dmg153p h4{margin:6px 0 0}.dmg153p p{margin:0}
+.dmg153big{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 10px}.dmg153big b{font-size:34px;font-family:var(--f-num,inherit)}.dmg153big .dmg153b{grid-column:1/-1;height:8px}
+.dmg153big.l1 .dmg153b i{background:#e6cf5a}.dmg153big.l2 .dmg153b i{background:#f09a4c}.dmg153big.l3 .dmg153b i,.dmg153big.l4 .dmg153b i{background:#ef5b51}
+.dmg153l{margin:0;padding-left:18px;display:grid;gap:4px}
+.dmg153t{width:100%;border-collapse:collapse;font-size:13.5px}.dmg153t th,.dmg153t td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.dmg153t th{white-space:nowrap;font-family:var(--f-num,inherit)}
+.a153 .admrow{grid-template-columns:minmax(0,1fr)}
+@media (prefers-reduced-motion:reduce){.dmg153.l3,.dmg153.l4,.dmg153.fl153{animation:none}}`;
+document.head.appendChild(st);
 })();
 </script>
 
