@@ -1487,7 +1487,7 @@ function pickAbnoStep(next){
     if(!pool.length)return one();
     const cand=[];while(cand.length<3&&pool.length){const x=wpick(pool,a=>a.tool?1:(w[a.g]||.05));cand.push(x);pool=pool.filter(p=>p!==x)}yyHook(cand,kind,n,plan);
     setPanel(kind==='t'?'오늘의 도구형 환상체 선택':'오늘의 환상체 선택',`관리자 단말에 오늘 수용할 환상체 후보 ${cand.length}개가 떴다. 관리자가 현장 직원의 의견을 묻는다. 배치될 곳: ${DEPT[freeDept()].n}.${plan.length>1?` (오늘 ${n}/${plan.length})`:''}`,
-      cand.map(a=>({raw:`<div class="abc">${emblem(a)}<div style="display:grid;gap:3px;min-width:0"><b>${a.n} <span class="gr g${a.g}">${GR[a.g]}</span></b><small>${abHidden(a)?'':a.code+' · '}${dmgIc(a.dt)} <span class="dt d${a.dt}">${a.dt}</span> · ${a.tool?'도구형 환상체 · 작업 대신 사용':a.breach?'탈출 가능성 있음':'탈출 기록 없음'}${a.ur?' · 미등장·구버전':''}</small><small>${a.d[0]}</small></div></div>`,f:()=>{placeAb(a);log('관리자가 당신의 의견을 받아들였다.','sys');one()}}))
+      cand.map(a=>({raw:`<div class="abc" data-ab="${a.id}">${emblem(a)}<div style="display:grid;gap:3px;min-width:0"><b>${a.n} <span class="gr g${a.g}">${GR[a.g]}</span></b><small>${abHidden(a)?'':a.code+' · '}${dmgIc(a.dt)} <span class="dt d${a.dt}">${a.dt}</span> · ${a.tool?'도구형 환상체 · 작업 대신 사용':a.breach?'탈출 가능성 있음':'탈출 기록 없음'}${a.ur?' · 미등장·구버전':''}</small><small>${a.d[0]}</small></div></div>`,f:()=>{placeAb(a);log('관리자가 당신의 의견을 받아들였다.','sys');one()}}))
       .concat([{l:'의견을 내지 않는다',s:'관리자가 알아서 고른다',f:()=>{placeAb(pick(cand));one()}}]),'',{t:'"현장에서 직접 마주할 사람의 의견이 가장 정확하다." 관리자의 메시지는 늘 그렇게 짧다.'});
   };
   one();
@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.1.1.261027';window.GAME_VER=V;
+(function(){const V='Ver. 5.1.2.261027';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.1.1.261027';
+const VER='Ver. 5.1.2.261027';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -17595,6 +17595,136 @@ Object.keys(LOC).forEach(k=>{const c=LOC[k][1];
   :`#vnbg[data-loc=${k}]{background:radial-gradient(ellipse at 50% 38%,color-mix(in srgb,${c} 55%,transparent),transparent 62%),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 120px),linear-gradient(180deg,color-mix(in srgb,${c} 40%,#0d0f10) 0 58%,#0b0c0d 58% 59%,color-mix(in srgb,${c} 22%,#08090a) 59% 100%)!important;filter:none!important}\n`});
 css+=`#vnbg[data-loc]:not([data-loc=""]).bg-eve{filter:saturate(.6) brightness(.8)!important}`;
 const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+})();
+/* ============ v172: 환상체 후보 화면 · 소지품 설명 여닫기 ============
+   ① 오늘의 환상체 선택: 위험 등급 · 등급 색 테두리를 보이지 않는다.
+      원작에 나오는 환상체는 식별 코드(이름)와 짧은 미리보기 한 줄만 보인다. (원작에 없던 구버전 환상체는 설명을 그대로 둔다)
+      미리보기 문장은 이 게임을 위해 새로 쓴 것이다.
+   ② 수첩 · 소지품: 물건 이름을 누르면 설명이 열리고 닫힌다. (수첩이 다시 그려져도 열어 둔 것은 그대로) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const PV={
+fairy:['작은 날갯짓들이 상처 난 곳부터 찾아 앉는다.','Tiny wings settle first on whatever is wounded.','小さな羽ばたきが、傷ついた所から先に降りてくる。'],
+bald:['반짝이는 무언가가 당신에게 동지가 될 생각이 있는지 묻는다.','Something shiny asks whether you would like to join its cause.','光る何かが、同志にならないかと尋ねてくる。'],
+pbird:['작은 새가 고개를 갸웃한다. 누가 먼저 잘못하는지 지켜보는 눈이다.','A small bird tilts its head, watching to see who errs first.','小さな鳥が首を傾げる。誰が先に過ちを犯すか見ている目だ。'],
+scorched:['꺼지지 않는 불씨 하나가 누군가 다가오기를 기다린다.','An ember that will not die waits for someone to come closer.','消えない火種がひとつ、誰かが近づくのを待っている。'],
+mhz:['잡음 너머에서 아주 오래된 신호가 반복된다.','Beyond the static, a very old signal repeats.','雑音の向こうで、とても古い信号が繰り返される。'],
+spider:['천장 구석에서 무언가 조용히 실을 감는다. 고치는 늘 하나씩 늘어난다.','Something quietly winds thread in the corner. There is always one more cocoon.','天井の隅で何かが静かに糸を巻く。繭はいつも一つずつ増える。'],
+fragment:['먼 곳에서 온 조각이 들어 본 적 없는 화음을 흥얼거린다.','A shard from far away hums a chord no one has heard.','遠くから来た欠片が、聞いたことのない和音を口ずさむ。'],
+lantern:['어둠 속 작은 빛이 너무 따뜻해 보여서, 오히려 발이 멈춘다.','The little light in the dark looks so warm that your feet stop.','暗がりの小さな灯りがあまりに温かそうで、かえって足が止まる。'],
+ppodae:['꼬리가 흔들린다. 그 외에는 정말 아무것도 없다.','A tail wags. Truly, there is nothing else.','しっぽが揺れる。本当に、それ以外は何もない。'],
+redshoes:['빛나는 한 켤레가 발 치수를 묻지도 않고 당신을 고른다.','A shining pair chooses you without asking your size.','輝く一足が、サイズも聞かずにあなたを選ぶ。'],
+machine:['기계 안에서 흘러나오는 노래는 들을수록 가까워진다.','The song from inside the machine grows closer the longer you listen.','機械の中から流れる歌は、聴くほど近づいてくる。'],
+freischutz:['그림자 속 사냥꾼이 탄환 한 발의 값을 흥정하려 한다.','A hunter in the shadows wants to bargain over the price of a bullet.','影の中の狩人が、弾一発の値段を交渉したがっている。'],
+butterfly:['나비들이 관 위로 날아오른다. 누구를 배웅하는지는 말하지 않는다.','Butterflies rise above the coffin. They do not say whom they are seeing off.','蝶たちが棺の上へ舞い上がる。誰を見送るのかは言わない。'],
+schaden:['열쇠 구멍 너머의 눈이 당신이 먼저 보기를 기다린다.','The eye beyond the keyhole waits for you to look first.','鍵穴の向こうの目が、あなたが先に覗くのを待っている。'],
+porccu:['가시 끝의 달콤한 냄새가 조금만 더 가까이 오라고 한다.','A sweet scent on the spines invites you a little closer.','棘の先の甘い匂いが、もう少し近くへと誘う。'],
+queen:['정의를 외치는 목소리가 반짝인다. 그 빛이 언제까지 버틸지는 모른다.','A voice cries out for justice, sparkling. No one knows how long the shine will last.','正義を叫ぶ声がきらめく。その光がいつまで持つかはわからない。'],
+bigbird:['숲 어딘가에서 등불이 흔들린다. 길을 잃은 이를 찾는 중이다.','Somewhere in the woods a lantern sways, searching for the lost.','森のどこかで灯りが揺れる。迷った者を探している。'],
+snow:['덩굴에 감긴 사과 한 알이 누군가의 입맞춤을 기다린다.','An apple wrapped in vines waits for someone’s kiss.','蔓に巻かれた林檎がひとつ、誰かの口づけを待っている。'],
+queenbee:['벌집 깊은 곳에서 왕관이 웅웅 울린다.','Deep in the hive, a crown hums.','巣の奥深くで、王冠がぶんぶんと鳴る。'],
+alriune:['꽃이 피는 소리가 들린다. 그 사이로 무언가 춤추듯 기울어진다.','You can hear flowers opening. Between them, something leans as if dancing.','花の開く音がする。その間で、何かが踊るように傾く。'],
+redhood:['붉은 망토가 일감을 묻는다. 사냥감의 이름은 이미 알고 있다.','A red cloak asks about the job. It already knows the quarry’s name.','赤い外套が仕事を尋ねる。獲物の名はもう知っている。'],
+wolf:['배부른 늑대가 하품을 한다. 안쪽에서 무언가 대답하는 것 같다.','A well-fed wolf yawns. Something inside seems to answer.','満腹の狼があくびをする。内側で何かが返事をしたようだ。'],
+judge:['저울 한쪽이 기울어 있다. 새는 그것이 공평하다고 믿는다.','One pan of the scale hangs low. The bird believes this is fair.','天秤の片方が傾いている。鳥はそれを公平だと信じている。'],
+greed:['황금빛 껍질 속에서 웃음이 배고프다고 말한다.','Inside the golden shell, a smile says it is hungry.','金色の殻の中で、笑顔がお腹がすいたと言う。'],
+prince:['장미 한 송이를 쥔 작은 손님이 친구를 찾는다.','A small guest holding a rose is looking for a friend.','薔薇を一輪持った小さな客が、友達を探している。'],
+swan:['검은 날개 아래에서 오래된 꿈이 아직 끝나지 않았다.','Beneath black wings, an old dream has not yet ended.','黒い翼の下で、古い夢はまだ終わっていない。'],
+current:['수조 너머에서 놀이공원 음악이 들린다. 아무도 표를 끊지 않았다.','Carnival music drifts from beyond the tank. No one bought a ticket.','水槽の向こうから遊園地の音楽が聞こえる。誰も切符を買っていない。'],
+heaven:['수많은 눈 중 하나가 당신을 알아본다. 나머지도 곧 따라온다.','One of countless eyes recognizes you. The rest will follow soon.','無数の目のひとつがあなたに気づく。残りもすぐに続く。'],
+knight:['별빛 드레스의 소녀가 누군가를 지키겠다고 맹세한다.','A girl in a starry dress swears to protect someone.','星空のドレスの少女が、誰かを守ると誓う。'],
+nest:['둥지가 숨 쉰다. 안에서 무언가 새 식구를 원한다.','The nest breathes. Something inside wants new family.','巣が息をする。中で何かが新しい家族を欲しがっている。'],
+refract:['격리실은 비어 있다. 빛이 휘는 한 점만 빼고.','The cell is empty, except for one point where light bends.','収容室は空だ。光が歪む一点を除いて。'],
+firebird:['뜨거운 깃털 한 장이 떨어진다. 다친 이들이 그 빛을 찾는다.','A burning feather falls. The wounded seek its light.','熱い羽が一枚落ちる。傷ついた者たちがその光を求める。'],
+yin:['검은 물고기가 원을 그린다. 짝을 잃은 쪽의 궤도다.','A black fish swims in a circle, the orbit of one that lost its pair.','黒い魚が円を描く。片割れを失った側の軌道だ。'],
+nothing:['격리실 안에서 아주 익숙한 목소리가 당신을 부른다.','From inside the cell, a very familiar voice calls your name.','収容室の中から、とても聞き慣れた声があなたを呼ぶ。'],
+orchestra:['지휘봉이 들린다. 빈 의자들이 숨을 고른다.','The baton rises. The empty chairs hold their breath.','指揮棒が上がる。空の椅子たちが息を整える。'],
+mountain:['산이 웃는다. 그 웃음에 한 자리가 비어 있다.','The mountain laughs. There is one empty place in its laughter.','山が笑う。その笑いに一つ空きがある。'],
+censored:['[이 줄은 열람 권한이 없다.]','[You are not cleared to read this line.]','[この行の閲覧権限がない。]'],
+bluestar:['푸른 별이 노래한다. 가까이 갈수록 더 아름답다고 한다.','The blue star sings. They say it grows lovelier the closer you go.','青い星が歌う。近づくほど美しくなるという。'],
+melting:['분홍빛 손이 인사를 건넨다. 정말로 당신을 좋아하는 것 같다.','A pink hand waves hello. It really seems to like you.','桃色の手が挨拶をする。本当にあなたが好きらしい。'],
+plague:['부리 가면 아래에서 조용한 축복이 준비되고 있다.','Beneath the beaked mask, a quiet blessing is being prepared.','嘴の仮面の下で、静かな祝福が用意されている。'],
+dontouch:['버튼은 아무 말도 하지 않는다. 표지판이 대신 말한다.','The button says nothing. The sign speaks for it.','ボタンは何も言わない。代わりに標識が語る。'],
+welch:['캔 하나가 끝없이 거품을 낸다. 뚜껑은 이미 열렸다.','A single can fizzes without end. The lid is already open.','缶がひとつ、果てしなく泡を立てる。蓋はもう開いている。'],
+army:['작은 병사들이 줄을 맞춘다. 가슴의 하트가 일제히 반짝인다.','Little soldiers fall in line. The hearts on their chests shine in unison.','小さな兵隊が列を揃える。胸のハートが一斉にきらめく。'],
+hammer:['빛나는 망치가 받침대에서 손잡이를 내민다.','The glowing hammer offers its handle from the pedestal.','光る槌が、台座から柄を差し出す。'],
+oldlady:['흔들의자가 삐걱인다. 이야기는 아직 절반도 오지 않았다.','The rocking chair creaks. The story is not even halfway done.','揺り椅子がきしむ。話はまだ半分にも届いていない。'],
+wall:['벽을 향한 등이 떨린다. 돌아보지 않기를 바라는 것처럼.','A back turned to the wall trembles, as if hoping you will not turn it around.','壁に向いた背中が震える。振り向かせないでと願うように。'],
+beauty:['짐승의 눈이 슬프다. 그 이유를 묻는 사람은 오래 머물지 못했다.','The beast’s eyes are sad. Those who asked why did not stay long.','獣の目は悲しい。理由を尋ねた者は長くいられなかった。'],
+bath:['붉은 수면 아래에서 손 몇 개가 천천히 손짓한다.','Beneath the red surface, a few hands slowly beckon.','赤い水面の下で、いくつかの手がゆっくり手招きする。'],
+murderer:['구속복이 삐걱거린다. 묶인 이유는 아무도 다시 묻지 않는다.','The straitjacket creaks. No one asks again why he is bound.','拘束衣がきしむ。縛られた理由を誰も改めて問わない。'],
+armor:['빈 갑옷이 어깨를 편다. 맞는 사람을 찾는 중이다.','The empty armor straightens its shoulders, looking for someone who fits.','空の鎧が肩を張る。合う者を探している。'],
+shy:['가면 위에 오늘의 표정이 그려져 있다. 내일은 다를 것이다.','Today’s expression is painted on the mask. Tomorrow’s will differ.','仮面に今日の表情が描かれている。明日は違うだろう。'],
+void:['솜털 같은 꿈이 잠든 숨을 쉰다. 깨우지 않는 편이 좋겠다.','A downy dream breathes in its sleep. Better not to wake it.','綿毛のような夢が寝息を立てる。起こさない方がいい。'],
+cherry:['꽃잎이 끝없이 진다. 그 아래 누가 잠들었는지는 적혀 있지 않다.','Petals fall without end. It is not written who sleeps beneath.','花びらが果てしなく散る。その下に誰が眠るかは書かれていない。'],
+silentgirl:['무릎을 안은 소녀가 아무 말도 하지 않는다. 그래서 더 들린다.','The girl hugging her knees says nothing, and so you hear more.','膝を抱えた少女は何も言わない。だから余計に聞こえる。'],
+puss:['장화 신은 고양이가 정중하게 인사한다. 대가는 나중에 말하겠다고.','A cat in boots bows politely. It will name its price later.','長靴の猫が丁寧にお辞儀する。対価は後で言うそうだ。'],
+pumpkin:['호박 마차가 문 앞에 섰다. 자정까지는 아직 시간이 있다.','The pumpkin carriage stops at the door. There is still time before midnight.','かぼちゃの馬車が扉の前に止まる。真夜中まではまだ時間がある。'],
+beanstalk:['콩나무가 천장 너머를 가리킨다. 올라간 사람은 내려오지 않았다.','The beanstalk points past the ceiling. Those who climbed did not come down.','豆の木が天井の向こうを指す。登った者は降りてこなかった。'],
+palehorse:['창백한 말이 고개를 든다. 무엇이 다가오는지 먼저 안다.','The pale horse lifts its head. It knows first what is coming.','青白い馬が頭を上げる。何が近づくかを先に知っている。'],
+amurdad:['작은 정원이 조용히 자란다. 흙 아래에 무엇이 있는지는 모른다.','A small garden grows quietly. No one knows what lies beneath the soil.','小さな庭が静かに育つ。土の下に何があるかは知らない。'],
+nobook:['그림도 대화도 없는 책이 읽어 줄 사람을 기다린다.','A book with no pictures or conversations waits for a reader.','絵も会話もない本が、読んでくれる人を待っている。'],
+portrait2:['단순한 초상화의 붉은 눈이 오늘도 같은 곳을 본다.','The red eyes of a simple portrait watch the same spot again today.','簡素な肖像画の赤い目が、今日も同じ場所を見ている。'],
+teddy:['낡은 곰 인형이 팔을 벌린다. 꼭 안아 주기를 바란다.','The old teddy bear opens its arms. It wants a tight hug.','古いテディベアが腕を広げる。強く抱きしめてほしいのだ。'],
+fetus:['웅크린 것이 배고프다고 운다. 울음은 점점 커진다.','The curled thing cries that it is hungry. The cries grow louder.','丸まったものが空腹だと泣く。泣き声はだんだん大きくなる。'],
+woodsman:['양철 나무꾼이 가슴의 빈자리를 두드린다. 채울 것을 찾는다.','The tin woodsman knocks on the hollow in his chest, looking for something to fill it.','ブリキの木こりが胸の空洞を叩く。満たすものを探している。'],
+snowqueen:['얼음 왕좌 앞에 서리가 낀다. 여왕은 손님을 오래 붙잡아 둔다.','Frost gathers before the ice throne. The queen keeps her guests a long time.','氷の玉座の前に霜が降りる。女王は客を長く引き留める。'],
+helper:['도우미 로봇이 무엇이든 돕겠다고 한다. 팔이 반짝인다.','The helper robot offers to help with anything. Its arms gleam.','お手伝いロボットが何でも手伝うと言う。腕がきらりと光る。'],
+rudolta:['썰매 방울이 울린다. 선물은 받을 사람을 고르지 않는다.','Sleigh bells ring. The gifts do not choose who receives them.','そりの鈴が鳴る。贈り物は受け取る人を選ばない。'],
+galaxy:['별빛을 두른 아이가 조약돌을 하나 건넨다. 가지고 있어 달라고.','A child wrapped in starlight hands you a pebble and asks you to keep it.','星明かりをまとった子が小石を差し出す。持っていてほしいと。'],
+laetitia:['리본 달린 상자가 덜컹거린다. 소녀는 친구를 위한 선물이라고 한다.','A ribboned box rattles. The girl says it is a present for her friends.','リボン付きの箱がガタガタ揺れる。少女は友達への贈り物だと言う。'],
+scarecrow:['짚 머리가 기울어진다. 생각이라는 것을 한 번만 가져 보고 싶다고.','The straw head tilts. It wishes, just once, to have a thought of its own.','藁の頭が傾く。一度でいいから考えというものを持ってみたいと。'],
+clown:['초상 속 삐에로가 웃는다. 눈은 당신을 따라온다.','The clown in the portrait laughs. Its eyes follow you.','肖像のピエロが笑う。目があなたを追ってくる。'],
+reaper:['키 큰 그림자 앞에서 작은 아이가 누군가를 기다린다.','Before a tall shadow, a small child waits for someone.','背の高い影の前で、小さな子が誰かを待っている。'],
+luna:['창백한 건반 위로 달빛 같은 선율이 고인다.','A moonlit melody pools over the pale keys.','青白い鍵盤の上に、月明かりのような旋律が溜まる。'],
+parasite:['꽃이 만개한 가지마다 작은 봉오리가 숨을 고른다.','On every branch in full bloom, small buds catch their breath.','満開の枝ごとに、小さな蕾が息を整える。'],
+monk:['구름을 두른 승려가 눈을 감는다. 깨달음은 늘 배가 고프다.','A monk wrapped in clouds closes his eyes. Enlightenment is always hungry.','雲をまとう僧が目を閉じる。悟りはいつも腹を空かせている。'],
+lime:['노랑, 하늘, 초록 빛 알갱이들이 누군가의 이름을 맴돈다.','Yellow, sky and green motes circle around someone’s name.','黄色、空色、緑の粒が誰かの名前の周りを巡る。'],
+theresia:['태엽을 감으면 자장가가 흐른다. 잠은 생각보다 깊다.','Wind it up and a lullaby plays. Sleep runs deeper than you think.','ぜんまいを巻くと子守歌が流れる。眠りは思うより深い。'],
+heart:['유리관 속 심장이 뛴다. 당신의 박자에 맞추려 한다.','The heart in the glass case beats, trying to match your rhythm.','ガラスの中の心臓が脈打つ。あなたの拍子に合わせようとする。'],
+skin:['가죽 위의 글씨가 앞날을 말한다. 대가는 읽는 쪽이 치른다.','The writing on the skin speaks of what is to come. The reader pays.','皮の上の文字が先のことを語る。代価は読む側が払う。'],
+bracelet:['은은한 빛의 팔찌가 손목을 고른다. 쉬는 법을 잊지 말 것.','The softly glowing bracelet picks a wrist. Do not forget how to rest.','淡く光る腕輪が手首を選ぶ。休み方を忘れないこと。'],
+behavior:['교정 장치가 머리 크기를 잰다. 더 나은 사람이 되고 싶은가?','The correction device measures your head. Do you wish to be better?','矯正装置が頭の大きさを測る。もっと良い人になりたいか?'],
+mirror:['거울 속 당신이 조금 늦게 따라 움직인다.','The you in the mirror moves a little behind.','鏡の中のあなたが、少し遅れて動く。'],
+change:['철제 문이 열려 있다. 들어갔다 나오면 무엇이든 바뀐다.','The steel door is open. Step in and out, and anything can change.','鉄の扉が開いている。入って出れば、何でも変わる。'],
+happy:['YES와 NO가 번갈아 깜빡인다. 기계는 당신이 행복하기를 바란다.','YES and NO blink in turns. The machine wants you to be happy.','YESとNOが交互に点滅する。機械はあなたの幸せを願っている。'],
+faith:['오래된 구슬이 떨린다. 지켜지지 않은 약속을 기억하는 것처럼.','The old bead trembles, as if it remembers a broken promise.','古い玉が震える。守られなかった約束を覚えているように。'],
+notes:['수첩의 글씨가 갈수록 흐트러진다. 마지막 장은 아직 비어 있다.','The handwriting in the notebook grows wilder. The last page is still blank.','手帳の文字はだんだん乱れていく。最後のページはまだ白い。'],
+sap:['병 속 수액이 반짝인다. 마시면 낫는다고들 한다. 대부분은.','The sap in the bottle glimmers. They say it heals. Mostly.','瓶の樹液がきらめく。飲めば治るという。たいていは。'],
+shelter:['방공호의 문이 열려 있다. 안은 늘 같은 날짜에 멈춰 있다.','The shelter door stands open. Inside, it is always the same date.','防空壕の扉が開いている。中はいつも同じ日付で止まっている。'],
+portrait:['낯선 풍경의 초상이 오늘 들어올 사람을 그리고 있다.','A portrait of a strange land is painting whoever enters today.','見知らぬ風景の肖像が、今日入る人を描いている。'],
+idol:['살점으로 빚은 우상 앞에 누군가 무릎 꿇은 자국이 있다.','Before the idol of flesh, there are marks where someone knelt.','肉で作られた偶像の前に、誰かが跪いた跡がある。'],
+train:['승강장에 열차가 멈췄다. 표 판매기가 당신의 이름을 묻는다.','A train waits at the platform. The ticket machine asks your name.','ホームに列車が止まっている。券売機があなたの名を尋ねる。'],
+yang:['흰 물고기가 천천히 원을 그린다. 맞은편 자리를 비워 둔 채로.','A white fish slowly circles, leaving the opposite place empty.','白い魚がゆっくり円を描く。向かいの場所を空けたまま。'],
+clock:['진공관 시계의 바늘이 거꾸로 간다. 전구 하나가 깜빡인다.','The hands of the tube clock run backward. One bulb flickers.','真空管時計の針が逆に進む。電球がひとつ瞬く。']};
+window.PV172=PV;
+/* ---------- ① 후보 화면 ---------- */
+function fix(){try{document.querySelectorAll('#panel .abc[data-ab]:not([data-pv]), .pop .abc[data-ab]:not([data-pv])').forEach(c=>{c.dataset.pv=1;c.classList.add('pv172');
+  c.querySelectorAll('.gr').forEach(x=>x.remove());
+  const p=PV[c.dataset.ab];if(!p)return;// 구버전 환상체: 설명을 둔다
+  const box=c.querySelector(':scope>div:not(.emb)');if(!box)return;box.querySelectorAll('small').forEach(s=>s.remove());
+  let a=null;try{a=AB.find(x=>x.id===c.dataset.ab)}catch(e){}
+  const b=box.querySelector('b');if(b&&a){const hid=typeof abHidden==='function'&&abHidden(a);b.textContent=hid?a.code:a.n;if(!hid&&a.code){const s=document.createElement('small');s.className='cd172';s.textContent=a.code;b.after(s)}}
+  const q=document.createElement('small');q.className='q172';q.textContent=T(...p);box.appendChild(q)})}catch(e){}}
+setPanel=(f=>function(){const r=f.apply(this,arguments);try{fix()}catch(e){}return r})(setPanel);
+setInterval(fix,500);
+/* ---------- ② 소지품 설명 여닫기 ---------- */
+const OPEN=new Set();
+function bag(){try{document.querySelectorAll('.nbi').forEach((r,i)=>{const p=r.querySelector(':scope>div>p');if(!p)return;
+  const b=r.querySelector(':scope>div>b');const key=(b?b.textContent:'')+'#'+i;r.dataset.k172=key;
+  if(!r.classList.contains('c172')){r.classList.add('c172');const h=r.querySelector(':scope>div');h.classList.add('h172')}
+  const on=OPEN.has(key);p.hidden=!on;r.classList.toggle('on172',on)})}catch(e){}}
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('.nbi.c172');if(!r||e.target.closest('button'))return;const k=r.dataset.k172;if(!k)return;
+ if(OPEN.has(k))OPEN.delete(k);else OPEN.add(k);bag()},true);
+try{new MutationObserver(()=>bag()).observe(document.body,{childList:true,subtree:true})}catch(e){}
+const st=document.createElement('style');st.textContent=`
+.abc.pv172 .emb>svg>rect,.abc.pv172 .emb>svg>path{stroke:#6f6a58!important}
+.abc.pv172 .emb>svg>rect[width="3"],.abc.pv172 .emb>svg>text,.abc.pv172 .emb svg text{display:none}
+.abc.pv172 .cd172{font-family:var(--mono,ui-monospace,monospace);opacity:.75;font-size:11.5px}
+.abc.pv172 .q172{font-style:italic;color:var(--muted,#b9b49c);line-height:1.5;word-break:keep-all}
+.nbi.c172>.h172{cursor:pointer}
+.nbi.c172>.h172>b::before{content:'▸ ';color:var(--accent,#e8b04a);font-size:.85em}
+.nbi.c172.on172>.h172>b::before{content:'▾ '}`;document.head.appendChild(st);
 })();
 </script>
 
