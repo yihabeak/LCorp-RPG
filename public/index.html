@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.2.2.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.2.3.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.2.2.261028';
+const VER='Ver. 5.2.3.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -16598,6 +16598,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.class
 
 /* ---------------- 이야기 화면 (가운데 위) ---------------- */
 let PANEL={head:'',body:'',subj:null},SUBJ=null,DOCK=null,LASTD=null;
+window.vnReset156=function(){SUBJ=null;DOCK=null;PANEL={head:'',body:'',subj:null};try{const sp=$i('vnspr');if(sp){sp.dataset.key='';sp.innerHTML='';sp.className=''}if(G&&$i('C156'))vnRender()}catch(e){}};
 const seph=k=>({k:'seph',d:k});
 function figAb(a){try{const x=window.figAb162&&window.figAb162(a);if(x)return x;const img=typeof userImg==='function'&&userImg(a.id);if(img)return `<img src="${img}" alt="">`;return window.creature127?window.creature127(a.id,a.dt,a.g,typeof abHidden==='function'&&abHidden(a)):emblem(a,true)}catch(e){return ''}}
 function figAg(a){try{const h=lbAllyFig({key:'ag',ag:a});const m=/<svg[\s\S]*<\/svg>/.exec(h);return m?m[0]:h}catch(e){return ''}}
@@ -18195,6 +18196,72 @@ forceNextDay=(f=>function(){try{const d=typeof ketD==='function'?ketD():0;
 emergencyNext=(f=>function(next){try{const d=typeof ketD==='function'?ketD():0;if(d&&ketReady()&&!(G.breachQ&&G.breachQ.length)&&G.min<T_FORCE)return ketClear(()=>f.call(this,next))}catch(e){}return f.apply(this,arguments)})(emergencyNext);
 // 날이 새로 시작될 때 직접 작업 수를 확실히 비운다
 startDay=(f=>function(){const fresh=G&&!G.flags['init'+G.day];const r=f.apply(this,arguments);try{if(fresh){G.dw=0;G.dwDay=G.day}}catch(e){}return r})(startDay);
+})();
+/* ============ v182: 장면 그림(배경 · 인물)이 지난 장면에 묶여 남던 문제 ============
+   원인: 작업을 시작하면 그 환상체를 「지금 장면의 주인공」으로 10분 동안 붙잡아 두는데, 작업 도중 죽거나
+   저장을 불러오거나 체크포인트로 돌아가면 그 표시를 지우는 곳이 없었다. → 다시 시작해도 격리실 · 환상체 모습이 남는다.
+   · 죽음 · 엔딩 · 저장 불러오기 · 새 날 시작 · 게임 상태가 통째로 바뀔 때(체크포인트 · 슬롯 전환) 장면을 비운다.
+   · 끝난 전투가 남아 배경이 전투 화면으로 묶이지 않게 한다. */
+(function(){
+const R=()=>{try{window.vnReset156&&window.vnReset156()}catch(e){}};
+die=(f=>function(){const r=f.apply(this,arguments);R();return r})(die);
+ending=(f=>function(){const r=f.apply(this,arguments);R();return r})(ending);
+loadSave=(f=>function(){R();const r=f.apply(this,arguments);R();return r})(loadSave);
+startDay=(f=>function(){R();return f.apply(this,arguments)})(startDay);
+let LG=null;
+function chk(){if(typeof G!=='undefined'&&G!==LG){const first=LG===null;LG=G;if(!first)R()}}
+/* 게임 상태가 바뀐 직후 첫 그리기 전에 비운다 */
+render=(f=>function(){try{chk()}catch(e){}return f.apply(this,arguments)})(render);
+try{if(typeof resumePhase==='function')resumePhase=(f=>function(){try{chk()}catch(e){}return f.apply(this,arguments)})(resumePhase)}catch(e){}
+setInterval(()=>{try{
+ chk();
+}catch(e){}},500);
+})();
+/* ============ v183: 마지막 닷새(46~50일차) ============
+   ① 세피라의 부탁(하루 한 번 건네는 미션)은 46일차부터 나오지 않는다. 찾아가면 인사만 나눈다.
+   ② 46일차부터 초과 근무로 날이 강제로 넘어가지 않는다. 시각은 「?」로만 보인다.
+   ③ 50일차 아침, 관리자 아인의 시설 전체 방송 (글은 새로 쓴 것이다).
+   ④ END 화면: END 위에 「수고했어, 그리고 고마워.」 */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+const LATE=()=>typeof G!=='undefined'&&G&&G.day>=46;
+/* ---------- ① 세피라의 부탁 ---------- */
+misOffer=(f=>function(k,self){if(!LATE())return f.apply(this,arguments);
+ try{G.misOffered=G.day;if(self){const S=SEPH[k];log(`${NL(S.n)}: ${pick(S.hi)}`,'q');addSp(2);render()}}catch(e){}})(misOffer);
+/* ---------- ② 강제로 날이 넘어가지 않는다 · 시각 ? ---------- */
+tick=(f=>function(skipId,mins){const was=G?G.min:0;const r=f.apply(this,arguments);
+ try{if(LATE()&&!G.dead&&G.min>=T_FORCE-1){const m=Math.max(1,mins||30);
+   if(was>=T_FORCE-1){/* 시각은 멈춰 있지만 초과 근무의 피로는 계속 쌓인다 */G.otAcc=(G.otAcc||0)+m;const n=Math.floor(G.otAcc/20);if(n){G.otAcc-=n*20;addSp(-n,T('초과 근무의 피로로','from overtime fatigue','残業の疲れで'))}}
+   G.min=T_FORCE-1}}catch(e){}return r})(tick);
+forceNextDay=(f=>function(){if(LATE()&&!G.dead&&!G.ended){G.min=Math.min(G.min,T_FORCE-1);try{render();workMenu()}catch(e){}return}return f.apply(this,arguments)})(forceNextDay);
+clock=(f=>function(m){if(LATE())return '?';return f.apply(this,arguments)})(clock);
+renderTop=(f=>function(){const r=f.apply(this,arguments);try{if(LATE()){const c=[...document.querySelectorAll('#daybox .hud-cell')].find(x=>/time|시각|時刻/i.test(x.querySelector('.hl')?.textContent||''));
+  if(c){const d=c.querySelector('.dim');if(d)d.textContent='';const b=c.querySelector('b');if(b){b.textContent='?';b.style.color=''}}}}catch(e){}return r})(renderTop);
+/* 46일차부터: 「다음 날 09:00이 되면 강제로 날이 바뀐다」 안내를 지운다 (어느 언어로 그려졌든) */
+const FD=[/\s*다음 날 09:00이 되면 강제로 날이 바뀐다\.\s*/g,/\s*다음 날 09:00이 되면 강제로 날이 바뀌어요\.\s*/g,/\s*At 09:00 the next day, the day changes automatically\.\s*/g,/\s*翌日09:00になると強制的に日が変わります。\s*/g];
+function scrub(){if(!LATE())return;try{document.querySelectorAll('#panel,.pop').forEach(root=>{root.querySelectorAll('li').forEach(li=>{if(FD.some(r=>{r.lastIndex=0;return r.test(li.textContent)})&&FD.some(r=>{r.lastIndex=0;return li.textContent.replace(r,'').trim()===''}))li.remove()});
+ const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){let t=n.nodeValue,o=t;FD.forEach(r=>{r.lastIndex=0;t=t.replace(r,' ')});if(t!==o)n.nodeValue=t.replace(/^ +/,o.startsWith(' ')?' ':'')}})}catch(e){}}
+let SQ=0;try{new MutationObserver(()=>{if(SQ)return;SQ=1;requestAnimationFrame(()=>{SQ=0;scrub()})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+/* ---------- ③ 50일차 · 아인의 방송 ---------- */
+const AY=()=>T('아인','Ayin','アイン');
+const L=[
+ ['(스피커가 켜지는 소리. 시설의 모든 층, 모든 방에 같은 목소리가 흐른다.)','(The speakers click on. The same voice flows into every floor and every room of the facility.)','（スピーカーの入る音。施設のすべての階、すべての部屋に同じ声が流れる。）',0],
+ ['"관리자다. 처음이자 마지막으로, 너희 모두에게 직접 말한다."','"This is the Manager. For the first and last time, I am speaking to all of you directly."','「管理人だ。最初で最後に、君たち全員へ直接話す。」',1],
+ ['"오늘이 쉰 번째 날이다. 너희가 견뎌 온 날들은 헛된 반복이 아니었다. 쓰러진 사람도, 끝까지 버틴 사람도, 그 하루하루가 모두 이곳에 쌓여 있다."','"Today is the fiftieth day. The days you endured were not empty repetition. Those who fell and those who held on — every single day of theirs is stacked here."','「今日は五十日目だ。君たちが耐えてきた日々は、無駄な繰り返しではなかった。倒れた者も、最後まで踏みとどまった者も、その一日一日がすべてここに積み重なっている。」',1],
+ ['"나는 너희에게 많은 것을 말하지 않았다. 변명할 생각은 없다. 다만 이 일이 무엇을 위한 것이었는지는 오늘 너희 눈으로 보게 될 것이다."','"I did not tell you much. I have no intention of making excuses. But what all of this was for, you will see with your own eyes today."','「私は君たちに多くを語らなかった。弁解するつもりはない。ただ、これが何のためだったのかは、今日その目で見ることになる。」',1],
+ ['"마지막 할당량이 채워지면 빛이 시설을 채울 것이다. 두려워하지 마라. 오늘만큼은 그 누구도 이곳에서 죽지 않는다."','"When the last quota is filled, light will fill the facility. Do not be afraid. Today, of all days, no one will die here."','「最後のノルマが満たされれば、光が施設を満たす。恐れるな。今日だけは、ここで誰も死なない。」',1],
+ ['"그러니 평소처럼 일해 다오. 격리실 문을 열고, 서로의 이름을 불러 주고, 끝까지 함께 있어 다오."','"So work as you always have. Open the containment doors, call each other by name, and stay together until the end."','「だから、いつも通り働いてくれ。収容室の扉を開け、互いの名前を呼び、最後まで共にいてくれ。」',1],
+ ['"…이상이다."','"…That is all."','「…以上だ。」',1],
+ ['(방송이 끊긴다. 잠깐의 정적 뒤, 어딘가에서 누군가 먼저 작업 장갑을 끼는 소리가 들린다.)','(The broadcast cuts out. After a brief silence, somewhere, someone is the first to pull on their work gloves.)','（放送が途切れる。短い静寂のあと、どこかで誰かが真っ先に作業手袋をはめる音がする。）',0]];
+function cast(){if(!G||G.day!==50||G.ended||G.arc||G.arcPre||G.theEnd||G.flags.ein183)return false;if(typeof POP!=='undefined'&&POP)return false;if(typeof B!=='undefined'&&B&&!B.done)return false;
+ G.flags.ein183=1;save();
+ pages(L.map(x=>({title:T('시설 전체 방송','Facility-wide broadcast','施設全体放送'),spk:x[3]?AY():'',t:T(x[0],x[1],x[2])})),()=>{log(T('아인의 방송이 끝났다. 마지막 근무가 시작된다.','Ayin\'s broadcast has ended. The last shift begins.','アインの放送が終わった。最後の勤務が始まる。'),'q');render();workMenu()});return true}
+workMenu=(f=>function(){if(cast())return;return f.apply(this,arguments)})(workMenu);
+/* ---------- ④ END 화면 ---------- */
+theEnd=(f=>function(){const r=f.apply(this,arguments);try{const b=document.getElementById('theEndBtn');if(b&&!document.getElementById('te183')){const s=document.createElement('div');s.id='te183';
+  s.textContent=T('수고했어, 그리고 고마워.','Good work. And thank you.','お疲れさま。そして、ありがとう。');b.parentNode.insertBefore(s,b)}}catch(e){}return r})(theEnd);
+const st=document.createElement('style');st.textContent=`#te183{font-size:clamp(17px,2.4vw,22px);letter-spacing:.06em;color:#4a4439;margin-bottom:-12px;font-weight:500}`;document.head.appendChild(st);
 })();
 </script>
 
