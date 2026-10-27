@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.2.3.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.2.4.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.2.3.261028';
+const VER='Ver. 5.2.4.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18245,18 +18245,32 @@ function scrub(){if(!LATE())return;try{document.querySelectorAll('#panel,.pop').
 let SQ=0;try{new MutationObserver(()=>{if(SQ)return;SQ=1;requestAnimationFrame(()=>{SQ=0;scrub()})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
 /* ---------- ③ 50일차 · 아인의 방송 ---------- */
 const AY=()=>T('아인','Ayin','アイン');
+/* 아인의 말투: 차분하고 다정한 반말 (~자 · ~거야 · ~줘 · ~지 · ~네). 원작처럼 에너지가 10%씩 찰 때마다 방송한다. 문장은 새로 쓴 것이다. */
 const L=[
- ['(스피커가 켜지는 소리. 시설의 모든 층, 모든 방에 같은 목소리가 흐른다.)','(The speakers click on. The same voice flows into every floor and every room of the facility.)','（スピーカーの入る音。施設のすべての階、すべての部屋に同じ声が流れる。）',0],
- ['"관리자다. 처음이자 마지막으로, 너희 모두에게 직접 말한다."','"This is the Manager. For the first and last time, I am speaking to all of you directly."','「管理人だ。最初で最後に、君たち全員へ直接話す。」',1],
- ['"오늘이 쉰 번째 날이다. 너희가 견뎌 온 날들은 헛된 반복이 아니었다. 쓰러진 사람도, 끝까지 버틴 사람도, 그 하루하루가 모두 이곳에 쌓여 있다."','"Today is the fiftieth day. The days you endured were not empty repetition. Those who fell and those who held on — every single day of theirs is stacked here."','「今日は五十日目だ。君たちが耐えてきた日々は、無駄な繰り返しではなかった。倒れた者も、最後まで踏みとどまった者も、その一日一日がすべてここに積み重なっている。」',1],
- ['"나는 너희에게 많은 것을 말하지 않았다. 변명할 생각은 없다. 다만 이 일이 무엇을 위한 것이었는지는 오늘 너희 눈으로 보게 될 것이다."','"I did not tell you much. I have no intention of making excuses. But what all of this was for, you will see with your own eyes today."','「私は君たちに多くを語らなかった。弁解するつもりはない。ただ、これが何のためだったのかは、今日その目で見ることになる。」',1],
- ['"마지막 할당량이 채워지면 빛이 시설을 채울 것이다. 두려워하지 마라. 오늘만큼은 그 누구도 이곳에서 죽지 않는다."','"When the last quota is filled, light will fill the facility. Do not be afraid. Today, of all days, no one will die here."','「最後のノルマが満たされれば、光が施設を満たす。恐れるな。今日だけは、ここで誰も死なない。」',1],
- ['"그러니 평소처럼 일해 다오. 격리실 문을 열고, 서로의 이름을 불러 주고, 끝까지 함께 있어 다오."','"So work as you always have. Open the containment doors, call each other by name, and stay together until the end."','「だから、いつも通り働いてくれ。収容室の扉を開け、互いの名前を呼び、最後まで共にいてくれ。」',1],
- ['"…이상이다."','"…That is all."','「…以上だ。」',1],
- ['(방송이 끊긴다. 잠깐의 정적 뒤, 어딘가에서 누군가 먼저 작업 장갑을 끼는 소리가 들린다.)','(The broadcast cuts out. After a brief silence, somewhere, someone is the first to pull on their work gloves.)','（放送が途切れる。短い静寂のあと、どこかで誰かが真っ先に作業手袋をはめる音がする。）',0]];
+ ['(스피커가 켜진다. 늘 안내 방송을 하던 목소리가 아니다. 시설의 모든 방에 낮고 차분한 목소리가 흐른다.)','(The speakers come on. It is not the voice that usually makes announcements. A low, calm voice fills every room of the facility.)','（スピーカーが入る。いつもの案内放送の声ではない。低く落ち着いた声が施設のすべての部屋に流れる。）',0],
+ ['"다들 들리지? 오늘 방송은 내가 할게. 낯선 목소리라 조금 어색해도 이해해 줘."','"Can everyone hear me? I\'ll be making today\'s announcements. It might feel strange hearing an unfamiliar voice, so bear with me."','「みんな、聞こえてるかな？今日の放送は僕がするよ。聞き慣れない声で少し戸惑うかもしれないけど、許してほしい。」',1],
+ ['"오늘이 마지막 날이야. 쉰 번의 아침을 지나서 여기까지 왔어. 끝까지 남은 사람도, 먼저 떠난 사람도 있었지. 그 하루하루가 모여서 오늘이 된 거야."','"Today is the last day. We came here through fifty mornings. Some stayed to the end, some left before us. All of those days added up to today."','「今日が最後の日だ。五十回の朝を越えてここまで来た。最後まで残った人も、先に去った人もいたね。その一日一日が集まって、今日になったんだ。」',1],
+ ['"오늘만큼은 아무도 쓰러지지 않을 거야. 그러니까 겁먹지 말고, 늘 하던 대로 해 줘."','"Today, no one will fall. So don\'t be afraid. Just do what you\'ve always done."','「今日だけは、誰も倒れない。だから怖がらずに、いつも通りにやってほしい。」',1],
+ ['"…그럼, 시작하자."','"…Well then, let\'s begin."','「…じゃあ、始めよう。」',1],
+ ['(방송이 잠시 멎는다. 어딘가에서 누군가 먼저 작업 장갑을 끼는 소리가 들린다.)','(The broadcast pauses. Somewhere, someone is the first to pull on their work gloves.)','（放送がしばし止む。どこかで誰かが真っ先に作業手袋をはめる音がする。）',0]];
+/* 에너지가 찰 때마다 (기존 v103의 아인 대사를 대신한다) */
+const M=[[.1,'바닥이 조금 움직여도 놀라지 마. 시설이 제자리를 찾아가는 중이야.','Don\'t be startled if the floor moves a little. The facility is finding its place.','床が少し動いても驚かないで。施設が本来の場所へ向かっているところなんだ。'],
+ [.2,'에너지가 차오르는 소리, 들려? 너희가 하루하루 모아 온 거야.','Can you hear the energy rising? That\'s what you gathered, day by day.','エネルギーが満ちていく音、聞こえる？君たちが一日一日集めてきたものだよ。'],
+ [.3,'오래 기다리게 했지. 대답 없는 날들이 길었을 거야.','I kept you waiting a long time. Those days without answers must have felt long.','長く待たせたね。答えのない日々は長かっただろう。'],
+ [.4,'버틴다는 게 얼마나 무거운 일인지, 나도 조금은 알아.','I know, at least a little, how heavy it is just to hold on.','耐えるということがどれほど重いことか、僕も少しは知ってる。'],
+ [.5,'절반이야. 서두르지 않아도 돼. 천천히, 하나씩 하자.','Halfway. There\'s no need to hurry. Slowly, one thing at a time.','半分だ。急がなくていい。ゆっくり、ひとつずつやろう。'],
+ [.6,'위쪽이 밝아지고 있어. 꽤 오랫동안 잊고 있던 색이네.','It\'s getting brighter above us. A color I\'d forgotten for a long time.','上のほうが明るくなってきた。ずいぶん長いこと忘れていた色だね。'],
+ [.7,'우린 너무 깊은 곳에 있었지. 이제 올라갈 차례야.','We were too deep for too long. Now it\'s our turn to rise.','僕たちは深すぎる場所にいた。今度は上がる番だ。'],
+ [.8,'바깥 공기는 차가울지도 몰라. 그래도 괜찮아. 곧 따뜻해질 테니까.','The air outside might be cold. That\'s all right. It will be warm soon.','外の空気は冷たいかもしれない。それでも大丈夫。すぐに温かくなるから。'],
+ [.9,'누구도 다른 누구 대신 아프지 않아도 되는 곳. 내가 바란 건 그 정도였어.','A place where no one has to hurt in someone else\'s stead. That was all I wished for.','誰かの代わりに誰かが傷つかなくていい場所。僕が願ったのは、それくらいのことだった。'],
+ [.95,'거의 다 왔어. 손을 멈추지 말아 줘.','We\'re almost there. Please don\'t stop now.','もうすぐだ。手を止めないでほしい。'],
+ [1,'고마워. 여기까지 와 줘서. 이제 내 차례는 끝났어.','Thank you for coming this far. My part is over now.','ありがとう。ここまで来てくれて。もう僕の出番は終わりだ。']];
+tick=(f=>function(){try{if(G&&G.day===50)G.ein50=99}catch(e){}const r=f.apply(this,arguments);
+ try{if(G&&G.day===50&&!G.ended&&!G.arc&&G.flags.ein183){const fr=G.pe/Math.max(1,quota());G.ay183=G.ay183||0;
+  while(G.ay183<M.length&&fr>=M[G.ay183][0]){const x=M[G.ay183];G.ay183++;log(T(`📢 아인: "${x[1]}"`,`📢 Ayin: "${x[2]}"`,`📢 アイン：「${x[3]}」`),'q');try{toast(T('시설 방송 · 아인','Broadcast · Ayin','施設放送 · アイン'))}catch(e){}}}}catch(e){}return r})(tick);
 function cast(){if(!G||G.day!==50||G.ended||G.arc||G.arcPre||G.theEnd||G.flags.ein183)return false;if(typeof POP!=='undefined'&&POP)return false;if(typeof B!=='undefined'&&B&&!B.done)return false;
  G.flags.ein183=1;save();
- pages(L.map(x=>({title:T('시설 전체 방송','Facility-wide broadcast','施設全体放送'),spk:x[3]?AY():'',t:T(x[0],x[1],x[2])})),()=>{log(T('아인의 방송이 끝났다. 마지막 근무가 시작된다.','Ayin\'s broadcast has ended. The last shift begins.','アインの放送が終わった。最後の勤務が始まる。'),'q');render();workMenu()});return true}
+ G.ein50=99;pages(L.map(x=>({title:T('시설 전체 방송','Facility-wide broadcast','施設全体放送'),spk:x[3]?AY():'',t:T(x[0],x[1],x[2])})),()=>{log(T('아인의 방송이 끝났다. 마지막 근무가 시작된다.','Ayin\'s broadcast has ended. The last shift begins.','アインの放送が終わった。最後の勤務が始まる。'),'q');render();workMenu()});return true}
 workMenu=(f=>function(){if(cast())return;return f.apply(this,arguments)})(workMenu);
 /* ---------- ④ END 화면 ---------- */
 theEnd=(f=>function(){const r=f.apply(this,arguments);try{const b=document.getElementById('theEndBtn');if(b&&!document.getElementById('te183')){const s=document.createElement('div');s.id='te183';
