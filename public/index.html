@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.1.0.261027';window.GAME_VER=V;
+(function(){const V='Ver. 5.1.1.261027';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -11929,7 +11929,7 @@ function endDesert(c,r){const a=c.a;if(good(r)||r==='part'){a.sp=r==='crit'?20:g
   return T(`보안팀이 도착했다. ${a.n}은(는) 끌려가며 한 번도 뒤돌아보지 않았다. 그 뒤로 그를 본 사람은 없다. (직원 이탈)`,`Security arrived. ${a.n} was dragged away without once looking back. No one saw them again. (Employee lost)`,`保安チームが到着した。${a.n}は連れて行かれる間、一度も振り返らなかった。その後、彼を見た者はいない。（職員離脱）`)}
 
 /* ---------- 사건 진행 창 ---------- */
-function runEvent(ev,c,cost){const stage=(e)=>{const opts=e.opts(c);
+function runEvent(ev,c,cost){const stage=(e)=>{window.CUREV171=e.id;const opts=e.opts(c);
     popup(ev.big?T('사건','Incident','事件'):T('작은 사건','Small incident','小さな出来事'),`<div class="vn112b"><div class="vn112l na"><p>${e.t(c)}</p></div></div><div class="vn112f"><div class="choices one">${opts.map((o,i)=>{const m=mods(Object.assign({a:c.a},o));const p=Math.round(chanceOf(o.dc,m.M,m.adv)*100);return `<button class="ch" data-o="${i}"><b>${tx(o.l)}</b><small>${tx(SN[o.stat])} · ${T('난이도','DC','難易度')} ${o.dc} · ${p}%${m.adv>0?' · '+T('이점','Adv.','有利'):m.adv<0?' · '+T('불리','Disadv.','不利'):''}</small></button>`}).join('')}</div></div>`,
       el=>{el.classList.add('vn112','decide');el.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{const o=opts[+b.dataset.o];const box=el.querySelector('.vn112f');
         D119.run(box,{stat:o.stat,dc:o.dc,a:c.a,soothe:o.soothe,label:tx(o.l)},res=>{
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.1.0.261027';
+const VER='Ver. 5.1.1.261027';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -16608,6 +16608,8 @@ function findSubj(txt){if(!txt||!G)return null;
  try{const abs=contained().filter(a=>!a.tool&&a.n&&txt.includes(a.n)).sort((x,y)=>y.n.length-x.n.length);if(abs.length)return {k:'ab',a:abs[0]}}catch(e){}
  try{const ags=G.agents.filter(a=>a.n&&a.n.length>=2&&(txt.includes(a.n)||txt.includes(NL(a.n))));if(ags.length)return {k:'ag',a:ags[0]}}catch(e){}
  try{for(const k of Object.keys(SEPH)){const n=SEPH[k].n;if(n&&(txt.includes(n)||txt.includes(NL(n))))return seph(k)}}catch(e){}
+ // 동기 · 사무직 동료(미라 등): 직원 목록의 이름과 달리 보이거나 직원이 아닌 사람도 모습을 보인다
+ try{const C0={haewon:'해원',doyun:'도윤',mira:'미라'};for(const k of Object.keys(CO)){const n=CO[k].n;if(!((n&&txt.includes(n))||(C0[k]&&txt.includes(C0[k]))))continue;const ag=typeof coAgent==='function'&&coAgent(k);if(ag&&ag.alive!==false)return {k:'ag',a:ag};return {k:'ag',a:{id:'co_'+k,n,dept:k==='mira'?'control':(G.dept||'control'),co:k,sp:0,hp:1,alive:true}}}}catch(e){}
  return null}
 function bgOf(s){if(!G)return 'dept';if(typeof B!=='undefined'&&B&&!B.done)return 'bat';if(s&&s.k==='ab')return 'cell';if(G.phase==='evening'||G.phase==='night')return 'eve';if(s&&(s.k==='ag'||s.k==='seph'))return 'talk';return 'dept'}
 function vnRender(){const C=$i('C156');if(!C||!G)return;
@@ -17540,6 +17542,59 @@ const st=document.createElement('style');st.textContent=css+`
 #inf170 .h{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;background:#f4ee9a;color:#111}
 #inf170 .h b{font-weight:800}#inf170 .x{margin-left:auto;min-width:32px;height:28px;border:1px solid #111;background:#111;color:#f4ee9a;cursor:pointer}
 #inf170 .b{overflow:auto;padding:12px 16px;color:#ebe6d0;line-height:1.65;font-size:14px}`;document.head.appendChild(st);
+})();
+/* ============ v171: 사건마다 일어나는 곳(위치)과 그곳의 배경 ============
+   · 사건(EV119)마다 위치를 정해 두고, 사건 창이 가운데에 붙어 있는 동안 그 위치의 배경을 보인다.
+   · 부서 · 격리실처럼 그림이 있는 곳은 그 그림을, 아직 그림이 없는 곳(휴게실 · 복도 등)은 임시 배경을 쓴다.
+     그림이 생기면 window.BG171[위치]에 넣기만 하면 바로 바뀐다.
+   · 표에 없는 이야기 장면(출근 전 · 퇴근 후 등)은 글에 나온 장소 낱말로 위치를 고른다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+// 위치 이름 · 임시 배경 색
+const LOC={
+ lounge:[['휴게실','Lounge','休憩室'],'#7a5a2e'],corridor:[['복도','Corridor','廊下'],'#3d4a52'],cafeteria:[['구내식당','Cafeteria','社員食堂'],'#6b4a2a'],
+ locker:[['탈의실 · 사물함','Locker room','更衣室'],'#3e4a3a'],dorm:[['기숙 구역','Dormitory','宿舎'],'#3a3550'],storage:[['창고 · 세탁실','Storage','倉庫'],'#4f4436'],
+ elevator:[['엘리베이터','Elevator','エレベーター'],'#47484c'],monitor:[['관측실','Monitoring room','観測室'],'#21414a'],maint:[['정비 통로','Maintenance shaft','整備通路'],'#4a3a2c']};
+const DEPTS=['control','info','train','safety','central','disc','welfare','extract','record','arch'];
+// 사건별 위치 (d:부서 = 그 부서의 그림 · dept = 지금 부서 · cell = 격리실)
+const EV={frozen:'cell',frozen2:'cell',desert:'storage',desert2:'storage',contra:'locker',panicR:'corridor',supply:'storage',coffee:'lounge',card:'corridor',bday:'lounge',roster:'dept',spar:'d:disc',memo:'dept',
+ s_mal1:'d:control',s_mal2:'d:control',s_yes1:'d:info',s_hod1:'d:train',s_net1:'d:safety',s_tip1:'d:central',s_geb1:'d:disc',s_che1:'d:welfare',s_bin1:'d:extract',s_hok1:'d:record',s_ang1:'dept',
+ w_cult:'storage',w_smoke:'lounge',w_power:'monitor',w_qlip:'monitor',d_lunch:'cafeteria',d_elev:'elevator',d_insom:'lounge',d_plant:'dept',d_sport:'lounge',d_dream:'lounge',d_photo:'dept',d_typo:'dept',d_vend:'lounge',d_old:'locker',d_song:'corridor',d_check:'d:safety',d_gossip:'lounge',
+ w_night:'lounge',w_nest:'dept',w_fixer:'corridor',w_debt:'locker',w_audit:'dept',d_pay:'dept',d_flu:'dept',d_call:'lounge',d_cat:'lounge',d_rain:'corridor',d_news:'lounge',d_welcome:'lounge',d_resign:'dept',
+ i_bunk:'dorm',i_radio:'lounge',i_library:'d:record',i_idphoto:'locker',i_sock:'storage',i_ramen:'dept',i_pw:'dept',i_stair:'corridor',i_bean:'lounge',i_manual:'dept',i_ant:'locker',i_roof:'maint',i_note:'dept',i_knit:'lounge',i_board:'lounge',i_push:'lounge',i_name:'corridor',i_puzzle:'lounge',i_water:'lounge',i_fridge:'lounge',i_clock:'corridor',i_hair:'locker',i_mask:'d:train',i_alarm:'corridor',i_graffiti:'corridor',i_glasses:'dept',i_nick:'lounge',i_sofa:'lounge',i_mimic:'lounge',i_suit:'storage',i_mop:'dept',i_tea:'lounge',i_relic:'locker',i_firstego:'dept',i_laugh:'d:safety',i_rev:'dept',i_sleep:'dept',i_diary:'corridor',i_vent:'maint',i_alone:'dept',i_letters:'corridor',i_quiet:'dept',i_karaoke:'lounge',i_piano:'lounge',i_food:'cafeteria',i_tissue:'corridor',i_stairs:'corridor',i_lost:'corridor',i_smell:'locker',i_cup:'lounge',i_badge:'dept',i_shoes:'locker',i_coin:'dept',i_scar:'locker',i_count:'dept',i_seed:'cafeteria',i_mirror:'locker',i_hum:'dept',i_bet:'lounge',i_hug:'corridor',i_morning:'elevator',i_tag:'dept',i_wish:'lounge',i_wake:'lounge',i_count2:'lounge',
+ l143_sign:'corridor',l143_clash:'corridor',l143_grief:'locker',l143_grief2:'dorm',l143_doc:'dept',l143_doc2:'dept',l143_audit:'dept',l143_outage:'corridor',l144_inform:'dept',l144_seph:'dept',l144_club:'lounge',l144_club2:'lounge',l144_ot:'maint',l145_rec1:'dept',l145_rec2:'maint',l145_tape0:'storage',l145_tape:'dept',l145_anniv:'dept'};
+window.EVLOC171=EV;
+// 표에 없는 장면: 글에 처음 나오는 장소 낱말
+const KW=[['cafeteria',/구내식당|식당|배식/],['lounge',/휴게실|자판기|매점/],['dorm',/숙소|기숙/],['locker',/사물함|탈의실|샤워실/],['storage',/창고|세탁실/],['elevator',/엘리베이터/],['corridor',/복도|계단/],['cell',/격리실 안|격리실 앞/]];
+function byText(t){let best=null;KW.forEach(([k,re])=>{const m=re.exec(t);if(m&&(!best||m.index<best[0]))best=[m.index,k]});return best?best[1]:null}
+// 사건 창이 열릴 때 사건 번호를 창에 적어 둔다
+popup=(f=>function(){const ov=f.apply(this,arguments);try{if(window.CUREV171&&ov&&ov.classList&&ov.classList.contains('pop')){ov.dataset.ev=window.CUREV171;window.CUREV171=null}}catch(e){}return ov})(popup);
+function now(){try{if(!G||!document.getElementById('M156'))return null;if(typeof B!=='undefined'&&B&&!B.done)return null;
+  const d=document.querySelector('.pop.dock156');
+  if(d){if(d.dataset.ev&&EV[d.dataset.ev])return EV[d.dataset.ev];if(d.querySelector('.vn112b,.story'))return byText(d.textContent.slice(0,240))}
+  const st=document.querySelector('#vnbody .story');if(st)return byText(st.textContent.slice(0,240));}catch(e){}return null}
+const nm=k=>{const x=LOC[k];return x?T(...x[0]):''};
+let LAST='';
+function apply(){const bg=document.getElementById('vnbg');if(!bg)return;let k=now();
+ // 지금 부서와 같으면 따로 바꿀 것이 없다
+ if(k==='dept')k=null;if(k&&k.startsWith('d:')&&G&&k.slice(2)===G.dept&&!bg.dataset.sp)k=null;
+ const v=k?k.replace(':','-'):'';if(bg.dataset.loc!==v)bg.dataset.loc=v;
+ const wm=document.getElementById('vnwm');if(wm){if(k&&LOC[k]){if(wm.textContent!==nm(k))wm.textContent=nm(k);wm.dataset.l171=1}else if(wm.dataset.l171){delete wm.dataset.l171;try{wm.textContent=(DEPT[G.dept]&&(typeof nameL==='function'?nameL(DEPT[G.dept].n):DEPT[G.dept].n))||''}catch(e){}}}
+ LAST=v}
+setInterval(apply,250);
+try{new MutationObserver(()=>apply()).observe(document.body,{childList:true,subtree:false})}catch(e){}
+// 배경 그림
+const B160=window.BG160||{},B171=window.BG171||{};
+const shade='linear-gradient(180deg,rgba(0,0,0,.08) 35%,rgba(0,0,0,.62))';
+let css='';
+DEPTS.forEach(d=>{if(B160[d])css+=`#vnbg[data-loc="d-${d}"]{background:${shade},url(${B160[d]}) center/cover no-repeat!important;filter:none!important}\n`});
+if(B160.cell)css+=`#vnbg[data-loc=cell]{background:radial-gradient(ellipse at 50% 60%,transparent,rgba(0,0,0,.5) 80%),${shade},url(${B160.cell}) center/cover no-repeat!important;filter:none!important}\n`;
+Object.keys(LOC).forEach(k=>{const c=LOC[k][1];
+ css+=B171[k]?`#vnbg[data-loc=${k}]{background:${shade},url(${B171[k]}) center/cover no-repeat!important;filter:none!important}\n`
+  // 임시 배경: 바닥 원근선 · 벽 패널 · 위치 색
+  :`#vnbg[data-loc=${k}]{background:radial-gradient(ellipse at 50% 38%,color-mix(in srgb,${c} 55%,transparent),transparent 62%),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 120px),linear-gradient(180deg,color-mix(in srgb,${c} 40%,#0d0f10) 0 58%,#0b0c0d 58% 59%,color-mix(in srgb,${c} 22%,#08090a) 59% 100%)!important;filter:none!important}\n`});
+css+=`#vnbg[data-loc]:not([data-loc=""]).bg-eve{filter:saturate(.6) brightness(.8)!important}`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 })();
 </script>
 
