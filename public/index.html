@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.2.4.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.2.5.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.2.4.261028';
+const VER='Ver. 5.2.5.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18253,6 +18253,17 @@ const L=[
  ['"오늘만큼은 아무도 쓰러지지 않을 거야. 그러니까 겁먹지 말고, 늘 하던 대로 해 줘."','"Today, no one will fall. So don\'t be afraid. Just do what you\'ve always done."','「今日だけは、誰も倒れない。だから怖がらずに、いつも通りにやってほしい。」',1],
  ['"…그럼, 시작하자."','"…Well then, let\'s begin."','「…じゃあ、始めよう。」',1],
  ['(방송이 잠시 멎는다. 어딘가에서 누군가 먼저 작업 장갑을 끼는 소리가 들린다.)','(The broadcast pauses. Somewhere, someone is the first to pull on their work gloves.)','（放送がしばし止む。どこかで誰かが真っ先に作業手袋をはめる音がする。）',0]];
+/* 방송 띄우기: 시련이 나타날 때의 알림판과 같은 모양 · 어떤 화면에서든 맨 위에 뜬다 · 여러 개면 차례로 */
+const QB=[];let BUSY=0;
+function pump(){if(BUSY||!QB.length)return;const [pc,t]=QB.shift();BUSY=1;
+ document.querySelectorAll('.ay183').forEach(x=>x.remove());const el=document.createElement('div');el.className='ord62 ay183';
+ el.innerHTML=`<small>${T('시설 전체 방송','Facility-wide broadcast','施設全体放送')} · ${T('에너지','Energy','エネルギー')} ${pc}%</small><b>${AY()}</b><p>"${t}"</p>`;
+ const done=()=>{if(el.isConnected)el.remove();BUSY=0;setTimeout(pump,350)};el.onclick=done;document.body.appendChild(el);try{sfx&&sfx('level')}catch(e){}setTimeout(()=>{if(el.isConnected)done()},7000)}
+const st183=document.createElement('style');st183.textContent=`.ord62.ay183{z-index:2147482300;background:linear-gradient(180deg,#1b1d20,#121315);border-color:#f4ee9a;box-shadow:0 0 0 1px rgba(244,238,154,.35),0 12px 40px rgba(0,0,0,.6),0 0 60px rgba(255,250,220,.18)}
+.ord62.ay183 small{color:#cfc9a8}.ord62.ay183 b{color:#fff8d6;letter-spacing:.08em}.ord62.ay183 p{color:#f1ecd8;font-size:14.5px;line-height:1.6}`;document.head.appendChild(st183);
+/* 행동 중이 아니어도(전투 · 작업 결과 등으로 에너지가 바뀌면) 바로 확인한다 */
+setInterval(()=>{try{if(G&&G.day===50&&!G.ended&&!G.arc&&G.flags.ein183){const fr=G.pe/Math.max(1,quota());G.ay183=G.ay183||0;
+  while(G.ay183<M.length&&fr>=M[G.ay183][0]){const x=M[G.ay183];G.ay183++;log(T(`📢 아인: "${x[1]}"`,`📢 Ayin: "${x[2]}"`,`📢 アイン：「${x[3]}」`),'q');QB.push([Math.round(x[0]*100),T(x[1],x[2],x[3])]);pump()}}}catch(e){}},1000);
 /* 에너지가 찰 때마다 (기존 v103의 아인 대사를 대신한다) */
 const M=[[.1,'바닥이 조금 움직여도 놀라지 마. 시설이 제자리를 찾아가는 중이야.','Don\'t be startled if the floor moves a little. The facility is finding its place.','床が少し動いても驚かないで。施設が本来の場所へ向かっているところなんだ。'],
  [.2,'에너지가 차오르는 소리, 들려? 너희가 하루하루 모아 온 거야.','Can you hear the energy rising? That\'s what you gathered, day by day.','エネルギーが満ちていく音、聞こえる？君たちが一日一日集めてきたものだよ。'],
@@ -18267,7 +18278,7 @@ const M=[[.1,'바닥이 조금 움직여도 놀라지 마. 시설이 제자리�
  [1,'고마워. 여기까지 와 줘서. 이제 내 차례는 끝났어.','Thank you for coming this far. My part is over now.','ありがとう。ここまで来てくれて。もう僕の出番は終わりだ。']];
 tick=(f=>function(){try{if(G&&G.day===50)G.ein50=99}catch(e){}const r=f.apply(this,arguments);
  try{if(G&&G.day===50&&!G.ended&&!G.arc&&G.flags.ein183){const fr=G.pe/Math.max(1,quota());G.ay183=G.ay183||0;
-  while(G.ay183<M.length&&fr>=M[G.ay183][0]){const x=M[G.ay183];G.ay183++;log(T(`📢 아인: "${x[1]}"`,`📢 Ayin: "${x[2]}"`,`📢 アイン：「${x[3]}」`),'q');try{toast(T('시설 방송 · 아인','Broadcast · Ayin','施設放送 · アイン'))}catch(e){}}}}catch(e){}return r})(tick);
+  while(G.ay183<M.length&&fr>=M[G.ay183][0]){const x=M[G.ay183];G.ay183++;log(T(`📢 아인: "${x[1]}"`,`📢 Ayin: "${x[2]}"`,`📢 アイン：「${x[3]}」`),'q');QB.push([Math.round(x[0]*100),T(x[1],x[2],x[3])]);pump()}}}catch(e){}return r})(tick);
 function cast(){if(!G||G.day!==50||G.ended||G.arc||G.arcPre||G.theEnd||G.flags.ein183)return false;if(typeof POP!=='undefined'&&POP)return false;if(typeof B!=='undefined'&&B&&!B.done)return false;
  G.flags.ein183=1;save();
  G.ein50=99;pages(L.map(x=>({title:T('시설 전체 방송','Facility-wide broadcast','施設全体放送'),spk:x[3]?AY():'',t:T(x[0],x[1],x[2])})),()=>{log(T('아인의 방송이 끝났다. 마지막 근무가 시작된다.','Ayin\'s broadcast has ended. The last shift begins.','アインの放送が終わった。最後の勤務が始まる。'),'q');render();workMenu()});return true}
@@ -18276,6 +18287,31 @@ workMenu=(f=>function(){if(cast())return;return f.apply(this,arguments)})(workMe
 theEnd=(f=>function(){const r=f.apply(this,arguments);try{const b=document.getElementById('theEndBtn');if(b&&!document.getElementById('te183')){const s=document.createElement('div');s.id='te183';
   s.textContent=T('수고했어, 그리고 고마워.','Good work. And thank you.','お疲れさま。そして、ありがとう。');b.parentNode.insertBefore(s,b)}}catch(e){}return r})(theEnd);
 const st=document.createElement('style');st.textContent=`#te183{font-size:clamp(17px,2.4vw,22px);letter-spacing:.06em;color:#4a4439;margin-bottom:-12px;font-weight:500}`;document.head.appendChild(st);
+})();
+/* ============ v184: 케테르 억제가 막히던 문제 · 상단 바 좌우 스크롤 ============
+   ① 날이 강제로 넘어갈 때(퇴근하지 못한 채 다음 날 9시) 탈출해 돌아다니던 환상체가 지워지지 않고 다음 날로 남았다.
+      → 「탈출 중」으로 계속 판정되어 클리포트 폭주가 영영 오르지 않음 → 케테르 억제(폭주 Lv6 · Lv10) 진행 불가.
+      지난 날에 생긴 탈출 기록은 새 날이 되면(또는 불러올 때) 처리반이 정리한 것으로 처리한다.
+   ② 안내 화면(케테르 억제 시작 등)에 설명 묶음이 길면 「받아들인다」 버튼이 높이 0으로 눌려 보이지 않았다.
+      → 설명이 있는 화면은 버튼을 맨 위에 두고, 아래 칸을 스크롤할 수 있게 한다.
+   ③ 화면 상단 바(일차 · 시각 · 할당량 …)를 좌우로 스크롤할 수 있게 한다 (마우스 휠로도). */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+function stale(){try{if(!G||!G.roam||!G.roam.length)return;const old=G.roam.filter(r=>{const d=parseInt(String(r.uid||''),10);return d&&d<G.day});if(!old.length)return;
+ old.forEach(r=>{try{(G.agents||[]).concat(G.clerks||[]).filter(a=>a.task&&a.task.r===r.uid).forEach(a=>{a.task=null;a.loc=null});if(r.e&&r.e.type==='ab'&&G.ab[r.e.id]&&typeof ABM!=='undefined'&&ABM[r.e.id])G.ab[r.e.id].cnt=ABM[r.e.id].cnt}catch(e){}
+  log(T(`${r.n} — 지난 근무일에 탈출한 채 남아 있던 것을 처리반이 밤사이 재격리했다.`,`${r.n} — left loose from a previous workday; the cleanup squad recontained it overnight.`,`${r.n} — 前の勤務日から脱走したままだったが、処理班が夜のうちに再収容した。`),'sys')});
+ G.roam=G.roam.filter(r=>!old.includes(r));try{save()}catch(e){}}catch(e){console.error(e)}}
+startDay=(f=>function(){stale();return f.apply(this,arguments)})(startDay);
+render=(f=>function(){stale();return f.apply(this,arguments)})(render);
+/* ③ 상단 바 휠 → 좌우 */
+document.addEventListener('wheel',e=>{const d=e.target.closest&&e.target.closest('#daybox');if(!d||d.scrollWidth<=d.clientWidth+2||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;d.scrollLeft+=e.deltaY;e.preventDefault()},{passive:false});
+const st=document.createElement('style');st.textContent=`
+body.ui156:not(.bat156) #panel#panel:has(>.kvb):has(>.choices){overflow-y:auto!important}
+body.ui156:not(.bat156) #panel#panel:has(>.kvb):has(>.choices)>.choices{order:-1;flex:0 0 auto!important;min-height:max-content;max-height:none!important;overflow:visible!important;margin-bottom:8px}
+body.ui156:not(.bat156) #panel#panel:has(>.kvb):has(>.choices)>h3{order:-2}
+@media (min-width:641px){#daybox{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;max-width:100%;min-width:0}
+ #daybox>*{flex-shrink:0!important}#daybox::-webkit-scrollbar{height:6px}#daybox::-webkit-scrollbar-thumb{background:rgba(244,238,154,.35);border-radius:3px}}`;
+document.head.appendChild(st);
 })();
 </script>
 
