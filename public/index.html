@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.2.1.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.2.2.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.2.1.261028';
+const VER='Ver. 5.2.2.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18177,6 +18177,24 @@ function open(){const L=[...document.querySelectorAll(SEL)];if(!L.length)return;
 setInterval(()=>{try{if(typeof B!=='undefined'&&B&&!B.done)fix()}catch(e){}},300);
 let Q=0;try{new MutationObserver(()=>{if(Q)return;Q=requestAnimationFrame(()=>{Q=0;try{if(typeof B!=='undefined'&&B&&!B.done)fix()}catch(e){}})}).observe(document.getElementById('panel')||document.body,{childList:true,subtree:true})}catch(e){}
 const st=document.createElement('style');st.textContent=`.hid180{display:none!important}`;document.head.appendChild(st);
+})();
+/* ============ v181: 케테르 억제(46~49일) · 같은 날 다시 시작 버그 ============
+   ① 보스(붉은 안개 · 조율자)를 이기거나 조건을 채운 뒤, 긴급 상황이 이어지다 근무 시간이 끝나 버리면
+      「끝내지 못했다 — 같은 날 다시 시작」으로 처리되던 문제: 그때 이미 조건을 채웠으면 완료로 처리하고 다음 날로 넘어간다.
+   ② 같은 날을 다시 시작할 때 지난 시도의 기록이 남던 문제: 오늘의 직접 작업 수 · 돌아다니던 탈출 개체 · 보스 승리 표시를 비운다.
+      (남아 있던 「직접 작업 7/8」 때문에 퇴근 조건이 꼬이고, 보스 승리 표시 때문에 억제가 시작하자마자 끝나 버렸다) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+forceNextDay=(f=>function(){try{const d=typeof ketD==='function'?ketD():0;
+  if(d){if(typeof ketReady==='function'&&ketReady()){G.sup.done=true;G.ketDone=G.ketDone||{};G.ketDone[d]=1;
+     log(T(`케테르의 코어 억제 ${d}일차 — ${KETER[d].n} 완료.`,`Keter's core suppression, day ${d} — ${KETER[d].n} complete.`,`ケテルのコア抑制 ${d}日目 — ${KETER[d].n} 完了。`),'good');try{hum(4)}catch(e){}}
+   else{/* 같은 날을 다시 시작한다: 지난 시도의 흔적을 지운다 */
+     G.dw=0;G.dwDay=G.day;G.roam=[];G.roamFight=null;if(G.ketBoss===G.day)delete G.ketBoss;if(G.wMid===G.day)delete G.wMid;G.selfToday=0}}}catch(e){console.error(e)}
+ return f.apply(this,arguments)})(forceNextDay);
+// 긴급 대응 사이사이에도 조건을 채웠는지 본다 (이기고 나서 근무 화면으로 돌아오기 전에 시간이 끝나지 않게)
+emergencyNext=(f=>function(next){try{const d=typeof ketD==='function'?ketD():0;if(d&&ketReady()&&!(G.breachQ&&G.breachQ.length)&&G.min<T_FORCE)return ketClear(()=>f.call(this,next))}catch(e){}return f.apply(this,arguments)})(emergencyNext);
+// 날이 새로 시작될 때 직접 작업 수를 확실히 비운다
+startDay=(f=>function(){const fresh=G&&!G.flags['init'+G.day];const r=f.apply(this,arguments);try{if(fresh){G.dw=0;G.dwDay=G.day}}catch(e){}return r})(startDay);
 })();
 </script>
 
