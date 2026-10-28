@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.2.5.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.3.0.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -13385,7 +13385,7 @@ try{TUT_TOPIC.people=()=>[
  S('#tabview .scard, #tabview',T('직원 카드','Staff cards','職員カード'),T('가장 높은 가치관과 등급에 따라 <b>칭호</b>가 붙는다. 카드를 누르면 작업 기록과 관계가 보인다. 관계가 <b>신뢰</b> 이상이면 <b>E.G.O를 건네 입힐</b> 수 있다.','Each gets a <b>title</b> from their highest virtue and rank. Press a card for work history and relationship. At <b>Trust</b> or above you can <b>hand them E.G.O</b>.','一番高い価値観と等級で<b>称号</b>が付きます。カードを押すと作業記録と関係が見えます。関係が<b>信頼</b>以上なら<b>E.G.Oを渡して着せられます</b>。')),
  S('#tabview',T('패닉','Panic','パニック'),T('정신력이 바닥난 직원은 성격에 따라 여러 패닉에 빠진다. 근무 화면에서 직접 <b>진압</b>할 수 있고, 진압 전투에서는 물러날 수도 있다. 결과는 직접 확인해 보시오.','Staff whose SP bottoms out fall into a panic that fits their personality. Suppress them from the work screen; you may also withdraw from that battle. See for yourself how it turns out.','精神力が尽きた職員は性格に応じたパニックに陥ります。勤務画面から自分で<b>鎮圧</b>でき、鎮圧戦から退くこともできます。結果は自分で確かめてください。'),{last:1})];
  TUT_TOPIC.time=()=>[S('.rt-hud, #rtBtn',T('실시간 정지','Pause time','リアルタイム停止'),T('눌러서, 또는 <b>스페이스바</b>로 시간을 멈춘다. 다시 누르거나 행동하면 흐른다.','Press here or hit <b>Space</b> to pause. Press again or act to resume.','押すか<b>スペースキー</b>で時間を止めます。もう一度押すか行動すると流れます。')),
-  S('#audBtn',T('소리','Sound','サウンド'),T('효과음과 배경 음악을 정한다.','Set sound effects and music.','効果音とBGMを設定します。'),{last:1})]}catch(e){}
+  S('#fsBtn',T('전체 화면','Full screen','全画面'),T('화면을 꽉 채워서 본다. 소리는 ⚙ 설정에서 정한다.','Fill the whole screen. Sound is set in ⚙ Settings.','画面いっぱいに表示する。サウンドは⚙設定で変える。'),{last:1})]}catch(e){}
 
 /* 쉼표로 여러 후보를 적은 선택자는 앞의 것부터 찾는다 (문서 순서로 조상이 먼저 잡히지 않게) */
 tutTarget=(f=>function(st){if(!st||!st.sel||st.sel.indexOf(',')<0)return f.apply(this,arguments);
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.2.5.261028';
+const VER='Ver. 5.3.0.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -16603,8 +16603,9 @@ const seph=k=>({k:'seph',d:k});
 function figAb(a){try{const x=window.figAb162&&window.figAb162(a);if(x)return x;const img=typeof userImg==='function'&&userImg(a.id);if(img)return `<img src="${img}" alt="">`;return window.creature127?window.creature127(a.id,a.dt,a.g,typeof abHidden==='function'&&abHidden(a)):emblem(a,true)}catch(e){return ''}}
 function figAg(a){try{const h=lbAllyFig({key:'ag',ag:a});const m=/<svg[\s\S]*<\/svg>/.exec(h);return m?m[0]:h}catch(e){return ''}}
 function figSeph(k){try{const c=(DEPT[k]&&DEPT[k].col)||'#f4ee9a';return window.human127({seed:'S:'+k,pcol:'#f4ee9a',body:c,tie:'#1b1b1b',arm:c,suit:'#1d2026',rim:'none',mood:'calm'})}catch(e){return ''}}
+function figNpc(n){try{const ang=/앤젤라|엔젤라|Angela|アンジェラ/.test(n||'');return window.human127({seed:'N:'+n,pcol:ang?'#9cc9f0':'#cfcfcf',body:ang?'#2c3f57':'#3a3f46',tie:'#1b1b1b',arm:ang?'#2c3f57':'#3a3f46',suit:'#1d2026',rim:'none',mood:'calm'})}catch(e){return ''}}
 function figMe(){try{return avatarSvg()}catch(e){return ''}}
-function nameOf(s){if(!s)return '';if(s.k==='ab')return s.a.n;if(s.k==='ag')return NL(s.a.n);if(s.k==='seph')return (SEPH[s.d]&&NL(SEPH[s.d].n))||'';if(s.k==='me')return G.name||'';return ''}
+function nameOf(s){if(!s)return '';if(s.k==='ab')return s.a.n;if(s.k==='ag')return NL(s.a.n);if(s.k==='seph')return (SEPH[s.d]&&NL(SEPH[s.d].n))||'';if(s.k==='me')return G.name||'';if(s.k==='npc')return s.n||'';return ''}
 function findSubj(txt){if(!txt||!G)return null;
  try{const abs=contained().filter(a=>!a.tool&&a.n&&txt.includes(a.n)).sort((x,y)=>y.n.length-x.n.length);if(abs.length)return {k:'ab',a:abs[0]}}catch(e){}
  try{const ags=(G.agents||[]).concat(G.clerks||[]).filter(a=>a.alive!==false&&a.n&&a.n.length>=2&&(txt.includes(a.n)||txt.includes(NL(a.n))));if(ags.length)return {k:'ag',a:ags[0]}}catch(e){}
@@ -16612,14 +16613,14 @@ function findSubj(txt){if(!txt||!G)return null;
  // 동기 · 사무직 동료(미라 등): 직원 목록의 이름과 달리 보이거나 직원이 아닌 사람도 모습을 보인다
  try{const C0={haewon:'해원',doyun:'도윤',mira:'미라'};for(const k of Object.keys(CO)){const n=CO[k].n;if(!((n&&txt.includes(n))||(C0[k]&&txt.includes(C0[k]))))continue;const ag=typeof coAgent==='function'&&coAgent(k);if(ag&&ag.alive!==false)return {k:'ag',a:ag};return {k:'ag',a:{id:'co_'+k,n,dept:k==='mira'?'control':(G.dept||'control'),co:k,sp:0,hp:1,alive:true}}}}catch(e){}
  return null}
-function bgOf(s){if(!G)return 'dept';if(typeof B!=='undefined'&&B&&!B.done)return 'bat';if(s&&s.k==='ab')return 'cell';if(G.phase==='evening'||G.phase==='night')return 'eve';if(s&&(s.k==='ag'||s.k==='seph'))return 'talk';return 'dept'}
+function bgOf(s){if(!G)return 'dept';if(typeof B!=='undefined'&&B&&!B.done)return 'bat';if(s&&s.k==='ab')return 'cell';if(G.phase==='evening'||G.phase==='night')return 'eve';if(s&&(s.k==='ag'||s.k==='seph'||s.k==='npc'))return 'talk';return 'dept'}
 function vnRender(){const C=$i('C156');if(!C||!G)return;
  const live=SUBJ&&SUBJ.until>Date.now()?SUBJ:null;const s=(DOCK&&DOCK.subj)||(live&&live.subj)||PANEL.subj;
  const bg=$i('vnbg');const k=bgOf(s);bg.className='bg-'+k;try{bg.dataset.d=G.dept||'';bg.dataset.sp=(k!=='cell'&&k!=='bat'&&window.bgSp170&&window.bgSp170())||''}catch(e){}let dc='#f4ee9a';try{dc=DEPT[G.dept].col}catch(e){}C.style.setProperty('--dc',dc);
  if(s&&s.k==='ab')C.style.setProperty('--gc',`var(--g${s.a.g},#f4ee9a)`);
  $i('vnwm').textContent=k==='cell'&&s?((s.a.code||'')):((DEPT[G.dept]&&NL(DEPT[G.dept].n))||'');
- const spr=$i('vnspr');const key=s?(s.k+':'+(s.a?s.a.id:s.d)+':'+(s.a&&s.k==='ag'?Math.round((s.a.sp||0)/10):'')):'';
- if(spr.dataset.key!==key){spr.dataset.key=key;spr.className=s?'sp-'+s.k:'';spr.innerHTML=!s?'':s.k==='ab'?figAb(s.a):s.k==='ag'?figAg(s.a):s.k==='seph'?figSeph(s.d):s.k==='me'?figMe():''}
+ const spr=$i('vnspr');const key=s?(s.k+':'+(s.a?s.a.id:s.k==='npc'?s.n:s.d)+':'+(s.a&&s.k==='ag'?Math.round((s.a.sp||0)/10):'')):'';
+ if(spr.dataset.key!==key){spr.dataset.key=key;spr.className=s?'sp-'+s.k:'';spr.innerHTML=!s?'':s.k==='ab'?figAb(s.a):s.k==='ag'?figAg(s.a):s.k==='seph'?figSeph(s.d):s.k==='me'?figMe():s.k==='npc'?figNpc(s.n):''}
  const nm=$i('vnname');const n=DOCK?'':nameOf(s);nm.hidden=!n;nm.textContent=n;
  $i('vnhead').textContent=PANEL.head||'';
  const body=$i('vnbody');const want=live&&live.html?live.html:PANEL.body;if(body.dataset.v!==want){body.dataset.v=want;body.innerHTML=want||`<p class="sub">${T('조용하다. 아래에서 할 일을 고르시오.','It is quiet. Choose what to do below.','静かだ。下でやることを選んでください。')}</p>`}
@@ -16631,7 +16632,7 @@ setPanel=(f=>function(title,sub,choices,extra,story){const r=f.apply(this,argume
 function afterPanel(title,story){const P=$i('panel');if(!P)return;
  const h3=P.querySelector(':scope>h3');const parts=[];let subj=null;
  const st=P.querySelector(':scope>.story');if(st){parts.push(st.outerHTML);st.remove();
-  if(story&&story.spk){subj=findSubj(story.spk)||null;if(!subj&&story.seph)subj=seph(G.dept)}else if(story&&story.seph)subj=seph(G.dept);if(!subj)subj=findSubj(st.textContent)}
+  if(story&&story.spk){subj=findSubj(story.spk)||null;if(!subj)subj={k:'npc',n:String(story.spk).replace(/<[^>]+>/g,'')}}else if(story&&story.seph)subj=seph(G.dept);if(!subj)subj=findSubj(st.textContent)}
  const sb=P.querySelector(':scope>p.sub');if(sb){parts.push(sb.outerHTML);sb.remove()}
  const td=P.querySelector(':scope>.todo');const vt=$i('vntodo');vt.innerHTML='';if(td)vt.appendChild(td);
  const sp=P.querySelector(':scope>.strip');const rs=$i('Rfs');if(sp){rs.innerHTML='';sp.open=true;rs.appendChild(sp)}
@@ -16983,7 +16984,7 @@ function measure(list,axis,items,size){items.forEach(x=>x.classList.remove('pg-o
  if(!list._gsplit){for(let k=items.length-2;k>=0;k--){if(!isItem(items[k])&&pg[k+1]>pg[k]&&!items.some((x,j)=>j!==k&&pg[j]===pg[k]&&isItem(x)))pg[k]=pg[k+1]}const u=[...new Set(pg)].sort((a,b)=>a-b);for(let k=0;k<pg.length;k++)pg[k]=u.indexOf(pg[k])}
  list._pages=pg;list._np=(pg.length?pg[pg.length-1]:0)+1}
 function apply(list){const st=PG[list._key];const c=list._ctl;const items=list._items||[];const np=list._np||1;
- const on=(list._over||list._gsplit)&&list._n>=2&&np>1;const sc=!!list._over&&list._n<2;if(list.classList.contains('pgon')!==on)list.classList.toggle('pgon',on);if(list.classList.contains('pgsc')!==sc)list.classList.toggle('pgsc',sc);
+ /* v186: 장 넘기기 대신 스크롤 */const on=window.PAGE158===true&&(list._over||list._gsplit)&&list._n>=2&&np>1;const sc=window.PAGE158===true?(!!list._over&&list._n<2):!!(list._over||list._gsplit);if(list.classList.contains('pgon')!==on)list.classList.toggle('pgon',on);if(list.classList.contains('pgsc')!==sc)list.classList.toggle('pgsc',sc);
  if(!on){items.forEach(x=>{if(x.classList.contains('pg-off'))x.classList.remove('pg-off')});if(c&&!c.hidden)c.hidden=true;return}
  st.i=Math.max(0,Math.min(np-1,st.i));items.forEach((x,k)=>{const off=list._pages[k]!==st.i;if(x.classList.contains('pg-off')!==off)x.classList.toggle('pg-off',off)});
  if(c){if(c.hidden)c.hidden=false;const t=`${st.i+1} / ${np}`;const s=c.querySelector('.pgn');if(s.textContent!==t)s.textContent=t;c.querySelector('.pgp').disabled=st.i<=0;c.querySelector('.pgn2').disabled=st.i>=np-1}}
@@ -17795,7 +17796,7 @@ agSuit=(f=>function(a){if(a&&a.clerk)return 'basic';return f.apply(this,argument
 /* ---------- ③ 위험 ---------- */
 function where(c){const [z,k]=(c.loc||'H:'+c.dept).split(':');return z==='L'?T(`${DN(k)} 로비`,`${DN(k)} lobby`,`${DN(k)}ロビー`):T(`${DN(k)} 복도`,`${DN(k)} hallway`,`${DN(k)}廊下`)}
 function status(c){if(!c.alive)return T(`순직 · D${c.died||'?'}`,`Deceased · D${c.died||'?'}`,`殉職・D${c.died||'?'}`);if(c.panic)return T('패닉 · 공황 상태','Panic · in shock','パニック・恐慌状態');return T(`${where(c)} · 사무 업무`,`${where(c)} · office work`,`${where(c)}・事務業務`)}
-window.clerkStatus174=status;
+window.clerkStatus174=status;window.clerkDie174=(c,w)=>die(c,w);
 function die(c,why){if(!c.alive)return;c.alive=false;c.hp=0;c.died=G.day;c.why=why;c.panic=null;G.clDeaths=(G.clDeaths||0)+1;
  log(T(`사무직 ${NL(c.n)}(${DN(c.dept)}) 사망 — ${why}`,`Clerk ${NL(c.n)} (${DN(c.dept)}) died — ${why}`,`事務職 ${NL(c.n)}(${DN(c.dept)}) 死亡 — ${why}`),'hurt');
  try{toast(T(`사무직 ${NL(c.n)} 사망`,`Clerk ${NL(c.n)} died`,`事務職 ${NL(c.n)} 死亡`),'hurt')}catch(e){}
@@ -18312,6 +18313,505 @@ body.ui156:not(.bat156) #panel#panel:has(>.kvb):has(>.choices)>h3{order:-2}
 @media (min-width:641px){#daybox{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;max-width:100%;min-width:0}
  #daybox>*{flex-shrink:0!important}#daybox::-webkit-scrollbar{height:6px}#daybox::-webkit-scrollbar-thumb{background:rgba(244,238,154,.35);border-radius:3px}}`;
 document.head.appendChild(st);
+})();
+/* ============ v185: 빛 탈취(51~53일) 다듬기 · 엔딩 기록 상세 ============
+   ① 여러 환상체가 한꺼번에 나오는 빛 탈취 전투(arcmix)에서 각 적에게 자기 환상체 그림을 쓴다
+      (그동안은 전투 전체에 환상체 하나만 정해져 있어 그림을 찾지 못했다).
+   ② 빛 탈취 동안 사무직도 하나둘 쓰러진다. 마지막 전투 무렵에는 아무도 남지 않는다.
+   ③ 엔딩 기록에 쌓아 온 숫자를 더 자세히 보여 준다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+/* ① */
+ENEMY.arcmix=(f=>function(opt){const out=[];(opt.ids||[]).forEach(id=>{const a=ABM[id];if(!a)return;const k=a.fight==='gen'?'gen':a.fight;if(!ENEMY[k])return;
+  try{const L=ENEMY[k](Object.assign({},opt,{ab:id,grade:a.g}));L.forEach(u=>{if(!u.n||u.n==='?')u.n=a.n;u.abSrc=id;out.push(u)})}catch(e){}});
+  if(!out.length)return f.apply(this,arguments);return out})(ENEMY.arcmix);
+lbEnemyFig=(f=>function(u){if(!u||!u.abSrc||typeof B==='undefined'||!B||!B.opt)return f.apply(this,arguments);
+  const o=B.opt.ab,n=B.units;B.opt.ab=u.abSrc;B.units=[u];try{return f.apply(this,arguments)}finally{B.opt.ab=o;B.units=n}})(lbEnemyFig);
+/* ② */
+function clLeft(){const A=G.arc;if(!A||!G.arcPlan)return 1;const P=G.arcPlan.fights;let n=A.fights.length-A.i;for(let d=A.d+1;d<=3;d++)n+=(P[d-1]||[]).length;return Math.max(0,n-1)/* 마지막 조율자 전투 제외 */}
+arcFall=(f=>function(where){const r=f.apply(this,arguments);try{if(!G.arc||!window.clerkDie174)return r;const alive=(G.clerks||[]).filter(c=>c.alive);if(!alive.length)return r;
+  const left=clLeft();const n=left<=0?alive.length:Math.min(alive.length,Math.ceil(alive.length/(left+1)));
+  const foes=(typeof arcEsc==='function'?arcEsc().map(id=>ABM[id].n):[]).concat([T('백야의 사도','an apostle of WhiteNight','白夜の使徒')]);
+  shuffle(alive).slice(0,n).forEach(c=>{const e=pick(foes);window.clerkDie174(c,T(`빛 탈취 — ${e}`,`The light's theft — ${e}`,`光の奪取 — ${e}`))});
+  const rest=(G.clerks||[]).filter(c=>c.alive).length;log(T(`사무직 ${n}명이 복도에서 쓰러졌다. 남은 사무직 ${rest}명.`,`${n} clerk(s) fell in the hallways. ${rest} clerk(s) remain.`,`事務職${n}人が廊下で倒れた。残る事務職${rest}人。`),'hurt');save()}catch(e){console.error(e)}return r})(arcFall);
+/* ③ */
+renderRecord=(f=>function(){const r=f.apply(this,arguments);try{const dl=document.querySelector('#app .rec dl');if(!dl||dl.dataset.r185||!G)return r;dl.dataset.r185=1;
+  const tc=k=>(G.tc&&G.tc[k])||0;const ag=G.agents||[],cl=G.clerks||[];
+  const allW=Object.values(G.ab||{}).reduce((s,x)=>s+((x&&x.works)||0),0);
+  const resN=Object.keys(G.res||{}).length,ttl=(G.titles||[]).length;
+  const rows=[
+   [T('직접 수행한 작업','Works you performed','自ら行った作業'),T(`${tc('work')}회 (그중 폭주 대응 ${tc('melt')}회)`,`${tc('work')} (meltdowns handled: ${tc('melt')})`,`${tc('work')}回(うち暴走対応 ${tc('melt')}回)`)],
+   [T('시설 전체 작업','All works in the facility','施設全体の作業'),T(`${allW}회`,`${allW}`,`${allW}回`)],
+   [T('전투 승리','Battles won','戦闘勝利'),T(`${tc('win')}회 · 시련 극복 ${tc('ordeal')}회`,`${tc('win')} · ordeals overcome: ${tc('ordeal')}`,`${tc('win')}回・試練克服 ${tc('ordeal')}回`)],
+   [T('패닉 진정','Panics calmed','パニック鎮静'),T(`${tc('calm')}회`,`${tc('calm')}`,`${tc('calm')}回`)],
+   [T('초과 근무','Overtime','残業'),T(`${Math.floor(tc('ot')/60)}시간`,`${Math.floor(tc('ot')/60)} h`,`${Math.floor(tc('ot')/60)}時間`)],
+   [T('관리직','Agents','管理職'),T(`함께한 ${ag.length}명 · 생존 ${ag.filter(a=>a.alive).length}명 · 순직 ${ag.filter(a=>!a.alive).length}명`,`${ag.length} served · ${ag.filter(a=>a.alive).length} alive · ${ag.filter(a=>!a.alive).length} fallen`,`共にした ${ag.length}人・生存 ${ag.filter(a=>a.alive).length}人・殉職 ${ag.filter(a=>!a.alive).length}人`)],
+   [T('사무직','Clerks','事務職'),T(`함께한 ${cl.length}명 · 생존 ${cl.filter(c=>c.alive).length}명 · 순직 ${G.clDeaths||cl.filter(c=>!c.alive).length}명`,`${cl.length} served · ${cl.filter(c=>c.alive).length} alive · ${G.clDeaths||cl.filter(c=>!c.alive).length} fallen`,`共にした ${cl.length}人・生存 ${cl.filter(c=>c.alive).length}人・殉職 ${G.clDeaths||cl.filter(c=>!c.alive).length}人`)],
+   [T('보유 E.G.O','E.G.O owned','所持E.G.O'),T(`무기 ${(G.ownW||[]).length}종 · 방어구 ${(G.ownS||[]).length}종 · 기프트 ${(G.giftOwn||[]).length}종`,`${(G.ownW||[]).length} weapons · ${(G.ownS||[]).length} suits · ${(G.giftOwn||[]).length} gifts`,`武器 ${(G.ownW||[]).length}種・防具 ${(G.ownS||[]).length}種・ギフト ${(G.giftOwn||[]).length}種`)],
+   [T('연구 · 칭호','Research · titles','研究・称号'),T(`연구 ${resN}개 · 칭호 ${ttl}개`,`${resN} research · ${ttl} titles`,`研究 ${resN}件・称号 ${ttl}個`)]];
+  const has=re=>[...dl.querySelectorAll('dt')].some(d=>re.test(d.textContent));
+  const base=[];
+  if(!has(/누적 에너지|누적 엔케팔린|Total energy|累計/))base.push([T('누적 엔케팔린','Total Enkephalin','累計エンケファリン'),`${(G.peTotal||0).toLocaleString()} PE`]);
+  if(!has(/격리 환상체|Contained|収容/))base.push([T('격리 환상체','Abnormalities contained','収容した幻想体'),T(`${(G.order||[]).length}종`,`${(G.order||[]).length}`,`${(G.order||[]).length}種`)]);
+  if(!has(/제압 성공|Suppress|制圧/))base.push([T('제압 성공','Suppressions','制圧成功'),T(`${G.suppressed||0}회`,`${G.suppressed||0}`,`${G.suppressed||0}回`)]);
+  if(!has(/시설 사망자|Facility deaths|施設の死者/))base.push([T('시설 사망자','Facility deaths','施設の死者'),T(`${G.deaths||0}명`,`${G.deaths||0}`,`${G.deaths||0}人`)]);
+  const html=base.concat(rows).map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+  const anchor=[...dl.querySelectorAll('dt')].find(d=>/제압 성공|Suppress|制圧/.test(d.textContent))||[...dl.querySelectorAll('dt')].find(d=>/마음의 온기|Warmth|温もり/.test(d.textContent));
+  const ttlDt=[...dl.querySelectorAll('dt')].find(d=>/^칭호$|^Titles$|^称号$/.test(d.textContent.trim()));
+  if(anchor&&anchor.nextElementSibling)anchor.nextElementSibling.insertAdjacentHTML('afterend',html);else if(ttlDt)ttlDt.insertAdjacentHTML('beforebegin',html);else dl.insertAdjacentHTML('beforeend',html)}catch(e){console.error(e)}return r})(renderRecord);
+})();
+/* ============ v186: 전체 화면 버튼 · 수첩(사람들 · 이야기) 정리 ============
+   ① 상단의 소리 버튼 자리에 전체 화면 버튼. 소리는 ⚙ 설정 → 소리에서만 바꾼다.
+      전체 화면을 지원하지 않는 기기(아이폰 사파리 등)는 화면을 꽉 채우는 보기로 바꾸고, 홈 화면에 추가하는 법을 알려 준다.
+   ② 수첩 · 사람들: 부서 → 관리직 / 사무직 → 직원을 누르면 그 사람의 관계가 보인다.
+   ③ 수첩 · 이야기: 큰 분류(시설의 이야기 · 남겨진 사람들 · 최근 기록)로 접어 두고, 안에서 진행 중 / 끝남으로 나눈다.
+   ※ 선택지 넘기기 → 스크롤 전환은 v158 안에서 한다 (window.PAGE158) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const H=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const NL=n=>(typeof nameL==='function'?nameL(n):n);
+/* ---------- ① 전체 화면 ---------- */
+const D=document,DE=D.documentElement;
+const fsEl=()=>D.fullscreenElement||D.webkitFullscreenElement||null;
+const canFS=()=>!!(DE.requestFullscreen||DE.webkitRequestFullscreen)&&(D.fullscreenEnabled!==false&&D.webkitFullscreenEnabled!==false);
+const ICON={on:'<svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg>',
+ off:'<svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg>'};
+const isOn=()=>!!fsEl()||DE.classList.contains('pfs186');
+function paint(){const b=D.getElementById('fsBtn');if(!b)return;const on=isOn();const want=on?'off':'on';if(b.dataset.st!==want){b.dataset.st=want;b.innerHTML=ICON[want]}
+ const l=on?T('전체 화면 끝내기','Exit full screen','全画面を終了'):T('전체 화면','Full screen','全画面');if(b.title!==l){b.title=l;b.setAttribute('aria-label',l)}}
+async function toggle(){try{
+ if(fsEl()){await (D.exitFullscreen||D.webkitExitFullscreen).call(D);return}
+ if(DE.classList.contains('pfs186')){DE.classList.remove('pfs186');paint();return}
+ if(canFS()){try{await (DE.requestFullscreen?DE.requestFullscreen({navigationUI:'hide'}):DE.webkitRequestFullscreen());try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{})}catch(e){}return}catch(e){}}
+ /* 지원하지 않는 기기: 화면을 꽉 채우는 보기 */
+ DE.classList.add('pfs186');paint();try{scrollTo(0,1)}catch(e){}
+ const ios=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ try{toast(ios?T('이 기기는 브라우저 전체 화면을 지원하지 않아 화면을 꽉 채운 보기로 바꿨다. 주소창까지 없애려면 공유 → 「홈 화면에 추가」로 연다.','This device has no browser full screen, so the view now fills the screen. To hide the address bar too, use Share → "Add to Home Screen".','この端末はブラウザの全画面に対応していないため、画面いっぱいの表示にした。アドレスバーも消すには共有 →「ホーム画面に追加」から開く。'):T('전체 화면을 쓸 수 없는 환경이라 화면을 꽉 채운 보기로 바꿨다.','Full screen is unavailable here, so the view now fills the screen.','全画面が使えない環境のため、画面いっぱいの表示にした。'))}catch(e){}
+}catch(e){console.error(e)}}
+D.addEventListener('fullscreenchange',paint);D.addEventListener('webkitfullscreenchange',paint);
+renderTop=(f=>function(){const r=f.apply(this,arguments);try{const t1=D.querySelector('.top1');if(t1){const a=t1.querySelector('#audBtn');if(a)a.hidden=true;
+  if(!t1.querySelector('#fsBtn')){const b=D.createElement('button');b.className='guide-btn';b.id='fsBtn';b.type='button';b.onclick=toggle;(a||t1.querySelector('#setBtn'))?(a||t1.querySelector('#setBtn')).before(b):t1.appendChild(b)}paint()}}catch(e){}return r})(renderTop);
+/* ---------- 펼침 상태 기억 (수첩은 몇 초마다 다시 그려진다) ---------- */
+const OPEN=new Set();
+D.addEventListener('toggle',e=>{const d=e.target;if(!d||!d.dataset||!d.dataset.k186)return;if(d.open)OPEN.add(d.dataset.k186);else OPEN.delete(d.dataset.k186)},true);
+const op=k=>OPEN.has(k)?' open':'';
+/* ---------- ② 사람들 ---------- */
+function people(body){const L=window.L143;if(!L)return;const w=L.W();const clIds=new Set((G.clerks||[]).map(c=>c.id));
+ const per={};Object.entries(w.rel).forEach(([k,r])=>{if(r.kn<1)return;const ids=k.split('|');ids.forEach(id=>{(per[id]=per[id]||[]).push({o:ids.find(x=>x!==id),r})})});
+ const lab=r=>{const R=L.RT[r.t]||{};return r.kn>=2?`<b class="${R.warm?'wm':'cd'}">${H(T(...(R.n||['?','?','?'])))}</b>`:`<b class="q">${R.warm?T('? 가까워 보인다','? They seem close','? 親しそうだ'):T('? 무언가 엇갈려 있다','? Something is off','? 何かがすれ違っている')}</b>`};
+ const dn=k=>{try{return NL(DEPT[k].n)}catch(e){return k}};
+ const groups={};Object.keys(per).forEach(id=>{const a=L.agById(id);if(!a)return;const d=a.dept||'control';(groups[d]=groups[d]||{ag:[],cl:[]})[clIds.has(id)?'cl':'ag'].push(a)});
+ const order=(typeof DEPT_ORDER!=='undefined'?DEPT_ORDER:Object.keys(groups)).filter(d=>groups[d]);
+ if(!order.length)return; /* 원래 안내문을 그대로 둔다 */
+ const hint=body.querySelector('p.sub.nbh');const hintH=hint?hint.outerHTML:'';
+ const person=(a,grp)=>{const L2=per[a.id].map(x=>{const o=L.agById(x.o);if(!o)return '';return `<li><span>${H(NL(o.n))}${o.alive?'':` <small class="dead">${T('(떠남)','(gone)','(去った)')}</small>`}${o.dept&&o.dept!==a.dept?` <small>· ${H(dn(o.dept))}</small>`:''}</span>${lab(x.r)}</li>`}).join('');
+  const warm=per[a.id].filter(x=>x.r.kn>=2&&(L.RT[x.r.t]||{}).warm).length;
+  return `<details class="p186" data-k186="p:${a.id}"${op('p:'+a.id)}><summary><span class="nm">${H(NL(a.n))}${a.alive?'':` <small class="dead">${T('(떠남)','(gone)','(去った)')}</small>`}</span><small>${T(`관계 ${per[a.id].length}`,`${per[a.id].length} ties`,`関係 ${per[a.id].length}`)}${warm?` · <i class="wm">♥${warm}</i>`:''}</small></summary><ul class="r186">${L2}</ul></details>`};
+ const sub=(key,title,list)=>list.length?`<details class="g186" data-k186="${key}"${op(key)}><summary>${title} <small>${list.length}</small></summary>${list.sort((x,y)=>(y.alive-x.alive)||NL(x.n).localeCompare(NL(y.n))).map(a=>person(a)).join('')}</details>`:'';
+ body.innerHTML=order.map(d=>{const g=groups[d];const n=g.ag.length+g.cl.length;let col='';try{col=DEPT[d].col}catch(e){}
+  return `<details class="d186" data-k186="d:${d}"${op('d:'+d)} style="--dc:${col||'var(--accent)'}"><summary><b>${H(dn(d))}</b><small>${T(`${n}명`,`${n}`,`${n}人`)}</small></summary>${sub('a:'+d,T('관리직','Agents','管理職'),g.ag)}${sub('c:'+d,T('사무직','Clerks','事務職'),g.cl)}</details>`}).join('')+hintH}
+/* ---------- ③ 이야기 ---------- */
+function story(body){const items=[...body.querySelectorAll(':scope>.nbs')];const ul=body.querySelector(':scope>ul.nbn');if(!items.length&&!ul)return;
+ const grief=/^(남겨진 사람|Left Behind|残された人)/;
+ const cat={fac:[],grief:[]};items.forEach(x=>{const t=(x.querySelector('b')||{}).textContent||'';(grief.test(t)?cat.grief:cat.fac).push(x)});
+ const row=(x,key)=>{const b=x.querySelector('b'),s=x.querySelector('span'),p=x.querySelector('p');const t=(b&&b.textContent)||'';const on=x.classList.contains('open');
+  const lb=key==='grief'&&b?b.innerHTML.replace(/^(남겨진 사람|Left Behind|残された人)\s*[·・]\s*/,''):(b?b.innerHTML:'');return `<details class="s186 ${on?'on':''}" data-k186="${key}:${H(t)}"${op(key+':'+t)}><summary><span>${lb}</span><em>${s?s.textContent:''}</em></summary><p>${p?p.innerHTML:''}</p></details>`};
+ const sect=(key,title,L)=>{if(!L.length)return '';const on=L.filter(x=>x.classList.contains('open')),off=L.filter(x=>!x.classList.contains('open'));
+  return `<details class="c186" data-k186="${key}"${op(key)}><summary><b>${title}</b><small>${T(`진행 중 ${on.length} · 끝남 ${off.length}`,`${on.length} ongoing · ${off.length} closed`,`進行中 ${on.length}・終了 ${off.length}`)}</small></summary>
+   ${on.length?`<div class="h186">${T('진행 중','Ongoing','進行中')}</div>${on.map(x=>row(x,key)).join('')}`:''}
+   ${off.length?`<details class="x186" data-k186="${key}:off"${op(key+':off')}><summary>${T(`끝난 이야기 ${off.length}개`,`${off.length} closed`,`終わった物語 ${off.length}件`)}</summary>${off.map(x=>row(x,key)).join('')}</details>`:''}</details>`};
+ const notes=ul?`<details class="c186" data-k186="notes"${op('notes')}><summary><b>${T('최근 기록','Recent notes','最近の記録')}</b><small>${ul.children.length}</small></summary>${ul.outerHTML}</details>`:'';
+ const empty=!items.length?(body.querySelector(':scope>p.sub')||{outerHTML:''}).outerHTML:'';
+ body.innerHTML=empty+sect('fac',T('시설의 이야기','Facility stories','施設の物語'),cat.fac)+sect('grief',T('남겨진 사람들','Those left behind','残された人々'),cat.grief)+notes}
+const V0=window.nb143;
+window.nb143=function(tab){const r=V0.apply(this,arguments);try{
+ const bodies=[...D.querySelectorAll('#Lnb .nbbody, .pop .nbbody')];bodies.forEach(body=>{const root=body.parentElement;const on=root&&root.querySelector('.nbt .on');const k=on&&on.dataset.nt;
+  if(k==='people'&&!body.dataset.v186){body.dataset.v186=1;people(body)}else if(k==='story'&&!body.dataset.v186){body.dataset.v186=1;story(body)}})}catch(e){console.error(e)}return r};
+const st=D.createElement('style');st.textContent=`
+html.pfs186,html.pfs186 body{height:100%;overflow:hidden}
+html.pfs186 #shell,html.pfs186 #app{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;margin:0!important;z-index:1;overflow:auto}
+.top1 #fsBtn{width:38px;padding:0!important;order:6;margin:0!important;position:static!important;height:38px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.top1 #audBtn[hidden]{display:none!important}
+.d186,.g186,.p186,.c186,.s186,.x186{border:0;margin:0}
+.d186{border-left:3px solid var(--dc);background:rgba(255,255,255,.025);margin:0 0 6px;padding:2px 0 2px 8px}
+.d186>summary,.g186>summary,.p186>summary,.c186>summary,.s186>summary,.x186>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:6px 4px}
+.d186>summary::-webkit-details-marker,.g186>summary::-webkit-details-marker,.p186>summary::-webkit-details-marker,.c186>summary::-webkit-details-marker,.s186>summary::-webkit-details-marker,.x186>summary::-webkit-details-marker{display:none}
+.d186>summary::before,.g186>summary::before,.c186>summary::before,.x186>summary::before{content:'▸';color:var(--muted);font-size:11px;transition:transform .15s}
+.d186[open]>summary::before,.g186[open]>summary::before,.c186[open]>summary::before,.x186[open]>summary::before{transform:rotate(90deg)}
+.d186>summary b{color:var(--dc);font-size:14px}.d186>summary small,.g186>summary small,.c186>summary small{margin-left:auto;color:var(--muted);font-size:11.5px}
+.g186{margin-left:6px}.g186>summary{font-size:12.5px;color:var(--fg2,var(--fg))}
+.p186{margin-left:14px;border-top:1px dashed var(--line,#333)}.p186>summary .nm{font-size:13.5px}.p186>summary small{margin-left:auto;color:var(--muted);font-size:11px}.p186[open]>summary .nm{color:var(--accent)}
+.p186 .wm,.r186 .wm{color:#69db7c;font-style:normal}.r186 .cd{color:#ff8a7a}.r186 .q{color:var(--muted)}
+.r186{list-style:none;margin:0 0 6px;padding:0 0 0 10px}.r186 li{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.r186 li b{font-weight:600;font-size:12px;white-space:nowrap}
+.c186{margin:0 0 6px;background:rgba(255,255,255,.025);padding:0 8px}.c186>summary b{font-size:14px}
+.h186{font-size:11px;color:var(--accent);letter-spacing:.06em;margin:4px 0 2px}
+.s186{border-top:1px dashed var(--line,#333)}.s186>summary span{flex:1;min-width:0;font-size:13px}.s186>summary em{font-style:normal;font-size:11px;color:var(--muted);flex:none}.s186.on>summary em{color:var(--accent)}
+.s186>p{margin:0 0 8px;font-size:12.5px;color:var(--fg2,var(--fg));line-height:1.55;padding-left:4px}
+.x186{margin:4px 0 6px}.x186>summary{font-size:12px;color:var(--muted)}
+.c186 ul.nbn{margin:0 0 8px}
+/* 스크롤로 바뀐 선택지 · 전투 카드 */
+.pl158.ply{overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin}
+.pl158.plx{overflow-x:auto!important;scrollbar-width:thin}
+.pl158::-webkit-scrollbar{display:block!important;width:6px;height:6px}.pl158::-webkit-scrollbar-thumb{background:rgba(244,238,154,.3);border-radius:3px}
+body.ui156.bat156 #panel #lbDock{overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin}
+body.ui156.bat156 #lbDock .lb-card{flex:0 0 auto!important;width:clamp(128px,16vw,200px)!important;min-width:0!important}
+body.ui156.bat156 #lbDock .lb-grp.pl158{overflow:visible!important}`;
+D.head.appendChild(st);
+})();
+/* ============ v187: 칸 크기 직접 조절 · 사건 글 「전체 보기」 제거 ============
+   ① 칸 사이의 경계선을 끌어서 크기를 바꾼다. 화면 비율이 바뀌어도 같은 비율로 유지된다 (비율로 저장).
+      · 좌우: 왼쪽 칸 | 가운데 | 오른쪽 칸 (넓은 화면에서만 — 좁은 화면은 양옆 칸이 서랍으로 바뀐다)
+      · 위아래: 왼쪽(내 상태 | 수첩) · 가운데(이야기 화면 | 선택지) · 오른쪽(장비 | 시설)
+      · 경계선을 두 번 누르면 그 경계만 처음대로. ⚙ 설정에서 전부 처음대로 되돌릴 수 있다.
+   ② 붙은 사건 창의 글은 칸 안에서 스크롤로 읽는다 (「전체 보기」 단추 없음). */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;const $i=id=>D.getElementById(id);
+const KEY='lcw_rz187';let S={};try{S=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){S={}}
+const saveS=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const css=D.createElement('style');css.id='rz187';D.head.appendChild(css);
+function applyCss(){let t='';
+ if(S.cl!=null||S.cr!=null){const l=S.cl??.16,r=S.cr??.18,m=Math.max(.2,1-l-r);t+=`@media (min-width:901px){html body.ui156 #shell>.wrap{grid-template-columns:minmax(0,${l}fr) minmax(0,${m}fr) minmax(0,${r}fr)!important}}\n`}
+ if(S.L!=null)t+=`html body.ui156 #L156{grid-template-rows:minmax(0,${S.L}fr) minmax(0,${1-S.L}fr)!important}html body.ui156 #L156>#Lp,html body.ui156 #L156>#Ln{height:auto!important;max-height:none!important;align-self:stretch!important;min-height:0!important}\n`;
+ if(S.R!=null)t+=`html body.ui156 #R156{grid-template-rows:minmax(0,${S.R}fr) minmax(0,${1-S.R}fr)!important}html body.ui156 #R156>#Rg,html body.ui156 #R156>#Rf{height:auto!important;max-height:none!important;align-self:stretch!important;min-height:0!important}\n`;
+ if(S.M!=null)t+=`html body.ui156:not(.bat156) #M156{grid-template-rows:minmax(0,${S.M}fr) minmax(0,${1-S.M}fr)!important}\n`;
+ if(css.textContent!==t)css.textContent=t;try{window.dispatchEvent(new Event('resize'))}catch(e){}}
+applyCss();
+/* 경계선 */
+const H={};
+function mk(id,dir){let h=$i('rz_'+id);if(!h){h=D.createElement('div');h.id='rz_'+id;h.className='rz187 '+dir;h.title=T('끌어서 크기 조절 · 두 번 누르면 처음대로','Drag to resize · double-click to reset','ドラッグでサイズ調整・ダブルクリックで元に戻す');D.body.appendChild(h);bind(h,id,dir)}return h}
+function rectOf(id){const e=$i(id);if(!e||!e.offsetParent)return null;const r=e.getBoundingClientRect();return r.width&&r.height?r:null}
+function place(){if(!D.body.classList.contains('ui156')||!$i('M156')){D.querySelectorAll('.rz187').forEach(h=>h.hidden=true);return}
+ const wide=innerWidth>=901;const L=rectOf('L156'),M=rectOf('M156'),R=rectOf('R156');
+ const set=(id,dir,x,y,w,h,show)=>{const e=mk(id,dir);e.hidden=!show;if(!show)return;Object.assign(e.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'})};
+ set('cl','v',L&&M?(L.right+M.left)/2-5:0,M?M.top:0,10,M?M.height:0,!!(wide&&L&&M));
+ set('cr','v',M&&R?(M.right+R.left)/2-5:0,M?M.top:0,10,M?M.height:0,!!(wide&&M&&R));
+ const row=(id,box,a,b)=>{const A=rectOf(a),B=rectOf(b);const X=rectOf(box);set(id,'h',X?X.left:0,A&&B?(A.bottom+B.top)/2-5:0,X?X.width:0,10,!!(X&&A&&B&&B.top>A.bottom-2))};
+ row('L','L156','Lp','Ln');row('R','R156','Rg','Rf');
+ const bat=D.body.classList.contains('bat156');const C=rectOf('C156'),P=rectOf('panel');set('M','h',M?M.left:0,C&&P?(C.bottom+P.top)/2-5:0,M?M.width:0,10,!!(!bat&&M&&C&&P&&P.top>C.bottom-2))}
+function bind(h,id,dir){
+ h.addEventListener('dblclick',()=>{delete S[id];saveS();applyCss();place()});
+ h.addEventListener('pointerdown',e=>{e.preventDefault();h.setPointerCapture(e.pointerId);h.classList.add('on');D.body.classList.add('rzing187');
+  const mv=ev=>{const W=$i('shell')?D.querySelector('#shell>.wrap').getBoundingClientRect():null;
+   if(id==='cl'||id==='cr'){if(!W)return;const gap=10,inner=W.width-gap*2;const L=rectOf('L156'),R=rectOf('R156');
+    let l=S.cl??(L?L.width/inner:.16),r=S.cr??(R?R.width/inner:.18);
+    if(id==='cl')l=clamp((ev.clientX-W.left-gap/2)/inner,.1,.4);else r=clamp((W.right-ev.clientX-gap/2)/inner,.1,.4);
+    if(1-l-r<.3){if(id==='cl')l=.7-r;else r=.7-l}S.cl=+l.toFixed(4);S.cr=+r.toFixed(4)}
+   else{const box=$i(id==='L'?'L156':id==='R'?'R156':'M156').getBoundingClientRect();S[id]=+clamp((ev.clientY-box.top)/box.height,.15,.85).toFixed(4)}
+   applyCss();place()};
+  const up=()=>{h.classList.remove('on');D.body.classList.remove('rzing187');h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);saveS()};
+  h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)})}
+setInterval(place,400);addEventListener('resize',()=>requestAnimationFrame(place));
+/* 설정: 칸 크기 처음대로 */
+try{settingsPop76=(f=>function(){const r=f.apply(this,arguments);try{const b=D.querySelector('.set76');if(b&&!b.querySelector('#rz187r')){b.insertAdjacentHTML('beforeend',`<section><h4>${T('칸 크기','Panel sizes','パネルサイズ')}</h4><p class="note">${T('칸 사이의 경계선을 끌어서 크기를 바꿀 수 있다. 경계선을 두 번 누르면 그 경계만 처음대로 돌아간다.','Drag the borders between panels to resize them. Double-click a border to reset it.','パネルの境界線をドラッグしてサイズを変えられる。境界線をダブルクリックするとその境界だけ元に戻る。')}</p><button class="btn ghost" type="button" id="rz187r">${T('모든 칸 크기 처음대로','Reset all panel sizes','すべてのパネルサイズを元に戻す')}</button></section>`);
+  b.querySelector('#rz187r').onclick=e=>{S={};saveS();applyCss();place();e.target.textContent=T('처음대로 돌렸다','Reset done','元に戻した')}}}catch(e){}return r})(settingsPop76)}catch(e){}
+const st=D.createElement('style');st.textContent=`
+.rz187{position:fixed;z-index:40;touch-action:none;background:transparent}
+.rz187[hidden]{display:none!important}
+.rz187.v{cursor:col-resize}.rz187.h{cursor:row-resize}
+.rz187::after{content:'';position:absolute;background:var(--accent,#f4ee9a);opacity:0;transition:opacity .15s;border-radius:2px}
+.rz187.v::after{left:4px;top:30%;width:2px;height:40%}.rz187.h::after{top:4px;left:35%;height:2px;width:30%}
+.rz187:hover::after{opacity:.55}.rz187.on::after{opacity:.9}
+body.rzing187,body.rzing187 *{user-select:none!important;cursor:inherit}
+@media (hover:none){.rz187::after{opacity:.25}}
+/* ② 사건 글: 전체 보기 없이 스크롤 */
+.pop.dock156 .dk-n .inf170b.more{display:none!important}
+.pop.dock156 .dk-n{overflow-y:auto!important;scrollbar-width:thin;overscroll-behavior:contain}`;
+D.head.appendChild(st);
+})();
+/* ============ v188: 튜토리얼 다듬기 — 지금 화면과 맞추고, 새로 생긴 것들을 넣는다 ============
+   · 「할 일은 세 갈래」 · 「업무」 · 「행동(퇴근)」 설명을 지금 타일 구성(작업 · 업무 · 행동)에 맞춘다
+   · 퇴근 조건에 「오늘의 직접 작업」 수를 넣는다
+   · 수첩: 소지품 · 사람들(부서 → 관리직/사무직 → 직원) · 이야기(분류) / 시설 상태는 오른쪽 칸
+   · 새 단계: 사무직 · 칸 크기 조절 · 상단 바 좌우 스크롤 · 전체 화면 · (전투) 탄환
+   · 설정: 소리 · 진행 코드 · 칸 크기 · 저장 후 종료
+   · 선택지는 넘기지 않고 스크롤한다는 안내 */
+(function(){
+const LI=i80(0,1,2);const x=(k,e,j)=>[k,e,j][LI];
+const body=(lead,li,tip)=>`<p class="co-lead">${x(...lead)}</p>${li&&li.length?`<ul class="co-ul">${li.map(a=>`<li>${x(...a)}</li>`).join('')}</ul>`:''}${tip?`<p class="co-tip">${x(...tip)}</p>`:''}`;
+const S=(sel,t,lead,li,tip,o)=>Object.assign({sel,t:x(...t),b:body(lead,li,tip)},o||{});
+const N=(t,lead,li,tip,o)=>Object.assign({t:x(...t),b:body(lead,li,tip)},o||{});
+function fix(L){if(!Array.isArray(L))return;
+ const find=sel=>L.findIndex(s=>s&&s.sel===sel);
+ const put=(i,st)=>{if(i<0)return;const ref=L[i];L[i]=Object.assign({},ref,st,{ch:ref.ch})};
+ const after=(i,arr)=>{if(i<0)return;const ch=L[i].ch;arr.forEach(s=>s.ch=ch);L.splice(i+1,0,...arr)};
+ const before=(i,arr)=>{if(i<0)return;const ch=L[i].ch;arr.forEach(s=>s.ch=ch);L.splice(i,0,...arr)};
+ /* 세 갈래 */
+ put(find('.cats'),S('.cats',['할 일은 세 갈래','Three kinds of action','やることは三つ'],['하루는 아래 칸의 세 타일로 움직인다.','Your day runs on the three tiles below.','一日は下の三つのタイルで動きます。'],[
+  ['<b>작업</b> — 격리실에 들어가 에너지를 모은다.','<b>Work</b> — enter units to gather energy.','<b>作業</b> — 収容室でエネルギーを集めます。'],
+  ['<b>업무</b> — 휴식 · 정비, 순찰 · 단련, 행정.','<b>Duty</b> — rest, patrol & training, administration.','<b>業務</b> — 休憩・整備、巡回・鍛錬、行政。'],
+  ['<b>행동</b> — 사람들과 이야기하고, 하루를 끝낸다(퇴근).','<b>Actions</b> — talk with people and end the day (clock out).','<b>行動</b> — 人と話し、一日を終えます(退勤)。']],
+  ['선택지가 칸을 넘치면 넘기지 않고 <b>위아래로 스크롤</b>한다.','When choices overflow, just <b>scroll</b>.','選択肢があふれたら<b>スクロール</b>します。']));
+ /* 업무 */
+ put(find('.cats .cat[data-cat="act"]'),S('.cats .cat[data-cat="act"]',['업무','Duty','業務'],['작업 말고 시설에서 하는 일들이다.','Facility jobs besides work.','作業以外の施設の仕事です。'],[
+  ['<b>휴식 · 정비</b> — 체력 · 정신력 회복, 시설 손상 정비.','<b>Rest & upkeep</b> — recover HP/Sanity, repair damage.','<b>休憩・整備</b> — 体力・精神力の回復、損傷の整備。'],
+  ['<b>순찰 · 단련</b> — 가치관 단련, 하루 한 번 <b>모의 전투</b>(아무도 죽지 않는다).','<b>Patrol & training</b> — train virtues; one <b>mock battle</b> a day (no one dies).','<b>巡回・鍛錬</b> — 価値観の鍛錬、一日一回の<b>模擬戦</b>(誰も死にません)。'],
+  ['<b>행정</b> — 부서 이동 · 연구 · 탄환 · 억제 현황. 대부분 시간이 들지 않는다.','<b>Administration</b> — move dept, research, bullets, suppression. Mostly takes no time.','<b>行政</b> — 部署移動・研究・弾丸・抑制状況。ほとんど時間がかかりません。']]));
+ /* 행동 (퇴근) */
+ put(find('.cats .cat[data-cat="leave"]'),S('.cats .cat[data-cat="leave"]',['행동 (퇴근)','Actions (clock out)','行動(退勤)'],['사람과 관련된 일, 그리고 하루의 끝이 여기 있다.','People, and the end of the day.','人に関わること、そして一日の終わりがここにあります。'],[
+  ['<b>사람</b> — 직원과 대화 · 동료 돕기(작업 중이면 함께 작업 +15%, 쉬는 중이면 다독이기) · 세피라 찾아가기.','<b>People</b> — talk, help a coworker (+15% if working, encourage if resting), visit a Sephirah.','<b>人</b> — 会話・同僚を手伝う(作業中なら+15%、休憩中なら励ます)・セフィラを訪ねる。'],
+  ['<b>업무 종료</b> — <b>할당량</b>을 채우고 <b>오늘의 직접 작업</b>(3회부터 날이 갈수록 늘어 최대 8회)을 마치면 열린다. 상단에 「직접 작업 n/n」으로 보인다.','<b>End of shift</b> — opens once the <b>quota</b> is met and you have done <b>today\'s personal work</b> (3, rising to 8 over time). Shown at the top as "Personal work n/n".','<b>業務終了</b> — <b>ノルマ</b>を満たし、<b>今日の直接作業</b>(3回から日が経つほど増え最大8回)を終えると開きます。上部に「直接作業 n/n」と表示されます。'],
+  ['L사 직원은 시설 밖으로 나갈 수 없다. 저녁은 <b>시설 안 기숙사</b>에서 보낸다.','L Corp staff never leave; evenings are spent in the <b>in-facility dorm</b>.','L社の職員は外に出られず、夜は<b>施設内の寮</b>で過ごします。']]));
+ /* 수첩 */
+ const nb=find('#nb143')>=0?find('#nb143'):L.findIndex(s=>s&&/^#Ln|#Lnb/.test(s.sel||''));
+ if(nb>=0){const sel=L[nb].sel;put(nb,S(sel,['수첩','Notebook','手帳'],['사건에서 얻은 것과 사람들 사이의 일이 적힌다.','Records what you found and what is between people.','事件で得たものと人々の間のことが書かれます。'],[
+  ['<b>소지품</b> — 사건에서 얻은 물건. 쓰거나 동료에게 건넨다. 판정을 돕거나 새 선택지를 연다.','<b>Items</b> — use them or give them away; they help checks or open choices.','<b>所持品</b> — 使ったり同僚に渡したり。判定を助け、新しい選択肢を開きます。'],
+  ['<b>사람들</b> — 부서 → 관리직 / 사무직 → 직원 이름을 누르면 그 사람의 관계가 펼쳐진다. 관계는 처음엔 숨겨져 있다가 낌새를 거쳐 드러난다.','<b>People</b> — department → agents / clerks → tap a name to see their ties. Ties start hidden, then hinted, then known.','<b>人々</b> — 部署 → 管理職/事務職 → 名前を押すとその人の関係が開きます。関係は最初隠れていて、気配を経て明らかになります。'],
+  ['<b>이야기</b> — 시설의 이야기 · 남겨진 사람들 · 최근 기록으로 나뉘고, 진행 중인 것이 위에 온다.','<b>Stories</b> — facility stories, those left behind, recent notes; ongoing ones come first.','<b>物語</b> — 施設の物語・残された人々・最近の記録に分かれ、進行中のものが上に来ます。']],
+  ['시설의 사기 · 소문 · 감사 · 손상은 오른쪽 <b>시설</b> 칸에 있다.','Morale, rumors, audit and damage are in the <b>Facility</b> panel on the right.','士気・噂・監査・損傷は右の<b>施設</b>欄にあります。']))}
+ /* 사무직 · 칸 크기 · 상단 바 — 시설 현황 뒤에 */
+ let sf=L.findIndex(s=>s&&/strip/.test(s.sel||''));if(sf<0)sf=nb;
+ after(sf,[N(['사무직','Clerks','事務職'],['관리직 말고도 부서마다 <b>사무직</b>이 일한다.','Besides agents, each department has <b>clerks</b>.','管理職のほかに部署ごとに<b>事務職</b>がいます。'],[
+   ['부서마다 하루 한 명씩, 최대 5명까지 늘어난다. 직원 탭에서 따로 볼 수 있다.','One joins each department per day, up to 5. See them in the Staff tab.','部署ごとに一日一人、最大5人まで増えます。職員タブで別に見られます。'],
+   ['환상체와 직접 작업하지는 않지만, 탈출이 일어나면 휘말려 다치거나 죽을 수 있다. 제압을 시도하기도 한다.','They don\'t work with abnormalities, but breaches can hurt or kill them. Sometimes they try to fight back.','アブノーマリティと作業はしませんが、脱走に巻き込まれて傷ついたり死んだりします。制圧を試みることもあります。'],
+   ['함께 지낸 시간이 쌓이면 사무직과의 이야기와 결말도 생긴다.','Time together brings their own stories and endings.','共に過ごすと事務職との物語や結末も生まれます。']]),
+  N(['내 화면 맞추기','Fit the screen to you','画面を合わせる'],['칸 크기와 보기는 직접 바꿀 수 있다.','You can resize panels and the view.','パネルの大きさや表示は自分で変えられます。'],[
+   ['<b>칸 사이 경계선</b>을 끌면 크기가 바뀐다. 두 번 누르면 그 경계만 처음대로.','<b>Drag the borders</b> between panels to resize; double-click to reset one.','<b>パネルの境界線</b>をドラッグでサイズ変更。ダブルクリックで元に戻ります。'],
+   ['맨 위 상태 줄(일차 · 시각 · 할당량 …)은 넘치면 <b>좌우로 스크롤</b>된다. 마우스 휠도 된다.','The top status bar <b>scrolls sideways</b> when it overflows (mouse wheel works).','上部の状態バー(日数・時刻・ノルマ…)はあふれると<b>左右にスクロール</b>します。マウスホイールも可。'],
+   ['오른쪽 위 <b>⛶</b>로 전체 화면. 전체 화면을 못 쓰는 기기는 화면을 꽉 채운 보기로 바뀐다.','<b>⛶</b> at the top right goes full screen; devices without it get a fill-the-screen view.','右上の<b>⛶</b>で全画面。対応しない端末は画面いっぱいの表示になります。']])]);
+ /* 전체 화면 · 설정 */
+ const sb=find('#setBtn');
+ if(sb>=0){before(sb,[S('#fsBtn',['전체 화면','Full screen','全画面'],['누르면 화면을 꽉 채운다. 한 번 더 누르면 돌아온다.','Press to fill the screen; press again to return.','押すと画面いっぱいに。もう一度押すと戻ります。'],[
+   ['아이폰처럼 브라우저 전체 화면이 없는 기기는 공유 → 「홈 화면에 추가」로 열면 주소창 없이 쓸 수 있다.','On devices without browser full screen (e.g. iPhone), use Share → "Add to Home Screen".','iPhoneなど全画面がない端末は、共有 →「ホーム画面に追加」で開くとアドレスバーなしで使えます。']])]);
+  const i2=find('#setBtn');put(i2,S('#setBtn',['설정','Settings','設定'],['보기 · 소리 · 저장을 여기서 정한다.','Display, sound and saving live here.','表示・サウンド・保存はここで決めます。'],[
+   ['<b>화면 · 글자</b> — UI 스타일, 색, 글꼴, 글자 크기, 움직임, 결과 카드, 주사위 연출.','<b>Display & text</b> — UI style, colors, font, size, motion, result card, dice.','<b>表示・文字</b> — UIスタイル、色、書体、文字サイズ、動き、結果カード、サイコロ演出。'],
+   ['<b>소리</b> — 효과음과 배경 음악. (소리 버튼은 이제 여기에만 있다)','<b>Sound</b> — effects and music (only here now).','<b>サウンド</b> — 効果音とBGM(今はここだけ)。'],
+   ['<b>진행 코드</b> — 다른 기기에서 이어 하기 · <b>칸 크기</b> 되돌리기 · <b>저장 후 종료</b>.','<b>Progress code</b> to continue elsewhere · reset <b>panel sizes</b> · <b>save & quit</b>.','<b>進行コード</b>で別端末へ・<b>パネルサイズ</b>のリセット・<b>保存して終了</b>。']]))}
+ const g={};L.forEach(s=>{if(s&&s.ch){g[s.ch]=(g[s.ch]||0)+1;s.chi=g[s.ch]}});L.forEach(s=>{if(s&&s.ch)s.chn=g[s.ch]})}
+function fixB(L){if(!Array.isArray(L))return;const i=L.findIndex(s=>s&&s.sel==='#autoBtn');if(i<0||L.some(s=>s&&s.sel==='#blt180'))return;const ch=L[i].ch;
+ L.splice(i,0,Object.assign(S('#blt180',['탄환','Bullets','弾丸'],['전투 중 쓸 수 있는 탄환은 이 단추 하나에 모여 있다.','All bullets you can use in battle are behind this one button.','戦闘で使える弾丸はこのボタンにまとまっています。'],[
+  ['누르면 가진 탄환 목록이 뜨고, 고른 뒤 쏠 대상을 누른다.','Press to list your bullets, pick one, then pick a target.','押すと弾丸の一覧が出ます。選んでから撃つ対象を押します。'],
+  ['괄호 안 숫자는 오늘 남은 탄환 수다.','The number in brackets is how many remain today.','括弧の数字は今日残っている弾丸の数です。']]),{ch}));
+ const g={};L.forEach(s=>{if(s&&s.ch){g[s.ch]=(g[s.ch]||0)+1;s.chi=g[s.ch]}});L.forEach(s=>{if(s&&s.ch)s.chn=g[s.ch]})}
+try{fix(TUT_STEPS)}catch(e){console.error(e)}
+try{fixB(TUT_BATTLE)}catch(e){console.error(e)}
+})();
+/* ============ v189: 튜토리얼은 짧게, 나머지는 「처음 마주칠 때」 ============
+   ① 근무 튜토리얼에서 당장 필요 없는 단계(LOB · 시설 손상 · 사무직 · 화면 맞추기 · 유대 · 수첩 · 기록 · 저녁 · 미션 · 결말 · 거울 세계 · 전체 화면)를 뺀다.
+      33단계 → 21단계. 빠진 내용은 아래 ②로 옮긴다.
+   ② 처음 안내 카드: 어떤 시스템을 처음 마주치는 순간, 화면 구석에 2~3줄짜리 카드가 하나씩 뜬다 (막지 않는다).
+      [가이드에서 자세히]로 해당 가이드 항목을 연다. 한 번 본 안내는 다시 뜨지 않는다. ⚙ 설정에서 끄거나 처음부터 다시 볼 수 있다.
+   ③ 가이드에 없던 항목을 더한다: 사무직 · 탈출과 제압 · 부서 이동과 연구 · 저장과 체크포인트 · 탄환 · 설계팀(46일~) · 화면 맞추기 */
+(function(){
+const LI=i80(0,1,2);const x=(k,e,j)=>[k,e,j][LI];const T=(k,e,j)=>i80(k,e,j);const D=document;
+/* ---------- ① 튜토리얼 줄이기 ---------- */
+try{const dropSel=['#daybox .hud-cell:nth-child(5)','#Rfw','#dmg153','#Lp .pc-bars','#side .b150, #side .card:nth-child(3)','#Ln','#nb143','#logcard','#fsBtn'];
+ const dropT=['사무직','Clerks','事務職','내 화면 맞추기','Fit the screen to you','画面を合わせる','저녁 시간','Evenings','夕方の時間','세피라와 미션','Sephirot & missions','セフィラとミッション','여러 갈래의 결말','Many endings','いくつもの結末','아인·소프·오르','Ain Soph Aur','アイン・ソフ・オウル'];
+ for(let i=TUT_STEPS.length-1;i>=0;i--){const s=TUT_STEPS[i];if(!s)continue;if((s.sel&&dropSel.includes(s.sel))||(!s.sel&&dropT.includes(s.t)))TUT_STEPS.splice(i,1)}
+ const w=TUT_STEPS[0];if(w&&w.b)w.b=w.b.replace(/여섯 장에 걸쳐/,'여섯 장으로 짧게').replace(/5분쯤/,'3분쯤').replace(/six chapters/,'six short chapters').replace(/about 5 minutes/,'about 3 minutes');
+ if(w&&w.b&&!/tip189/.test(w.b))w.b=w.b.replace('</ul>',`<li class="tip189l">${x('나머지는 <b>처음 마주칠 때</b> 구석의 짧은 카드로 알려 준다.','The rest is explained <b>when you first meet it</b>, in a short corner card.','残りは<b>初めて出会ったとき</b>隅の短いカードで案内します。')}</li></ul>`);
+ /* 화면 맞추기: 설정 바로 앞에 한 단계 */
+ const si=TUT_STEPS.findIndex(s=>s&&s.sel==='#setBtn');
+ if(si>=0&&!TUT_STEPS.some(s=>s&&s.scr189)){const b=(lead,li,tip)=>`<p class="co-lead">${x(...lead)}</p><ul class="co-ul">${li.map(a=>`<li>${x(...a)}</li>`).join('')}</ul>${tip?`<p class="co-tip">${x(...tip)}</p>`:''}`;
+  TUT_STEPS.splice(si,0,{sel:'#fsBtn',scr189:1,ch:TUT_STEPS[si].ch,t:x('화면 맞추기','Fit the screen','画面の調整'),b:b(['화면은 내 기기에 맞게 바꿀 수 있다.','You can fit the screen to your device.','画面は自分の端末に合わせて変えられます。'],[
+   ['<b>⛶ 전체 화면</b> — 이 단추. 한 번 더 누르면 돌아온다. 아이폰은 공유 → 「홈 화면에 추가」로 열면 주소창 없이 쓸 수 있다.','<b>⛶ Full screen</b> — this button; press again to return. On iPhone, use Share → "Add to Home Screen".','<b>⛶ 全画面</b> — このボタン。もう一度押すと戻ります。iPhoneは共有 →「ホーム画面に追加」から。'],
+   ['<b>칸 크기</b> — 칸 사이 경계선을 끌면 크기가 바뀐다. 두 번 누르면 그 경계만 처음대로. 비율로 저장되어 화면이 바뀌어도 유지된다.','<b>Panel size</b> — drag the borders between panels; double-click to reset. Saved as ratios.','<b>パネルサイズ</b> — 境界線をドラッグで変更、ダブルクリックで元に戻ります。比率で保存されます。'],
+   ['<b>상단 상태 줄</b> — 넘치면 좌우로 스크롤된다(마우스 휠도 된다). 선택지는 위아래로 스크롤한다.','<b>Top status bar</b> — scrolls sideways when it overflows (mouse wheel works). Choices scroll up and down.','<b>上部の状態バー</b> — あふれると左右にスクロール(ホイール可)。選択肢は上下にスクロール。']],
+   ['칸 크기는 ⚙ 설정에서 한 번에 처음대로 되돌릴 수 있다.','Reset all panel sizes at once in ⚙ Settings.','パネルサイズは⚙設定でまとめて元に戻せます。'])})}
+ const g={};TUT_STEPS.forEach(s=>{if(s&&s.ch){g[s.ch]=(g[s.ch]||0)+1;s.chi=g[s.ch]}});TUT_STEPS.forEach(s=>{if(s&&s.ch)s.chn=g[s.ch]})}catch(e){console.error(e)}
+/* ---------- ③ 가이드 항목 ---------- */
+const ul=a=>`<ul class="defs">${a.map(l=>`<li>${x(...l)}</li>`).join('')}</ul>`;
+const GA=[
+ {k:'sup189',t:x('탈출과 제압','Breaches & suppression','脱走と制圧'),b:`<p>${x('환상체가 탈출하거나 시련이 나타나면 이야기 화면 오른쪽 위 <b>경보</b> 칸에 뜬다.','Escapes and ordeals appear in the <b>Alert</b> box at the top right of the story view.','脱走や試練は物語画面右上の<b>警報</b>欄に表示されます。')}</p>`+ul([
+  ['<b>직접 나선다</b> — 그 자리로 가서 진압 전투를 한다. 이기면 제압.','<b>Step in</b> — go there and fight. Win to suppress it.','<b>自ら出る</b> — その場へ行き鎮圧戦闘。勝てば制圧。'],
+  ['나서지 않으면 근처 동료가 대신 싸운다. 동료가 다치거나 죽을 수 있고, 위협이 크면 몸을 사리기도 한다.','Otherwise nearby coworkers fight it. They can be hurt or killed, and may avoid big threats.','出なければ近くの同僚が戦います。負傷や死亡もあり、脅威が大きいと身を引くこともあります。'],
+  ['탈출 중에는 클리포트 폭주 게이지가 오르지 않는다. 퇴근할 때까지 남은 것은 처리반이 들어가고 LOB -1.','The meltdown gauge does not rise during breaches. Anything left at clock-out is handled by a cleanup squad (LOB -1).','脱走中はクリフォト暴走ゲージが上がりません。退勤時に残っていれば処理班が入り LOB -1。'],
+  ['<b>시련</b>은 폭주 단계가 오를 때 복도에 나타난다. 여명 → 정오 → 어스름 → 자정 순으로 강해진다.','<b>Ordeals</b> appear in hallways as meltdown levels rise: dawn → noon → dusk → midnight.','<b>試練</b>は暴走段階が上がると廊下に現れます。黎明 → 正午 → 黄昏 → 深夜の順に強くなります。'],
+  ['붉은 안개 · 조율자 같은 <b>보스</b>는 코어 억제 중에 나타나며, 이기면 억제 조건을 채운다.','<b>Bosses</b> like the Red Mist or the Arbiter appear during core suppressions; beating them meets the goal.','赤い霧・調律者のような<b>ボス</b>はコア抑制中に現れ、勝てば抑制条件を満たします。']])},
+ {k:'clerk189',t:x('사무직','Clerks','事務職'),b:ul([
+  ['부서마다 관리직과 따로 <b>사무직</b>이 일한다. 하루 한 명씩 늘어 부서당 최대 5명.','Each department has <b>clerks</b> besides agents; one joins per day, up to 5 per department.','部署ごとに管理職とは別に<b>事務職</b>がいます。一日一人ずつ増え、部署あたり最大5人。'],
+  ['환상체와 작업하지는 않지만 탈출에 휘말리면 다치거나 죽는다. 위험이 크면 피하고, 때로 제압을 시도한다.','They don\'t work with abnormalities, but breaches can hurt or kill them. They flee big dangers and sometimes try to fight.','作業はしませんが、脱走に巻き込まれると負傷・死亡します。危険が大きいと逃げ、時に制圧を試みます。'],
+  ['직원 탭에서 관리직과 나뉘어 보이고, 사무직끼리 · 관리직과의 관계도 생긴다. 그들만의 사건과 결말도 있다.','The Staff tab lists them separately. They form ties with each other and with agents, and have their own events and endings.','職員タブで管理職と分けて表示され、関係も生まれます。彼らだけの事件や結末もあります。']])},
+ {k:'dept189',t:x('부서 이동 · 연구','Departments & research','部署移動・研究'),b:ul([
+  ['부서는 날이 지나며 하나씩 열린다. 부서마다 세피라 · 특징 · 연구가 다르다.','Departments open over time, each with its own Sephirah, traits and research.','部署は日が経つと一つずつ開きます。セフィラ・特徴・研究がそれぞれ違います。'],
+  ['<b>업무 → 행정</b>에서 하루 한 번 <b>부서 이동</b>, 하루 한 번 <b>부서 연구</b>를 할 수 있다. 시간이 들지 않는다.','Under <b>Duty → Administration</b>: <b>move departments</b> once a day and <b>research</b> once a day. Takes no time.','<b>業務 → 行政</b>で一日一回<b>部署移動</b>、一日一回<b>部署研究</b>ができます。時間はかかりません。'],
+  ['연구는 탄환 · 다른 부서 격리실 작업(합동) 같은 기능을 연다. 기본은 내 부서 격리실만 작업할 수 있다.','Research unlocks things like bullets and working other departments\' units (joint work). By default you only work your own department.','研究は弾丸・他部署の収容室での作業(合同)などを開きます。基本は自部署の収容室のみ作業できます。']])},
+ {k:'save189',t:x('저장 · 체크포인트','Saving & checkpoints','セーブ・チェックポイント'),b:ul([
+  ['행동할 때마다 자동으로 저장된다.','The game saves automatically as you act.','行動するたびに自動保存されます。'],
+  ['<b>체크포인트</b> — 1일차와 6 · 11 · 16 …일차 아침(5일마다)에 따로 남는다. 죽거나 엔딩을 본 뒤 그 아침으로 돌아갈 수 있다.','<b>Checkpoints</b> — kept on day 1 and every 5 days (mornings of days 6, 11, 16…). After death or an ending you can return to that morning.','<b>チェックポイント</b> — 1日目と6・11・16…日目の朝(5日ごと)に別に残ります。死亡やエンディングの後、その朝に戻れます。'],
+  ['<b>⚙ 설정 → 진행 코드</b>로 다른 기기 · 다른 사이트에서 이어 할 수 있다.','<b>⚙ Settings → Progress code</b> lets you continue on another device or site.','<b>⚙設定 → 進行コード</b>で別の端末・サイトで続けられます。']])},
+ {k:'ammo189',t:x('탄환','Bullets','弾丸'),b:ul([
+  ['연구로 열리는 전투 보조 수단이다. 체력 · 정신력 회복, 보호막, 감속 등.','Battle aids unlocked by research: HP/Sanity recovery, shields, slow and more.','研究で開く戦闘補助。体力・精神力回復、シールド、減速など。'],
+  ['전투 화면의 <b>탄환 ▾</b>를 눌러 고르고, 쏠 대상을 누른다. 숫자는 남은 수량.','Press <b>Bullets ▾</b> in battle, pick one, then pick a target. The number is what remains.','戦闘画面の<b>弾丸 ▾</b>を押して選び、撃つ対象を押します。数字は残り数。']])},
+ {k:'keter189',t:x('설계팀 (46일~)','Architecture (day 46+)','設計チーム(46日〜)'),b:ul([
+  ['46~49일은 매일 <b>케테르의 코어 억제</b>가 걸린다. 날마다 목표가 다르고, 다른 세피라들의 규칙이 겹쳐 걸린다.','Days 46–49 each bring <b>Keter\'s core suppression</b>, with a different goal and other Sephirot\'s rules stacked on.','46〜49日は毎日<b>ケテルのコア抑制</b>。日ごとに目標が違い、他のセフィラの規則が重なります。'],
+  ['이 기간에는 시각이 <b>?</b>로만 보이고, 초과 근무로 날이 강제로 넘어가지 않는다. 목표를 채울 때까지 같은 날이 이어진다.','During this time the clock shows <b>?</b> and overtime never forces the next day. The day continues until the goal is met.','この期間は時刻が<b>?</b>と表示され、残業で日が強制的に進みません。目標を満たすまで同じ日が続きます。'],
+  ['세피라의 일일 부탁은 더 나오지 않는다.','Sephirot no longer give daily requests.','セフィラの日々の頼みはもう出ません。']])},
+ {k:'screen189',t:x('화면 맞추기','Fitting the screen','画面の調整'),b:ul([
+  ['<b>칸 사이 경계선</b>을 끌면 크기가 바뀐다. 두 번 누르면 그 경계만 처음대로. 비율로 저장되어 화면이 바뀌어도 유지된다.','<b>Drag panel borders</b> to resize; double-click to reset. Saved as ratios, so it survives screen changes.','<b>パネルの境界線</b>をドラッグでサイズ変更、ダブルクリックで元に戻ります。比率で保存されます。'],
+  ['상단 상태 줄은 넘치면 <b>좌우로 스크롤</b>된다(마우스 휠 가능). 선택지는 넘기지 않고 스크롤한다.','The top status bar <b>scrolls sideways</b> (mouse wheel works). Choices scroll instead of paging.','上部の状態バーはあふれると<b>左右にスクロール</b>(ホイール可)。選択肢はページではなくスクロール。'],
+  ['오른쪽 위 <b>⛶</b> 전체 화면. 아이폰은 공유 → 「홈 화면에 추가」로 열면 주소창 없이 쓸 수 있다.','<b>⛶</b> at top right for full screen. On iPhone use Share → "Add to Home Screen".','右上の<b>⛶</b>で全画面。iPhoneは共有 →「ホーム画面に追加」から。'],
+  ['<b>⚙ 설정</b>에서 화면 · 글자 · 소리 · 칸 크기 되돌리기.','<b>⚙ Settings</b>: display, text, sound, panel-size reset.','<b>⚙設定</b>で表示・文字・サウンド・パネルサイズのリセット。']])}];
+try{GA.forEach(a=>{if(!GUIDE.some(g=>g.k===a.k)){const i=GUIDE.findIndex(g=>g.k==='mirror');GUIDE.splice(i<0?GUIDE.length:i,0,a)}})}catch(e){}
+/* ---------- ② 처음 안내 카드 ---------- */
+const KEY='lcw_tip189';let ST={seen:{},off:false};try{ST=Object.assign(ST,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+const Wm=()=>{try{return window.L143&&L143.W()}catch(e){return null}};
+const has=q=>{try{return !!D.querySelector(q)}catch(e){return false}};
+const live=()=>{try{return typeof contained==='function'?contained():[]}catch(e){return []}};
+const TIPS=[
+ ['escape',()=>(G.breachQ||[]).some(e=>e.type==='ab')||(G.roam||[]).some(r=>r.e&&r.e.type==='ab'),['환상체 탈출','Abnormality breach','アブノーマリティ脱走'],['경보 칸에 위치가 뜬다. <b>직접 나선다</b>로 진압하거나 동료에게 맡긴다. 퇴근 때까지 남으면 LOB -1.','The Alert box shows where. <b>Step in</b> to suppress it, or leave it to coworkers. Left until clock-out: LOB -1.','警報欄に位置が出ます。<b>自ら出る</b>で鎮圧するか同僚に任せます。退勤まで残るとLOB -1。'],'sup189'],
+ ['ordeal',()=>(G.roam||[]).some(r=>r.e&&r.e.type==='ordeal')||(G.breachQ||[]).some(e=>e.type==='ordeal'),['시련','Ordeal','試練'],['폭주 단계가 오르면 복도에 나타나는 적이다. 여명 → 정오 → 어스름 → 자정 순으로 강해진다.','Enemies that appear in hallways as meltdowns rise: dawn → noon → dusk → midnight.','暴走段階が上がると廊下に現れる敵。黎明 → 正午 → 黄昏 → 深夜の順に強くなります。'],'sup189'],
+ ['melt',()=>live().some(a=>G.ab[a.id]&&G.ab[a.id].melt>0),['폭주한 격리실','Meltdown','暴走した収容室'],['붉게 표시된 격리실은 남은 시간 안에 작업해야 진정된다. 놓치면 사고로 이어질 수 있다.','Work in the flagged unit before time runs out to calm it. Missing it can lead to incidents.','赤く示された収容室は残り時間内に作業すると鎮まります。逃すと事故につながることがあります。'],'danger'],
+ ['panic',()=>(G.agents||[]).some(a=>a.alive&&a.panic),['패닉','Panic','パニック'],['정신력이 바닥난 직원은 공황에 빠져 위험해진다. 진압해서 정신을 되찾게 할 수 있다.','Staff whose Sanity hits bottom panic and become dangerous. Suppress them to bring them back.','精神力が尽きた職員はパニックに陥り危険になります。鎮圧して正気に戻せます。'],'people'],
+ ['death',()=>(G.deaths||0)>0,['동료의 죽음','A coworker\'s death','同僚の死'],['떠난 사람의 유품과 남겨진 사람들의 이야기가 수첩에 남는다. 남겨진 사람을 찾아가 볼 수 있다.','Keepsakes and the stories of those left behind go into the Notebook. You can visit them.','去った人の遺品と残された人の物語が手帳に残ります。訪ねることもできます。'],'journal'],
+ ['clerk',()=>(G.clerks||[]).length>0,['사무직','Clerks','事務職'],['부서마다 사무직이 하루 한 명씩 늘어난다(최대 5명). 작업은 하지 않지만 탈출에 휘말릴 수 있다. 직원 탭에서 따로 본다.','Clerks join each department daily (up to 5). They don\'t do works, but breaches can catch them. See them in the Staff tab.','部署ごとに事務職が一日一人増えます(最大5人)。作業はしませんが脱走に巻き込まれます。職員タブで確認。'],'clerk189'],
+ ['lob',()=>G.day>=2&&(G.lob||0)>0,['LOB 포인트','LOB points','LOBポイント'],['할당량 · 미션 · 초과 근무로 쌓인다. 왼쪽 「LOB 사용하기」에서 쓴다.','Earned from quotas, missions and overtime. Spend it via "Use LOB" on the left.','ノルマ・ミッション・残業で貯まります。左の「LOBを使う」で使います。'],'grow'],
+ ['bond',()=>G.day>=2,['유대와 마음의 온기','Bonds & Warmth','絆と心の温もり'],['함께 일하고 이야기할수록 유대가 쌓이고, 사람답게 행동할수록 마음의 온기가 오른다. 결말에 영향을 준다.','Bonds grow as you work and talk together; Warmth rises with humane choices. Both shape the ending.','共に働き話すほど絆が深まり、人間らしく振る舞うほど心の温もりが上がります。結末に影響します。'],'hum150'],
+ ['dmg',()=>{const w=Wm();return w&&w.w&&w.w.damage>=8},['시설 손상','Facility damage','施設の損傷'],['탈출이 일어날수록 오른다. 업무 → 휴식 · 정비에서 정비로 낮춘다. 100이 되면 시설이 무너진다.','Rises with breaches. Lower it via Duty → Rest & upkeep. At 100 the facility collapses.','脱走が起きるほど上がります。業務 → 休憩・整備で下げます。100で施設が崩壊します。'],'dmg153'],
+ ['notebook',()=>{const w=Wm();return w&&((w.it&&Object.keys(w.it).length)||Object.values(w.rel||{}).some(r=>r.kn>=1))},['수첩','Notebook','手帳'],['왼쪽 아래 수첩에 소지품 · 사람들 사이의 관계 · 진행 중인 이야기가 쌓인다.','The Notebook (bottom left) collects items, ties between people and ongoing stories.','左下の手帳に所持品・人間関係・進行中の物語がたまります。'],'journal'],
+ ['evening',()=>G.phase==='evening',['저녁 시간','Evening','夕方の時間'],['퇴근 뒤 기숙사에서 보내는 시간이다. 쉬거나 동료와 지내는 선택이 정신력과 관계를 바꾼다.','Time in the dorm after work. Resting or spending time with others changes Sanity and ties.','退勤後に寮で過ごす時間。休むか同僚と過ごすかで精神力と関係が変わります。'],'flow'],
+ ['dept2',()=>{try{return openDepts().length>=2}catch(e){return false}},['새 부서','A new department','新しい部署'],['업무 → 행정에서 하루 한 번 부서 이동 · 부서 연구를 할 수 있다. 연구는 탄환 · 합동 작업 등을 연다.','Duty → Administration: move departments and research once a day each. Research unlocks bullets, joint work and more.','業務 → 行政で一日一回、部署移動・部署研究ができます。研究で弾丸・合同作業などが開きます。'],'dept189'],
+ ['mis',()=>!!G.mis,['세피라의 부탁','A Sephirah\'s request','セフィラの頼み'],['그날 안에 조건을 채우면 보상과 함께 세피라와의 사이가 깊어진다. 상단에 진행이 보인다.','Meet the condition that day for a reward and a closer bond. Progress shows at the top.','その日のうちに条件を満たすと報酬とともにセフィラとの仲が深まります。上部に進行が表示されます。'],'people'],
+ ['core',()=>{try{return coreSeen()}catch(e){return false}},['코어 억제','Core suppression','コア抑制'],['세피라의 코어 미션 세 단계를 마치면 억제가 열린다. 억제 중에는 그 세피라의 규칙이 걸린다. 해내면 영구 효과를 얻는다.','Finish a Sephirah\'s three core missions to unlock suppression. Their rule applies during it; success grants a lasting effect.','セフィラのコアミッション3段階を終えると抑制が開きます。抑制中はその規則がかかり、成功で永続効果。'],'people'],
+ ['ego',()=>(G.ownW||[]).length>=2||(G.ownS||[]).length>=2,['E.G.O 장비','E.G.O gear','E.G.O装備'],['격리실 도감에서 PE로 E.G.O를 추출하고, 장비 · 인사 탭에서 나와 동료에게 장착한다.','Extract E.G.O with PE in the Codex and equip it (on you or coworkers) in Gear & Staffing.','収容室図鑑でPEを使ってE.G.Oを抽出し、装備・人事タブで装備します。'],'codex'],
+ ['gift',()=>(G.giftOwn||[]).length>0,['E.G.O 기프트','E.G.O gift','E.G.Oギフト'],['환상체가 건넨 작은 선물이다. 오른쪽 위 외형 칸에서 부위마다 하나씩 단다.','Small gifts from abnormalities. Wear one per slot in the appearance panel at top right.','アブノーマリティからの小さな贈り物。右上の外見欄で部位ごとに一つ付けます。'],'codex'],
+ ['tool',()=>live().some(a=>a.tool),['도구형 환상체','Tool abnormality','ツール型アブノーマリティ'],['작업 대신 사용하거나 몸에 지닌다. 효과가 큰 만큼 대가도 있으니 설명을 먼저 읽는다.','Used or carried instead of worked on. Strong effects come with a price, so read first.','作業の代わりに使ったり身につけたりします。効果が大きい分代償もあるので先に説明を読みましょう。'],'codex'],
+ ['ammo',()=>has('#blt180'),['탄환','Bullets','弾丸'],['탄환 ▾를 눌러 고른 뒤 대상을 누른다. 숫자는 오늘 남은 수량.','Press Bullets ▾, pick one, then a target. The number is what remains today.','弾丸 ▾を押して選び、対象を押します。数字は今日の残り。'],'ammo189'],
+ ['ckpt',()=>G.day>=6,['체크포인트','Checkpoints','チェックポイント'],['1일차와 5일마다(6 · 11 · 16 …일차) 아침이 따로 저장된다. 죽거나 엔딩을 본 뒤 그 아침으로 돌아갈 수 있다.','Day 1 and every 5 days (days 6, 11, 16…) are saved separately. After death or an ending you can return there.','1日目と5日ごと(6・11・16…日目)の朝が別に保存されます。死亡やエンディング後にそこへ戻れます。'],'save189'],
+ ['mirror',()=>G.day>=3,['아인 · 소프 · 오르','Ain Soph Aur','アイン・ソフ・オウル'],['위쪽 탭의 거울 세계. 다른 관리자의 기록과 겨루는 친선전이다.','The mirror world in the top tabs: friendly matches against other managers\' records.','上部タブの鏡の世界。他の管理人の記録と戦う親善戦です。'],'mirror'],
+ ['ending',()=>G.day>=8,['여러 갈래의 결말','Many endings','いくつもの結末'],['선택 · 관계 · 마음의 온기에 따라 결말이 갈린다. 어떤 결말은 50일보다 먼저 찾아온다.','Choices, ties and Warmth decide the ending. Some arrive before day 50.','選択・関係・心の温もりで結末が分かれます。50日より前に訪れる結末もあります。'],'endings'],
+ ['keter',()=>G.day>=46&&G.day<=49,['설계팀','Architecture','設計チーム'],['46~49일은 매일 케테르의 코어 억제다. 시각은 ?로 보이고, 목표를 채울 때까지 같은 날이 이어진다.','Days 46–49: Keter\'s core suppression every day. The clock shows ?, and the day lasts until the goal is met.','46〜49日は毎日ケテルのコア抑制。時刻は?と表示され、目標を満たすまで同じ日が続きます。'],'keter189']];
+let CUR=null;const Q=[];
+function show(t){const [id,,ti,tx_,gk]=t;CUR=id;ST.seen[id]=1;sv();
+ const el=D.createElement('div');el.className='tip189';el.setAttribute('role','status');
+ el.innerHTML=`<small>${T('처음 안내','First time','はじめての案内')}</small><b>${x(...ti)}</b><p>${x(...tx_)}</p><div class="tip189b">${gk&&GUIDE.some(g=>g.k===gk)?`<button type="button" class="btn ghost small" data-g>${T('가이드에서 자세히','More in the Guide','ガイドで詳しく')}</button>`:''}<button type="button" class="btn small" data-x>${T('알겠다','Got it','了解')}</button></div>`;
+ const done=()=>{el.classList.add('out');setTimeout(()=>el.remove(),200);CUR=null};
+ el.querySelector('[data-x]').onclick=done;const g=el.querySelector('[data-g]');if(g)g.onclick=()=>{done();try{guide(gk)}catch(e){}};
+ D.body.appendChild(el);setTimeout(()=>{if(el.isConnected&&CUR===id)done()},20000)}
+function scan(){try{if(ST.off||CUR||!G||G.dead||G.ended||G.theEnd||G.arc||G.arcPre)return;if(typeof TUT!=='undefined'&&TUT)return;if(!D.body.classList.contains('ui156'))return;
+ if(!(G.flags&&(G.flags.tutDone||G.day>1||G.flags.init2))&&G.day<=1){/* 첫날 튜토리얼 직후엔 조금 기다린다 */if(!scan.t0)scan.t0=Date.now();if(Date.now()-scan.t0<8000)return}
+ for(const t of TIPS){if(ST.seen[t[0]])continue;let ok=false;try{ok=t[1]()}catch(e){}if(ok){show(t);return}}}catch(e){}}
+setInterval(scan,1500);
+window.tips189={reset(){ST.seen={};sv()},off(v){ST.off=!!v;sv()}};
+/* 설정 */
+try{settingsPop76=(f=>function(){const r=f.apply(this,arguments);try{const b=D.querySelector('.set76');if(b&&!b.querySelector('#tip189s')){
+ b.insertAdjacentHTML('beforeend',`<section id="tip189s"><h4>${T('처음 안내','First-time tips','はじめての案内')}</h4><p class="note">${T('시스템을 처음 마주칠 때 화면 구석에 짧은 안내가 뜬다.','Short tips appear in the corner when you first meet a system.','システムに初めて出会うと隅に短い案内が出ます。')}</p><div class="row"><button class="btn ghost" type="button" data-t="off">${ST.off?T('다시 켜기','Turn on','オンにする'):T('끄기','Turn off','オフにする')}</button><button class="btn ghost" type="button" data-t="reset">${T('처음부터 다시 보기','Show all again','最初から見直す')}</button></div></section>`);
+ b.querySelector('[data-t="off"]').onclick=e=>{ST.off=!ST.off;sv();e.target.textContent=ST.off?T('다시 켜기','Turn on','オンにする'):T('끄기','Turn off','オフにする')};
+ b.querySelector('[data-t="reset"]').onclick=e=>{ST.seen={};sv();e.target.textContent=T('다시 보게 했다','Will show again','また表示します')}}}catch(e){}return r})(settingsPop76)}catch(e){}
+const st=D.createElement('style');st.textContent=`
+.tip189{position:fixed;right:16px;bottom:16px;z-index:2147482000;width:min(340px,calc(100vw - 32px));background:rgba(16,17,19,.97);border:1px solid var(--accent,#f4ee9a);border-left-width:4px;padding:10px 14px 12px;box-shadow:0 10px 30px rgba(0,0,0,.55);animation:tip189 .25s ease-out;color:var(--fg,#eee)}
+.tip189.out{opacity:0;transform:translateY(8px);transition:.2s}
+.tip189 small{display:block;font-size:11px;color:var(--accent,#f4ee9a);letter-spacing:.08em}
+.tip189 b{display:block;font-size:15px;margin:2px 0 4px}
+.tip189 p{margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--fg2,var(--fg))}
+.tip189b{display:flex;gap:6px;justify-content:flex-end}
+@keyframes tip189{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:640px){.tip189{right:8px;left:8px;bottom:8px;width:auto}}`;
+D.head.appendChild(st);
+})();
+/* ============ v190: 창이 겹치지 않게 · 결정해야 하는 창은 잠근다 · 상단 단추 간격 ============
+   · 정보 창(가이드 · 설정 · 시설 상태 · 칭호 …)이 열린 채로 다른 단추 · 위쪽 탭을 누르면, 열린 창을 닫고 새 화면으로 바꾼다.
+   · 꼭 결정해야 하는 창(사건 · 세피라 코어 미션 안내처럼 「돌아간다」가 없는 선택 창)은 잠근다:
+     ✕ · Esc · 바깥 누르기로 닫히지 않고, 다른 단추를 눌러도 바뀌지 않는다(창이 한 번 흔들리며 알린다).
+     잠긴 동안 게임이 띄우려는 다른 창은 기다렸다가 결정이 끝난 뒤에 뜬다.
+   · 오른쪽 위 가이드 단추가 다른 단추들과 떨어져 보이던 간격을 붙인다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const BACK=/돌아간다|돌아가기|닫기|그만둔다|나중에|취소|Back|Close|Cancel|Later|戻る|閉じる|やめる|後で|キャンセル/;
+function locked(ov){ov=ov||(typeof POP!=='undefined'?POP:null);if(!ov||!ov.isConnected)return false;
+ if(ov.classList.contains('ev157'))return true;
+ if(!ov.classList.contains('decide'))return false;if(ov.classList.contains('u156pop'))return false;
+ if(ov.querySelector('.s150,.u151,.set76,.adm,.nb156,.log156,.dmg153p,.gd-nav,.tut-pop'))return false;
+ const chs=[...ov.querySelectorAll('.pop-b .ch, .pop-b [data-o], .pop-b [data-y], .pop-b [data-yes]')];if(!chs.length)return false;
+ return !chs.some(b=>BACK.test(b.textContent||''))}
+function mark(){try{if(typeof POP!=='undefined'&&POP&&POP.isConnected){const L=locked(POP);if(POP.classList.contains('lock190')!==L)POP.classList.toggle('lock190',L)}}catch(e){}}
+function shake(){try{const c=POP&&POP.querySelector('.pop-card');if(!c)return;c.classList.remove('shk190');void c.offsetWidth;c.classList.add('shk190');
+ const h=POP.querySelector('.pop-h h3');toast(T('먼저 이 창에서 결정해야 한다.','Decide in this window first.','先にこのウィンドウで決めてください。'),'warn')}catch(e){}}
+/* 잠긴 창 안에서의 조작은 이어서 새 창을 열 수 있다 */
+let INSIDE=0;['pointerdown','click','keydown'].forEach(ev=>D.addEventListener(ev,e=>{if(e.target&&e.target.closest&&e.target.closest('.pop'))INSIDE=Date.now()},true));
+const Q=[];
+popup=(f=>function(){try{mark();if(typeof POP!=='undefined'&&POP&&POP.classList.contains('lock190')&&!window.__pop190force&&Date.now()-INSIDE>1500){Q.push([this,[...arguments]]);if(Q.length>6)Q.shift();return D.createElement('div')}}catch(e){}
+ const r=f.apply(this,arguments);setTimeout(mark,0);return r})(popup);
+closePop=(f=>function(){const r=f.apply(this,arguments);if(Q.length)setTimeout(()=>{if(typeof POP!=='undefined'&&POP)return;const q=Q.shift();if(q){window.__pop190force=1;try{popup.apply(q[0],q[1])}finally{window.__pop190force=0}}},140);return r})(closePop);
+/* Esc · 바깥 누르기 막기 */
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){mark();if(typeof POP!=='undefined'&&POP&&POP.classList.contains('lock190')){e.stopImmediatePropagation();e.stopPropagation();shake()}}},true);
+D.addEventListener('click',e=>{const t=e.target;if(typeof POP==='undefined'||!POP||!POP.isConnected)return;if(typeof TUT!=='undefined'&&TUT)return;mark();
+ const L=POP.classList.contains('lock190');
+ if(t===POP&&L){e.stopPropagation();e.preventDefault();shake();return}
+ if(t.closest&&t.closest('.pop,.tip189,.ord62,#toasts,#coach,.rz187,#ins79,.dc148'))return;
+ const ctl=t.closest&&t.closest('button,a,[role=tab],[role=button],.tap,.cat,.hud-cell,summary,[data-nt],[onclick]');if(!ctl)return;
+ if(!ctl.closest('#shell,.top1,#daybox,#tabs,#L156,#R156,#M156,body'))return;
+ if(L){e.stopPropagation();e.preventDefault();shake();return}
+ /* 정보 창: 닫고 누른 것을 그대로 진행 (붙은 사건 창 중 결정이 필요 없는 것도 바꾼다) */
+ try{closePop()}catch(err){}},true);
+setInterval(mark,600);
+const st=D.createElement('style');st.textContent=`
+.pop.lock190 .pop-x{display:none!important}
+.shk190{animation:shk190 .38s ease}
+@keyframes shk190{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+body.ui156 .pop.dock156.lock190 .pop-card.shk190{animation:shk190 .38s ease}
+/* 상단 단추: 가이드 · 전체 화면 · 설정을 한 덩어리로 */
+#shell .top1 #guideBtn.guide-btn{margin:0 0 0 auto!important}
+#shell .top1 #fsBtn.guide-btn,#shell .top1 #setBtn.guide-btn{margin:0!important}`;
+D.head.appendChild(st);
+})();
+/* ============ v191: 전투 스킬 칸 다듬기 (모바일 · 슬롯 구분 · 아군 고르기) · 상단 바 스크롤 표시 ============
+   · 스킬 칸 맨 위에 아군 고르기 줄(이름 · 속도 · 배정 수)을 다시 보인다. 아군 그림(SD)을 눌러도 바뀐다.
+   · 고른 아군의 슬롯마다 테두리 상자로 묶고, 상자 위에 「슬롯 n · 속도 · 상태」를 늘 보인다. 상자들은 좌우로 스크롤.
+   · 모바일(좁은 화면): 스킬 칸이 가로 전체를 쓰고, 전투 단추들은 그 아래 한 줄(두 줄)로 모은다.
+   · 상단 탭 줄 · 상태 줄: 얇은 스크롤 막대를 늘 보이고, 더 볼 것이 있는 쪽 끝을 흐리게 해서 넘길 수 있음을 알린다.
+   · 전투 튜토리얼 「아군 고르기」에 그림(SD)을 눌러도 된다는 안내를 넣는다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+/* ---------- 스킬 칸 ---------- */
+renderBattle=(f=>function(){const r=f.apply(this,arguments);try{if(!D.body.classList.contains('ui156'))return r;const dock=D.getElementById('lbDock');if(!dock||typeof B==='undefined'||!B||B.done)return r;
+ const gs=[...dock.querySelectorAll(':scope>.lb-grp')];if(!gs.length)return r;let row=dock.querySelector(':scope>.lbs191');
+ if(!row){row=D.createElement('div');row.className='lbs191';const tb=dock.querySelector(':scope>.ai96')||dock.querySelector(':scope>.lb-tabs');tb?tb.after(row):dock.prepend(row)}
+ gs.forEach(g=>row.appendChild(g));
+ const vis=gs.filter(g=>!g.hidden);vis.forEach((g,i)=>{g.classList.toggle('one191',vis.length===1);const h=g.querySelector(':scope>.lb-gh');if(h&&!h.dataset.n191){h.dataset.n191=1}});
+}catch(e){console.error(e)}return r})(renderBattle);
+/* ---------- 스크롤 끝 흐림 ---------- */
+function edge(el){if(!el)return;const l=el.scrollLeft>2,rr=el.scrollLeft+el.clientWidth<el.scrollWidth-2;el.classList.toggle('fl191',l);el.classList.toggle('fr191',rr);
+ if(!el.dataset.e191){el.dataset.e191=1;el.addEventListener('scroll',()=>edge(el),{passive:true})}}
+setInterval(()=>{['#tabs','#daybox','#lbDock .lbs191','#lbDock .lb-tabs'].forEach(q=>D.querySelectorAll(q).forEach(edge))},500);
+addEventListener('resize',()=>['#tabs','#daybox'].forEach(q=>edge(D.querySelector(q))));
+/* 스킬 상자 줄: 마우스 휠로 좌우 */
+D.addEventListener('wheel',e=>{const d=e.target.closest&&e.target.closest('#lbDock .lbs191, #tabs');if(!d||d.scrollWidth<=d.clientWidth+2||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;if(e.target.closest('.lb-card.open'))return;d.scrollLeft+=e.deltaY;e.preventDefault()},{passive:false});
+/* ---------- 전투 튜토리얼 ---------- */
+try{const LI=i80(0,1,2);const x=(k,e,j)=>[k,e,j][LI];
+ const li=(k,e,j)=>`<li>${x(k,e,j)}</li>`;
+ const av=TUT_BATTLE.find(s=>s&&s.sel==='#panel .lb-al .lb-av, #panel .lb-al');
+ if(av&&!/sd191/.test(av.b))av.b=av.b.replace('</ul>',`<li class="sd191">${x('<b>아군 그림(SD)을 누르면</b> 아래 스킬 칸이 그 아군의 카드로 바뀐다. 다른 동료의 스킬은 이렇게 정한다.','<b>Tap an ally\'s figure (SD)</b> to switch the skill area below to their cards. This is how you set other allies\' skills.','<b>味方の絵(SD)を押す</b>と、下のスキル欄がその味方のカードに切り替わります。他の仲間のスキルはこうして決めます。')}</li></ul>`);
+ const sk=TUT_BATTLE.find(s=>s&&s.sel==='#lbDock .lb-grp:not([hidden]) .lb-card[data-lbc]');
+ if(sk&&!/sd191/.test(sk.b))sk.b=sk.b.replace('</ul>',`<li class="sd191">${x('카드는 <b>슬롯마다 상자</b>로 묶여 있다. 상자 위에 슬롯 번호 · 속도 · 상태가 보이고, 넘치면 좌우로 스크롤한다.','Cards are grouped in a <b>box per slot</b>, labeled with slot, speed and status. Scroll sideways if they overflow.','カードは<b>スロットごとの枠</b>にまとまり、上にスロット番号・速度・状態が出ます。あふれたら左右にスクロール。')}</li><li class="sd191">${x('다른 아군의 카드는 위 전투 화면에서 <b>그 아군 그림(SD)</b>을 눌러 불러온다.','To see another ally\'s cards, <b>tap their figure (SD)</b> on the battlefield above.','他の味方のカードは、上の戦闘画面で<b>その味方の絵(SD)</b>を押して呼び出します。')}</li></ul>`);
+}catch(e){}
+const st=D.createElement('style');st.textContent=`
+/* 아군 고르기 줄은 화면을 깔끔하게 두려고 숨긴다 (아군 그림 SD를 눌러 바꾼다) */
+html body.ui156.bat156 #lbDock .lb-tabs{display:none!important}
+/* 스킬 칸: 아군 줄 + 슬롯 상자 줄 */
+html body.ui156.bat156 #panel #lbDock{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;overflow:hidden!important;max-height:none!important;min-width:0}
+html body.ui156.bat156 #lbDock .lbs191{display:flex;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;min-height:0;flex:1 1 auto;padding-bottom:4px;scrollbar-width:thin;scroll-snap-type:x proximity}
+html body.ui156.bat156 #lbDock .lbs191>.lb-grp:not([hidden]){display:flex!important;flex-direction:row;flex-wrap:nowrap;gap:6px;align-items:stretch;flex:none;position:relative;border:1px solid var(--line2,#3d424a);border-top:2px solid var(--accent,#f4ee9a);padding:20px 6px 6px;background:rgba(255,255,255,.02);scroll-snap-align:start;overflow:visible!important}
+html body.ui156.bat156 #lbDock .lbs191>.lb-grp[hidden]{display:none!important}
+html body.ui156.bat156 #lbDock .lbs191>.lb-grp>.lb-gh{display:block!important;position:absolute;left:6px;top:2px;max-width:none!important;font-size:11.5px!important;white-space:nowrap;color:var(--accent,#f4ee9a);writing-mode:horizontal-tb}
+html body.ui156.bat156 #lbDock .lbs191>.lb-grp>.lb-gh em.bad{color:var(--c-red,#ff6b6b)}
+html body.ui156.bat156 #lbDock .lbs191 .lb-card{flex:0 0 auto!important;width:clamp(120px,15vw,190px)!important;min-width:0!important;max-width:none!important}
+html body.ui156.bat156 #lbDock .lbs191 .lb-card.open{width:clamp(220px,26vw,320px)!important}
+/* 스크롤 표시: 얇은 막대 · 끝 흐림 */
+#tabs,#daybox,#lbDock .lbs191,#lbDock .lb-tabs{scrollbar-width:thin;scrollbar-color:rgba(244,238,154,.55) rgba(255,255,255,.06)}
+#tabs::-webkit-scrollbar,#daybox::-webkit-scrollbar,#lbDock .lbs191::-webkit-scrollbar,#lbDock .lb-tabs::-webkit-scrollbar{display:block!important;height:5px}
+#tabs::-webkit-scrollbar-track,#daybox::-webkit-scrollbar-track,#lbDock .lbs191::-webkit-scrollbar-track,#lbDock .lb-tabs::-webkit-scrollbar-track{background:rgba(255,255,255,.06);border-radius:3px}
+#tabs::-webkit-scrollbar-thumb,#daybox::-webkit-scrollbar-thumb,#lbDock .lbs191::-webkit-scrollbar-thumb,#lbDock .lb-tabs::-webkit-scrollbar-thumb{background:rgba(244,238,154,.55);border-radius:3px}
+#tabs.fr191,#daybox.fr191,#lbDock .lbs191.fr191,#lbDock .lb-tabs.fr191{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+#tabs.fl191,#daybox.fl191,#lbDock .lbs191.fl191,#lbDock .lb-tabs.fl191{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px);mask-image:linear-gradient(90deg,transparent,#000 28px)}
+#tabs.fl191.fr191,#daybox.fl191.fr191,#lbDock .lbs191.fl191.fr191,#lbDock .lb-tabs.fl191.fr191{-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
+#tabs,#daybox{padding-bottom:4px!important}
+/* 모바일: 스킬 칸 가로 전체 · 단추는 아래로 */
+@media (max-width:700px),(orientation:landscape) and (max-height:540px){
+ html body.ui156.bat156 #panel .lb{grid-template-columns:minmax(0,1fr)!important}
+ html body.ui156.bat156 #panel .lb>*{grid-column:1/-1!important}
+ html body.ui156.bat156 #panel .lb>#lbDock{grid-row:auto!important;max-height:none!important}
+ html body.ui156.bat156 #panel .lb>.lb-foot{grid-row:auto!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-items:stretch}
+ html body.ui156.bat156 #panel .lb-foot .row{display:contents!important}
+ html body.ui156.bat156 #panel .lb-foot .row>*{margin:0!important;min-height:38px;padding:6px 8px!important;font-size:13px!important}
+ html body.ui156.bat156 #panel .lb-foot #goBtn{grid-column:1/-1}
+ html body.ui156.bat156 #lbDock .lbs191 .lb-card{width:clamp(118px,38vw,170px)!important}
+ html body.ui156.bat156 #lbDock .lbs191 .lb-card.open{width:min(80vw,300px)!important}
+}`;
+D.head.appendChild(st);
 })();
 </script>
 
