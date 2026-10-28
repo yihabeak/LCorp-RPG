@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.3.0.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.3.1.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.3.0.261028';
+const VER='Ver. 5.3.1.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18812,6 +18812,34 @@ html body.ui156.bat156 #lbDock .lbs191 .lb-card.open{width:clamp(220px,26vw,320p
  html body.ui156.bat156 #lbDock .lbs191 .lb-card.open{width:min(80vw,300px)!important}
 }`;
 D.head.appendChild(st);
+})();
+/* ============ v192: 격리실에는 「탈출 중」인데 경보에는 없는 환상체 ============
+   원인: 탈출 표시(esc)는 퇴근할 때나 제압했을 때만 지워진다. 그런데 날이 강제로 넘어가거나(퇴근 없이),
+   같은 날 다시 시작하거나, 지난 탈출 기록을 정리하는 길에서는 경보(탈출 목록)만 비우고 표시는 남았다.
+   → 경보에 없으니 제압할 수 없고, 격리실은 계속 「탈출 중」으로 잠긴다.
+   · 탈출 목록 · 대기 중인 긴급 · 진행 중인 전투 어디에도 없는 「탈출 중」 표시는 3초 넘게 이어지면 재격리된 것으로 고친다.
+   · 날이 바뀔 때(강제로 넘어가는 날 포함)도 한 번에 정리한다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const BIRDS=['pbird','judge','bigbird'];
+function live(id){try{
+ const hit=e=>e&&e.type==='ab'&&(e.id===id||(e.id==='apoc'&&BIRDS.includes(id)));
+ if((G.breachQ||[]).some(hit))return true;
+ if((G.roam||[]).some(r=>!r.dead&&hit(r.e)))return true;
+ if(typeof B!=='undefined'&&B&&!B.done&&B.opt&&(B.opt.ab===id||(B.opt.ids||[]).includes(id)||(B.opt.ab==='apoc'&&BIRDS.includes(id))))return true;
+ }catch(e){return true}return false}
+const MISS={};
+function fix(id,quiet){try{if(typeof escBack==='function')escBack(id);else{const s=G.ab[id];s.esc=0;s.cnt=ABM[id].cnt}}catch(e){}delete MISS[id];
+ if(!quiet)try{log(T(`${ABM[id].n} — 경보에서 사라진 채 「탈출 중」으로 남아 있던 기록을 바로잡았다. 격리실로 돌아와 있다.`,`${ABM[id].n} — was marked as escaped with no alert; corrected. It is back in its unit.`,`${ABM[id].n} — 警報にないまま「脱走中」と残っていた記録を修正した。収容室に戻っている。`),'sys')}catch(e){}}
+function scan(all){try{if(typeof G==='undefined'||!G||!G.ab||G.dead||G.ended)return;
+ for(const id of Object.keys(G.ab)){const s=G.ab[id];if(!s||!s.esc){delete MISS[id];continue}
+  if(live(id)){delete MISS[id];continue}
+  if(all){fix(id,true);continue}
+  MISS[id]=(MISS[id]||0)+1;if(MISS[id]>=3){fix(id);try{render()}catch(e){}}}}catch(e){}}
+setInterval(()=>scan(false),1000);
+/* 날이 바뀔 때 · 불러올 때: 바로 정리 */
+startDay=(f=>function(){scan(true);return f.apply(this,arguments)})(startDay);
+try{loadSave=(f=>function(){const r=f.apply(this,arguments);setTimeout(()=>scan(true),50);return r})(loadSave)}catch(e){}
 })();
 </script>
 
