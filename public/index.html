@@ -10200,7 +10200,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.3.1.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.3.2.261028';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14008,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.3.1.261028';
+const VER='Ver. 5.3.2.261028';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18191,7 +18191,7 @@ forceNextDay=(f=>function(){try{const d=typeof ketD==='function'?ketD():0;
   if(d){if(typeof ketReady==='function'&&ketReady()){G.sup.done=true;G.ketDone=G.ketDone||{};G.ketDone[d]=1;
      log(T(`케테르의 코어 억제 ${d}일차 — ${KETER[d].n} 완료.`,`Keter's core suppression, day ${d} — ${KETER[d].n} complete.`,`ケテルのコア抑制 ${d}日目 — ${KETER[d].n} 完了。`),'good');try{hum(4)}catch(e){}}
    else{/* 같은 날을 다시 시작한다: 지난 시도의 흔적을 지운다 */
-     G.dw=0;G.dwDay=G.day;G.roam=[];G.roamFight=null;if(G.ketBoss===G.day)delete G.ketBoss;if(G.wMid===G.day)delete G.wMid;G.selfToday=0}}}catch(e){console.error(e)}
+     G.dw=0;G.dwDay=G.day;try{(G.roam||[]).forEach(r=>{if(r.e&&r.e.type==='ab'&&typeof escBack==='function')escBack(r.e.id)});(G.breachQ||[]).forEach(e=>{if(e.type==='ab'&&typeof escBack==='function')escBack(e.id)})}catch(e){}G.roam=[];G.breachQ=(G.breachQ||[]).filter(e=>e.type==='boss');G.roamFight=null;if(G.ketBoss===G.day)delete G.ketBoss;if(G.wMid===G.day)delete G.wMid;G.selfToday=0}}}catch(e){console.error(e)}
  return f.apply(this,arguments)})(forceNextDay);
 // 긴급 대응 사이사이에도 조건을 채웠는지 본다 (이기고 나서 근무 화면으로 돌아오기 전에 시간이 끝나지 않게)
 emergencyNext=(f=>function(next){try{const d=typeof ketD==='function'?ketD():0;if(d&&ketReady()&&!(G.breachQ&&G.breachQ.length)&&G.min<T_FORCE)return ketClear(()=>f.call(this,next))}catch(e){}return f.apply(this,arguments)})(emergencyNext);
@@ -18302,8 +18302,7 @@ function stale(){try{if(!G||!G.roam||!G.roam.length)return;const old=G.roam.filt
  old.forEach(r=>{try{(G.agents||[]).concat(G.clerks||[]).filter(a=>a.task&&a.task.r===r.uid).forEach(a=>{a.task=null;a.loc=null});if(r.e&&r.e.type==='ab'&&G.ab[r.e.id]&&typeof ABM!=='undefined'&&ABM[r.e.id])G.ab[r.e.id].cnt=ABM[r.e.id].cnt}catch(e){}
   log(T(`${r.n} — 지난 근무일에 탈출한 채 남아 있던 것을 처리반이 밤사이 재격리했다.`,`${r.n} — left loose from a previous workday; the cleanup squad recontained it overnight.`,`${r.n} — 前の勤務日から脱走したままだったが、処理班が夜のうちに再収容した。`),'sys')});
  G.roam=G.roam.filter(r=>!old.includes(r));try{save()}catch(e){}}catch(e){console.error(e)}}
-startDay=(f=>function(){stale();return f.apply(this,arguments)})(startDay);
-render=(f=>function(){stale();return f.apply(this,arguments)})(render);
+/* v193: 잘못된 판정(uid 앞 숫자를 날짜로 봄)이라 쓰지 않는다. 지난 날 탈출 정리는 v193이 맡는다. */
 /* ③ 상단 바 휠 → 좌우 */
 document.addEventListener('wheel',e=>{const d=e.target.closest&&e.target.closest('#daybox');if(!d||d.scrollWidth<=d.clientWidth+2||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;d.scrollLeft+=e.deltaY;e.preventDefault()},{passive:false});
 const st=document.createElement('style');st.textContent=`
@@ -18713,24 +18712,33 @@ const T=(k,e,j)=>i80(k,e,j);const D=document;
 const BACK=/돌아간다|돌아가기|닫기|그만둔다|나중에|취소|Back|Close|Cancel|Later|戻る|閉じる|やめる|後で|キャンセル/;
 function locked(ov){ov=ov||(typeof POP!=='undefined'?POP:null);if(!ov||!ov.isConnected)return false;
  if(ov.classList.contains('ev157'))return true;
+ /* 출동 직전 「동행할 직원」: 닫히면 출동이 끊겨 탈출 · 시련이 사라진 것처럼 보였다 */
+ if(ov.querySelector('#pkGo'))return true;
  if(!ov.classList.contains('decide'))return false;if(ov.classList.contains('u156pop'))return false;
  if(ov.querySelector('.s150,.u151,.set76,.adm,.nb156,.log156,.dmg153p,.gd-nav,.tut-pop'))return false;
+ /* 이야기(대사)가 붙은 결정 창만 잠근다 — 격리실 작업 고르기 같은 메뉴는 ✕로 닫을 수 있어야 한다 */
+ if(!ov.querySelector('.story,.vn112b,.vn112f'))return false;
  const chs=[...ov.querySelectorAll('.pop-b .ch, .pop-b [data-o], .pop-b [data-y], .pop-b [data-yes]')];if(!chs.length)return false;
  return !chs.some(b=>BACK.test(b.textContent||''))}
-function mark(){try{if(typeof POP!=='undefined'&&POP&&POP.isConnected){const L=locked(POP);if(POP.classList.contains('lock190')!==L)POP.classList.toggle('lock190',L)}}catch(e){}}
+function mark(){try{D.querySelectorAll('.pop').forEach(ov=>{const L=locked(ov);if(ov.classList.contains('lock190')!==L)ov.classList.toggle('lock190',L)})}catch(e){}}
+const anyLock=()=>D.querySelector('.pop.lock190');
 function shake(){try{const c=POP&&POP.querySelector('.pop-card');if(!c)return;c.classList.remove('shk190');void c.offsetWidth;c.classList.add('shk190');
  const h=POP.querySelector('.pop-h h3');toast(T('먼저 이 창에서 결정해야 한다.','Decide in this window first.','先にこのウィンドウで決めてください。'),'warn')}catch(e){}}
 /* 잠긴 창 안에서의 조작은 이어서 새 창을 열 수 있다 */
 let INSIDE=0;['pointerdown','click','keydown'].forEach(ev=>D.addEventListener(ev,e=>{if(e.target&&e.target.closest&&e.target.closest('.pop'))INSIDE=Date.now()},true));
 const Q=[];
-popup=(f=>function(){try{mark();if(typeof POP!=='undefined'&&POP&&POP.classList.contains('lock190')&&!window.__pop190force&&Date.now()-INSIDE>1500){Q.push([this,[...arguments]]);if(Q.length>6)Q.shift();return D.createElement('div')}}catch(e){}
+popup=(f=>function(){try{mark();if(anyLock()&&!window.__pop190force&&Date.now()-INSIDE>1500){Q.push([this,[...arguments]]);if(Q.length>6)Q.shift();return D.createElement('div')}}catch(e){}
  const r=f.apply(this,arguments);setTimeout(mark,0);return r})(popup);
+/* 「동행할 직원」 창은 [출동] · [자동]으로만 닫힌다 (다른 길로 닫히면 출동이 끊겨 탈출 · 시련이 사라진 것처럼 보였다) */
+let PKOK=0;D.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#pkGo,#pkAuto'))PKOK=Date.now()},true);
+closePop=(f=>function(){try{if(typeof POP!=='undefined'&&POP&&POP.isConnected&&POP.querySelector('#pkGo')&&Date.now()-PKOK>2000&&!window.__pk190force&&!(G&&(G.dead||G.ended))&&!(typeof B!=='undefined'&&B&&!B.done))return}catch(e){}return f.apply(this,arguments)})(closePop);
 closePop=(f=>function(){const r=f.apply(this,arguments);if(Q.length)setTimeout(()=>{if(typeof POP!=='undefined'&&POP)return;const q=Q.shift();if(q){window.__pop190force=1;try{popup.apply(q[0],q[1])}finally{window.__pop190force=0}}},140);return r})(closePop);
 /* Esc · 바깥 누르기 막기 */
-window.addEventListener('keydown',e=>{if(e.key==='Escape'){mark();if(typeof POP!=='undefined'&&POP&&POP.classList.contains('lock190')){e.stopImmediatePropagation();e.stopPropagation();shake()}}},true);
-D.addEventListener('click',e=>{const t=e.target;if(typeof POP==='undefined'||!POP||!POP.isConnected)return;if(typeof TUT!=='undefined'&&TUT)return;mark();
- const L=POP.classList.contains('lock190');
- if(t===POP&&L){e.stopPropagation();e.preventDefault();shake();return}
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){mark();if(anyLock()){e.stopImmediatePropagation();e.stopPropagation();shake()}}},true);
+D.addEventListener('click',e=>{const t=e.target;if(!D.querySelector('.pop'))return;mark();
+ const L=!!anyLock();
+ if(t.classList&&t.classList.contains('pop')&&t.classList.contains('lock190')){e.stopPropagation();e.preventDefault();shake();return}
+ if(typeof TUT!=='undefined'&&TUT)return;
  if(t.closest&&t.closest('.pop,.tip189,.ord62,#toasts,#coach,.rz187,#ins79,.dc148'))return;
  const ctl=t.closest&&t.closest('button,a,[role=tab],[role=button],.tap,.cat,.hud-cell,summary,[data-nt],[onclick]');if(!ctl)return;
  if(!ctl.closest('#shell,.top1,#daybox,#tabs,#L156,#R156,#M156,body'))return;
@@ -18813,33 +18821,51 @@ html body.ui156.bat156 #lbDock .lbs191 .lb-card.open{width:clamp(220px,26vw,320p
 }`;
 D.head.appendChild(st);
 })();
-/* ============ v192: 격리실에는 「탈출 중」인데 경보에는 없는 환상체 ============
-   원인: 탈출 표시(esc)는 퇴근할 때나 제압했을 때만 지워진다. 그런데 날이 강제로 넘어가거나(퇴근 없이),
-   같은 날 다시 시작하거나, 지난 탈출 기록을 정리하는 길에서는 경보(탈출 목록)만 비우고 표시는 남았다.
-   → 경보에 없으니 제압할 수 없고, 격리실은 계속 「탈출 중」으로 잠긴다.
-   · 탈출 목록 · 대기 중인 긴급 · 진행 중인 전투 어디에도 없는 「탈출 중」 표시는 3초 넘게 이어지면 재격리된 것으로 고친다.
-   · 날이 바뀔 때(강제로 넘어가는 날 포함)도 한 번에 정리한다. */
+/* ============ v193: 탈출 · 시련 기록을 실제 상태에 맞춘다 (v184 · v192 대체) ============
+   원인 (5.2.5 ~ 5.3.1): v184의 「지난 날 탈출 정리」가 탈출 번호(uid)의 앞 숫자를 날짜로 잘못 읽었다.
+   번호는 날짜가 아니라 차례로 늘어나는 수라서, 날짜보다 작은 번호의 탈출 · 시련이 생기자마자 지워졌다.
+   (시련이 떴다가 전투 없이 사라짐 · 탈출했는데 경보에 없음 · 「처리반이 밤사이 재격리」가 같은 날 뜸)
+   · 탈출 · 시련이 생길 때 그날의 날짜를 따로 적어 두고, 그 날짜로만 판단한다.
+   · 퇴근 없이 날이 넘어가면(강제로 넘어감 등) 퇴근 때와 똑같이 정산한다: 남은 탈출은 처리반 투입 · LOB -1, 시련은 지나간다.
+   · 같은 날 안에서 표시가 어긋나면 실제 상태를 따른다:
+     - 오늘 탈출했는데 경보에 없으면 → 경보에 다시 올린다 (직접 나서서 제압할 수 있다)
+     - 경보에는 있는데 격리실이 「탈출 중」이 아니면 → 「탈출 중」으로 맞춘다
+     - 오늘 탈출한 기록이 아닌데 「탈출 중」만 남았으면 → 격리실로 돌린다 */
 (function(){
 const T=(k,e,j)=>i80(k,e,j);
 const BIRDS=['pbird','judge','bigbird'];
-function live(id){try{
- const hit=e=>e&&e.type==='ab'&&(e.id===id||(e.id==='apoc'&&BIRDS.includes(id)));
- if((G.breachQ||[]).some(hit))return true;
- if((G.roam||[]).some(r=>!r.dead&&hit(r.e)))return true;
- if(typeof B!=='undefined'&&B&&!B.done&&B.opt&&(B.opt.ab===id||(B.opt.ids||[]).includes(id)||(B.opt.ab==='apoc'&&BIRDS.includes(id))))return true;
- }catch(e){return true}return false}
-const MISS={};
-function fix(id,quiet){try{if(typeof escBack==='function')escBack(id);else{const s=G.ab[id];s.esc=0;s.cnt=ABM[id].cnt}}catch(e){}delete MISS[id];
- if(!quiet)try{log(T(`${ABM[id].n} — 경보에서 사라진 채 「탈출 중」으로 남아 있던 기록을 바로잡았다. 격리실로 돌아와 있다.`,`${ABM[id].n} — was marked as escaped with no alert; corrected. It is back in its unit.`,`${ABM[id].n} — 警報にないまま「脱走中」と残っていた記録を修正した。収容室に戻っている。`),'sys')}catch(e){}}
-function scan(all){try{if(typeof G==='undefined'||!G||!G.ab||G.dead||G.ended)return;
- for(const id of Object.keys(G.ab)){const s=G.ab[id];if(!s||!s.esc){delete MISS[id];continue}
-  if(live(id)){delete MISS[id];continue}
-  if(all){fix(id,true);continue}
-  MISS[id]=(MISS[id]||0)+1;if(MISS[id]>=3){fix(id);try{render()}catch(e){}}}}catch(e){}}
-setInterval(()=>scan(false),1000);
-/* 날이 바뀔 때 · 불러올 때: 바로 정리 */
-startDay=(f=>function(){scan(true);return f.apply(this,arguments)})(startDay);
-try{loadSave=(f=>function(){const r=f.apply(this,arguments);setTimeout(()=>scan(true),50);return r})(loadSave)}catch(e){}
+const hitAb=(e,id)=>e&&e.type==='ab'&&(e.id===id||(e.id==='apoc'&&BIRDS.includes(id)));
+function inBattle(id){try{return typeof B!=='undefined'&&B&&!B.done&&B.opt&&(B.opt.ab===id||(B.opt.ids||[]).includes(id)||(B.opt.ab==='apoc'&&BIRDS.includes(id)))}catch(e){return false}}
+function alerted(id){return (G.breachQ||[]).some(e=>hitAb(e,id))||(G.roam||[]).some(r=>!r.dead&&hitAb(r.e,id))||inBattle(id)}
+/* 날짜 표시 */
+function tag(){try{(G.roam||[]).forEach(r=>{if(r.d193==null)r.d193=G.day});(G.breachQ||[]).forEach(e=>{if(e.d193==null)e.d193=G.day});
+ Object.keys(G.ab||{}).forEach(id=>{const s=G.ab[id];if(s&&s.esc&&s.escD==null&&alerted(id))s.escD=G.day;if(s&&!s.esc&&s.escD!=null)delete s.escD})}catch(e){}}
+roamFromQ=(f=>function(){const r=f.apply(this,arguments);tag();return r})(roamFromQ);
+/* 퇴근 없이 날이 넘어갈 때: 퇴근과 같은 정산 */
+function settle(){try{if(!G)return;const left=(G.roam||[]).filter(r=>!r.dead);let n=0;
+ left.forEach(r=>{if(r.e&&r.e.type==='ab'){n++;try{log(T(`${r.n}이(가) 제압되지 않은 채 근무일이 끝났다. 처리반이 투입되었다. LOB -1.`,`${r.n} was never suppressed before the workday ended. A cleanup squad went in. LOB -1.`,`${r.n}が制圧されないまま勤務日が終わった。処理班が投入された。LOB -1。`),'hurt')}catch(e){}}
+  try{(G.agents||[]).concat(G.clerks||[]).filter(a=>a.task&&a.task.r===r.uid).forEach(a=>{a.task=null;a.loc=null})}catch(e){}});
+ if(n)G.lob=Math.max(0,(G.lob||0)-n);G.roam=[];G.breachQ=(G.breachQ||[]).filter(e=>e.type==='boss');
+ AB.forEach(a=>{const s=G.ab[a.id];if(s&&s.esc){s.esc=0;s.cnt=a.cnt;delete s.escD}})}catch(e){console.error(e)}}
+startDay=(f=>function(first){try{if(G&&!G.flags['init'+G.day]&&((G.roam||[]).length||Object.values(G.ab||{}).some(s=>s&&s.esc)))settle()}catch(e){}return f.apply(this,arguments)})(startDay);
+/* 같은 날 안에서 어긋남 바로잡기 */
+const MISS={},READD={};
+function fixLoop(){try{if(typeof G==='undefined'||!G||!G.ab||G.dead||G.ended||G.phase!=='work'&&G.phase!=='emergency')return;tag();
+ /* 경보에 있는데 격리실 표시가 없음 */
+ (G.roam||[]).forEach(r=>{if(r.dead||!r.e||r.e.type!=='ab')return;const s=G.ab[r.e.id];if(s&&!s.esc&&r.e.id!=='apoc'){s.esc=1;s.cnt=0;s.melt=0;s.escD=G.day}});
+ /* 격리실은 탈출 중인데 경보에 없음 */
+ for(const id of Object.keys(G.ab)){const s=G.ab[id];if(!s||!s.esc||alerted(id)){delete MISS[id];continue}
+  MISS[id]=(MISS[id]||0)+1;if(MISS[id]<3)continue;delete MISS[id];
+  const key=G.day+':'+id;
+  if(s.escD===G.day&&!READD[key]&&ABM[id]&&ABM[id].breach!==false){READD[key]=1;G.breachQ=G.breachQ||[];G.breachQ.push({type:'ab',id,d193:G.day});
+   try{log(T(`⚠ ${ABM[id].n} — 탈출했는데 경보에서 빠져 있었다. 경보에 다시 올렸다.`,`⚠ ${ABM[id].n} — escaped but missing from the alerts. Re-added.`,`⚠ ${ABM[id].n} — 脱走したのに警報から抜けていた。警報に戻した。`),'warn')}catch(e){}
+   try{if(typeof roamFromQ==='function')roamFromQ();save();render()}catch(e){}}
+  else{try{if(typeof escBack==='function')escBack(id);else{s.esc=0;s.cnt=ABM[id].cnt}}catch(e){}delete s.escD;
+   try{log(T(`${ABM[id].n} — 오늘 탈출한 기록이 없는데 「탈출 중」 표시만 남아 있었다. 격리실 상태를 바로잡았다.`,`${ABM[id].n} — marked as escaped with no breach today. Unit status corrected.`,`${ABM[id].n} — 今日脱走した記録がないのに「脱走中」表示だけ残っていた。収容室の状態を直した。`),'sys')}catch(e){}
+   try{save();render()}catch(e){}}}}catch(e){console.error(e)}}
+setInterval(fixLoop,1000);
+/* 불러올 때: 날짜 없는 옛 기록은 아침이면 지난 날 것으로 본다 */
+try{loadSave=(f=>function(){const r=f.apply(this,arguments);setTimeout(()=>{try{if(!G)return;const m=G.phase==='morning';(G.roam||[]).forEach(x=>{if(x.d193==null)x.d193=m?G.day-1:G.day});Object.values(G.ab||{}).forEach(s=>{if(s&&s.esc&&s.escD==null)s.escD=m?G.day-1:G.day})}catch(e){}},30);return r})(loadSave)}catch(e){}
 })();
 </script>
 
