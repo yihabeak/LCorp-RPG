@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Project Moon 팬메이드 비공식·비영리 게임"><meta name="theme-color" content="#12181a"><meta property="og:type" content="website"><meta property="og:site_name" content="L사 본사 근무일지"><meta property="og:title" content="L사 본사 근무일지"><meta property="og:description" content="환상체를 관리하고, 살아남아라. Lobotomy Corporation 팬메이드 웹 RPG (비공식·비영리)"><meta property="og:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="L사 본사 근무일지 배너"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="ko"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Project Moon 팬메이드 비공식·비영리 게임"><meta name="theme-color" content="#12181a"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="근무일지"><meta property="og:type" content="website"><meta property="og:site_name" content="L사 본사 근무일지"><meta property="og:title" content="L사 본사 근무일지"><meta property="og:description" content="환상체를 관리하고, 살아남아라. Lobotomy Corporation 팬메이드 웹 RPG (비공식·비영리)"><meta property="og:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="L사 본사 근무일지 배너"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://lcorp-rpg.pages.dev/og-hq.jpg"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>L사 본사 근무일지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600&display=swap">
@@ -767,7 +767,7 @@ function setUserImg(id,file){
 // 개방 순서는 원작 진행을 따른다: 1일 지휘 → 6일 정보 → 11·16일 교육/안전(선택) → 21일 중앙본부 → 26·31일 징계/복지(선택) → 36·41일 추출/기록(선택) → 46일 설계.
 // 부서 보너스(그 부서 소속일 때)와 연구 효과는 원작 연구 이름을 빌려 텍스트 게임에 맞게 자체 설계.
 const DEPT={
- control:{col:'#e8c23a',n:'지휘팀',s:'말쿠트',layer:'상층',cap:4,bonus:'전투 속도 +1',res:[['tt2','TT2 프로토콜','하루 한 번, 행동 하나가 폭주 게이지를 올리지 않는다'],['joint','합동 지휘','다른 부서 환상체도 직접 작업할 수 있다'],['call','소집 호출','출동할 때 동료 한 명을 더 데려간다']]},
+ control:{col:'#e8c23a',n:'지휘팀',s:'말쿠트',layer:'상층',cap:4,bonus:'전투 속도 +1',res:[['tt2','TT2 프로토콜','하루 한 번, 행동 하나가 폭주 게이지를 올리지 않는다'],['joint','합동 지휘','다른 부서 환상체도 직접 작업할 수 있다'],['call','소집 호출','출동할 때 동료 두 명을 더 데려간다']]},
  info:{col:'#a46bdc',n:'정보팀',s:'예소드',layer:'상층',cap:4,bonus:'작업 성공률 +3%',res:[['gov','G.O 시각화','관찰 단계와 무관하게 카운터와 예상 성공률이 보인다'],['norm','피해 정규화','작업 중 받는 피해 -10%'],['manual','환상체 대응 매뉴얼','공포 피해가 절반이 된다']]},
  train:{col:'#ef8a2a',n:'교육팀',s:'호드',layer:'상층',cap:4,bonus:'가치관 성장 +15%',res:[['edu','교육 매뉴얼 보급','가치관 성장 +15%'],['duty','직무 교육 강화','전투 공격 위력 +1'],['hire','고용 절차 강화','새로 채용되는 직원의 능력치가 높아진다']]},
  safety:{col:'#5fc35a',n:'안전팀',s:'네짜흐',layer:'상층',cap:4,bonus:'휴식·퇴근 회복 +30%',res:[['regen','재생로 Mk2','휴식할 때 회복량 +50%'],['gas','정신 오염 중화 가스','전투가 끝나면 정신력 +10'],['regfix','재생로 판별식 수정','패닉에서 돌아올 확률 +15%']]},
@@ -2017,7 +2017,7 @@ function delegate(i,next){
 function battleMates(e){
   const d=e.type==='ab'?G.ab[e.id].dept:null;
   const pool=G.agents.filter(a=>a.alive&&!a.out&&!a.panic&&(a.dept===G.dept||a.dept===d)).sort((x,y)=>((y.dept===G.dept)-(x.dept===G.dept))||(!!y.co-!!x.co)||agRank(y)-agRank(x));
-  return pool.slice(0,2+(has('call')?1:0));
+  return pool.slice(0,2+(has('call')?2:0));
 }
 function sortie(i,next){
   const e=G.breachQ.splice(i,1)[0];const mates=battleMates(e);const back=()=>{if(G.dead)return;const t=G.lastBattleTurns||3;log(`진압에 ${15+5*t}분이 걸렸다.`,'sys');tick(null,15+5*t);emergencyNext(next)};
@@ -3348,18 +3348,25 @@ function attackFromEnemy(u,s,coins,clashes,tgt,def){
   if(s.lfx&&typeof lfxUse==='function')lfxUse(u,s,tgt);
   let pow=powOf(u,s,0,tgt);
   let evadeLeft=def&&def.type==='evade';
+  if(window.KX)KX.start(u,s,tgt,clashes);
   for(let i=0;i<coins;i++){
     if(tgt.dead||u.hp<=0)break;
     const hd=chance(headP(u));if(hd)pow+=s.cp;
+    const KC=window.KX?KX.coin(u,s,tgt,i,hd):null;
     if(u.st.bleed&&u.st.bleed.c>0){hitUnit(u,u.st.bleed.p);u.st.bleed.c--;if(!u.st.bleed.c)delete u.st.bleed;if(u.hp<=0)break}
     if(evadeLeft){const ev=rollPow(tgt,def,1);if(ev>=pow){blog(`${tgt.n} 회피 성공 (${ev} ≥ ${pow}).`,'b');continue}else evadeLeft=false}
     const hpBefore=tgt.hp;
-    dmgAlly(tgt,pow*(1+0.03*clashes),s.c,`${u.n}의 ${s.n}`,u.g);
+    const crit=!!(KC&&KC.crit)||!!(u.st.poise&&u.st.poise.c>0&&chance(u.st.poise.p*.05));
+    if(crit){if(u.st.poise&&u.st.poise.c>0){u.st.poise.c--;if(!u.st.poise.c)delete u.st.poise}blog(`${u.n} 치명타!`,'b')}
+    dmgAlly(tgt,(pow+(KC?KC.pw:0))*(1+0.03*clashes)*(KC?KC.dm:1)*(crit?1.2:1),s.c,`${u.n}의 ${s.n}`,u.g);
     if(u.hooks.onHit)u.hooks.onHit(u,hpBefore-tgt.hp);
     for(const k in (s.on||{})){const [p,c]=s.on[k];addStatus(tgt,k,p,c)}
     if(s.lfx&&typeof lfxHit==='function')lfxHit(u,s,tgt,i,hd,hpBefore-tgt.hp);
-    const sk=tgt.st.sinking;if(sk&&sk.c>0&&!tgt.dead){allySp(tgt,-sk.p);blog(`침잠: ${tgt.n} 정신력 -${sk.p}`,'b');sk.c--;if(!sk.c)delete tgt.st.sinking}
+    const sk=tgt.st.sinking;if(sk&&sk.c>0&&!tgt.dead){if(typeof allySpV==='function'&&allySpV(tgt)<=-45){dmgAlly(tgt,sk.p,'WHITE','침잠',0);blog(`침잠: ${tgt.n} 정신력이 바닥나 우울 피해 ${sk.p}`,'b')}else{allySp(tgt,-sk.p);blog(`침잠: ${tgt.n} 정신력 -${sk.p}`,'b')}sk.c--;if(!sk.c)delete tgt.st.sinking}
+    const rp=tgt.st.rupture;if(rp&&rp.c>0&&!tgt.dead){dmgAlly(tgt,rp.p,'RED','파열',0);blog(`파열: ${tgt.n} ${rp.p}`,'b');rp.c--;if(!rp.c)delete tgt.st.rupture}
+    if(window.KX)KX.hit(u,s,tgt,i,hd,hpBefore-tgt.hp,crit);
   }
+  if(window.KX)KX.end(u,s,tgt,0,clashes);
 }
 // 코인 하나하나의 앞/뒤를 기록해 합 연출(playReplay)에 넘긴다
 function flipCoins(unit,s,coins,target){const pr=headP(unit);const h=[];for(let i=0;i<coins;i++)h.push(chance(pr));return {h,pow:powOf(unit,s,h.filter(Boolean).length,target)}}
@@ -4406,7 +4413,7 @@ function goRoam(uid){const r=(G.roam||[]).find(x=>x.uid===uid);if(!r)return;cons
   log(`${nodeName(r.node)}(으)로 향한다. ${mins}분.`,'sys');
   act(null,()=>{const r2=(G.roam||[]).find(x=>x.uid===uid);if(!r2){log(`도착했을 때는 이미 ${r.n}이(가) 제압된 뒤였다.`,'sys');return workMenu()}
     const F=G.agents.filter(a=>a.alive&&!a.panic&&a.task&&a.task.k==='fight'&&a.task.r===uid);
-    G.roamFight={uid,hp:r2.hp,mates:F.slice(0,2+(has('call')?1:0)),first:F.length===0&&r2.hp>=1};
+    G.roamFight={uid,hp:r2.hp,mates:F.slice(0,2+(has('call')?2:0)),first:F.length===0&&r2.hp>=1};
     log(G.roamFight.first?`가장 먼저 도착했다. ${r2.n}은(는) 상처 하나 없다.`:F.length?`${F.map(a=>a.n).join(', ')}이(가) 버티고 있었다. ${r2.n}의 남은 기세 ${Math.round(r2.hp*100)}%.`:`맞서던 직원들은 이미 물러났거나 쓰러졌다. 그들이 남긴 상처로 ${r2.n}의 기세는 ${Math.round(r2.hp*100)}%.`,'warn');
     G.roam=G.roam.filter(x=>x.uid!==uid);F.forEach(a=>{a.task={k:'rest',until:G.min+20};a.loc=null});G.ploc=r2.node;
     G.breachQ.unshift(r2.e);sortie(0,workMenu)},mins)}
@@ -4671,15 +4678,19 @@ const _powV38=powOf;powOf=function(a,s,h,t){let p=_powV38(a,s,h,t);if(B&&s&&s.co
 attackFromAlly=function(a,s,coins,target,clashes){
   const cb=condBon(a,s,target);
   let pow=powOf(a,s,0,target),total=0;const pr=headP(a);const cp=s.cp+cb.cp;
+  if(window.KX)KX.start(a,s,target,clashes);
   for(let i=0;i<coins;i++){
     if(target.hp<=0||a.dead)break;
     const head=chance(pr);if(head)pow+=cp;
+    const KC=window.KX?KX.coin(a,s,target,i,head):null;
     const bl=a.st.bleed;if(bl&&bl.c>0){dmgAlly(a,bl.p,'RED','출혈',0);bl.c--;if(!bl.c)delete a.st.bleed;if(a.dead)return}
-    let mult=(1+resMult(target.res[s.t]||1)+resMult(target.sres[s.sin]||1))*(target.hooks.resMul?target.hooks.resMul(target):1)*(1+0.03*clashes)*gradeMul(kit(a).g-target.g)*(1+cb.dmg);
-    if(a.st.poise&&a.st.poise.c>0&&chance(a.st.poise.p*.05)){mult*=1.2;a.st.poise.c--;blog('치명타!','b')}
-    let d=hitUnit(target,Math.max(1,pow*mult),a);
+    let mult=(1+resMult(target.res[s.t]||1)+resMult(target.sres[s.sin]||1))*(target.hooks.resMul?target.hooks.resMul(target):1)*(1+0.03*clashes)*gradeMul(kit(a).g-target.g)*(1+cb.dmg)*(KC?KC.dm:1);
+    const crit=!!(KC&&KC.crit)||!!(a.st.poise&&a.st.poise.c>0&&chance(a.st.poise.p*.05));
+    if(crit){mult*=1.2;if(a.st.poise&&a.st.poise.c>0){a.st.poise.c--;if(!a.st.poise.c)delete a.st.poise}blog('치명타!','b')}
+    let d=hitUnit(target,Math.max(1,(pow+(KC?KC.pw:0))*mult),a);
     const rp=target.st.rupture;if(rp&&rp.c>0&&target.hp>0){d+=hitUnit(target,rp.p,a);rp.c--;if(!rp.c)delete target.st.rupture}
     const sk=target.st.sinking;if(sk&&sk.c>0&&target.hp>0){d+=hitUnit(target,sk.p,a);sk.c--;if(!sk.c)delete target.st.sinking}
+    if(window.KX)d+=KX.hit(a,s,target,i,head,d,crit)||0;
     total+=d;
     for(const k in (s.on||{})){const [p,c]=s.on[k];if(k==='poise')addStatus(a,k,p,c);else addStatus(target,k,p,c)}
     for(const [ci,when,k,p,c] of (s.cfx||[])){if(ci!==i||(when==='head'&&!head))continue;if(k==='poise'||k==='haste'||k==='protect'||k==='charge')addStatus(a,k,p,c);else addStatus(target,k,p,c)}
@@ -4688,6 +4699,7 @@ attackFromAlly=function(a,s,coins,target,clashes){
     if(s.lifesteal){a.hp=Math.min(a.max,a.hp+Math.round(d*s.lifesteal));if(a.key==='player')G.hp=a.hp}
   }
   a.usedTurn=B.turn;
+  if(window.KX)total+=KX.end(a,s,target,total,clashes)||0;
   if(s.burst&&target.st.tremor&&target.hp>0){target.shift+=target.st.tremor.p;blog(`진동 폭발! ${target.n}의 흐트러짐 지점이 ${target.st.tremor.p} 당겨졌다.`,'b');target.st.tremor.c--;if(target.st.tremor.c<=0)delete target.st.tremor;hitUnit(target,0,a)}
   if(s.sinkBonus&&target.st.sinking&&target.hp>0)total+=hitUnit(target,target.st.sinking.c,a);
   if(s.sin)B.sins[s.sin]=(B.sins[s.sin]||0)+1;
@@ -5048,7 +5060,7 @@ function pickable(a,L){return a.alive&&!a.out&&!a.panic&&a.hp>0&&(L>=2||agTier(a
 const _sortieV45=sortie;sortie=function(i,next){
   const L=pickLevel();const e=G.breachQ[i];
   if(!L||!e||G.noPick){return _sortieV45(i,next)}
-  const cap=2+(has('call')?1:0);const def=battleMates(e).slice(0,cap);
+  const cap=2+(has('call')?2:0);const def=battleMates(e).slice(0,cap);
   const pool=G.agents.filter(a=>a.alive&&!a.out&&!a.panic);let sel=def.filter(a=>pickable(a,L)||true).map(a=>a.id);
   const draw=b=>{const box=b.querySelector('.pk');box.innerHTML=pool.map(a=>{const on=sel.includes(a.id),ok=pickable(a,L)||def.includes(a);const su=suitOf(agSuit(a)),wp=agWeap(a);
     return `<button class="pk-r ${on?'on':''}" data-pk="${a.id}" ${ok?'':'disabled'}><b>${a.n} <span class="gr g${Math.max(0,agRank(a)-1)}">${ROMAN[agRank(a)]}</span></b><small>${DEPT[a.dept].n} · 체력 ${Math.max(0,a.hp)}/${agMax(a)} · 정신력 ${a.sp}</small><small>${wp==='baton'?'제압봉':weapOf(wp).n} · ${su.n} · 관계 ${AGT[agTier(a)]}</small>${ok?'':'<em>관계 \'신뢰\' 이상만 지명 가능</em>'}</button>`}).join('');
@@ -8805,7 +8817,7 @@ LOB 포인트: 장비 구입과 가치관 강화에 쓰는 포인트.|LOB Points
 TT2 프로토콜|TT2 Protocol|TT2プロトコル
 모두 접기|Collapse all|すべて閉じる
 모두 펼치기|Expand all|すべて開く
-출동할 때 동료 한 명을 더 데려간다|Bring one more colleague when deploying|出動時に同僚を一人多く連れて行く
+출동할 때 동료 두 명을 더 데려간다|Bring two more colleagues when deploying|出動時に同僚を二人多く連れて行く
 다른 부서 환상체도 직접 작업할 수 있다|You can work on other departments' Abnormalities|他部門のアブノーマリティにも作業できる
 하루 한 번, 행동 하나가 폭주 게이지를 올리지 않는다|Once a day, one action doesn't raise the meltdown gauge|一日一回、行動一つが暴走ゲージを上げない
 관찰 레벨|Observation Level|観測レベル
@@ -10200,7 +10212,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.3.2.261028';window.GAME_VER=V;
+(function(){const V='Ver. 5.4.0.261102';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14008,7 +14020,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.3.2.261028';
+const VER='Ver. 5.4.0.261102';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -18866,6 +18878,894 @@ function fixLoop(){try{if(typeof G==='undefined'||!G||!G.ab||G.dead||G.ended||G.
 setInterval(fixLoop,1000);
 /* 불러올 때: 날짜 없는 옛 기록은 아침이면 지난 날 것으로 본다 */
 try{loadSave=(f=>function(){const r=f.apply(this,arguments);setTimeout(()=>{try{if(!G)return;const m=G.phase==='morning';(G.roam||[]).forEach(x=>{if(x.d193==null)x.d193=m?G.day-1:G.day});Object.values(G.ab||{}).forEach(s=>{if(s&&s.esc&&s.escD==null)s.escD=m?G.day-1:G.day})}catch(e){}},30);return r})(loadSave)}catch(e){}
+})();
+/* ============ v194: 백색 자정 · 발톱 위력 하향 ============
+   발톱은 코어 억제 보스(붉은 안개 · 조율자)가 아닌 시련인데, 위력 보정이 세 겹(v111 ×1.2 · v114 ×2.5 · 피해 계수 ×1.6)으로 쌓여 훨씬 강했다.
+   시뮬레이션 (가치관 130 · ALEPH 장비 · 동료 2명 · 자동 배정, 15회): 이전 0% (대부분 1페이즈도 못 넘김) → 53%.
+   · 합 위력 배율 2.5 → 2.0 (v196 아군 키워드 강화 뒤 재조정) · 주는 피해 계수 1.6 → 1.3 (체력 · 기믹은 그대로) */
+(function(){
+try{window.BK114=window.BK114||{};window.BK114.claw=2.0}catch(e){}
+try{if(typeof BK59!=='undefined')BK59.claw=1.3}catch(e){}
+})();
+/* ============ v195: 키워드 엔진 정비 (1단계) ============
+   림버스의 키워드 규칙(메커니즘만 참고)에 맞춰 아군 · 적 양쪽에서 똑같이 작동하게 한다.
+   ■ 대표 키워드
+     화상  턴 종료 시 위력만큼 고정 피해 · 횟수 -1
+     출혈  공격 스킬의 코인을 굴릴 때마다 위력만큼 고정 피해 · 횟수 -1   (적도 코인마다)
+     진동  진동 폭발 시 위력만큼 흐트러짐 지점을 당긴다 · 턴 종료 시 횟수 -1
+     파열  공격에 맞을 때마다 위력만큼 고정 피해 · 횟수 -1             (이제 아군도 맞는다)
+     침잠  공격에 맞을 때마다 위력만큼 정신력 피해 · 정신력이 바닥이거나 없으면 우울 피해 · 횟수 -1
+     호흡  적중 시 위력×5% 확률로 치명타(피해 ×1.2) · 치명타 후 횟수 -1 · 턴 종료 시 횟수 -1   (이제 적도 치명타)
+     충전  스킬이 소모해 위력을 얻는 자원 · 최대 20 · 턴 종료 시 -1
+   ■ 스킬 효과(kx) — 아군 · 적 스킬 모두 s.kx 배열로 쓴다 (2 · 3단계에서 스킬 데이터를 이 형식으로 다시 짠다)
+     {w:'use'|'win'|'hit'|'head'|'crit'|'kill'|'end', ci:코인 번호(1부터 · 생략 시 모든 코인), if:조건 배열, do:동작, k:키워드, p, c, n, v}
+     조건  'tk:burn>=5'(대상 위력) 'tc:bleed>=3'(대상 횟수) 'sk:poise>=10'(자신 위력) 'sc:charge>=5'(자신 횟수)
+           'thp<50' 'shp<50' 'stag'(대상 흐트러짐) 'fast'(속도가 더 빠름) 'first'(이번 턴 첫 공격) 'has:burn'(대상에 있음)
+     동작  give(대상에 부여: p 위력 · c 횟수) self(자신) allies(아군 전체) ally(체력 비율이 가장 낮은 아군)
+           trig(대상의 키워드를 지금 한 번 터뜨림) burst(진동 폭발) eat(대상 키워드 횟수 n까지 소모 → 소모 1당 위력만큼 고정 피해 · v배)
+           pow(최종 위력 +v) cp(코인 위력 +v) dmg(피해량 +v%) dmgk(대상 k 횟수 1당 피해량 +v% · 최대 10회분)
+           crit(치명타 확정) heal(체력 +v) sp(정신력 +v) shield(보호막 +v) spend(자신 k 횟수 n 소모 → 성공하면 같은 줄의 then 실행) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const ENEMY=u=>!u.ally;
+const alive=u=>u&&(u.ally?!u.dead:u.hp>0);
+const P=(u,k)=>(u&&u.st&&u.st[k])?u.st[k].p||0:0, C=(u,k)=>(u&&u.st&&u.st[k])?u.st[k].c||0:0;
+const KN=k=>(typeof STN!=='undefined'&&STN[k])||k;
+/* ---------- 부여 규칙 (림버스식): 위력 부여는 위력만, 횟수 부여는 횟수만 늘린다. 없던 키워드면 반대쪽은 1 ---------- */
+function give(u,k,p,c){if(!alive(u))return;if(!u.ally&&window.KXres201){const r=KXres201(u,k,p,c);if(!r)return;p=r[0];c=r[1]}const has=u.st[k]&&(u.st[k].p>0||u.st[k].c>0);
+ if(k==='charge'){const cur=u.st.charge?u.st.charge.p:0;const add=(p||0)+(c||0);u.st.charge={p:Math.min(20,cur+add),c:1};return}
+ if(window.INGIVE201)INGIVE201(1);try{addStatus(u,k,p||0,c||0)}finally{if(window.INGIVE201)INGIVE201(0)}const st=u.st[k];if(st&&!has){if(!st.p)st.p=1;if(!st.c)st.c=1}if(!u.ally&&window.KXgive201)KXgive201(u,k)}
+/* ---------- 조건 ---------- */
+function cond(a,t,cs,ctx){for(const c of (cs||[])){let m;
+ if((m=/^(tk|tc|sk|sc):([a-z]+)(>=|<=|>|<|=)(\d+)$/.exec(c))){const who=m[1][0]==='t'?t:a;const v=m[1][1]==='k'?P(who,m[2]):C(who,m[2]);const n=+m[4];
+   if(!(m[3]==='>='?v>=n:m[3]==='<='?v<=n:m[3]==='>'?v>n:m[3]==='<'?v<n:v===n))return false;continue}
+ if((m=/^has:([a-z]+)$/.exec(c))){if(!(P(t,m[1])>0||C(t,m[1])>0))return false;continue}
+ if((m=/^(thp|shp)(<|>)(\d+)$/.exec(c))){const who=m[1]==='thp'?t:a;const r=who?who.hp/(who.max||1)*100:0;if(!(m[2]==='<'?r<+m[3]:r>+m[3]))return false;continue}
+ if(c==='stag'){if(!(t&&t.stag>0))return false;continue}
+ if(c==='first'){if(a.usedTurn===B.turn)return false;continue}
+ if(c==='fast'){try{const sa=a.ally?a.speed:Math.max(0,...B.intents.filter(i=>i.u===a).map(i=>i.spd));const st=t.ally?t.speed:Math.max(0,...B.intents.filter(i=>i.u===t).map(i=>i.spd));if(!((sa||0)>(st||0)))return false}catch(e){return false}continue}
+ if(c==='crit'){if(!(ctx&&ctx.crit))return false;continue}
+ if(c==='kill'){if(!(t&&!alive(t)))return false;continue}
+ return false}return true}
+/* ---------- 키워드를 지금 한 번 터뜨리기 ---------- */
+function hurt(u,amt,src,col){amt=Math.max(0,Math.round(amt));if(!amt||!alive(u))return 0;if(u.ally){const h=u.hp;dmgAlly(u,amt,col||'RED',src,0);return Math.max(0,h-u.hp)}return hitUnit(u,amt,null)||0}
+function trig(u,k,by){if(!alive(u))return 0;const st=u.st[k];if(!st||!(st.c>0))return 0;let d=0;
+ if(k==='sinking'){if(u.ally&&allySpV(u)>-45){allySp(u,-st.p);blog(`${KN(k)} 발동: ${u.n} 정신력 -${st.p}`,'b')}else d=hurt(u,st.p,KN(k),'WHITE')}
+ else if(k==='tremor'){return burst(u)}
+ else if(['burn','bleed','rupture'].includes(k)){d=hurt(u,st.p,KN(k));blog(`${KN(k)} 발동: ${u.n} ${d}`,'b')}
+ else return 0;
+ st.c--;if(st.c<=0)delete u.st[k];return d}
+function burst(u){const st=u.st.tremor;if(!st||!(st.c>0)||!alive(u))return 0;
+ if(u.ally){u.stagG=(u.stagG||0)+st.p;blog(`진동 폭발: ${u.n} 흐트러짐 피해 ${st.p}`,'b')}else{u.shift=(u.shift||0)+st.p;blog(`진동 폭발! ${u.n}의 흐트러짐 지점이 ${st.p} 당겨졌다.`,'b');try{hitUnit(u,0,null)}catch(e){}}
+ st.c--;if(st.c<=0)delete u.st.tremor;return 0}
+/* ---------- 실행 ---------- */
+const lowAlly=a=>{const L=(a.ally?B.allies.filter(x=>!x.dead):B.units.filter(x=>x.hp>0));return L.sort((x,y)=>x.hp/x.max-y.hp/y.max)[0]};
+const team=a=>a.ally?B.allies.filter(x=>!x.dead):B.units.filter(x=>x.hp>0);
+function run(a,s,t,e,ctx){let d=0;
+ switch(e.do){
+  case 'give':give(t,e.k,e.p,e.c);break;
+  case 'self':give(a,e.k,e.p,e.c);break;
+  case 'ally':{const x=lowAlly(a);if(x)give(x,e.k,e.p,e.c);break}
+  case 'allies':team(a).forEach(x=>give(x,e.k,e.p,e.c));break;
+  case 'trig':d+=trig(t,e.k,a);break;
+  case 'burst':burst(t);break;
+  case 'eat':{const st=t&&t.st[e.k];if(st&&st.c>0){const n=Math.min(st.c,e.n||1);st.c-=n;const pw=st.p;if(st.c<=0)delete t.st[e.k];d+=hurt(t,pw*n*(e.v||1),`${KN(e.k)} 흡수`);blog(`${a.n}: ${t.n}의 ${KN(e.k)} ${n}회를 거둬들여 ${d} 피해`,'b')}break}
+  case 'heal':if(a.ally){a.hp=Math.min(a.max,a.hp+e.v);if(a.key==='player')G.hp=a.hp}else a.hp=Math.min(a.max,a.hp+e.v);break;
+  case 'sp':if(a.ally)allySp(a,e.v);break;
+  case 'shield':a.shield=(a.shield||0)+e.v;break;
+  case 'tsp':if(t&&t.ally&&!t.dead){allySp(t,-e.v);blog(`${t.n} 정신력 -${e.v}`,'b')}break;
+  case 'spend':{const st=a.st[e.k];const n=e.n||1;if(st&&(e.k==='charge'?st.p:st.c)>=n){if(e.k==='charge')st.p-=n;else st.c-=n;if((e.k==='charge'?st.p:st.c)<=0)delete a.st[e.k];(e.then||[]).forEach(x=>{d+=run(a,s,t,x,ctx)||0})}break}
+ }return d}
+function list(s,w){return (s&&s.kx||[]).filter(e=>e.w===w||(w==='use'&&e.w==='start'))}
+const UK=new Set();
+function use(a,s,t){if(!B||!s||!s.kx)return;const key=B.turn+':'+(a.uid||a.key||a.n)+':'+s.n;if(UK.has(key))return;UK.add(key);
+ list(s,'use').forEach(e=>{if(['pow','cp','dmg','dmgk','crit'].includes(e.do))return;if(cond(a,t,e.if))run(a,s,t,e)})}
+let CTX=null;
+window.KX={
+ start(a,s,t,clashes){CTX={a,s,t,heads:0,cpb:0,dm:1,crit:false};if(!s||!s.kx)return;
+  use(a,s,t);if(clashes>0)list(s,'win').forEach(e=>{if(cond(a,t,e.if))run(a,s,t,e)});
+  /* 사용 시 위력 · 피해 보정 */
+  list(s,'use').forEach(e=>{if(!cond(a,t,e.if))return;if(e.do==='cp')CTX.cpb+=e.v;if(e.do==='dmg')CTX.dm*=1+e.v/100;if(e.do==='dmgk'){CTX.dm*=1+Math.min(10,C(t,e.k))*e.v/100}})},
+ coin(a,s,t,i,head){if(!CTX||CTX.a!==a)this.start(a,s,t,0);if(head)CTX.heads++;let crit=false;
+  (s&&s.kx||[]).forEach(e=>{if(e.do!=='crit')return;if(e.ci&&e.ci!==i+1)return;if((e.w==='use'||e.w==='head'&&head||e.w==='hit')&&cond(a,t,e.if))crit=true});
+  return {pw:CTX.heads*CTX.cpb,dm:CTX.dm,crit}},
+ hit(a,s,t,i,head,dmg,crit){if(!s||!s.kx)return 0;let d=0;const ctx={crit};
+  s.kx.forEach(e=>{if(e.ci&&e.ci!==i+1)return;if(['pow','cp','dmg','dmgk'].includes(e.do)||e.do==='crit'&&e.w!=='crit')return;
+   const ok=e.w==='hit'||(e.w==='head'&&head)||(e.w==='crit'&&crit)||(e.w==='kill'&&!alive(t));if(!ok)return;if(!cond(a,t,e.if,ctx))return;d+=run(a,s,t,e,ctx)||0});return d},
+ end(a,s,t,total,clashes){let d=0;if(s&&s.kx)list(s,'end').forEach(e=>{if(cond(a,t,e.if))d+=run(a,s,t,e)||0});CTX=null;return d},
+ use,give,trig,burst,cond};
+/* 합이 시작될 때도 [사용 시] 효과를 적용 (양쪽) · 사용 시 위력 보정은 합 위력에도 들어간다 */
+doClash=(f=>function(sl,it){try{const s=slotSkill(sl);if(s&&s.kx)use(sl.a,s,it.u);if(it.s&&it.s.kx)use(it.u,it.s,sl.a)}catch(e){}return f.apply(this,arguments)})(doClash);
+powOf=(f=>function(a,s,h,t){let p=f.apply(this,arguments);try{if(s&&s.kx&&t)for(const e of s.kx){if(e.w!=='use'&&e.w!=='start')continue;if(e.do!=='pow'&&e.do!=='cp')continue;if(!cond(a,t,e.if))continue;p+=e.do==='pow'?e.v:e.v*(h||0)}}catch(x){}return Math.max(0,p)})(powOf);
+newTurn=(f=>function(){UK.clear();return f.apply(this,arguments)})(newTurn);
+/* ---------- 턴 종료: 진동 · 호흡 · 충전 감소 ---------- */
+endTurn=(f=>function(){try{if(B)[...B.allies.filter(a=>!a.dead),...B.units.filter(u=>u.hp>0)].forEach(x=>{
+  ['tremor','poise'].forEach(k=>{const st=x.st&&x.st[k];if(st&&st.c>0){st.c--;if(st.c<=0)delete x.st[k]}});
+  const ch=x.st&&x.st.charge;if(ch){ch.p=Math.min(20,ch.p)-1;if(ch.p<=0)delete x.st.charge}})}catch(e){}return f.apply(this,arguments)})(endTurn);
+/* ---------- 설명 ---------- */
+const W={use:['사용 시','On use','使用時'],start:['사용 시','On use','使用時'],win:['합 승리 시','Clash win','マッチ勝利時'],hit:['적중 시','On hit','的中時'],head:['앞면 적중 시','Heads hit','表的中時'],crit:['치명타 시','On crit','クリティカル時'],kill:['처치 시','On kill','撃破時'],end:['공격 종료 시','After attack','攻撃終了時']};
+function cTxt(c){let m;
+ if((m=/^(tk|tc|sk|sc):([a-z]+)(>=|<=|>|<|=)(\d+)$/.exec(c))){const who=m[1][0]==='t'?T('대상','target','対象'):T('자신','self','自身');const what=m[1][1]==='k'?T('위력','potency','威力'):T('횟수','count','回数');
+   const op={'>=':T('이상','or more','以上'),'<=':T('이하','or less','以下'),'>':T('초과','over','超'),'<':T('미만','under','未満'),'=':''}[m[3]];return T(`${who}의 ${KN(m[2])} ${what} ${m[4]} ${op}`,`${who} ${KN(m[2])} ${what} ${m[4]} ${op}`,`${who}の${KN(m[2])}${what}${m[4]}${op}`)}
+ if((m=/^has:([a-z]+)$/.exec(c)))return T(`대상에게 ${KN(m[1])}이(가) 있으면`,`target has ${KN(m[1])}`,`対象に${KN(m[1])}があれば`);
+ if((m=/^(thp|shp)(<|>)(\d+)$/.exec(c)))return T(`${m[1]==='thp'?'대상':'자신'} 체력 ${m[3]}% ${m[2]==='<'?'미만':'초과'}`,`${m[1]==='thp'?'target':'own'} HP ${m[2]==='<'?'under':'over'} ${m[3]}%`,`${m[1]==='thp'?'対象':'自身'}の体力${m[3]}%${m[2]==='<'?'未満':'超'}`);
+ return {stag:T('대상이 흐트러져 있으면','target staggered','対象が乱れていれば'),fast:T('속도가 대상보다 빠르면','faster than target','対象より速ければ'),first:T('이번 턴 첫 공격이면','first attack this turn','このターン最初の攻撃なら')}[c]||c}
+function dTxt(e){const k=KN(e.k);const pc=(e.p?T(` ${e.p}`,` ${e.p}`,` ${e.p}`):'')+(e.c?T(` (횟수 +${e.c})`,` (+${e.c} count)`,`(回数+${e.c})`):'');
+ switch(e.do){
+  case 'give':return e.p?T(`대상에게 ${k}${pc} 부여`,`Inflict ${k}${pc}`,`対象に${k}${pc}付与`):T(`대상의 ${k} 횟수 +${e.c}`,`+${e.c} ${k} count`,`対象の${k}回数+${e.c}`);
+  case 'self':return e.p||!e.c?T(`자신에게 ${k}${pc}`,`Gain ${k}${pc}`,`自身に${k}${pc}`):T(`자신의 ${k} 횟수 +${e.c}`,`+${e.c} own ${k} count`,`自身の${k}回数+${e.c}`);
+  case 'ally':return T(`체력이 가장 낮은 아군에게 ${k}${pc}`,`Lowest-HP ally gains ${k}${pc}`,`体力が最も低い味方に${k}${pc}`);
+  case 'allies':return T(`아군 전체에게 ${k}${pc}`,`All allies gain ${k}${pc}`,`味方全体に${k}${pc}`);
+  case 'trig':return T(`대상의 ${k}을(를) 지금 한 번 발동`,`Trigger target's ${k} once now`,`対象の${k}を今1回発動`);
+  case 'burst':return T('진동 폭발','Tremor Burst','振動爆発');
+  case 'eat':return T(`대상의 ${k} 횟수를 최대 ${e.n||1} 소모 — 1회당 ${k} 위력${e.v&&e.v!==1?`×${e.v}`:''}만큼 고정 피해`,`Consume up to ${e.n||1} ${k} count — fixed damage of potency${e.v&&e.v!==1?`×${e.v}`:''} each`,`対象の${k}回数を最大${e.n||1}消費 — 1回ごとに威力${e.v&&e.v!==1?`×${e.v}`:''}の固定ダメージ`);
+  case 'pow':return T(`최종 위력 ${e.v>0?'+':''}${e.v}`,`Final power ${e.v>0?'+':''}${e.v}`,`最終威力${e.v>0?'+':''}${e.v}`);
+  case 'cp':return T(`코인 위력 ${e.v>0?'+':''}${e.v}`,`Coin power ${e.v>0?'+':''}${e.v}`,`コイン威力${e.v>0?'+':''}${e.v}`);
+  case 'dmg':return T(`피해량 +${e.v}%`,`Damage +${e.v}%`,`ダメージ+${e.v}%`);
+  case 'dmgk':return T(`대상의 ${k} 횟수 1당 피해량 +${e.v}% (최대 10)`,`+${e.v}% damage per target ${k} count (max 10)`,`対象の${k}回数1につきダメージ+${e.v}%(最大10)`);
+  case 'crit':return T('치명타 확정','Guaranteed critical','クリティカル確定');
+  case 'heal':return T(`체력 +${e.v}`,`HP +${e.v}`,`体力+${e.v}`);
+  case 'sp':return T(`정신력 +${e.v}`,`Sanity +${e.v}`,`精神力+${e.v}`);
+  case 'shield':return T(`보호막 +${e.v}`,`Shield +${e.v}`,`シールド+${e.v}`);
+  case 'tsp':return T(`대상의 정신력 -${e.v}`,`Target Sanity -${e.v}`,`対象の精神力-${e.v}`);
+  case 'spend':return T(`자신의 ${k} ${e.n||1} 소모 → `,`Spend ${e.n||1} ${k} → `,`自身の${k}${e.n||1}消費 → `)+(e.then||[]).map(dTxt).join(', ');
+ }return e.do}
+function kxLines(s){return (s&&s.kx||[]).map(e=>{const w=`${e.ci?T(`${e.ci}코인 `,`Coin ${e.ci} `,`${e.ci}コイン `):''}[${T(...(W[e.w]||[e.w,e.w,e.w]))}]`;const c=(e.if||[]).map(cTxt).join(', ');return [w,(c?c+(LI()===0?(/면$/.test(c)?' ':'이면 '):' → '):'')+dTxt(e)]})}
+const LI=()=>{try{return i80(0,1,2)}catch(e){return 0}};
+window.kxLines195=kxLines;
+try{limbusLines=(f=>function(s){const L=f.apply(this,arguments);try{kxLines(s).forEach(x=>L.push(x))}catch(e){}return L})(limbusLines)}catch(e){}
+try{lfxLines=(f=>function(s){const L=f.apply(this,arguments);try{kxLines(s).forEach(([w,t])=>L.push(`${w} ${t}`))}catch(e){}return L})(lfxLines)}catch(e){}
+/* ---------- 키워드 사전 ---------- */
+try{Object.assign(STN,{fragile:STN.fragile||'취약',protect:STN.protect||'보호',paralysis:STN.paralysis||'마비',bind:STN.bind||'속박',haste:STN.haste||'신속',charge:STN.charge||'충전'});
+ Object.assign(KWD,{
+  burn:T('화상: 턴 종료 시 위력만큼 고정 피해를 받고 횟수 -1. 오래 남고 쌓기 쉽지만 한 턴에 한 번만 터진다.','Burn: at turn end take fixed damage equal to potency, count -1.','火傷:ターン終了時、威力分の固定ダメージを受け回数-1。'),
+  bleed:T('출혈: 공격 스킬의 코인을 굴릴 때마다 위력만큼 고정 피해를 받고 횟수 -1. 적이 많이 공격할수록 크게 터진다.','Bleed: each time the unit flips a coin of an attack skill, take fixed damage equal to potency, count -1.','出血:攻撃スキルのコインを投げるたび、威力分の固定ダメージを受け回数-1。'),
+  rupture:T('파열: 공격에 맞을 때마다 위력만큼 고정 피해를 받고 횟수 -1. 우리 쪽 공격 횟수가 곧 피해다.','Rupture: each time hit by an attack, take fixed damage equal to potency, count -1.','破裂:攻撃を受けるたび、威力分の固定ダメージを受け回数-1。'),
+  sinking:T('침잠: 공격에 맞을 때마다 위력만큼 정신력을 잃고 횟수 -1. 정신력이 바닥이거나 없으면 우울 피해로 받는다.','Sinking: each time hit, lose Sanity equal to potency, count -1. With no Sanity left, take Gloom damage instead.','沈潜:攻撃を受けるたび、威力分の精神力を失い回数-1。精神力がない場合は憂鬱ダメージ。'),
+  tremor:T('진동: 진동 폭발을 맞으면 위력만큼 흐트러짐 지점이 당겨진다. 턴 종료 시 횟수 -1.','Tremor: when hit by a Tremor Burst, the stagger threshold moves by potency. Count -1 at turn end.','振動:振動爆発を受けると威力分だけ乱れ閾値が引き寄せられる。ターン終了時回数-1。'),
+  poise:T('호흡: 적중 시 위력×5% 확률로 치명타(피해 ×1.2). 치명타가 나면 횟수 -1, 턴 종료 시에도 횟수 -1.','Poise: on hit, potency×5% chance to crit (×1.2 damage). Count -1 on crit and at turn end.','呼吸:的中時、威力×5%の確率でクリティカル(ダメージ×1.2)。クリティカル時と終了時に回数-1。'),
+  charge:T('충전: 스킬이 소모해 위력을 얻는 자원. 최대 20, 턴 종료 시 -1.','Charge: a resource skills spend for power. Max 20, -1 at turn end.','充電:スキルが消費して威力を得る資源。最大20、ターン終了時-1。'),
+  fragile:T('취약: 위력 1당 받는 피해 +10%. 턴 종료 시 횟수 -1.','Fragile: +10% damage taken per potency.','脆弱:威力1につき被ダメージ+10%。'),
+  protect:T('보호: 위력 1당 받는 피해 -10% (최대 -50%).','Protection: -10% damage taken per potency (max -50%).','保護:威力1につき被ダメージ-10%(最大-50%)。'),
+  paralysis:T('마비: 위력만큼 이번 턴 스킬 위력이 줄어든다.','Paralysis: skill power reduced by potency this turn.','麻痺:威力分、このターンのスキル威力が下がる。'),
+  bind:T('속박: 다음 턴 속도가 위력만큼 줄어든다.','Bind: next turn speed reduced by potency.','束縛:次のターン速度が威力分下がる。'),
+  haste:T('신속: 다음 턴 속도가 위력만큼 늘어난다.','Haste: next turn speed increased by potency.','迅速:次のターン速度が威力分上がる。')})}catch(e){}
+})();
+/* ============ v196: 2단계 — 아군 E.G.O 스킬 재설계 · E.G.O 슈트 패시브 ============
+   ■ 무기(85종): 무기마다 대표 키워드 하나를 정해(기존 스킬이 쓰던 키워드) 스킬 세 개를
+     ① 쌓기(키워드 부여 + 공격 유형별 보조)  ② 조건부 강화(대상 키워드가 쌓이면 코인 위력↑ · 횟수 보충 · 마지막 코인 디버프)
+     ③ 마무리(키워드별 결정타: 화상 발동 · 출혈 거둬들이기 · 파열 비례 피해 · 침잠 발동 · 진동 폭발 · 호흡 치명타 확정)
+     흐름으로 다시 짠다. 등급이 높을수록 수치가 커진다. 위력 · 코인은 그대로.
+   ■ 슈트(82종): 같은 환상체의 무기와 같은 키워드 · 죄악으로 패시브를 단다 (림버스의 전투 패시브 · 서포트 패시브 구조 참고)
+     전투 패시브  [보유: 죄악 자원 N] — 입은 사람에게만
+     서포트 패시브 (HE 이상) — 같은 전투에 나선 아군 전체에게. 같은 키워드 슈트 · 무기를 모으면 덱이 완성된다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+const KS=['burn','bleed','rupture','sinking','tremor','poise'];
+const KN=k=>(typeof STN!=='undefined'&&STN[k])||k;
+const SINN=s=>(typeof SINS!=='undefined'&&SINS[s])||s;
+/* ---------- 무기별 대표 키워드 · 죄악 ---------- */
+function mainK(w){const cnt={};(w.skills||[]).forEach(s=>{Object.keys(s.on||{}).forEach(k=>{if(KS.includes(k))cnt[k]=(cnt[k]||0)+2});(s.cfx||[]).forEach(x=>{if(x[5]!=='x'&&KS.includes(x[2]))cnt[x[2]]=(cnt[x[2]]||0)+1});if(s.burst)cnt.tremor=(cnt.tremor||0)+2});
+ const best=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];if(best)return best;
+ return {RED:'bleed',WHITE:'sinking',BLACK:'rupture',PALE:'poise'}[w.dc]||'burn'}
+function mainSin(w){const c={};(w.skills||[]).forEach(s=>{if(s.sin)c[s.sin]=(c[s.sin]||0)+1});return Object.keys(c).sort((a,b)=>c[b]-c[a])[0]||'wrath'}
+const WK={},WS={};
+/* ---------- 스킬 틀 ---------- */
+function design(w){const K=mainK(w),g=w.g||0,P=1+(g>>1);WK[w._id]=K;WS[w._id]=mainSin(w);
+ (w.skills||[]).forEach((s,i)=>{if(!s||s._k196)return;s._k196=1;const t=s.t,L=s.coins;
+  delete s.on;delete s.burst;delete s.sinkBonus;delete s.chUse;s.cfx=[[-9,'none','',0,0,'x']];s.cond=[];s.kx=[];const X=e=>s.kx.push(e);
+  const sec=t==='slash'?{w:'win',do:'self',k:'poise',p:2+g,c:1}:t==='pierce'?{w:'win',do:'self',k:'haste',p:1,c:1}:{w:'win',do:'self',k:'charge',p:2+(g>>1)};
+  const deb=t==='slash'?{w:'hit',ci:L,do:'give',k:'bind',p:1,c:1}:t==='pierce'?{w:'hit',ci:L,do:'give',k:'fragile',p:1+(g>=3?1:0),c:1}:{w:'hit',ci:L,do:'give',k:'paralysis',p:1,c:1};
+  if(i===0){ /* ① 쌓기 */
+   if(K==='poise')X({w:'head',do:'self',k:'poise',p:P+1,c:1});else X({w:'hit',do:'give',k:K,p:P+1});
+   if(K!=='poise'||t!=='slash')X(sec)}
+  else if(i===1){ /* ② 조건부 강화 */
+   if(K==='poise'){X({w:'use',if:[`sk:poise>=${4+g}`],do:'cp',v:1+(g>=3?1:0)});X({w:'hit',do:'self',k:'poise',c:1})}
+   else{X({w:'use',if:[`tk:${K}>=${3+g}`],do:'cp',v:1+(g>=3?1:0)});X({w:'head',do:'give',k:K,c:1})}
+   X(deb)}
+  else{ /* ③ 마무리 */
+   switch(K){
+    case 'burn':X({w:'hit',do:'give',k:'burn',p:P});X({w:'use',do:'dmgk',k:'burn',v:4+g});X({w:'end',do:'trig',k:'burn'});break;
+    case 'bleed':X({w:'hit',do:'give',k:'bleed',c:1});X({w:'use',if:['tc:bleed>=3'],do:'cp',v:1+(g>>1)});X({w:'end',do:'eat',k:'bleed',n:1+(g>>1),v:1});break;
+    case 'rupture':X({w:'hit',do:'give',k:'rupture',c:1});X({w:'use',do:'dmgk',k:'rupture',v:3+g});X({w:'kill',do:'self',k:'poise',p:3,c:1});break;
+    case 'sinking':X({w:'hit',do:'give',k:'sinking',p:P});X({w:'use',if:['tc:sinking>=3'],do:'cp',v:1+(g>>1)});X({w:'end',do:'trig',k:'sinking'});break;
+    case 'tremor':X({w:'hit',do:'give',k:'tremor',p:P+1});X({w:'use',if:['has:tremor'],do:'pow',v:1+(g>>1)});X({w:'end',do:'burst'});break;
+    case 'poise':X({w:'use',do:'self',k:'poise',p:2+g,c:1});X({w:'head',if:['sk:poise>=10'],do:'crit'});X({w:'use',do:'allies',k:'poise',p:1});break}
+   if(K!=='poise')X(sec)}
+ })}
+try{Object.keys(WEAP).forEach(id=>{const w=WEAP[id];if(!w||id==='redmist58'||id==='baton'&&false)return;w._id=id;design(w)})}catch(e){console.error(e)}
+window.WK196=WK;window.WS196=WS;
+/* ---------- 슈트 패시브 ---------- */
+function suitInfo(id){const S=SUIT[id];if(!S)return null;const w=WEAP[id]||WEAP[id+'w']||WEAP[id.replace(/w$/,'')];
+ const K=w&&WK[w._id]?WK[w._id]:({RED:'bleed',WHITE:'sinking',BLACK:'rupture',PALE:'poise'}[Object.keys(S.r||{}).sort((a,b)=>S.r[a]-S.r[b])[0]]||'burn');
+ const sin=w&&WS[w._id]?WS[w._id]:'wrath';return {K,sin,g:S.g||0}}
+/* 전투 패시브 (자신) · 서포트 패시브 (아군 전체) */
+function passOf(id){const I=suitInfo(id);if(!I||id==='basic')return null;const {K,sin,g}=I;const need=Math.max(2,4-(g>>1)),lim=1+(g>>1);
+ const bat={burn:{w:'coin',if:['has:burn'],do:'dmg',v:10+3*g},bleed:{w:'hit',if:['has:bleed'],do:'give',k:'bleed',c:1,lim},rupture:{w:'coin',if:['tc:rupture>=3'],do:'cp',v:1},
+  sinking:{w:'hit',if:['has:sinking'],do:'give',k:'sinking',p:1,lim},tremor:{w:'hit',if:['has:tremor'],do:'give',k:'tremor',c:1,lim},poise:{w:'turn',do:'self',k:'poise',p:1+(g>>1),c:1}}[K];
+ const sup=g>=2?{burn:{w:'coin',if:['tc:burn>=3'],do:'dmg',v:5+2*(g-2)},bleed:{w:'coin',if:['tc:bleed>=3'],do:'cp',v:1},rupture:{w:'coin',if:['has:rupture'],do:'dmg',v:5+2*(g-2)},
+  sinking:{w:'turn',do:'allies',k:'protect',p:1,c:1},tremor:{w:'coin',if:['stag'],do:'dmg',v:10+5*(g-2)},poise:{w:'turn',do:'allies',k:'poise',p:1,c:1}}[K]:null;
+ return {K,sin,need,bat:Object.assign({own:sin,need},bat),sup}}
+window.passOf196=passOf;
+const own=(e)=>!e.own||((B&&B.sins&&B.sins[e.own])||0)>=e.need;
+const ownerSuit=a=>a&&a.ally?(a.suit||null):null;
+function effects(a){if(!B||!a||!a.ally)return [];const L=[];const me=passOf(ownerSuit(a));if(me&&me.bat&&own(me.bat))L.push(me.bat);
+ supSuits().forEach(id=>{const p=passOf(id);if(p&&p.sup)L.push(p.sup)});return L}
+/* 서포트 패시브의 출처: 기본은 전투 중인 아군 · v199부터 대기 인원 (window.supSrc196) */
+function supSuits(){try{if(window.supSrc196)return supSrc196()||[]}catch(e){}return B.allies.filter(x=>!x.dead).map(ownerSuit)}
+const LIM={};
+function okIf(a,t,e){try{return KX.cond(a,t,e.if||[])}catch(x){return false}}
+/* 코인 보정 (피해량 · 코인 위력) */
+KX.coin=(f=>function(a,s,t,i,head){const r=f.apply(this,arguments);try{if(a&&a.ally){effects(a).forEach(e=>{if(e.w!=='coin'||!okIf(a,t,e))return;if(e.do==='dmg')r.dm*=1+e.v/100;if(e.do==='cp'&&head)r.pw+=e.v})}}catch(x){}return r})(KX.coin);
+/* 적중 시 */
+KX.hit=(f=>function(a,s,t,i,head,dmg,crit){let d=f.apply(this,arguments)||0;try{if(a&&a.ally&&t&&(t.hp>0)){effects(a).forEach((e,j)=>{if(e.w!=='hit'||!okIf(a,t,e))return;const key=B.turn+':'+(a.key+(a.ag?a.ag.id:''))+':'+e.k+':'+j;if(e.lim){LIM[key]=(LIM[key]||0)+1;if(LIM[key]>e.lim)return}KX.give(t,e.k,e.p,e.c)})}}catch(x){}return d})(KX.hit);
+/* 턴 시작 시 */
+newTurn=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){for(const k in LIM)delete LIM[k];
+  B.allies.filter(x=>!x.dead).forEach(a=>{const me=passOf(ownerSuit(a));const e=me&&me.bat&&own(me.bat)?me.bat:null;if(!e||e.w!=='turn')return;if(e.do==='self')KX.give(a,e.k,e.p,e.c);if(e.do==='allies')B.allies.filter(x=>!x.dead).forEach(x=>KX.give(x,e.k,e.p,e.c))});
+  supSuits().forEach(id=>{const p=passOf(id);const e=p&&p.sup;if(!e||e.w!=='turn')return;B.allies.filter(x=>!x.dead).forEach(x=>KX.give(x,e.k,e.p,e.c))})}}catch(e){}return r})(newTurn);
+/* ---------- 설명 ---------- */
+function eTxt(e){const lines=window.kxLines195?kxLines195({kx:[{w:e.w==='coin'||e.w==='turn'?'use':e.w,if:e.if,do:e.do,k:e.k,p:e.p,c:e.c,v:e.v}]}):[];let t=lines[0]?lines[0][1]:'';
+ if(e.w==='turn')t=T('턴 시작 시 ','At turn start, ','ターン開始時、')+t;else if(e.w==='coin')t=T('공격할 때 ','When attacking, ','攻撃時、')+t;else if(e.w==='hit')t=T('적중 시 ','On hit, ','的中時、')+t;
+ if(e.lim)t+=T(` (턴당 ${e.lim}회)`,` (${e.lim}/turn)`,`(ターンごと${e.lim}回)`);return t}
+function passHtml(id){const p=passOf(id);if(!p)return '';
+ return `<div class="ps196"><div class="ps196h">${T('패시브','Passive','パッシブ')} · ${KN(p.K)}</div>
+  <p><b>${T('전투','Combat','戦闘')}</b> <em>[${T('보유','Owned','保有')}: ${SINN(p.sin)} ${p.need}]</em> ${eTxt(p.bat)}</p>
+  ${p.sup?`<p><b>${T('서포트','Support','サポート')}</b> <em>${T('대기 인원일 때 · 아군 전체','while on standby · all allies','待機中 · 味方全体')}</em> ${eTxt(p.sup)}</p>`:`<p class="mut">${T('서포트 패시브는 HE 등급 이상 슈트에 붙는다.','Support passives come with HE-grade suits and above.','サポートパッシブはHE以上のスーツに付く。')}</p>`}</div>`}
+window.passHtml196=passHtml;
+/* 슈트가 보이는 곳에 패시브를 덧붙인다: 오른쪽 장비 칸 · 장비 바꾸기 창 */
+function deco(){try{
+ const eq=document.querySelector('#Rg .pc-eq');if(eq&&G){const want=G.suit||'';let tag=eq.nextElementSibling&&eq.nextElementSibling.classList.contains('ps196')?eq.nextElementSibling:null;
+  if(!tag||tag.dataset.s!==want){tag&&tag.remove();const h=passHtml(want);if(h){eq.insertAdjacentHTML('afterend',h);eq.nextElementSibling.dataset.s=want}}}
+ const pop=document.querySelector('.pop');if(pop){const h3=(pop.querySelector('.pop-h h3')||{}).textContent||'';
+  if(/슈트|Suit|スーツ/.test(h3))pop.querySelectorAll('[data-eq]').forEach(b=>{if(b.querySelector('.ps196'))return;const h=passHtml(b.dataset.eq);if(h)b.insertAdjacentHTML('beforeend',h)});
+  if(/무기|Weapon|武器/.test(h3))pop.querySelectorAll('[data-eq]').forEach(b=>{if(b.querySelector('.wk196')||!WK[b.dataset.eq])return;b.insertAdjacentHTML('beforeend',`<small class="wk196">${T('대표 키워드','Main keyword','代表キーワード')}: <b>${KN(WK[b.dataset.eq])}</b> · ${T('죄악','Sin','罪')} ${SINN(WS[b.dataset.eq])}</small>`)})}}catch(e){}}
+setInterval(deco,700);
+const st=document.createElement('style');st.textContent=`.ps196{margin-top:6px;padding:6px 8px;border-left:2px solid var(--accent,#f4ee9a);background:rgba(255,255,255,.03);font-size:11.5px;line-height:1.5;text-align:left}
+.ps196h{font-size:11px;color:var(--accent,#f4ee9a);letter-spacing:.05em;margin-bottom:2px}.ps196 p{margin:2px 0}.ps196 em{font-style:normal;color:var(--muted)}`;document.head.appendChild(st);
+})();
+/* ============ v199: 출동 편성 = 기본 동행 · 대기 인원 · 장비 상세 ============
+   (v198의 키워드 공명은 뺐다 — 덱은 전투에 함께 나선 사람들의 무기 스킬이 모인 것, 그 이상의 덤은 없다)
+   · 출동 편성: [출동]을 누르면 처음부터 체크되어 있을 직원(최대 2명 · 「소집 호출」 연구 시 4명)과
+     대기 인원(편성 가능 인원의 절반)을 정한다. 체크로 켜고 끈다. 자리가 차면 더 체크되지 않는다.
+   · 대기 인원: 전투에 나선 직원이 쓰러지면 차례로 들어온다. 대기하는 동안에만 그 사람 슈트의 서포트 패시브가 아군 전체에 걸린다.
+   · 「동행할 직원」 창: ✕(또는 바깥 누르기)로 닫으면 출동하지 않는다. 경보는 그대로 남는다.
+   · 무기 스킬 · 슈트 패시브를 한곳에서: E.G.O 상세 창 (오른쪽 패널 · 장비 탭 · 편성 창에서 열기) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const KN=k=>(typeof STN!=='undefined'&&STN[k])||k;
+const SINN=s=>(typeof SINS!=='undefined'&&SINS[s])||s;
+const WKf=id=>(window.WK196&&WK196[id])||null;
+const cap=()=>2+(typeof has==='function'&&has('call')?2:0);
+const rcap=()=>Math.max(1,Math.ceil(cap()/2));
+const okAg=a=>a&&a.alive&&!a.out&&!a.panic&&a.hp>0;
+const agById=id=>(G.agents||[]).find(a=>a.id===id);
+function lists(){G.team=Array.isArray(G.team)?G.team:[];G.reserve=Array.isArray(G.reserve)?G.reserve:[];
+ G.team=G.team.filter(id=>{const a=agById(id);return a&&a.alive});G.reserve=G.reserve.filter(id=>{const a=agById(id);return a&&a.alive&&!G.team.includes(id)});return [G.team,G.reserve]}
+const team=()=>lists()[0].map(agById).filter(Boolean);
+const reserve=()=>lists()[1].map(agById).filter(Boolean);
+/* 편성에 넣을 수 있는 사람: 같은 부서 동료 · 관계 「신뢰」 이상 · (정의 Ⅲ 또는 마음의 온기 60이면 누구든) */
+function canPick(a){try{return pickLevel()>=2||agTier(a)>=2||a.dept===G.dept}catch(e){return true}}
+window.squad199={team,reserve,cap,rcap};
+
+/* ---------- 출동할 때 기본으로 고르는 사람 ---------- */
+battleMates=(f=>function(e){const def=f.apply(this,arguments);try{if(G.pickMates||(G.roamFight&&G.roamFight.mates&&G.roamFight.mates.length))return def;const T0=team().filter(okAg);if(!T0.length)return def;
+ const out=T0.slice(0,cap());for(const a of def){if(out.length>=cap())break;if(!out.includes(a)&&!G.reserve.includes(a.id))out.push(a)}return out}catch(x){return def}})(battleMates);
+
+/* ---------- 장비 상세 ---------- */
+const TYN=t=>({slash:T('참격','Slash','斬撃'),pierce:T('관통','Pierce','貫通'),blunt:T('타격','Blunt','打撃')}[t]||'');
+function skHtml(s,tag){if(!s)return '';let fx='';try{fx=limbusHtml(s)}catch(e){}
+ return `<div class="gd199s" style="${s.sin?`--sc:var(--s-${s.sin})`:''}"><div class="gd199sh"><b>${tag?`<i>${tag}</i> `:''}${s.n}</b><span>${s.sin?SINN(s.sin)+' · ':''}${TYN(s.t)} · ${s.base}~${s.base+s.cp*s.coins} · ${'◆'.repeat(s.coins||1)}</span></div>${fx}</div>`}
+function weapHtml(id){const w=weapOf(id);if(!w)return '';const k=WKf(id);const cnt=[T('3장','×3','3枚'),T('2장','×2','2枚'),T('1장','×1','1枚')];
+ return `<div class="gd199"><div class="gd199h">${ic('sword')} <b>${w.n}</b> <span class="gr g${w.g}">${GR[w.g]}</span> <span class="dt d${w.dc}">${w.dc}</span>${k?` <em class="gd199k">${T('키워드','Keyword','キーワード')} ${KN(k)}</em>`:''}</div>
+  ${(w.skills||[]).map((s,i)=>skHtml(s,`S${i+1} ${cnt[i]||''}`)).join('')}
+  ${w.ego&&w.ego.s?skHtml(Object.assign({sin:w.ego.sin},w.ego.s),`E.G.O · ${T('정신력','SP','精神力')} ${w.ego.sp||0}`):''}</div>`}
+function suitHtml(id){const s=suitOf(id);if(!s)return '';let r='';try{r=resLine(suitR(id))}catch(e){}
+ return `<div class="gd199"><div class="gd199h">${ic('shield')} <b>${s.n}</b> <span class="gr g${s.g||0}">${GR[s.g||0]}</span></div><div class="gd199r res">${r}</div><p class="note gd199n">${T('숫자가 낮을수록 덜 아프다 (1 = 그대로).','Lower is better (1 = normal).','数値が低いほど痛くない(1=等倍)。')}</p>${window.passHtml196?passHtml196(id):''}</div>`}
+window.weapHtml199=weapHtml;window.suitHtml199=suitHtml;
+/* E.G.O 상세 창: 왼쪽 목록 · 오른쪽 상세 (창이 바뀌지 않고 안에서만 넘긴다) */
+function dexPop(kind,id){kind=kind||'w';const lists=()=>kind==='w'?G.ownW:G.ownS;id=id||(kind==='w'?G.weapon:G.suit);
+ const users=(k,x)=>{const al=alloc();const n=Object.keys(al).filter(a=>al[a][k]===x).map(a=>(agById(a)||{}).n).filter(Boolean);if((k==='w'?G.weapon:G.suit)===x)n.unshift(T('나','Me','自分'));return n};
+ const draw=el=>{const L=lists();if(!L.includes(id))id=L[0];
+  el.querySelector('.dx199t').innerHTML=['w','s'].map(k=>`<button type="button" class="btn small ${k===kind?'':'ghost'}" data-k="${k}">${k==='w'?T('무기','Weapons','武器'):T('슈트','Suits','スーツ')} ${(k==='w'?G.ownW:G.ownS).length}</button>`).join('');
+  el.querySelector('.dx199l').innerHTML=L.map(x=>{const o=kind==='w'?weapOf(x):suitOf(x);const k=kind==='w'?WKf(x):(window.passOf196&&passOf196(x)||{}).K;const u=users(kind,x);
+   return `<button type="button" class="dx199i ${x===id?'on':''}" data-id="${x}"><b>${o.n} <span class="gr g${o.g||0}">${GR[o.g||0]}</span></b><small>${k?KN(k)+' · ':''}${T('보유','Owned','保有')} ${x==='baton'||x==='basic'?'∞':invN(kind,x)}${u.length?' · '+u.join(', '):''}</small></button>`}).join('');
+  el.querySelector('.dx199d').innerHTML=kind==='w'?weapHtml(id):suitHtml(id);
+  el.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{kind=b.dataset.k;id=kind==='w'?G.weapon:G.suit;draw(el)});
+  el.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{id=b.dataset.id;draw(el)})};
+ popup(T('E.G.O 상세','E.G.O details','E.G.O詳細'),`<div class="row dx199t"></div><div class="dx199"><div class="dx199l"></div><div class="dx199d"></div></div>`,draw,{wide:true})}
+window.dexPop199=dexPop;
+
+/* ---------- 출동 편성 창 ---------- */
+function rowHtml(a,mode,inT,inR,full,fullR,lockAll,canF){const e=alloc()[a.id]||{w:'baton',s:'basic'};const ok=okAg(a),can=(canF||canPick)(a);const k=WKf(e.w),p=window.passOf196?passOf196(e.s):null;
+ const st=!ok?(a.panic?T('패닉','Panic','パニック'):a.out?T('자리 비움','Away','不在'):T('출동 불가','Unavailable','出動不可')):!can?T('관계 「신뢰」 이상 또는 같은 부서만','Trust+ or same department only','「信頼」以上か同じ部門のみ'):'';
+ const dT=lockAll||((!can||!ok)&&!inT)||(!inT&&full),dR=lockAll||((!can||!ok)&&!inR)||(!inR&&fullR);
+ return `<div class="sq199r ${inT?'t':''} ${inR?'r':''} ${ok?'':'na'}" data-row="${a.id}">
+  <div class="sq199c"><label class="sq199k ${dT?'dis':''}"><input type="checkbox" data-t="${a.id}" ${inT?'checked':''} ${dT?'disabled':''}><span>${T('출동','Sortie','出動')}</span></label>
+   <label class="sq199k rv ${dR?'dis':''}"><input type="checkbox" data-r="${a.id}" ${inR?'checked':''} ${dR?'disabled':''}><span>${T('대기','Standby','待機')}</span></label></div>
+  <div class="sq199m"><b>${a.n} <span class="gr g${Math.max(0,agRank(a)-1)}">${ROMAN[agRank(a)]}</span></b><small>${DEPT[a.dept]?DEPT[a.dept].n:''} · HP ${Math.max(0,a.hp)}/${agMax(a)} · ${T('정신력','SP','精神力')} ${a.sp}${st?` · <em>${st}</em>`:''}</small>
+   <small class="sq199g">${ic('sword')} ${weapOf(e.w).n}${k?` <em>${KN(k)}</em>`:''} · ${ic('shield')} ${suitOf(e.s).n}${p?` <em>${KN(p.K)}${p.sup?' · '+T('서포트','support','サポート'):''}</em>`:''}</small>
+   ${mode==='team'&&!lockAll?`<div class="sq199sel"><select data-w="${a.id}">${gearOpts(a,'w').map(id=>`<option value="${id}" ${id===e.w?'selected':''}>${weapOf(id).n}${WKf(id)?' · '+KN(WKf(id)):''}</option>`).join('')}</select><select data-s="${a.id}">${gearOpts(a,'s').map(id=>`<option value="${id}" ${id===e.s?'selected':''}>${suitOf(id).n}${window.passOf196&&passOf196(id)?' · '+KN(passOf196(id).K):''}</option>`).join('')}</select></div>`:''}
+   <details class="sq199d"><summary>${T('스킬 · 패시브 보기','Skills & passives','スキル・パッシブ')}</summary>${weapHtml(e.w)}${suitHtml(e.s)}</details></div></div>`}
+function gearOpts(ag,kind){const left=stockLeft();(G.agents||[]).forEach(a=>{if(a.alive&&a.eq&&a.eq[kind]&&a!==ag)left[kind+':'+a.eq[kind]]=(left[kind+':'+a.eq[kind]]||0)-1});
+ const list=kind==='w'?G.ownW:G.ownS,base=kind==='w'?'baton':'basic',of=kind==='w'?weapOf:suitOf;
+ return [base].concat(list.filter(id=>id!==base&&agCan(ag,of(id).g)&&((left[kind+':'+id]||0)>0||(ag.eq&&ag.eq[kind]===id))))}
+/* 공통: 목록 + 체크 상태 그리기 */
+function sqBody(el,st,mode,lockAll){const body=el.querySelector('.sq199b');const ags=(G.agents||[]).filter(a=>a.alive);
+ const full=st.t.length>=cap(),fullR=st.r.length>=rcap();
+ const ord=ags.slice().sort((x,y)=>(st.t.includes(y.id)-st.t.includes(x.id))||(st.r.includes(y.id)-st.r.includes(x.id))||(okAg(y)-okAg(x))||((st.can||canPick)(y)-(st.can||canPick)(x))||((y.dept===G.dept)-(x.dept===G.dept))||agRank(y)-agRank(x));
+ const sups=st.r.map(agById).filter(Boolean).map(a=>{const p=window.passOf196?passOf196((alloc()[a.id]||{}).s):null;return p&&p.sup?`<li><b>${a.n}</b> · ${KN(p.K)}</li>`:''}).filter(Boolean);
+ el.querySelector('.sq199n').innerHTML=`<span class="${full?'full':''}">${T('출동','Sortie','出動')} <b>${st.t.length}/${cap()}</b></span><span class="${fullR?'full':''}">${T('대기','Standby','待機')} <b>${st.r.length}/${rcap()}</b></span>`;
+ body.innerHTML=`<div class="sq199me"><b>${T('나','Me','自分')} · ${G.name||''}</b><small>${ic('sword')} ${weapOf(G.weapon).n}${WKf(G.weapon)?` <em>${KN(WKf(G.weapon))}</em>`:''} · ${ic('shield')} ${suitOf(G.suit).n} · ${T('항상 출동','always deployed','常に出動')}</small></div>
+  ${sups.length?`<div class="sq199sup">${T('대기 중 서포트 패시브','Standby support passives','待機中サポートパッシブ')}<ul>${sups.join('')}</ul></div>`:''}
+  <div class="sq199l">${ord.map(a=>rowHtml(a,mode,st.t.includes(a.id),st.r.includes(a.id),full,fullR,lockAll,st.can)).join('')}</div>`;
+ body.querySelectorAll('input[data-t]').forEach(x=>x.onchange=()=>{const id=x.dataset.t;if(x.checked){if(st.t.length>=cap()){x.checked=false;return}st.t.push(id);st.r=st.r.filter(z=>z!==id)}else st.t=st.t.filter(z=>z!==id);st.on&&st.on();sqBody(el,st,mode,lockAll)});
+ body.querySelectorAll('input[data-r]').forEach(x=>x.onchange=()=>{const id=x.dataset.r;if(x.checked){if(st.r.length>=rcap()){x.checked=false;return}st.r.push(id);st.t=st.t.filter(z=>z!==id)}else st.r=st.r.filter(z=>z!==id);st.on&&st.on();sqBody(el,st,mode,lockAll)});
+ body.querySelectorAll('select[data-w],select[data-s]').forEach(x=>x.onchange=()=>{const id=x.dataset.w||x.dataset.s,kind=x.dataset.w?'w':'s';const a=agById(id);if(!a)return;a.eq=a.eq||{w:null,s:null};a.eq[kind]=x.value==='baton'||x.value==='basic'?null:x.value;try{ALC=null}catch(e){}save();sqBody(el,st,mode,lockAll)});
+ body.querySelectorAll('details.sq199d').forEach(d=>{const id=d.closest('[data-row]').dataset.row;if(OPEN.has(id))d.open=true;d.ontoggle=()=>{d.open?OPEN.add(id):OPEN.delete(id)}})}
+const OPEN=new Set();
+function teamPop(){if(!G)return;const lock=typeof B!=='undefined'&&B&&!B.done;lists();const st={t:G.team.slice(0,cap()),r:G.reserve.slice(0,rcap())};
+ st.on=()=>{G.team=st.t.slice();G.reserve=st.r.slice();save()};
+ popup(T('출동 편성','Squad','出動編成'),`<p class="sub">${lock?T('전투 중에는 바꿀 수 없다.','Cannot change during battle.','戦闘中は変更できない。'):T('[출동] 체크 — 출동할 때 처음부터 골라져 있는 직원. [대기] 체크 — 출동한 직원이 쓰러지면 차례로 들어온다. 대기하는 동안 그 사람 슈트의 서포트 패시브가 아군 전체에 걸린다. 체크는 바로 저장된다.','[Sortie] — preselected when you deploy. [Standby] — joins in order when a deployed member falls; while waiting, their suit\'s support passive applies to all allies. Changes save immediately.','[出動]— 出動時に最初から選ばれる職員。[待機]— 出動した職員が倒れると順に入る。待機中はそのスーツのサポートパッシブが味方全体にかかる。チェックはすぐ保存される。')}</p>
+  <div class="row sq199top"><span class="sq199n"></span><button type="button" class="btn ghost small" data-clr ${lock?'disabled':''}>${T('모두 해제 (자동)','Clear all (auto)','すべて解除(自動)')}</button><button type="button" class="btn ghost small" data-dex>${T('E.G.O 상세','E.G.O details','E.G.O詳細')}</button></div><div class="sq199b"></div>`,el=>{
+  sqBody(el,st,'team',lock);el.querySelector('[data-clr]').onclick=()=>{st.t=[];st.r=[];st.on();sqBody(el,st,'team',lock)};el.querySelector('[data-dex]').onclick=()=>dexPop('w')},{wide:true})}
+window.teamPop198=teamPop;window.teamPop199=teamPop;
+
+/* ---------- 「동행할 직원」: 출동 직전 고르기 ---------- */
+let LASTROAM=null;
+try{goRoam=(f=>function(uid){try{const r=(G.roam||[]).find(x=>x.uid===uid);if(r)LASTROAM=JSON.parse(JSON.stringify(r))}catch(e){}return f.apply(this,arguments)})(goRoam)}catch(e){}
+let RES=null;
+sortie=(f=>function(i,next){const e=G.breachQ[i];
+ if(!e||e.type==='panic'||G.noPick||window.__pk199)return f.apply(this,arguments);
+ const def=battleMates(e).slice(0,cap());const rf=G.roamFight;
+ const st={t:def.filter(okAg).map(a=>a.id),r:reserve().filter(a=>okAg(a)&&!def.includes(a)).slice(0,rcap()).map(a=>a.id),can:a=>canPick(a)||def.includes(a)||G.team.includes(a.id)||G.reserve.includes(a.id)};
+ let done=false;
+ const go=()=>{if(done)return;done=true;clearInterval(wt);const idx=G.breachQ.indexOf(e);if(idx<0)return;const mates=st.t.map(agById).filter(Boolean);
+  RES={ids:st.r.slice(),t:Date.now()};G.pickMates=mates;G.noPick=1;window.__pk199=1;closePop();
+  try{f(idx,next)}finally{G.noPick=0;G.pickMates=null;window.__pk199=0}};
+ const cancel=()=>{if(done)return;done=true;clearInterval(wt);
+  setTimeout(()=>{try{if(typeof B!=='undefined'&&B&&!B.done)return;const idx=G.breachQ.indexOf(e);
+   log(T('출동하지 않았다. 경보는 그대로 울리고 있다.','You did not deploy. The alarm keeps ringing.','出動しなかった。警報は鳴り続けている。'),'sys');
+   if(rf&&LASTROAM&&LASTROAM.uid===rf.uid){if(idx>=0)G.breachQ.splice(idx,1);G.roamFight=null;G.roam=G.roam||[];if(!G.roam.some(x=>x.uid===LASTROAM.uid))G.roam.push(LASTROAM);LASTROAM=null;save();return workMenu()}
+   G.roamFight=null;
+   if(e.type==='boss'&&idx>=0){G.breachQ.splice(idx,1);try{G.sup.boss=0}catch(x){}save();return workMenu()}
+   save();try{emergency(next||workMenu)}catch(x){workMenu()}}catch(x){console.error(x)}},60)};
+ const el0=popup(T('동행할 직원','Choose companions','同行する職員'),`<p class="sub">${T('출동 편성에서 정한 직원이 먼저 체크되어 있다. ✕로 닫으면 출동하지 않는다.','Your squad is pre-checked. Close with ✕ to stay put.','出動編成の職員が先にチェックされている。✕で閉じると出動しない。')}</p>
+  <div class="row sq199top"><span class="sq199n"></span><span class="row" style="gap:6px;margin:0"><button type="button" class="btn ghost small" data-sv>${T('기본 편성으로 저장','Save as default','基本編成に保存')}</button><button type="button" class="btn" id="pk199go">${T('출동 →','Deploy →','出動 →')}</button></span></div><div class="sq199b"></div>`,el=>{
+  sqBody(el,st,'pick',false);el.querySelector('#pk199go').onclick=go;
+  el.querySelector('[data-sv]').onclick=()=>{G.team=st.t.slice();G.reserve=st.r.slice();save();toast(T('기본 편성으로 저장했다.','Saved as default squad.','基本編成に保存した。'))}},{wide:true});
+ const ov=typeof POP!=='undefined'?POP:null;if(ov)ov.classList.add('decide','pk199');
+ const wt=setInterval(()=>{if(done)return clearInterval(wt);if(!ov||!ov.isConnected)cancel()},250)})(sortie);
+
+/* ---------- 전투: 대기 인원 · 교체 투입 ---------- */
+startBattle=(f=>function(kind,opt){const r=f.apply(this,arguments);try{if(typeof B!=='undefined'&&B&&!B.done&&!B.spar124&&!B.mir136&&kind!=='panicAgent'){
+  let ids=null;if(RES&&Date.now()-RES.t<300000){ids=RES.ids}RES=null;if(!ids)ids=lists()[1].slice();
+  const inB=new Set(B.allies.map(x=>x.ag&&x.ag.id).filter(Boolean));B.reserve199=ids.map(agById).filter(a=>okAg(a)&&!inB.has(a.id)).slice(0,rcap());
+  if(B.reserve199.length)blog(T(`대기: ${B.reserve199.map(a=>a.n).join(', ')}`,`Standby: ${B.reserve199.map(a=>a.n).join(', ')}`,`待機:${B.reserve199.map(a=>a.n).join('、')}`),'b');}}catch(e){console.error(e)}return r})(startBattle);
+window.supSrc196=()=>{try{if(!B||!B.reserve199)return [];return B.reserve199.filter(a=>a.alive&&!B.allies.some(x=>x.ag===a)).map(a=>agSuit(a))}catch(e){return []}};
+allyDown=(f=>function(a){const r=f.apply(this,arguments);try{if(typeof B!=='undefined'&&B&&!B.done&&a&&a.key!=='player'&&B.reserve199&&B.reserve199.length&&B.allies.some(x=>x.key==='player'&&!x.dead)){
+  while(B.reserve199.length){const ag=B.reserve199.shift();if(!okAg(ag)||B.allies.some(x=>x.ag===ag))continue;const u=mkAgentAlly(ag);B.allies.push(u);
+   blog(T(`대기하던 ${ag.n}이(가) 전투에 뛰어들었다.`,`${ag.n}, on standby, joins the fight.`,`待機していた${ag.n}が戦闘に飛び込んだ。`),'bh');break}}}catch(e){console.error(e)}return r})(allyDown);
+
+/* ---------- 오른쪽 패널 단추 ---------- */
+setInterval(()=>{try{const eq=D.querySelector('#Rg .pc-eq');if(!eq)return;let w=D.getElementById('sq199w');
+ if(!w){w=D.createElement('div');w.id='sq199w';w.innerHTML=`<button type="button" class="btn ghost small" id="tm198btn"></button><button type="button" class="btn ghost small" id="dx199btn">${T('E.G.O 상세','E.G.O details','E.G.O詳細')}</button>`;
+  const ps=eq.nextElementSibling&&eq.nextElementSibling.classList.contains('ps196')?eq.nextElementSibling:eq;ps.insertAdjacentElement('afterend',w);
+  w.querySelector('#tm198btn').onclick=teamPop;w.querySelector('#dx199btn').onclick=()=>dexPop('w')}
+ const n=team().length,m=reserve().length;const t=n||m?T(`출동 편성 · ${n}+${m}`,`Squad · ${n}+${m}`,`出動編成・${n}+${m}`):T('출동 편성 (자동)','Squad (auto)','出動編成(自動)');const b=w.querySelector('#tm198btn');if(b.textContent!==t)b.textContent=t}catch(e){}},700);
+/* 장비 바꾸기 창에서도 상세로 */
+equipPop=(f=>function(k){const r=f.apply(this,arguments);try{const b=POP&&POP.querySelector('.pop-b');if(b&&!b.querySelector('.dx199go')){b.insertAdjacentHTML('afterbegin',`<button type="button" class="btn ghost small dx199go">${T('스킬 · 패시브 자세히 보기','View skills & passives','スキル・パッシブ詳細')}</button>`);b.querySelector('.dx199go').onclick=()=>dexPop(k)}}catch(e){}return r})(equipPop);
+
+const st=D.createElement('style');st.textContent=`#sq199w{display:grid;grid-template-columns:1fr;gap:4px;margin-top:6px}#sq199w .btn{width:100%;margin:0}
+.sq199top{justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.sq199n span{display:inline-block;margin-right:12px;font-size:13px}.sq199n span.full b{color:var(--accent,#f4ee9a)}.sq199n span.full::after{content:' · ${T('가득','full','満員')}';color:var(--muted);font-size:11px}
+.sq199me{border:1px solid var(--accent,#f4ee9a);padding:6px 10px;margin:6px 0;display:flex;flex-direction:column;gap:2px;font-size:12.5px}.sq199me small{color:var(--muted)}
+.sq199sup{font-size:12px;margin:4px 0 8px;padding:6px 10px;border-left:2px solid #7fc8ff;background:rgba(127,200,255,.06)}.sq199sup ul{margin:2px 0 0;padding-left:16px}
+.sq199l{display:grid;gap:6px;max-height:52vh;overflow:auto;padding-right:2px}
+.sq199r{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;border:1px solid var(--line2,#3d424a);padding:6px 8px;background:var(--panel2,#1a1c20)}
+.sq199r.t{border-color:var(--accent,#f4ee9a);background:rgba(244,238,154,.07)}.sq199r.r{border-color:#7fc8ff;background:rgba(127,200,255,.06)}.sq199r.na{opacity:.55}
+.sq199c{display:flex;flex-direction:column;gap:4px}.sq199k{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--line2,#3d424a);cursor:pointer;font-size:12.5px;min-width:72px;user-select:none}
+.sq199k input{width:18px;height:18px;accent-color:var(--accent,#f4ee9a);cursor:pointer;margin:0}.sq199k.rv input{accent-color:#7fc8ff}.sq199k.dis{opacity:.4;cursor:not-allowed}.sq199k.dis input{cursor:not-allowed}
+.sq199m{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:12.5px}.sq199m small{color:var(--muted);font-size:11.5px}.sq199m em{font-style:normal;color:var(--accent,#f4ee9a)}.sq199g svg{width:12px;height:12px;vertical-align:-1px}
+.sq199sel{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px}.sq199sel select{width:100%;background:var(--panel,#111);color:inherit;border:1px solid var(--line2,#3d424a);padding:3px;font:inherit;font-size:12px}
+.sq199d summary{cursor:pointer;font-size:11.5px;color:#7fc8ff;margin-top:3px}.sq199d[open] summary{margin-bottom:4px}
+.gd199{border:1px solid var(--line2,#3d424a);padding:6px 8px;margin:4px 0;background:rgba(255,255,255,.02);font-size:12px;text-align:left}.gd199h{margin-bottom:4px}.gd199k{font-style:normal;color:var(--accent,#f4ee9a);font-size:11.5px}
+.gd199s{border-left:3px solid var(--sc,var(--line2,#3d424a));padding:3px 8px;margin:4px 0;background:rgba(0,0,0,.18)}.gd199sh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.gd199sh span{color:var(--muted);font-size:11px}.gd199sh i{font-style:normal;color:var(--muted);font-size:10.5px;margin-right:2px}
+.gd199s p,.gd199s li{margin:1px 0;font-size:11.5px}.gd199r span{margin-right:8px}.gd199n{margin:2px 0 4px;font-size:11px}
+.dx199t{gap:6px;margin-bottom:8px}.dx199{display:grid;grid-template-columns:minmax(150px,240px) 1fr;gap:10px;align-items:start}.dx199l{display:grid;gap:4px;max-height:60vh;overflow:auto}
+.dx199i{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:5px 8px;border:1px solid var(--line2,#3d424a);background:var(--panel2,#1a1c20);color:inherit;cursor:pointer;font:inherit;font-size:12.5px}.dx199i small{color:var(--muted);font-size:11px}.dx199i.on{border-color:var(--accent,#f4ee9a);background:rgba(244,238,154,.1)}
+.dx199d{max-height:60vh;overflow:auto}.dx199go{margin-bottom:8px}
+@media (max-width:700px){.dx199{grid-template-columns:1fr}.dx199l{max-height:28vh}.sq199sel{grid-template-columns:1fr}}`;D.head.appendChild(st);
+})();
+/* ============ v200: 직원 장비 조합 · 직원 E.G.O 추출 · 추출 화면 · 부서 맞교환 · 관리 방법을 지키는 직원 ============
+   · 직원은 무기 대표 키워드와 슈트 패시브 키워드가 맞는 조합, 자기 부서 환상체의 피해 색에 강한 슈트를 고른다 (하루 시작에 한 번 정리 · 쉬는 틈에 다시 맞춘다).
+   · 직원도 E.G.O를 추출한다: 자기가 입을 수 있고 지금보다 나아질 때만 · PE가 모이면 바로 · 최대 수량까지. 
+   · 장비 탭 추출 화면: 환상체를 고르면 그 환상체의 슈트 · 무기를 상세와 함께 보여 주고 바로 추출한다.
+   · 부서 이동: 정원이 찬 부서로도 갈 수 있다 — 그 부서 직원 한 명과 자리를 맞바꾼다.
+   · 직원 작업: 관리 방법(카운터 규칙 · 즉사 조건)을 어기는 작업은 하지 않고, 슈트 내성으로 보아 크게 다칠 환상체는 피한다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const KN=k=>(typeof STN!=='undefined'&&STN[k])||k;
+const WKf=id=>(window.WK196&&WK196[id])||null;
+const PK=id=>{try{return window.passOf196?passOf196(id):null}catch(e){return null}};
+const DT=['RED','WHITE','BLACK','PALE'];
+
+/* ---------- 1. 장비 조합 ---------- */
+function deptRes(ag,sid){try{const L=deptAbs(ag.dept).filter(a=>!a.tool);if(!L.length)return 0;const r=suitR(sid);let v=0;L.forEach(a=>{v+=(1-(r[a.dt]||1))*(1+a.g*.25)});return v/L.length*3}catch(e){return 0}}
+function pairScore(ag,w,s){const wg=w&&w!=='baton'&&w!=='fixer'?weapOf(w).g+1:0,sg=s&&s!=='basic'?(suitOf(s).g||0)+1:0;const k=WKf(w),p=PK(s);
+ return wg*10+sg*10+(k&&p&&k===p.K?6:0)+deptRes(ag,s||'basic')}
+window.pairScore200=pairScore;
+function freeFor(ag){const left=stockLeft();(G.agents||[]).forEach(a=>{if(a.alive&&a.eq&&a!==ag){if(a.eq.w)left['w:'+a.eq.w]=(left['w:'+a.eq.w]||0)-1;if(a.eq.s)left['s:'+a.eq.s]=(left['s:'+a.eq.s]||0)-1}});return left}
+function bestPair(ag){const left=freeFor(ag);const cur=alloc()[ag.id]||{w:'baton',s:'basic'};
+ const W=[cur.w].concat(G.ownW.filter(id=>id!=='baton'&&(left['w:'+id]||0)>0&&agCan(ag,weapOf(id).g)));
+ const S=[cur.s].concat(G.ownS.filter(id=>id!=='basic'&&(left['s:'+id]||0)>0&&agCan(ag,suitOf(id).g)));
+ let best={w:cur.w,s:cur.s,v:pairScore(ag,cur.w,cur.s)};const v0=best.v;
+ for(const w of W)for(const s of S){const v=pairScore(ag,w,s);if(v>best.v+.01)best={w,s,v}}return {best,v0,cur}}
+window.craftPick200=a=>craftPick(a);gearUp=function(ag){try{alloc();const {best,v0,cur}=bestPair(ag);if(best.v<v0+3)return null;const r={};
+ if(best.w!==cur.w&&best.w!=='baton'&&best.w!=='fixer')r.w=best.w;if(best.s!==cur.s&&best.s!=='basic')r.s=best.s;return (r.w||r.s)?r:null}catch(e){return null}};
+function tidy(){try{if(!G||!G.agents)return;let n=0;G.agents.filter(a=>a.alive).sort((x,y)=>agRank(y)-agRank(x)).forEach(a=>{const up=gearUp(a);if(up){a.eq=a.eq||{w:null,s:null};if(up.w)a.eq.w=up.w;if(up.s)a.eq.s=up.s;try{ALC=null}catch(e){}n++}});
+ if(n)log(T(`직원 ${n}명이 무기와 슈트의 짝을 맞춰 바꿔 입었다.`,`${n} staff swapped gear into matching sets.`,`職員${n}人が武器とスーツの組み合わせを揃えた。`),'npc')}catch(e){console.error(e)}}
+startDay=(f=>function(){const r=f.apply(this,arguments);tidy();return r})(startDay);
+
+/* ---------- 2. 직원 E.G.O 추출 ---------- */
+const autoOn=()=>true;
+function craftPick(ag){if(!autoOn())return null;G.cr200=G.cr200&&G.cr200.d===G.day?G.cr200:{d:G.day,n:0};
+ const cur=alloc()[ag.id]||{w:'baton',s:'basic'};const v0=pairScore(ag,cur.w,cur.s);let best=null;
+ extList().forEach(x=>{if(!x.ok)return;const id=x.a.eq.id,k=x.kind==='suit'?'s':'w';const g=k==='s'?suitOf(id).g:weapOf(id).g;if(!agCan(ag,g))return;
+  const v=k==='s'?pairScore(ag,cur.w,id):pairScore(ag,id,cur.s);const gain=v-v0;if(gain>=4&&(!best||gain>best.gain))best={x,k,id,gain,eq:1}});
+ /* 자기가 쓸 게 없어도 꺼낼 수 있는 E.G.O는 꺼내 보관실에 둔다 (최대 수량까지) */
+ if(!best)extList().forEach(x=>{if(!x.ok)return;const id=x.a.eq.id,k=x.kind==='suit'?'s':'w';const g=k==='s'?suitOf(id).g:weapOf(id).g;if(!best||g>best.g)best={x,k,id,g,gain:0,eq:0}});return best}
+agentStep=(f=>function(ag,now,pAb,notes,count){try{const Tk=ag.task||{k:'idle',until:0};
+ if(ag.alive&&!ag.panic&&!ag.out&&now>=Tk.until&&(Tk.k==='idle'||Tk.k==='rest')&&ag.sp>-30&&!(typeof B!=='undefined'&&B&&!B.done)){
+  const melting=deptAbs(ag.dept).some(a=>!a.tool&&G.ab[a.id].melt>0&&!G.ab[a.id].busy);const c=!melting&&craftPick(ag);
+  if(c){const s=G.ab[c.x.a.id];s.pe-=c.x.cost;addInv(c.k,c.id);ag.eq=ag.eq||{w:null,s:null};if(c.eq)ag.eq[c.k]=c.id;try{ALC=null}catch(e){}G.cr200.n++;ag.task={k:'idle',until:now+10};
+   const nm=c.x.a.eq.wn;if(!c.eq)notes.push(T(`${ag.n}이(가) ${c.x.a.n}에게서 E.G.O ${c.k==='s'?'슈트':'무기'} 「${nm}」을(를) 추출해 장비 보관실에 두었다. (PE -${c.x.cost})`,`${ag.n} extracted the E.G.O ${c.k==='s'?'suit':'weapon'} "${nm}" from ${c.x.a.n} and stored it. (PE -${c.x.cost})`,`${ag.n}が${c.x.a.n}からE.G.O${c.k==='s'?'スーツ':'武器'}「${nm}」を抽出し、装備保管室に置いた。(PE -${c.x.cost})`));else notes.push(c.k==='s'?T(`${ag.n}이(가) ${c.x.a.n}에게서 E.G.O 슈트 「${nm}」을(를) 추출해 갈아입었다. (PE -${c.x.cost})`,`${ag.n} extracted the E.G.O suit "${nm}" from ${c.x.a.n} and put it on. (PE -${c.x.cost})`,`${ag.n}が${c.x.a.n}からE.G.Oスーツ「${nm}」を抽出して着替えた。(PE -${c.x.cost})`)
+    :T(`${ag.n}이(가) ${c.x.a.n}에게서 E.G.O 무기 「${nm}」을(를) 추출해 손에 쥐었다. (PE -${c.x.cost})`,`${ag.n} extracted the E.G.O weapon "${nm}" from ${c.x.a.n}. (PE -${c.x.cost})`,`${ag.n}が${c.x.a.n}からE.G.O武器「${nm}」を抽出した。(PE -${c.x.cost})`));return}}}catch(e){console.error(e)}
+ return f.apply(this,arguments)})(agentStep);
+
+/* ---------- 3. 장비 탭: 환상체를 골라 추출 ---------- */
+let SEL=null,ONLY=false;
+function rows(){const out=[];contained().forEach(a=>{if(a.tool||!a.eq)return;const s=G.ab[a.id],ei=egoInfo(a);const it=[];
+ [['suit','s',ei.s],['weap','w',ei.w]].forEach(([kind,k,d])=>{if(!d)return;const have=invN(k,a.eq.id),cost=egoCostN(d.cost);
+  const lock=s.obs<d.obs,max=have>=d.max,poor=s.pe<cost;it.push({kind,k,d,have,cost,max:d.max,lock,full:max,poor,ok:!lock&&!max&&!poor})});
+ if(it.length)out.push({a,s,it,ok:it.some(x=>x.ok)})});return out.sort((x,y)=>(y.ok-x.ok)||(y.a.g-x.a.g))}
+const OBN=n=>(typeof ROMAN!=='undefined'?ROMAN[n]:n);
+function pill(x){const c=x.ok?'ok':x.full?'full':x.lock?'lock':'poor';const lbl=x.kind==='suit'?T('슈트','Suit','スーツ'):T('무기','Weapon','武器');
+ const t=x.ok?'✓':x.full?'MAX':x.lock?'🔒':'PE';return `<span class="ex200p ${c}">${lbl} ${t}</span>`}
+function exBox(){const R=rows();const L=ONLY?R.filter(r=>r.ok):R;if(!L.length)return `<p class="note">${ONLY?T('지금 추출할 수 있는 E.G.O가 없다.','Nothing to extract right now.','今抽出できるE.G.Oはない。'):T('E.G.O를 꺼낼 수 있는 환상체가 아직 없다.','No abnormality has E.G.O available yet.','E.G.Oを取り出せるアブノーマリティはまだいない。')}</p>`;
+ if(!SEL||!L.some(r=>r.a.id===SEL))SEL=L[0].a.id;const cur=L.find(r=>r.a.id===SEL);const lock=typeof B!=='undefined'&&B&&!B.done;
+ const card=x=>{const id=cur.a.eq.id;const head=x.lock?`<div class="gd199"><div class="gd199h">${x.kind==='suit'?ic('shield'):ic('sword')} <b>???</b></div><p class="note">${T(`관찰 ${OBN(x.d.obs)}에서 이름과 추출이 열린다 (지금 ${OBN(cur.s.obs||0)}).`,`Unlocks at Observation ${OBN(x.d.obs)} (now ${OBN(cur.s.obs||0)}).`,`観察${OBN(x.d.obs)}で名前と抽出が解禁(現在${OBN(cur.s.obs||0)})。`)}</p></div>`:(x.kind==='suit'?suitHtml199(id):weapHtml199(id));
+  const why=x.full?T('최대 수량','Max owned','最大数'):x.lock?T('관찰 부족','Need observation','観察不足'):x.poor?T(`PE 부족 (${cur.s.pe}/${x.cost})`,`Not enough PE (${cur.s.pe}/${x.cost})`,`PE不足(${cur.s.pe}/${x.cost})`):'';
+  return `<div class="ex200c">${head}<div class="ex200f"><span>${T('비용','Cost','コスト')} <b>PE ${x.cost}</b> · ${T('보유','Owned','保有')} <b>${x.have}/${x.max}</b></span><button type="button" class="btn small" data-x200="${x.kind}" ${x.ok&&!lock?'':'disabled'}>${x.ok?(x.kind==='suit'?T('슈트 추출','Extract suit','スーツ抽出'):T('무기 추출','Extract weapon','武器抽出')):why}</button></div></div>`};
+ return `<div class="ex200"><div class="ex200l">${L.map(r=>`<button type="button" class="ex200i ${r.a.id===SEL?'on':''} ${r.ok?'can':''}" data-ab200="${r.a.id}"><b>${r.a.n} <span class="gr g${r.a.g}">${GR[r.a.g]}</span></b><small>PE ${r.s.pe} · ${T('관찰','Obs.','観察')} ${OBN(r.s.obs||0)}</small><span class="ex200ps">${r.it.map(pill).join('')}</span></button>`).join('')}</div>
+  <div class="ex200r"><div class="ex200t"><b>${cur.a.n}</b> <span class="gr g${cur.a.g}">${GR[cur.a.g]}</span> <span class="note">PE ${T('재고','stock','在庫')} ${cur.s.pe}</span></div>${cur.it.map(card).join('')}</div></div>`}
+hrView=(f=>function(){let h=f.apply(this,arguments);try{const L=h.indexOf('추출 가능한 E.G.O');if(L<0)return h;const st=h.lastIndexOf('<div',L);const k=h.indexOf('</div></div>',L);if(st<0||k<0)return h;
+ const tg=`<div class="row ex200h"><span class="lbl grouplbl">${T('E.G.O 추출','E.G.O extraction','E.G.O抽出')}</span><label class="sq199k"><input type="checkbox" id="ex200only" ${ONLY?'checked':''}><span>${T('지금 추출할 수 있는 것만','Extractable now only','今抽出できるものだけ')}</span></label><button type="button" class="btn ghost small" id="ex200dex">${T('보유 E.G.O 상세','Owned E.G.O details','所持E.G.O詳細')}</button></div><div id="ex200">${exBox()}</div>`;
+ h=h.slice(0,st)+tg+h.slice(k+6)}catch(e){console.error(e)}return h})(hrView);
+function bindEx(){const box=D.getElementById('ex200');if(!box)return;
+ box.querySelectorAll('[data-ab200]').forEach(b=>b.onclick=()=>{SEL=b.dataset.ab200;box.innerHTML=exBox();bindEx();if(window.innerWidth<=700){const r=box.querySelector('.ex200r');r&&r.scrollIntoView({behavior:'smooth',block:'start'})}});
+ box.querySelectorAll('[data-x200]').forEach(b=>b.onclick=()=>{const r=rows().find(r=>r.a.id===SEL);if(!r)return;const x=r.it.find(i=>i.kind===b.dataset.x200);if(!x||!x.ok)return;
+  r.s.pe-=x.cost;addInv(x.k,r.a.eq.id);log(T(`${r.a.n}에게서 E.G.O ${x.kind==='suit'?'슈트':'무기'} 「${r.a.eq.wn}」 추출 (${invN(x.k,r.a.eq.id)}/${x.max}).`,`Extracted E.G.O ${x.kind==='suit'?'suit':'weapon'} "${r.a.eq.wn}" from ${r.a.n} (${invN(x.k,r.a.eq.id)}/${x.max}).`,`${r.a.n}からE.G.O${x.kind==='suit'?'スーツ':'武器'}「${r.a.eq.wn}」を抽出(${invN(x.k,r.a.eq.id)}/${x.max})。`),'warn');save();render()})}
+bindHr=(f=>function(){const r=f.apply(this,arguments);try{bindEx();const o=D.getElementById('ex200only');if(o)o.onchange=()=>{ONLY=o.checked;const b=D.getElementById('ex200');if(b){b.innerHTML=exBox();bindEx()}};
+ const d=D.getElementById('ex200dex');if(d)d.onclick=()=>dexPop199('w')}catch(e){console.error(e)}return r})(bindHr);
+
+/* ---------- 4. 부서 이동: 정원이 차면 한 명과 맞바꾼다 ---------- */
+transferMenu=function(back){const old=G.dept;
+ const done=(k,sw)=>{G.dept=k;G.moved=true;if(sw){sw.dept=old;if(sw.task&&sw.task.ab&&G.ab[sw.task.ab]&&G.ab[sw.task.ab].busy===sw.id)G.ab[sw.task.ab].busy=null;if(sw.task&&(sw.task.k==='move'||sw.task.k==='work'))sw.task={k:'idle',until:G.min}}
+  log(T(`${DEPT[k].n}(으)로 소속을 옮겼다.`,`Transferred to ${DEPT[k].n}.`,`${DEPT[k].n}へ異動した。`),'warn');if(sw)log(T(`${sw.n}이(가) 자리를 내주고 ${DEPT[old].n}(으)로 옮겼다.`,`${sw.n} gave up the spot and moved to ${DEPT[old].n}.`,`${sw.n}が席を譲り、${DEPT[old].n}へ移った。`),'npc');
+  try{log(`${SEPH[k].n}: ${pick(SEPH[k].hi)}`,'seph')}catch(e){}save();render();back()};
+ const swap=k=>setPanel(T('누구와 자리를 바꿀까','Swap with whom?','誰と入れ替える?'),T(`${DEPT[k].n}은(는) 정원이 찼다. 한 명이 당신 자리(${DEPT[old].n})로 옮긴다.`,`${DEPT[k].n} is full. One member moves to your spot (${DEPT[old].n}).`,`${DEPT[k].n}は定員に達している。一人があなたの席(${DEPT[old].n})へ移る。`),
+  agentsIn(k).filter(a=>!a.panic).map(a=>({l:`${a.n} · ${ROMAN[agRank(a)]}`,s:`HP ${Math.max(0,a.hp)}/${agMax(a)} · ${T('정신력','SP','精神力')} ${a.sp}${a.co?' · '+T('동기','cohort','同期'):''}`,f:()=>done(k,a)})).concat([{l:T('그만둔다','Cancel','やめる'),f:()=>transferMenu(back)}]));
+ setPanel(T('부서 이동','Transfer','部門異動'),T('소속 부서가 바뀌면 직접 작업할 수 있는 환상체, 함께 출동하는 동료, 소속 효과가 바뀐다. 정원이 찬 부서로 가면 그 부서 직원 한 명과 자리를 맞바꾼다.','Changing departments changes which abnormalities you can work on, your sortie mates, and your department bonus. Moving into a full department swaps you with one of its staff.','所属部門が変わると、作業できるアブノーマリティ、出動する同僚、所属効果が変わる。定員に達した部門へ行くと、その部門の職員一人と入れ替わる。'),
+  openDepts().filter(k=>k!==G.dept).map(k=>{const full=deptCount(k)>=agCap(k);const cand=agentsIn(k).filter(a=>!a.panic).length;
+   return {l:`${DEPT[k].n} · ${SEPH[k].n}`,dis:full&&!cand,s:`${T('소속 효과','Bonus','所属効果')}: ${DEPT[k].bonus} · ${T('환상체','Abn.','アブノーマリティ')} ${deptAbs(k).length} · ${T('인원','Staff','人員')} ${deptCount(k)}/${agCap(k)}${full?' · '+T('정원 — 한 명과 맞바꾼다','Full — swap with one','定員 — 一人と入れ替え'):''}`,f:()=>full?swap(k):done(k,null)}}).concat([{l:T('그대로 있는다','Stay','そのまま'),f:back}]))};
+setInterval(()=>{try{D.querySelectorAll('.pop small').forEach(s=>{if(/정원이 찬 부서로는 갈 수 없다|Can't move to a full department|定員に達した部門へは行けない/.test(s.textContent))s.textContent=s.textContent.replace(/정원이 찬 부서로는 갈 수 없다/,'정원이 차면 한 명과 맞바꾼다').replace(/Can't move to a full department/,'Full departments: swap with one member').replace(/定員に達した部門へは行けない/,'定員なら一人と入れ替え')})}catch(e){}},600);
+
+/* ---------- 5. 직원 작업: 관리 방법 준수 · 슈트 내성 ---------- */
+function binom(n,p){const P=new Array(n+1).fill(0);P[0]=1;for(let i=0;i<n;i++){for(let j=i+1;j>0;j--)P[j]=P[j]*(1-p)+P[j-1]*p;P[0]*=1-p}return P}
+function resDist(a,p){const n=(window.BOX103||[8,10,14,18,24])[a.g]||10;const P=binom(n,p);let g=0,m=0,b=0;P.forEach((v,k)=>{const r=k/n;if(r>=.7)g+=v;else if(r>=.4)m+=v;else b+=v});return {good:g,normal:m,bad:b,n}}
+function belief(ag,a,w){try{if(favKnown(a,w.id))return prefOf(a,w.id)}catch(e){}try{const m=ag.ai149&&ag.ai149.wm&&ag.ai149.wm[a.id+'|'+w.id];if(m&&m.n>=2)return m.r}catch(e){}return .5}
+function estP(ag,a,w){const r0=agRank(ag);const vl=lv(ag.st[w.v]);return clamp(belief(ag,a,w)+ag.st.T*.002+(ag.sp/45)*.1+(vl-(a.g+1))*.04-(r0<a.g?.08*(a.g-r0):0),.05,.95)}
+/* 카운터 규칙을 미리 따져 본다 (상태는 되돌린다) */
+function cntRule(ag,a,w,res){const s=G.ab[a.id];if(!s||s.esc||NOCNT60.has(a.id))return 0;const sv=JSON.stringify(s),sp=JSON.stringify(G.p60||null);let tot=0,n=0;
+ try{for(let i=0;i<3;i++){n++;const x={res,w:w.id,L:k=>lv(ag.st[k]),who:ag.id,ag,maxPE:false,panic:false,died:false,hpLow:ag.hp<agMax(ag)*.5,
+   watched(){const c=agentsIn(s.dept).filter(o=>o!==ag&&!o.panic&&!o.out).length;return Math.random()<Math.min(.85,.3*c)},add(d){tot+=d},say(){}};
+  (CR60[a.id]||BAD60)(x)}}catch(e){}finally{const o=JSON.parse(sv);Object.keys(s).forEach(k=>delete s[k]);Object.assign(s,o);if(sp==='null')delete G.p60;else G.p60=JSON.parse(sp)}return tot/n}
+/* 즉사 · 위험 조건 (관리 방법) */
+function deadly(ag,a,w){if(a.id==='teddy'&&ag.lastAb==='teddy')return true;
+ if(a.id==='beauty'&&w.id==='rep'){try{const s=G.ab.beauty;if((s.rep2||0)>=1)return true}catch(e){}}
+ if(a.id==='bath'&&lv(ag.st.T)<2)return 'risk';return false}
+function hurt(ag,a,p,n){const su=suitOf(agSuit(ag));const fail=n*(1-p);const d=[1,1.4,2,2.8,4][a.g]*fail*.8*((su.r&&su.r[a.dt])||1)*gradeMul(a.g-(su.g||0));
+ const diff=a.g+1-agRank(ag);const fear=diff>0?[0,5,12,25,45][Math.min(diff,4)]:0;let hp=0,sp=fear;
+ if(a.dt==='WHITE')sp+=d*.8;else if(a.dt==='BLACK'){hp+=d*.6;sp+=d*.4}else if(a.dt==='PALE')hp+=d*1.1;else hp+=d;hp*=1.4;sp*=1.3;
+ return {hp,sp,risk:hp/Math.max(1,ag.hp)+sp/Math.max(1,ag.sp+45)*.6}}
+/* 관리 방법을 얼마나 아는가: 관찰 레벨 0~4 → 0.15~1 (정보 독점 연구 시 1) */
+function know(a){try{if(has('gov'))return 1;const s=G.ab[a.id];return Math.min(1,.15+.2125*(s.obs||0))}catch(e){return .5}}
+function evalWork(ag,a,w,K){const p=estP(ag,a,w);const R=resDist(a,p);let dl=deadly(ag,a,w);if(dl&&!(K&&K.dl))dl=false;
+ const ec=R.good*cntRule(ag,a,w,'good')+R.normal*cntRule(ag,a,w,'normal')+R.bad*cntRule(ag,a,w,'bad');const h=hurt(ag,a,p,R.n);
+ const s=G.ab[a.id];const low=(s.cnt!=null&&s.cnt<=1&&ec<-.3)?-2:0;
+ const k=K?K.k:1;return {w,p,ec:ec*k,h,dl,sc:p+ec*1.2*k-h.risk*.8+low*k+(dl===true?-9:dl==='risk'?-.4:0)}}
+function plan(ag,a){const works=WORKS.filter(w=>!(a.sp==='request'&&w.id==='att')&&!(typeof workBan==='function'&&workBan(a,w.id))&&!(typeof SPSLOT!=='undefined'&&SPSLOT[a.id]===w.id));
+ const k=know(a);const K={k,dl:Math.random()<k};const L=(works.length?works:WORKS.slice()).map(w=>evalWork(ag,a,w,K)).sort((x,y)=>y.sc-x.sc);return L}
+window.plan200=plan;
+npcWork=(f=>function(ag,a){if(window.__ai200off||!ag||!a||a.tool||!G.ab[a.id]||!G.ab[a.id].dept)return f.apply(this,arguments);let L=null;try{L=plan(ag,a)}catch(e){console.error(e)}
+ if(!L||!L.length)return f.apply(this,arguments);const best=L[0];
+ if(best.dl===true&&!(G.ab[a.id].melt>0))return {pe:0,note:chance(.4)?T(`${ag.n}이(가) ${a.n}의 관리 방법을 떠올리고 격리실 문 앞에서 돌아섰다.`,`${ag.n} remembered ${a.n}'s handling rules and turned back at the door.`,`${ag.n}は${a.n}の管理方法を思い出し、収容室の前で引き返した。`):null};
+ const ok=L.filter(x=>x.sc>=best.sc-.12&&x.dl!==true).map(x=>x.w);const keep=WORKS.slice();WORKS.splice(0,WORKS.length,...(ok.length?ok:[best.w]));
+ try{return f.apply(this,arguments)}finally{WORKS.splice(0,WORKS.length,...keep)}})(npcWork);
+/* 대상 고르기: 관리 방법상 손해이거나 슈트로 버티기 힘든 환상체는 피하고, 버틸 만한 환상체로 간다 */
+function abVerdict(ag,a){const s=G.ab[a.id];const L=plan(ag,a);const b=L[0];if(!b)return {go:true,b};const melt=s.melt>0;
+ const bad=b.dl===true||b.h.risk>=(melt?1.15:.7)||(!melt&&(b.ec<=-.6||(s.cnt!=null&&s.cnt<=1&&b.ec<=-.1)||(s.cnt!=null&&s.cnt<=2&&b.ec<=-.35)));return {go:!bad,b}}
+agentStep=(f=>function(ag,now,pAb,notes,count){const prev=ag.task;const r=f.apply(this,arguments);if(window.__ai200off)return r;try{const Tk=ag.task;
+ if(ag.alive&&!ag.panic&&Tk&&Tk.k==='move'&&Tk!==prev&&Tk.ab&&ABM[Tk.ab]&&!ABM[Tk.ab].tool){const a=ABM[Tk.ab];const v=abVerdict(ag,a);
+  if(!v.go){if(G.ab[a.id].busy===ag.id)G.ab[a.id].busy=null;
+   const alt=deptAbs(ag.dept).filter(x=>!x.tool&&x.id!==a.id&&!G.ab[x.id].busy&&x.id!==pAb).map(x=>({x,v:abVerdict(ag,x)})).filter(o=>o.v.go).sort((p,q)=>(G.ab[q.x.id].melt>0)-(G.ab[p.x.id].melt>0)||q.v.b.sc-p.v.b.sc)[0];
+   if(alt){G.ab[alt.x.id].busy=ag.id;Tk.ab=alt.x.id}else ag.task={k:'idle',until:now+R(10,20)};
+   if(chance(.25)){const why=v.b&&v.b.dl===true?T('관리 방법상 지금 들어가면 안 된다','handling rules forbid it right now','管理方法上、今は入ってはいけない'):v.b&&v.b.h.risk>=.7?T(`슈트(${suitOf(agSuit(ag)).n})로는 ${a.dt} 피해를 버티기 힘들다`,`their suit (${suitOf(agSuit(ag)).n}) can't take ${a.dt} damage well`,`スーツ(${suitOf(agSuit(ag)).n})では${a.dt}ダメージに耐えにくい`):T('지금 들어가면 카운터가 떨어진다','going in now would lower the counter','今入るとカウンターが下がる');
+    notes.push(T(`${ag.n}이(가) ${a.n} 격리실을 피했다 — ${why}.${alt?` ${alt.x.n} 쪽으로 향한다.`:''}`,`${ag.n} avoided ${a.n} — ${why}.${alt?` Heading to ${alt.x.n}.`:''}`,`${ag.n}は${a.n}の収容室を避けた — ${why}。${alt?`${alt.x.n}へ向かう。`:''}`))}}}}catch(e){console.error(e)}return r})(agentStep);
+
+const st=D.createElement('style');st.textContent=`.ex200h{align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}.ex200h .grouplbl{margin:0 8px 0 0}
+.ex200{display:grid;grid-template-columns:minmax(170px,260px) 1fr;gap:10px;align-items:start;margin-top:8px}.ex200l{display:grid;gap:4px;max-height:62vh;overflow:auto;padding-right:2px}
+.ex200i{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:6px 8px;border:1px solid var(--line2,#3d424a);background:var(--panel2,#1a1c20);color:inherit;cursor:pointer;font:inherit;font-size:12.5px;opacity:.75}
+.ex200i.can{opacity:1}.ex200i.on{border-color:var(--accent,#f4ee9a);background:rgba(244,238,154,.1);opacity:1}.ex200i small{color:var(--muted);font-size:11px}
+.ex200ps{display:flex;gap:4px;flex-wrap:wrap}.ex200p{font-size:10.5px;padding:0 6px;border:1px solid var(--line2,#3d424a);border-radius:999px;color:var(--muted)}.ex200p.ok{border-color:#8fd18f;color:#8fd18f}.ex200p.full{color:var(--accent,#f4ee9a)}
+.ex200r{display:grid;gap:8px}.ex200t{font-size:14px}.ex200c{border:1px solid var(--line2,#3d424a);padding:6px;background:rgba(0,0,0,.15)}.ex200c .gd199{border:0;margin:0}
+.ex200f{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 6px 2px;border-top:1px dashed var(--line2,#3d424a);font-size:12.5px;flex-wrap:wrap}
+@media (max-width:700px){.ex200{grid-template-columns:1fr}.ex200l{max-height:30vh}}`;D.head.appendChild(st);
+})();
+/* ============ v201: 3단계 — 주요 적 기믹 (키워드 내성 · 상태 반응 패시브 · 대응 스킬 · 페이즈) ============
+   대상: WAW · ALEPH 환상체, 시련(색별), 코어 억제 보스(붉은 안개 · 조율자).
+   · 키워드 내성: 면역(0) · 반감(0.5) · 약점(1.5) — 부여되는 위력 · 횟수에 곱한다.
+   · 상태 반응 패시브: 턴 시작 · 피격 · 공격 후 · 키워드를 받을 때 · 위력 보정(공격 시) · 받는 피해 보정(피격 시)
+   · 대응 스킬: 직원의 키워드를 빼앗거나, 먹거나, 터뜨리는 고유 스킬 (라오루식 환상체 본체에 한 장씩)
+   · 페이즈: 체력이 일정 비율 아래로 떨어지면 한 번 발동
+   이름과 설명은 이 게임에서 새로 지었다 (림버스의 메커니즘 구조만 참고). 설명 문장은 데이터에서 자동으로 만든다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const KN=k=>(typeof STN!=='undefined'&&STN[k])||({protect:T('보호','Protect','保護'),fragile:T('취약','Fragile','脆弱'),bind:T('속박','Bind','束縛'),haste:T('신속','Haste','迅速'),paralysis:T('마비','Paralysis','麻痺'),charge:T('충전','Charge','充電')}[k])||k;
+const N=(k,e,j)=>[k,e,j];const tx=a=>Array.isArray(a)?T(a[0],a[1],a[2]):a;
+const DEBUFF=['burn','bleed','rupture','sinking','tremor','fragile','bind','paralysis'];
+
+/* ---------- 데이터 ---------- */
+/* 패시브: {n, w:turn|hit|atk|kw|ph|aura|def, k(kw의 키워드), v(ph 비율·aura/def 수치), if:[조건], do, dk(대상 키워드), p, c, lim} */
+const P={
+ /* --- WAW --- */
+ queen:{r:{sinking:.5,rupture:1.5},
+  p:[{n:N('사랑의 이름으로 압수','Confiscated in Love\'s Name','愛の名の下に没収'),w:'atk',if:['has:poise'],do:'steal',dk:'poise'},
+     {n:N('변신의 빛','Light of Transformation','変身の光'),w:'ph',v:50,do:'cleanse',dk:'debuff',then:{do:'self',dk:'protect',p:3,c:1}}],
+  sk:{n:N('하트 브레이크','Heart Break','ハートブレイク'),base:6,cp:3,coins:2,t:'pierce',x:{do:'det',dk:'rupture'}}},
+ bigbird:{r:{burn:1.5,sinking:0},
+  p:[{n:N('등불 아래로','Under the Lamp','灯りの下へ'),w:'turn',do:'foes',dk:'sinking',p:1,c:1},
+     {n:N('길 잃은 자의 그림자','Shadow of the Lost','迷い人の影'),w:'aura',if:['tk:sinking>=3'],do:'pow',v:2}]},
+ snow:{r:{bleed:.5,burn:1.5},
+  p:[{n:N('가시 덩굴','Thorned Vines','棘の蔓'),w:'hit',do:'foe',dk:'bind',p:1,c:1,lim:2},
+     {n:N('다시 돋는 가지','Regrowing Branches','再び伸びる枝'),w:'ph',v:50,do:'heal',v2:10,then:{do:'cleanse',dk:'burn'}}]},
+ queenbee:{r:{burn:1.5,rupture:.5},
+  p:[{n:N('밀랍 갑피','Wax Carapace','蜜蝋の甲殻'),w:'def',if:['has:charge'],do:'dmg',v:-20},
+     {n:N('여왕을 지켜라','Guard the Queen','女王を守れ'),w:'kw',k:'burn',do:'mates',dk:'protect',p:1,c:1,lim:1}]},
+ alriune:{r:{burn:0,bleed:0,sinking:1.5},
+  p:[{n:N('시드는 향','Withering Scent','しおれる香り'),w:'atk',if:['tk:sinking>=3'],do:'foe',dk:'fragile',p:1,c:1}],
+  sk:{n:N('흙으로 돌아가라','Return to Soil','土に還れ'),base:5,cp:3,coins:2,t:'pierce',x:{do:'det',dk:'sinking'}}},
+ redhood:{r:{bleed:.5},
+  p:[{n:N('사냥꾼의 호흡','Hunter\'s Breath','狩人の呼吸'),w:'turn',do:'self',dk:'poise',p:2,c:1},
+     {n:N('피 냄새','Scent of Blood','血の匂い'),w:'kw',k:'bleed',do:'pow',v:1,lim:1}]},
+ wolf:{r:{burn:.5,bleed:1.5},
+  p:[{n:N('굶주린 코','Hungry Nose','飢えた鼻'),w:'aura',if:['has:bleed'],do:'pow',v:2},
+     {n:N('밤의 질주','Night Sprint','夜の疾走'),w:'ph',v:50,do:'self',dk:'haste',p:2,c:1,then:{do:'cleanse',dk:'bind'}}],
+  sk:{n:N('핏자국 핥기','Lick the Bloodstain','血の跡を舐める'),base:5,cp:3,coins:2,t:'slash',x:{do:'feed',dk:'bleed'}}},
+ judge:{r:{tremor:.5,rupture:.5},
+  p:[{n:N('다시 맞춰지는 저울','Rebalancing Scale','釣り合い直す天秤'),w:'turn',if:['sk:tremor>=5'],do:'cleanse',dk:'tremor',then:{do:'pow',v:2}},
+     {n:N('무게를 다는 눈','Weighing Eye','重さを量る目'),w:'hit',if:['has:charge'],do:'foe',dk:'paralysis',p:1,c:1,lim:1}]},
+ greed:{r:{bleed:.5},
+  p:[{n:N('황금 갑주','Golden Plate','黄金の鎧'),w:'def',if:['has:poise'],do:'dmg',v:-20}],
+  sk:{n:N('반짝이는 것은 내 것','Everything Shiny Is Mine','輝くものは私のもの'),base:6,cp:3,coins:2,t:'blunt',x:{do:'steal',dk:'charge'}}},
+ swan:{r:{sinking:.5,burn:1.5},
+  p:[{n:N('일곱 벌의 옷','Seven Shirts','七枚の衣'),w:'ph',v:50,do:'mates',dk:'protect',p:2,c:1,then:{do:'cleanse',dk:'debuff'}},
+     {n:N('물에 젖은 깃','Soaked Feathers','濡れた羽'),w:'atk',if:['has:sinking'],do:'foe',dk:'sinking',p:0,c:1}]},
+ current:{r:{burn:0,sinking:.5,tremor:1.5},
+  p:[{n:N('끌어당기는 물살','Dragging Current','引きずる流れ'),w:'turn',do:'foes',dk:'sinking',p:1,c:1},
+     {n:N('깊은 곳','The Depths','深み'),w:'aura',if:['tk:sinking>=5'],do:'pow',v:3}]},
+ heaven:{r:{rupture:1.5,sinking:.5},
+  p:[{n:N('보이지 않는 곳에서','From Where You Don\'t Look','見ていない所から'),w:'turn',do:'foe1',dk:'fragile',p:1,c:1},
+     {n:N('파고드는 시선','Burrowing Gaze','食い込む視線'),w:'aura',if:['has:fragile'],do:'pow',v:2}]},
+ knight:{r:{sinking:0,tremor:.5},
+  p:[{n:N('바닥 없는 절망','Bottomless Despair','底なしの絶望'),w:'kw',k:'sinking',do:'self',dk:'protect',p:1,c:1,lim:1}]},
+ nest:{r:{bleed:0,rupture:1.5},
+  p:[{n:N('비늘 틈의 독','Venom Between Scales','鱗の間の毒'),w:'hit',do:'foe',dk:'bleed',p:1,c:1,lim:2}]},
+ firebird:{r:{burn:0,sinking:1.5},
+  p:[{n:N('타오르는 깃','Blazing Plumes','燃え上がる羽'),w:'atk',do:'foe',dk:'burn',p:1,c:1}],
+  sk:{n:N('불을 삼키는 새','Bird That Swallows Flame','炎を呑む鳥'),base:6,cp:3,coins:2,t:'pierce',x:{do:'feed',dk:'burn'}}},
+ yin:{r:{tremor:0,burn:.5},
+  p:[{n:N('반쪽의 균형','Half Balance','半分の均衡'),w:'def',if:['has:charge'],do:'dmg',v:-25}]},
+ luna:{r:{tremor:1.5,sinking:.5},
+  p:[{n:N('달빛 악보','Moonlit Score','月光の楽譜'),w:'turn',if:['even'],do:'foes',dk:'sinking',p:1,c:1}]},
+ monk:{r:{bind:0,paralysis:0,rupture:.5},
+  p:[{n:N('깨달음을 버린 자','One Who Cast Off Enlightenment','悟りを捨てた者'),w:'ph',v:50,do:'cleanse',dk:'debuff'}]},
+ prince:{r:{sinking:.5,burn:1.5},p:[{n:N('번지는 포자','Spreading Spores','広がる胞子'),w:'atk',do:'foe',dk:'sinking',p:1,c:1}]},
+ refract:{r:{tremor:1.5,rupture:.5},p:[{n:N('굴절된 빛','Refracted Light','屈折した光'),w:'def',if:['has:poise'],do:'dmg',v:-20}]},
+ parasite:{r:{bleed:.5,burn:1.5},p:[{n:N('뿌리 내림','Taking Root','根を張る'),w:'hit',do:'foe',dk:'bind',p:1,c:1,lim:1}]},
+ playwright:{r:{sinking:.5},p:[{n:N('막간','Intermission','幕間'),w:'turn',do:'foe1',dk:'sinking',p:2,c:1}]},
+ lime:{r:{rupture:.5,burn:1.5},p:[{n:N('조여드는 똬리','Tightening Coil','締まる蜷局'),w:'atk',do:'foe',dk:'bind',p:1,c:1}]},
+ /* --- ALEPH --- */
+ nothing:{r:{bleed:.5,rupture:.5,burn:1.5},
+  p:[{n:N('흉내 낸 숨','Mimicked Breath','真似た息'),w:'atk',if:['has:poise'],do:'steal',dk:'poise'},
+     {n:N('새 껍질','New Skin','新しい皮'),w:'ph',v:50,do:'cleanse',dk:'debuff'}],
+  sk:{n:N('너도 될 수 있어','I Can Be You Too','君にもなれる'),base:8,cp:3,coins:2,t:'slash',x:{do:'steal',dk:'charge'}}},
+ orchestra:{r:{sinking:0,tremor:1.5},
+  p:[{n:N('객석의 침묵','Silence of the Audience','客席の沈黙'),w:'turn',do:'foes',dk:'sinking',p:1,c:1},
+     {n:N('절정','Climax','クライマックス'),w:'aura',if:['tk:sinking>=5'],do:'pow',v:3}],
+  sk:{n:N('앙코르','Encore','アンコール'),base:7,cp:3,coins:2,t:'blunt',x:{do:'det',dk:'sinking'}}},
+ mountain:{r:{bleed:0,rupture:1.5,burn:1.5},
+  p:[{n:N('쌓여 가는 웃음','Piling Laughter','積もる笑い'),w:'atk',do:'foe',dk:'fragile',p:1,c:1},
+     {n:N('썩은 살','Rotten Flesh','腐った肉'),w:'kw',k:'burn',do:'pow',v:-1,lim:1}],
+  sk:{n:N('삼키고 남은 것','What\'s Left After Swallowing','呑み残し'),base:7,cp:3,coins:2,t:'blunt',x:{do:'feed',dk:'bleed'}}},
+ censored:{r:{sinking:.5,tremor:.5},
+  p:[{n:N('봐서는 안 될 것','What Must Not Be Seen','見てはならぬもの'),w:'aura',if:['tsp<0'],do:'pow',v:3}]},
+ bluestar:{r:{sinking:0,tremor:.5},
+  p:[{n:N('하늘의 부름','Call of the Sky','空の呼び声'),w:'turn',do:'foes',dk:'sinking',p:2,c:1}],
+  sk:{n:N('별빛 낙하','Starfall','星光の落下'),base:8,cp:3,coins:2,t:'blunt',x:{do:'det',dk:'sinking'}}},
+ melting:{r:{bleed:0,rupture:.5,burn:1.5},
+  p:[{n:N('끈적한 사랑','Sticky Love','べたつく愛'),w:'hit',do:'foe',dk:'paralysis',p:1,c:1,lim:1}],
+  sk:{n:N('하나가 되자','Let\'s Become One','ひとつになろう'),base:7,cp:3,coins:2,t:'blunt',x:{do:'feed',dk:'rupture'}}},
+ army:{r:{burn:.5,sinking:1.5},
+  p:[{n:N('대열 정비','Closing Ranks','隊列整備'),w:'turn',do:'mates',dk:'protect',p:1,c:1}]},
+ whitenight:{r:{burn:.5,bleed:.5,rupture:.5,sinking:.5,tremor:.5},
+  p:[{n:N('흔들리지 않는 빛','Unwavering Light','揺るがぬ光'),w:'ph',v:50,do:'cleanse',dk:'debuff',then:{do:'self',dk:'protect',p:5,c:1}},
+     {n:N('신앙의 무게','Weight of Faith','信仰の重さ'),w:'aura',if:['has:sinking'],do:'pow',v:2}]},
+ apoc:{r:{sinking:.5,bleed:.5},
+  p:[{n:N('숲의 법','Law of the Forest','森の掟'),w:'kw',k:'rupture',do:'self',dk:'protect',p:1,c:1,lim:1},
+     {n:N('세 개의 눈','Three Eyes','三つの目'),w:'aura',if:['has:poise'],do:'pow',v:2}],
+  sk:{n:N('저울에 올린 숨','Breath on the Scale','天秤に載せた息'),base:7,cp:3,coins:2,t:'slash',x:{do:'steal',dk:'poise'}}}
+};
+/* 시련: 색별 (그 전투의 모든 적) */
+const PO={
+ amber:{r:{burn:1.5,rupture:.5},p:[{n:N('끝없는 식욕','Endless Appetite','尽きぬ食欲'),w:'atk',if:['has:bleed'],do:'feed',dk:'bleed'}]},
+ green:{r:{bleed:0,tremor:1.5,rupture:1.5},p:[{n:N('강철 외피','Steel Shell','鋼鉄の外殻'),w:'def',if:['has:charge'],do:'dmg',v:-20}]},
+ violet:{r:{sinking:0,rupture:1.5},p:[{n:N('이해할 수 없는 말','Incomprehensible Words','理解できない言葉'),w:'turn',do:'foe1',dk:'sinking',p:1,c:1}]},
+ crimson:{r:{burn:.5,bleed:1.5},p:[{n:N('웃음 폭죽','Laughing Firecracker','笑いの爆竹'),w:'atk',do:'foe',dk:'burn',p:1,c:1}]},
+ indigo:{r:{bleed:.5,burn:1.5},p:[{n:N('청소 시간','Cleanup Time','掃除の時間'),w:'aura',if:['thp<50'],do:'pow',v:2}]},
+ white:{r:{tremor:.5,poise:.5},p:[{n:N('해결사의 감','Fixer\'s Instinct','フィクサーの勘'),w:'turn',do:'self',dk:'poise',p:2,c:1}]}
+};
+/* 코어 억제 보스 */
+const PB={
+ redmist:{r:{bleed:.5,burn:.5},
+  p:[{n:N('피맛을 아는 칼','A Blade That Knows Blood','血の味を知る刃'),w:'aura',if:['has:bleed'],do:'pow',v:1},
+     {n:N('다시 일어선 전설','The Legend Rises Again','再び立つ伝説'),w:'ph',v:50,do:'cleanse',dk:'debuff',then:{do:'pow',v:2}}]},
+ arbiter:{r:{tremor:0,rupture:.5},
+  p:[{n:N('봉인 명령','Sealing Order','封印命令'),w:'hit',if:['has:charge'],do:'strip',dk:'charge',lim:1},
+     {n:N('조율','Attunement','調律'),w:'ph',v:50,do:'cleanse',dk:'debuff',then:{do:'self',dk:'protect',p:3,c:1}}]}
+};
+window.P201={P,PO,PB};
+
+/* ---------- 누가 어떤 기믹을 갖는가 ---------- */
+function prof(u){if(u&&u.p201!==undefined)return u.p201;if(!u||u.ally||typeof B==='undefined'||!B||!B.opt)return null;let p=null;
+ try{if(B.opt.boss&&PB[B.opt.boss==='disc'?'redmist':B.opt.boss])p=u.minion||u.mainU?null:PB[B.opt.boss==='disc'?'redmist':B.opt.boss];
+  else if((B.kind==='redmist'||B.kind==='arbiter')&&!u.minion)p=PB[B.kind];
+  else if(B.opt.ordeal&&B.opt.col&&PO[B.opt.col])p=PO[B.opt.col];
+  else if(u.lorId&&!u.mainU&&P[u.lorId])p=P[u.lorId];
+  else if(B.opt.ab&&P[B.opt.ab]&&!u.minion&&!u.mainU&&B.units[0]===u)p=P[B.opt.ab]}catch(e){}
+ u.p201=p;return p}
+window.prof201=prof;
+
+/* ---------- 키워드 내성 (v195 give에서 부른다) ---------- */
+let INGIVE=0;
+window.KXres201=function(u,k,p,c){const pr=prof(u);if(!pr||!pr.r||pr.r[k]==null)return [p,c];const r=pr.r[k];if(r<=0){note(u,k,0);return null}
+ const f=x=>!x?0:r>1?Math.ceil(x*r):Math.max(1,Math.round(x*r));note(u,k,r);return [f(p),f(c)]};
+const NOTED={};function note(u,k,r){try{const key=B.turn+':'+u.uid+':'+k;if(NOTED[key])return;NOTED[key]=1;
+ if(r===0)blog(T(`${u.n}: ${KN(k)} 면역 — 걸리지 않는다.`,`${u.n}: immune to ${KN(k)}.`,`${u.n}:${KN(k)}無効 — かからない。`),'b')}catch(e){}}
+window.KXgive201=function(u,k){try{if(u&&!u.ally&&prof(u))react(u,'kw',null,k)}catch(e){}};
+addStatus=(f=>function(u,k,p,c){try{if(!INGIVE&&u&&!u.ally&&prof(u)){const r=KXres201(u,k,p,c);if(!r)return;p=r[0];c=r[1];const x=f.call(this,u,k,p,c);react(u,'kw',null,k);return x}}catch(e){}return f.apply(this,arguments)})(addStatus);
+window.INGIVE201=v=>{INGIVE=v};
+
+/* ---------- 조건 · 동작 ---------- */
+const Pk=(u,k)=>(u&&u.st&&u.st[k])?u.st[k].p||0:0,Ck=(u,k)=>(u&&u.st&&u.st[k])?u.st[k].c||0:0;
+const foes=()=>B.allies.filter(a=>!a.dead);const mates=()=>B.units.filter(x=>x.hp>0);
+function ok(u,o,cs){for(const c of (cs||[])){let m;
+ if((m=/^(tk|tc|sk|sc):([a-z]+)>=(\d+)$/.exec(c))){const who=m[1][0]==='t'?o:u;const v=m[1][1]==='k'?Pk(who,m[2]):Ck(who,m[2]);if(!(v>=+m[3]))return false;continue}
+ if((m=/^has:([a-z]+)$/.exec(c))){if(!(Pk(o,m[1])>0||Ck(o,m[1])>0))return false;continue}
+ if((m=/^thp<(\d+)$/.exec(c))){if(!o||!(o.hp/(o.max||1)*100<+m[1]))return false;continue}
+ if((m=/^tsp<(-?\d+)$/.exec(c))){if(!o||!(allySpV(o)<+m[1]))return false;continue}
+ if(c==='even'){if(B.turn%2)return false;continue}}return true}
+function give(x,k,p,c){if(!x)return;try{KX.give(x,k,p,c)}catch(e){addStatus(x,k,p||0,c||0)}}
+function powUp(u,v){if(u.pw201&&u.pw201.t===B.turn)u.pw201.v+=v;else u.pw201={t:B.turn,v};u.pw201.v=Math.max(-5,Math.min(6,u.pw201.v))}
+function act(u,o,e){const k=e.dk;switch(e.do){
+ case 'self':give(u,k,e.p,e.c);break;
+ case 'foe':if(o)give(o,k,e.p,e.c);break;
+ case 'foe1':{const L=foes();const t=L.length?pick(L):null;if(t)give(t,k,e.p,e.c);break}
+ case 'foes':foes().forEach(a=>give(a,k,e.p,e.c));break;
+ case 'mates':mates().forEach(x=>give(x,k,e.p,e.c));break;
+ case 'cleanse':{const ks=k==='debuff'?DEBUFF:[k];ks.forEach(z=>{if(u.st[z])delete u.st[z]});break}
+ case 'pow':powUp(u,e.v);break;
+ case 'heal':u.hp=Math.min(u.max,u.hp+Math.round(u.max*(e.v2||e.v)/100));break;
+ case 'steal':case 'strip':{if(!o||!o.st[k])break;const p=o.st[k].p||0;delete o.st[k];if(e.do==='steal')powUp(u,Math.min(3,Math.ceil(p/3)));
+  blog(e.do==='steal'?T(`${u.n}이(가) ${o.n}의 ${KN(k)} ${p}을(를) 빼앗았다. 이번 턴 위력 +${Math.min(3,Math.ceil(p/3))}.`,`${u.n} stole ${o.n}'s ${KN(k)} ${p}. Power +${Math.min(3,Math.ceil(p/3))} this turn.`,`${u.n}が${o.n}の${KN(k)}${p}を奪った。このターン威力+${Math.min(3,Math.ceil(p/3))}。`):T(`${u.n}이(가) ${o.n}의 ${KN(k)}을(를) 지웠다.`,`${u.n} erased ${o.n}'s ${KN(k)}.`,`${u.n}が${o.n}の${KN(k)}を消した。`),'b');break}
+ case 'feed':{if(!o||!o.st[k])break;const p=o.st[k].p||0;delete o.st[k];const h=Math.min(Math.round(u.max*.08),p*3);u.hp=Math.min(u.max,u.hp+h);
+  blog(T(`${u.n}이(가) ${o.n}의 ${KN(k)}을(를) 먹어 치웠다. 체력 +${h}.`,`${u.n} devoured ${o.n}'s ${KN(k)}. HP +${h}.`,`${u.n}が${o.n}の${KN(k)}を喰らった。体力+${h}。`),'b');break}
+ case 'det':{if(!o)break;try{KX.trig(o,k)}catch(e){}break}}
+ if(e.then)act(u,o,e.then)}
+const LIM={};
+function react(u,w,o,k){const pr=prof(u);if(!pr)return;pr.p.forEach((e,j)=>{if(e.w!==w)return;if(w==='kw'&&e.k!==k)return;if(!ok(u,o,e.if))return;
+ const key=B.turn+':'+u.uid+':'+j;const lim=e.lim||(w==='turn'||w==='atk'?99:1);LIM[key]=(LIM[key]||0)+1;if(LIM[key]>lim)return;
+ if(w!=='atk'&&w!=='hit'||Math.random()<1)act(u,o,e);if(w!=='turn')flash(u,e)})}
+function flash(u,e){try{const key=B.turn+':'+u.uid+':'+tx(e.n);if(NOTED[key])return;NOTED[key]=1;blog(`▸ ${u.n} · ${tx(e.n)}`,'b')}catch(x){}}
+
+/* ---------- 연결 ---------- */
+newTurn=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){for(const k in LIM)delete LIM[k];B.units.filter(u=>u.hp>0).forEach(u=>{const pr=prof(u);if(!pr)return;
+  const t=pr.p.filter(e=>e.w==='turn'&&ok(u,null,e.if));t.forEach(e=>{act(u,null,e);blog(`▸ ${u.n} · ${tx(e.n)}`,'b')});phase(u)})}}catch(e){console.error(e)}return r})(newTurn);
+function phase(u){const pr=prof(u);if(!pr||u.hp<=0)return;pr.p.forEach((e,j)=>{if(e.w!=='ph')return;u.ph201=u.ph201||{};if(u.ph201[j])return;if(u.hp<=u.max*e.v/100){u.ph201[j]=1;act(u,null,e);
+ blog(T(`━━ ${u.n} · ${tx(e.n)} ━━`,`━━ ${u.n} · ${tx(e.n)} ━━`,`━━ ${u.n}・${tx(e.n)} ━━`),'bh')}})}
+hitUnit=(f=>function(u,amt,src){const r=f.apply(this,arguments);try{if(u&&!u.ally&&u.hp>0&&prof(u))phase(u)}catch(e){}return r})(hitUnit);
+/* 위력: 적의 [공격 시] 보정 + 이번 턴 위력 */
+powOf=(f=>function(a,s,h,t){let p=f.apply(this,arguments);try{if(a&&!a.ally&&B){const pr=prof(a);if(a.pw201&&a.pw201.t===B.turn)p+=a.pw201.v;
+  if(pr&&t)pr.p.forEach(e=>{if(e.w==='aura'&&ok(a,t,e.if))p+=e.v})}}catch(x){}return Math.max(0,p)})(powOf);
+/* 받는 피해: 적의 [피격 시] 보정 */
+KX.coin=(f=>function(a,s,t,i,head){const r=f.apply(this,arguments);try{if(a&&a.ally&&t&&!t.ally){const pr=prof(t);if(pr)pr.p.forEach(e=>{if(e.w==='def'&&ok(t,a,e.if))r.dm*=1+e.v/100})}}catch(x){}return r})(KX.coin);
+/* 공격이 끝날 때: 적의 [공격 후] · 대응 스킬 / 직원에게 맞은 적의 [피격 시] */
+KX.end=(f=>function(a,s,t,total,clashes){const d=f.apply(this,arguments);try{if(B&&!B.done&&a&&t){
+  if(!a.ally&&a.hp>0&&prof(a)&&!t.dead){if(s&&s.x201)act(a,t,s.x201);react(a,'atk',t)}
+  if(a.ally&&!t.ally&&t.hp>0&&prof(t))react(t,'hit',a)}}catch(e){console.error(e)}return d})(KX.end);
+/* 대응 스킬: 라오루식 본체에 한 장 */
+function addSk(u){try{const pr=prof(u);if(!pr||!pr.sk||!u.lor)return;const d=pr.sk;const nm=tx(d.n);
+ const mk=()=>S(nm,d.base,d.cp,d.coins,d.t,(u.lorAb&&u.lorAb.col)||'RED',(u.lorAb&&u.lorAb.sin)||'wrath',{},{x201:d.x,k201:1});
+ if(u.lorSk&&!u.lorSk.some(s=>s.k201))u.lorSk.push(mk());if(u.skills&&!u.skills.some(s=>s.k201))u.skills.push(mk());}catch(e){}}
+startBattle=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done){B.units.forEach(u=>{delete u.p201;addSk(u)});
+  const L=B.units.filter(u=>prof(u)&&prof(u).r);if(L.length){const u=L[0];blog(T(`■ 키워드 특성 — ${resTxt(prof(u).r)}`,`■ Keyword traits — ${resTxt(prof(u).r)}`,`■ キーワード特性 — ${resTxt(prof(u).r)}`),'b')}}}catch(e){console.error(e)}return r})(startBattle);
+lform=(f=>function(u,fm){const r=f.apply(this,arguments);try{if(u&&u.lorId&&typeof B!=='undefined'&&B)addSk(u)}catch(e){}return r})(lform);
+
+/* ---------- 설명 ---------- */
+function resTxt(r){return Object.keys(r).map(k=>{const v=r[k];return v<=.3?T(`${KN(k)} 강한 내성`,`${KN(k)} strongly resisted`,`${KN(k)}強耐性`):v<1?T(`${KN(k)} 반감`,`${KN(k)} halved`,`${KN(k)}半減`):T(`${KN(k)} 약점`,`${KN(k)} weak`,`${KN(k)}弱点`)}).join(' · ')}
+function cTxt(c){let m;
+ if((m=/^(tk|tc|sk|sc):([a-z]+)>=(\d+)$/.exec(c))){const who=m[1][0]==='t'?T('상대','the opponent','相手'):T('자신','itself','自身');const wh=m[1][1]==='k'?T('위력','potency','威力'):T('횟수','count','回数');return T(`${who}의 ${KN(m[2])} ${wh} ${m[3]} 이상이면`,`if ${who} has ${KN(m[2])} ${wh} ${m[3]}+`,`${who}の${KN(m[2])}${wh}${m[3]}以上なら`)}
+ if((m=/^has:([a-z]+)$/.exec(c)))return T(`상대에게 ${KN(m[1])}이(가) 있으면`,`if the opponent has ${KN(m[1])}`,`相手に${KN(m[1])}があれば`);
+ if((m=/^thp<(\d+)$/.exec(c)))return T(`상대 체력이 ${m[1]}% 미만이면`,`if the opponent is below ${m[1]}% HP`,`相手の体力が${m[1]}%未満なら`);
+ if((m=/^tsp<(-?\d+)$/.exec(c)))return T(`상대 정신력이 ${m[1]} 미만이면`,`if the opponent's SP is below ${m[1]}`,`相手の精神力が${m[1]}未満なら`);
+ if(c==='even')return T('짝수 턴에','on even turns','偶数ターンに');return ''}
+function st(k,p,c){return `${KN(k)}${p?' '+p:''}${c?T(` (횟수 +${c})`,` (count +${c})`,`(回数+${c})`):''}`}
+function dTxt(e){const k=e.dk;let s='';switch(e.do){
+ case 'self':s=T(`자신에게 ${st(k,e.p,e.c)}`,`gains ${st(k,e.p,e.c)}`,`自身に${st(k,e.p,e.c)}`);break;
+ case 'foe':s=T(`상대에게 ${st(k,e.p,e.c)}`,`inflicts ${st(k,e.p,e.c)} on the opponent`,`相手に${st(k,e.p,e.c)}`);break;
+ case 'foe1':s=T(`무작위 직원 한 명에게 ${st(k,e.p,e.c)}`,`inflicts ${st(k,e.p,e.c)} on a random employee`,`ランダムな職員一人に${st(k,e.p,e.c)}`);break;
+ case 'foes':s=T(`모든 직원에게 ${st(k,e.p,e.c)}`,`inflicts ${st(k,e.p,e.c)} on all employees`,`全職員に${st(k,e.p,e.c)}`);break;
+ case 'mates':s=T(`적 진영 모두에게 ${st(k,e.p,e.c)}`,`all enemies gain ${st(k,e.p,e.c)}`,`敵陣全員に${st(k,e.p,e.c)}`);break;
+ case 'cleanse':s=k==='debuff'?T('자신의 약화 효과를 모두 지운다','removes all its debuffs','自身の弱体効果をすべて消す'):T(`자신의 ${KN(k)}을(를) 지운다`,`removes its ${KN(k)}`,`自身の${KN(k)}を消す`);break;
+ case 'pow':s=T(`이번 턴 위력 ${e.v>0?'+':''}${e.v}`,`Power ${e.v>0?'+':''}${e.v} this turn`,`このターン威力${e.v>0?'+':''}${e.v}`);break;
+ case 'heal':s=T(`체력 ${e.v2||e.v}% 회복`,`heals ${e.v2||e.v}% HP`,`体力${e.v2||e.v}%回復`);break;
+ case 'steal':s=T(`상대의 ${KN(k)}을(를) 빼앗는다 — 위력 3당 이번 턴 위력 +1 (최대 +3)`,`steals the opponent's ${KN(k)} — Power +1 per 3 potency this turn (max +3)`,`相手の${KN(k)}を奪う — 威力3ごとにこのターン威力+1(最大+3)`);break;
+ case 'strip':s=T(`상대의 ${KN(k)}을(를) 지운다`,`erases the opponent's ${KN(k)}`,`相手の${KN(k)}を消す`);break;
+ case 'feed':s=T(`상대의 ${KN(k)}을(를) 먹어 치우고 위력×3만큼 체력 회복 (최대 8%)`,`devours the opponent's ${KN(k)}, healing 3× its potency (max 8%)`,`相手の${KN(k)}を喰らい、威力×3回復(最大8%)`);break;
+ case 'det':s=T(`상대의 ${KN(k)}을(를) 즉시 한 번 발동시킨다`,`triggers the opponent's ${KN(k)} once`,`相手の${KN(k)}を即座に一度発動させる`);break}
+ return s+(e.then?' · '+dTxt(e.then):'')}
+function pTxt(e){const W={turn:T('[턴 시작 시]','[Turn start]','[ターン開始時]'),hit:T('[피격 시]','[When hit]','[被撃時]'),atk:T('[공격 후]','[After attacking]','[攻撃後]'),aura:T('[공격 시]','[On attack]','[攻撃時]'),def:T('[피격 시]','[When hit]','[被撃時]'),
+  kw:T(`[${KN(e.k)}을(를) 받을 때]`,`[On receiving ${KN(e.k)}]`,`[${KN(e.k)}を受けた時]`),ph:T(`[체력 ${e.v}% 이하 · 1회]`,`[At ${e.v}% HP or less · once]`,`[体力${e.v}%以下・1回]`)}[e.w];
+ const c=(e.if||[]).map(cTxt).filter(Boolean).join(', ');let d;
+ if(e.w==='aura')d=T(`위력 +${e.v}`,`Power +${e.v}`,`威力+${e.v}`);else if(e.w==='def')d=T(`받는 피해 ${e.v}%`,`damage taken ${e.v}%`,`受けるダメージ${e.v}%`);else d=dTxt(e);
+ return `${W} ${c?c+' ':''}${d}${e.lim&&e.w!=='ph'?T(` (턴당 ${e.lim}회)`,` (${e.lim}/turn)`,`(ターンごと${e.lim}回)`):''}`}
+function infoHtml(u,head){const pr=prof(u);if(!pr)return '';
+ return `<div class="kx201"><div class="lbl">${head||T('키워드 특성','Keyword traits','キーワード特性')}</div>${pr.r?`<p class="kx201r">${resTxt(pr.r)}</p>`:''}<ul>${pr.p.map(e=>`<li><b>${tx(e.n)}</b> — ${pTxt(e)}</li>`).join('')}${pr.sk?`<li><b>${tx(pr.sk.n)}</b> — ${T('고유 스킬','Unique skill','固有スキル')} · ${T('적중 후','after hitting','的中後')} ${dTxt(pr.sk.x)}</li>`:''}</ul></div>`}
+window.kxInfo201=infoHtml;
+eUnitInfo=(f=>function(u){const r=f.apply(this,arguments);try{const b=POP&&POP.querySelector('.einfo');if(b&&!b.querySelector('.kx201')){const h=infoHtml(u);if(h)b.insertAdjacentHTML('afterbegin',h)}}catch(e){}return r})(eUnitInfo);
+/* 격리실 도감(관찰 Ⅲ 이상)에도 보인다 */
+abPop=(f=>function(a){const r=f.apply(this,arguments);try{const s=G.ab[a.id];const pr=P[a.id];if(pr&&s&&(s.obs||0)>=3&&POP){const b=POP.querySelector('.pop-b');if(b&&!b.querySelector('.kx201')){const fake={n:a.n,p201:pr,uid:-1};
+  b.insertAdjacentHTML('beforeend',infoHtml(fake,T('전투 키워드 특성 (관찰 Ⅲ)','Combat keyword traits (Obs. III)','戦闘キーワード特性(観察III)')).replace('class="kx201"','class="kx201 kx201d"'))}}}catch(e){}return r})(abPop);
+const css=D.createElement('style');css.textContent=`.kx201{border-left:2px solid #c96f6f;padding:4px 8px;margin:0 0 8px;background:rgba(201,111,111,.06);font-size:12px;text-align:left}.kx201 ul{margin:2px 0 0;padding-left:16px}.kx201 li{margin:2px 0}.kx201r{margin:2px 0;color:#e0b0b0}.kx201d{margin-top:10px}`;D.head.appendChild(css);
+})();
+/* ============ v202: 전투 이탈 단추가 가려지던 문제 · 절대 못 이기는 상황 없애기 ============
+   · 전투 「상황」 선택지가 떠 있으면 아래쪽 [전투 이탈] 단추가 그 밑에 깔려 누를 수 없었다 → 전투 화면 위쪽 막대에도 [전투 이탈]을 둔다 (늘 보인다).
+   · 키워드 「면역」 → 「강한 내성」: 부여량 ×0.25, 최소 1은 들어간다. 어떤 키워드 덱으로도 상대할 수 있다.
+     (알리우네 「흙으로 빚은 인형」 설명도 같이 고친다)
+   · 「단단함」(일정 이하 피해 무시): 키워드 피해는 그대로 들어가고, 약한 일격도 1/3은 들어간다. */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+/* ---------- 1. 위쪽 막대의 전투 이탈 ---------- */
+function fleeGo(){try{D.querySelectorAll('.pop.dock156,.pop.lock190').forEach(x=>x.remove());if(typeof POP!=='undefined'&&POP&&!POP.isConnected)POP=null}catch(e){}battleFlee()}
+function fleeAsk(){if(!canFlee())return;window.__pop190force=1;window.__pop150force=1;try{fleeAsk0()}finally{window.__pop190force=0;window.__pop150force=0}}
+function fleeAsk0(){popChoices(T('전투 이탈','Retreat','戦闘離脱'),'',[{l:T('물러난다','Retreat','退く'),s:T(`정신력 -8 · 적은 지금 기세 그대로 ${B.opt.boss?'남아 있다. 근무 화면에서 다시 맞설 수 있다':'다시 시설을 돌아다닌다'}`,`SP -8 · The enemy keeps its current strength${B.opt.boss?' and waits; you can face it again from the work screen':' and roams the facility again'}`,`精神力-8・敵は今の勢いのまま${B.opt.boss?'残る。勤務画面から再び挑める':'再び施設を歩き回る'}`),f:fleeGo},{l:T('계속 싸운다','Keep fighting','戦い続ける'),s:'',f:()=>{}}])}
+function deco(){try{if(typeof B==='undefined'||!B||B.done)return;const top=D.querySelector('#panel .lb-top');if(!top)return;let b=top.querySelector('#flee202');const ok=canFlee();
+ if(!ok){if(b)b.remove();return}if(!b){top.insertAdjacentHTML('beforeend',`<button class="todo-g bguide" type="button" id="flee202">${T('전투 이탈','Retreat','戦闘離脱')}</button>`);b=top.querySelector('#flee202')}}catch(e){}}
+renderBattle=(f=>function(){const r=f.apply(this,arguments);deco();return r})(renderBattle);
+setInterval(deco,800);window.fleeAsk202=fleeAsk;
+D.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#flee202,#fleeBtn');if(!b)return;e.stopPropagation();e.preventDefault();if(typeof B!=='undefined'&&B&&!B.done)fleeAsk()},true);
+
+/* ---------- 2. 키워드 면역 → 강한 내성 ---------- */
+const MIN=.25;
+try{const L=window.P201;if(L)[L.P,L.PO,L.PB].forEach(G0=>Object.values(G0).forEach(p=>{if(p&&p.r)for(const k in p.r)if(p.r[k]<=0)p.r[k]=MIN}))}catch(e){}
+const _res=window.KXres201;if(_res)window.KXres201=function(u,k,p,c){const r=_res(u,k,p,c);if(r)return r;return [p?Math.max(1,Math.round(p*MIN)):0,c?Math.max(1,Math.round(c*MIN)):0]};
+/* 알리우네: 원래 「화상·출혈 면역」 설명 */
+lform=(f=>function(u,fm){const r=f.apply(this,arguments);try{if(Array.isArray(u.lorPass)&&u.lorPass.some(x=>/화상·출혈 면역|Immune to Burn and Bleed|火傷・出血無効/.test(x[1]||'')))
+ u.lorPass=u.lorPass.map(x=>/화상·출혈 면역|Immune to Burn and Bleed|火傷・出血無効/.test(x[1]||'')?[x[0],T('화상 · 출혈에 강하다 (부여량 ×0.25, 최소 1)','Resists Burn and Bleed (applied ×0.25, at least 1)','火傷・出血に強い(付与量×0.25、最低1)')]:x)}catch(e){}return r})(lform);
+
+/* ---------- 3. 단단함: 키워드 피해는 통과 · 약한 일격은 1/3 ---------- */
+hitUnit=(f=>function(u,amt,src){try{const h=u&&u.lor&&u.form&&u.form.hard;if(h&&amt>0&&amt<=h){const fm=u.form;const keep=fm.hard;fm.hard=0;
+  try{return f.call(this,u,src?Math.max(1,Math.round(amt/3)):amt,src)}finally{fm.hard=keep}}}catch(e){}return f.apply(this,arguments)})(hitUnit);
+try{const d=LD&&LD.nothing&&LD.nothing.lph&&LD.nothing.lph[1];if(d&&d.pass)d.pass=d.pass.map(x=>/무시/.test(x[1]||'')?[x[0],T('6 이하의 피해는 1/3만 받는다 (화상 · 출혈 같은 키워드 피해는 그대로)','Takes only 1/3 of hits of 6 or less (keyword damage like Burn or Bleed goes through)','6以下のダメージは1/3だけ受ける(火傷・出血などのキーワードダメージはそのまま)')]:x)}catch(e){}
+})();
+/* ============ v203: 환상체 스킬 세분화 — 스킬마다 조건 · 코인별 효과 ============
+   환상체(격리실 제압 · 배회 · 빛 탈취 혼전)의 일반 공격 스킬에 림버스식 효과를 붙인다. 이미 고유 효과가 있는 스킬 · 특수 공격은 건드리지 않는다.
+   · 이미 키워드를 거는 스킬(라오루식 효과)은 「노리기 · 몰아치기」 조건과 죄악 성향만 더한다.
+   · 대표 키워드: 스킬이 거는 키워드, 없으면 피해 색으로 (RED 출혈 · WHITE 침잠 · BLACK 파열 · PALE 진동)
+   · 스킬마다 「키워드 틀」 하나 + 「죄악 성향」 하나 (모두 v195 키워드 엔진으로 처리 · 설명은 자동)
+     키워드 틀  ① 쌓기: 적중 시 부여 · 마지막 코인 앞면이면 횟수 +1
+                ② 노리기: 대상에게 그 키워드가 많으면 코인 위력 +1 · 끝나면 한 번 발동
+                ③ 몰아치기: 대상에게 그 키워드가 있으면 피해 +10% · 첫 코인이 횟수 +1
+     죄악 성향  분노 — 체력 50% 미만이면 위력 +2 / 색욕 — 합에서 이기면 자신에게 호흡 / 나태 — 합에서 이기면 보호
+                탐식 — 앞면 적중 시 체력 회복 / 우울 — 앞면 적중 시 대상 정신력 감소 / 오만 — 대상보다 빠르면 마지막 코인 치명타
+                질투 — 대상의 체력이 50% 미만이면 피해 +15%
+   · 등급이 높을수록 수치가 커진다 (ZAYIN · TETH 1 / HE · WAW 2 / ALEPH 3) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const KW=['bleed','burn','rupture','sinking','tremor'];
+const COLK={RED:'bleed',WHITE:'sinking',BLACK:'rupture',PALE:'tremor'};
+const h=s=>{let x=0;for(const c of String(s||''))x=(x*31+c.charCodeAt(0))|0;return Math.abs(x)};
+function skip(s){return !s||s.kx||s.k201||!(s.coins>0)||s.noAtk||s.special||s.salv||s.judge||s.rise||s.execute||s.swallow||s.gift||s.boom||s.seal||s.mark||s.shock||s.lose2}
+function design(s,g,i){const n=s.coins;const P=g>=4?3:g>=2?2:1;const on=Object.keys(s.on||{}).concat((s.lfx||[]).map(e=>e&&e.k).filter(Boolean));const hasFx=!!(s.lfx&&s.lfx.length);const K=on.find(k=>KW.includes(k))||COLK[s.c]||'bleed';const L=[];
+ const tpl=hasFx?1+(h(s.n)+i)%2:(h(s.n)+i)%3;
+ if(tpl===0){if(!on.includes(K))L.push({w:'hit',do:'give',k:K,p:P,c:1});L.push({w:'head',ci:n,do:'give',k:K,c:1})}
+ else if(tpl===1){L.push({w:'use',if:[`tk:${K}>=${2+P}`],do:'cp',v:1});if(!on.includes(K))L.push({w:'hit',ci:1,do:'give',k:K,p:P,c:1});L.push({w:'end',if:[`has:${K}`],do:'trig',k:K})}
+ else{L.push({w:'use',if:[`has:${K}`],do:'dmg',v:10});L.push({w:'head',ci:1,do:'give',k:K,p:on.includes(K)?0:P,c:1})}
+ switch(s.sin){
+  case 'wrath':L.push({w:'use',if:['shp<50'],do:'pow',v:2});break;
+  case 'lust':L.push({w:'win',do:'self',k:'poise',p:P+1,c:1});break;
+  case 'sloth':L.push({w:'win',do:'self',k:'protect',p:P,c:1});break;
+  case 'gluttony':L.push({w:'head',do:'heal',v:2+2*P});break;
+  case 'gloom':L.push({w:'head',ci:n,do:'tsp',v:2+P});break;
+  case 'pride':L.push({w:'head',ci:n,if:['fast'],do:'crit'});break;
+  case 'envy':L.push({w:'use',if:['thp<50'],do:'dmg',v:15});break}
+ s.kx=L;s._k203=1}
+function isAbFight(){try{if(!B||!B.opt)return false;const o=B.opt;if(o.ordeal||o.boss||o.spar||o.mir)return false;const k=B.kind||'';
+ return !!(o.ab||k.startsWith('lor_')||k==='arcmix'||k==='gen'||(typeof ABM!=='undefined'&&Object.values(ABM).some(a=>a.fight===k)))}catch(e){return false}}
+function apply(){try{if(typeof B==='undefined'||!B||B.done||!isAbFight())return;B.units.forEach(u=>{if(u.ally)return;const g=u.lorG!=null?u.lorG:(u.g||0);(u.skills||[]).forEach((s,i)=>{if(!s._k203&&!skip(s))design(s,g,i)})})}catch(e){console.error(e)}}
+startBattle=(f=>function(){const r=f.apply(this,arguments);apply();try{renderBattle()}catch(e){}return r})(startBattle);
+newTurn=(f=>function(){apply();return f.apply(this,arguments)})(newTurn);
+/* 적 스킬 정보에 효과 줄 */
+eSkRow=(f=>function(s,u,it){let r=f.apply(this,arguments);try{if(s&&s._k203&&window.kxLines195&&!(typeof infoHidden==='function'&&infoHidden())){const L=kxLines195(s);if(L.length){
+ const ks=[...new Set((s.kx||[]).map(e=>e.k).filter(k=>k&&typeof KWD!=='undefined'&&KWD[k]&&!(s.on&&s.on[k])))];
+ r+=`<ul class="kx203">${L.map(([w,t])=>`<li><b>${w}</b> ${t}</li>`).join('')}</ul>${ks.length?`<p class="mut kx203k">${ks.map(k=>KWD[k]).join('<br>')}</p>`:''}`}}}catch(e){}return r})(eSkRow);
+window.design203=design;
+const st=D.createElement('style');st.textContent=`.kx203{list-style:none;padding-left:0;margin:4px 0;display:grid;gap:2px;font-size:12px}.kx203 b{color:var(--warn,#d9a441)}.kx203k{font-size:11.5px}`;D.head.appendChild(st);
+})();
+/* ============ v204: 백야 난이도 — 종말새와 비슷한 흐름으로 ============
+   문제: 「일어나 나를 섬기라」가 1턴 강제 외에도 일반 스킬처럼 매 턴 섞여 나왔고, 흐트러짐 · PALE 약점이 겹쳐 한 번에 최대 체력을 넘는 피해(최대 365)가 났다.
+        「두려워 말라」 보호가 한 턴에 여러 번 겹쳐 백야에게 피해가 거의 들어가지 않았다. → 2~4턴 만에 무너지는 전투.
+   · 「일어나 나를 섬기라」: 1턴째와 그 뒤 4턴마다 (정해진 공격 · 일반 스킬로는 안 나온다) · 턴 끝 피해는 최대 체력 40% 고정 (흐트러짐 · 내성 배율 없음)
+   · 짙어지는 빛: 3턴마다 백야와 사도의 위력 +1 (최대 +4) · 체력은 조금 줄였다 (실낙원 ×1.3 · 부활 ×1.0) — 오래 끌수록 위험하다
+   · 「두려워 말라」: 한 턴에 한 번만 · 보호는 백야 쪽 누구든 최대 5까지
+   · 부활 형태 「나를 부정하지 말라」(광역 22): 2턴마다 한 번 정해진 공격으로 */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);
+try{const W=LD.whitenight;const opt=p=>{const o=p[p.length-1];return o&&typeof o==='object'&&!Array.isArray(o)?o:null};const setO=(p,x)=>{const o=opt(p);if(o)p[p.length-1]=Object.assign({},o,x);else p.push(x)};
+ W.main.k=1.3;if(W.lph&&W.lph[0])W.lph[0].k=1;W.main.pages.forEach(p=>{const o=opt(p);if(o&&o.rise)setO(p,{special:1})});
+ const R=W.lph&&W.lph[0];if(R){const i=R.pages.findIndex(p=>{const o=opt(p);return o&&o.aoe});if(i>=0){setO(R.pages[i],{special:1});R.every=(R.every||[]).filter(e=>e[0]!==i).concat([[i,2,2]])}}
+ W.main.pass=W.main.pass.map(x=>/턴 끝에 최대 체력 50%/.test(x[1]||'')?[x[0],T('1턴째와 그 뒤 4턴마다 한 명에게 「일어나 나를 섬기라」 — 그 턴 끝에 최대 체력 40% 피해 (원작 즉사, 축소)','On turn 1 and every 4 turns after, "Rise and Serve Me" on one employee — 40% max HP damage at the end of that turn (instant death in the original, reduced)','1ターン目とその後4ターンごとに一人へ「起きて私に仕えよ」— そのターン終了時に最大体力40%ダメージ(原作は即死、縮小)')]:x)}catch(e){console.error(e)}
+const isWN=()=>typeof B!=='undefined'&&B&&B.units&&B.units.some(u=>u.lorId==='whitenight'&&!u.mainU);
+/* 「일어나 나를 섬기라」: 1턴째 + 그 뒤 4턴마다 다시 (5 · 9 · 13 …턴) */
+newTurn=(f=>function(){const r=f.apply(this,arguments);try{if(B&&!B.done&&B.turn>1&&(B.turn-1)%4===0){const live=B.allies.filter(a=>!a.dead);B.units.filter(u=>u.lorId==='whitenight'&&!u.mainU&&u.hp>0&&!(u.stag>0)).forEach(u=>{const s=u.skills.find(x=>x.rise);if(s&&live.length){B.intents.push({u,s,spd:Math.max(1,R(u.spd[0],u.spd[1])),id:Math.max(-1,...B.intents.map(i=>i.id))+1,tgt:pick(live)});blog(T('백야가 다시 손을 든다. 「일어나 나를 섬기라」','White Night raises its hand again. "Rise and Serve Me"','白夜が再び手を挙げる。「起きて私に仕えよ」'),'bh');B.wc={};autoAssign();renderBattle()}})}}catch(e){console.error(e)}return r})(newTurn);
+/* 짙어지는 빛: 3턴마다 백야 · 사도의 위력 +1 (최대 +4) */
+powOf=(f=>function(a,s,h,t){let p=f.apply(this,arguments);try{if(a&&!a.ally&&(a.lorId==='whitenight'||a.lorId==='whitenight_m')&&B)p+=Math.min(4,Math.floor(B.turn/3))}catch(e){}return p})(powOf);
+/* 턴 끝 피해: 최대 체력 40% 고정 */
+dmgAlly=(f=>function(a,amt,color,src,atkG){if(src==='일어나 나를 섬기라'&&a&&!a.dead){const cap=Math.round(a.max*.4);a.hp=Math.max(0,a.hp-cap);if(a.key==='player')G.hp=a.hp;
+ blog(T(`일어나 나를 섬기라 → ${a.n}: 체력 -${cap}`,`Rise and Serve Me → ${a.n}: HP -${cap}`,`起きて私に仕えよ → ${a.n}:体力-${cap}`),'bh');if(a.hp<=0)allyDown(a);return}return f.apply(this,arguments)})(dmgAlly);
+/* 「두려워 말라」 한 턴 한 번 · 보호 상한 5 */
+lorBuff=(f=>function(v,s){if(v&&v.lorId==='whitenight'&&s&&s.prot){if(v.prot204===B.turn)return;v.prot204=B.turn}const r=f.apply(this,arguments);try{if(isWN())B.units.forEach(x=>{const p=x.st&&x.st.protect;if(p&&p.p>5)p.p=5})}catch(e){}return r})(lorBuff);
+addStatus=(f=>function(u,k,p,c){const r=f.apply(this,arguments);try{if(k==='protect'&&u&&!u.ally&&isWN()&&u.st.protect&&u.st.protect.p>5)u.st.protect.p=5}catch(e){}return r})(addStatus);
+})();
+
+/* ============ 웹 앱(PWA): 설치 · 오프라인 · 새 버전 알림 (공개 사이트에서만) ============ */
+(function(){if(!('serviceWorker' in navigator)||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+const T=(k,e,j)=>{try{return i80(k,e,j)}catch(x){return k}};
+function bar(w){if(document.getElementById('upd205'))return;const d=document.createElement('div');d.id='upd205';
+ d.innerHTML=`<span>${T('새 버전이 준비되었다.','A new version is ready.','新しいバージョンの準備ができた。')}</span><button type="button">${T('새로 고침','Reload','再読み込み')}</button><button type="button" class="x">✕</button>`;
+ d.style.cssText='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:99999;background:#1b2225;color:#f4ee9a;border:1px solid #f4ee9a;padding:8px 12px;display:flex;gap:10px;align-items:center;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.5)';
+ d.querySelectorAll('button').forEach(b=>b.style.cssText='background:none;border:1px solid #f4ee9a;color:#f4ee9a;padding:3px 10px;cursor:pointer;font:inherit');
+ d.querySelector('button').onclick=()=>{try{save()}catch(e){}w.postMessage('skip')};d.querySelector('.x').onclick=()=>d.remove();document.body.appendChild(d)}
+let reloading=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading)return;reloading=true;location.reload()});
+window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>{
+ if(reg.waiting&&navigator.serviceWorker.controller)bar(reg.waiting);
+ reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)bar(w)})});
+ setInterval(()=>reg.update().catch(()=>{}),30*60*1000)}).catch(()=>{})});
+/* 설정 창에 「앱으로 설치」 (브라우저가 설치를 허락할 때만) */
+let DP=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DP=e});
+setInterval(()=>{try{const b=document.querySelector('.set76');if(!b||b.querySelector('#ins205'))return;const st=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone;
+ const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+ b.insertAdjacentHTML('afterbegin',`<section id="ins205"><h4>${T('앱으로 설치','Install as app','アプリとしてインストール')}</h4><p class="note">${st?T('지금 앱으로 실행 중이다.','Running as an app.','アプリとして実行中。'):ios?T('Safari 아래쪽 공유 단추 → 「홈 화면에 추가」.','In Safari: Share → "Add to Home Screen".','Safariの共有ボタン → 「ホーム画面に追加」。'):T('홈 화면 · 바탕 화면에 아이콘을 두고 전체 화면으로 실행한다. 한 번 열면 인터넷 없이도 이어서 할 수 있다.','Adds an icon and runs full screen. After the first visit it also works offline.','ホーム画面に置いて全画面で起動。一度開けばオフラインでも続けられる。')}</p>${!st&&DP?`<button class="btn ghost" type="button" id="ins205b">${T('설치하기','Install','インストール')}</button>`:''}</section>`);
+ const ib=b.querySelector('#ins205b');if(ib)ib.onclick=async()=>{if(!DP)return;DP.prompt();try{await DP.userChoice}catch(e){}DP=null;ib.remove()}}catch(e){}},700);
 })();
 </script>
 
