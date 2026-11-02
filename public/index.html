@@ -10212,7 +10212,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)return;con
 
 /* ================= v92: 타이틀 화면 버전 표기 =================
    Ver. n.m.a.b — n 큰 변화 · m 중요한 업데이트 · a 수정 · b 배포일(YYMMDD). 값은 빌드 때 ver.txt와 날짜로 채워진다. */
-(function(){const V='Ver. 5.4.0.261102';window.GAME_VER=V;
+(function(){const V='Ver. 5.4.1.261102';window.GAME_VER=V;
 const st=document.createElement('style');st.textContent='.ver92{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font:600 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--mut,#8fa19c);opacity:.75;pointer-events:none;z-index:5}';document.head.appendChild(st);
 function put(){const t=document.querySelector('#app .title');let el=document.getElementById('ver92');
   if(!t){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='ver92';el.className='ver92';el.setAttribute('translate','no');document.body.appendChild(el)}el.textContent=V}
@@ -14020,7 +14020,7 @@ dmgAlly=(f=>function(a,amt){if(EAG&&amt>0){const A=[...arguments];A[1]=amt*.6;re
 const T=(k,e,j)=>i80(k,e,j);
 const NL=n=>(typeof nameL==='function'?nameL(n):n);
 const TRN=n=>(typeof tr80==='function'?tr80(n):n);
-const VER='Ver. 5.4.0.261102';
+const VER='Ver. 5.4.1.261102';
 const online=()=>typeof api74==='function';
 const user=()=>{try{return A74&&A74.user?A74.user:null}catch(e){return null}};
 const slot=()=>{try{return window.mirApiSlot136?window.mirApiSlot136():0}catch(e){return 0}};
@@ -19119,7 +19119,7 @@ function deco(){try{
  const pop=document.querySelector('.pop');if(pop){const h3=(pop.querySelector('.pop-h h3')||{}).textContent||'';
   if(/슈트|Suit|スーツ/.test(h3))pop.querySelectorAll('[data-eq]').forEach(b=>{if(b.querySelector('.ps196'))return;const h=passHtml(b.dataset.eq);if(h)b.insertAdjacentHTML('beforeend',h)});
   if(/무기|Weapon|武器/.test(h3))pop.querySelectorAll('[data-eq]').forEach(b=>{if(b.querySelector('.wk196')||!WK[b.dataset.eq])return;b.insertAdjacentHTML('beforeend',`<small class="wk196">${T('대표 키워드','Main keyword','代表キーワード')}: <b>${KN(WK[b.dataset.eq])}</b> · ${T('죄악','Sin','罪')} ${SINN(WS[b.dataset.eq])}</small>`)})}}catch(e){}}
-setInterval(deco,700);
+setInterval(deco,700);window.psDeco196=deco;
 const st=document.createElement('style');st.textContent=`.ps196{margin-top:6px;padding:6px 8px;border-left:2px solid var(--accent,#f4ee9a);background:rgba(255,255,255,.03);font-size:11.5px;line-height:1.5;text-align:left}
 .ps196h{font-size:11px;color:var(--accent,#f4ee9a);letter-spacing:.05em;margin-bottom:2px}.ps196 p{margin:2px 0}.ps196 em{font-style:normal;color:var(--muted)}`;document.head.appendChild(st);
 })();
@@ -19247,11 +19247,11 @@ allyDown=(f=>function(a){const r=f.apply(this,arguments);try{if(typeof B!=='unde
    blog(T(`대기하던 ${ag.n}이(가) 전투에 뛰어들었다.`,`${ag.n}, on standby, joins the fight.`,`待機していた${ag.n}が戦闘に飛び込んだ。`),'bh');break}}}catch(e){console.error(e)}return r})(allyDown);
 
 /* ---------- 오른쪽 패널 단추 ---------- */
-setInterval(()=>{try{const eq=D.querySelector('#Rg .pc-eq');if(!eq)return;let w=D.getElementById('sq199w');
+const sqDeco=()=>{try{const eq=D.querySelector('#Rg .pc-eq');if(!eq)return;let w=D.getElementById('sq199w');
  if(!w){w=D.createElement('div');w.id='sq199w';w.innerHTML=`<button type="button" class="btn ghost small" id="tm198btn"></button><button type="button" class="btn ghost small" id="dx199btn">${T('E.G.O 상세','E.G.O details','E.G.O詳細')}</button>`;
   const ps=eq.nextElementSibling&&eq.nextElementSibling.classList.contains('ps196')?eq.nextElementSibling:eq;ps.insertAdjacentElement('afterend',w);
   w.querySelector('#tm198btn').onclick=teamPop;w.querySelector('#dx199btn').onclick=()=>dexPop('w')}
- const n=team().length,m=reserve().length;const t=n||m?T(`출동 편성 · ${n}+${m}`,`Squad · ${n}+${m}`,`出動編成・${n}+${m}`):T('출동 편성 (자동)','Squad (auto)','出動編成(自動)');const b=w.querySelector('#tm198btn');if(b.textContent!==t)b.textContent=t}catch(e){}},700);
+ const n=team().length,m=reserve().length;const t=n||m?T(`출동 편성 · ${n}+${m}`,`Squad · ${n}+${m}`,`出動編成・${n}+${m}`):T('출동 편성 (자동)','Squad (auto)','出動編成(自動)');const b=w.querySelector('#tm198btn');if(b.textContent!==t)b.textContent=t}catch(e){}};setInterval(sqDeco,700);window.sqDeco199=sqDeco;
 /* 장비 바꾸기 창에서도 상세로 */
 equipPop=(f=>function(k){const r=f.apply(this,arguments);try{const b=POP&&POP.querySelector('.pop-b');if(b&&!b.querySelector('.dx199go')){b.insertAdjacentHTML('afterbegin',`<button type="button" class="btn ghost small dx199go">${T('스킬 · 패시브 자세히 보기','View skills & passives','スキル・パッシブ詳細')}</button>`);b.querySelector('.dx199go').onclick=()=>dexPop(k)}}catch(e){}return r})(equipPop);
 
@@ -19745,6 +19745,17 @@ dmgAlly=(f=>function(a,amt,color,src,atkG){if(src==='일어나 나를 섬기라'
 /* 「두려워 말라」 한 턴 한 번 · 보호 상한 5 */
 lorBuff=(f=>function(v,s){if(v&&v.lorId==='whitenight'&&s&&s.prot){if(v.prot204===B.turn)return;v.prot204=B.turn}const r=f.apply(this,arguments);try{if(isWN())B.units.forEach(x=>{const p=x.st&&x.st.protect;if(p&&p.p>5)p.p=5})}catch(e){}return r})(lorBuff);
 addStatus=(f=>function(u,k,p,c){const r=f.apply(this,arguments);try{if(k==='protect'&&u&&!u.ally&&isWN()&&u.st.protect&&u.st.protect.p>5)u.st.protect.p=5}catch(e){}return r})(addStatus);
+})();
+/* ============ v205: 오른쪽 패널 단추 깜빡임 고침 ============
+   오른쪽 장비 칸(#Rg)은 실시간으로 자주 다시 그려진다. 슈트 패시브 · [출동 편성] · [E.G.O 상세]는 0.7초마다 다시 붙이고 있어서
+   다시 그려질 때마다 잠깐 사라졌다가 나타났다(깜빡임). → 다시 그려지는 그 순간(화면에 그리기 전)에 바로 붙인다. */
+(function(){
+let busy=false;
+function fix(){if(busy)return;busy=true;try{if(window.psDeco196)psDeco196();if(window.sqDeco199)sqDeco199()}catch(e){}busy=false}
+function watch(){const t=document.getElementById('Rg')||document.getElementById('side')||document.body;
+ new MutationObserver(()=>{const eq=document.querySelector('#Rg .pc-eq');if(!eq)return;const n=eq.nextElementSibling;
+  if(!document.getElementById('sq199w')||!(n&&(n.classList.contains('ps196')||n.id==='sq199w')))fix()}).observe(document.body,{childList:true,subtree:true})}
+if(document.body)watch();else document.addEventListener('DOMContentLoaded',watch);
 })();
 
 /* ============ 웹 앱(PWA): 설치 · 오프라인 · 새 버전 알림 (공개 사이트에서만) ============ */
