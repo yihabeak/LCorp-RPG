@@ -1,2 +1,8 @@
 /bgm/*
   Cache-Control: public, max-age=2592000
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+/ab/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=604800
+/sw.js
+  Cache-Control: no-cache

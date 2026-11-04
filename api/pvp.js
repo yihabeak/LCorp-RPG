@@ -143,7 +143,7 @@ export default async function handler(req, res) {
       const type = b.type === 'pub' ? 'pub' : 'code';
       let code = code6();
       for (let i = 0; i < 4 && await redis('EXISTS', `rt:${code}`); i++) code = code6();
-      const r = { type, mode: '1v1', v: txt(b.v, 20), mem: [{ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now() }], seats: { A: [], B: [] }, ready: {}, P: {}, at: Date.now() };
+      const r = { type, mode: '1v1', v: txt(b.v, 20), mem: [{ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now(), act: Date.now() }], seats: { A: [], B: [] }, ready: {}, P: {}, at: Date.now() };
       toLobby(r);
       await redis('SET', `rt:${code}`, JSON.stringify(r), 'EX', TTL);
       if (type === 'pub') await redis('SADD', 'rt:pub', code);
@@ -176,6 +176,8 @@ export default async function handler(req, res) {
       await redis('SET', key, JSON.stringify(r), 'EX', TTL);
     };
     prune(r);
+    // 방 수명: 만든 지 3시간이 지나면 닫는다 (켜 둔 채 잊힌 탭이 1.5초마다 묻는 것을 끝낸다)
+    if (Date.now() - (r.at || 0) > 3 * 3600e3) { await redis('DEL', key); await redis('SREM', 'rt:pub', code); return send(res, 404, { code: 'noroom' }); }
 
     if (op === 'join' && req.method === 'POST') {
       const have = r.mem.find(m => m.id === id);
@@ -183,13 +185,15 @@ export default async function handler(req, res) {
         if (r.mem.length >= MAX_MEM) return send(res, 409, { code: 'full' });
         if (r.v && txt(b.v, 20) !== r.v) return send(res, 409, { code: 'ver', v: r.v });
         const deck = cleanDeck(b.deck); if (!deck) return send(res, 400, { code: 'bad' });
-        r.mem.push({ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now() });
-      } else have.seen = Date.now();
+        r.mem.push({ id, n: String(uid).slice(0, 20), d: pl(deck, uid), seen: Date.now(), act: Date.now() });
+      } else { have.seen = Date.now(); have.act = Date.now(); }
       await save(); return send(res, 200, { ok: true });
     }
     const meM = r.mem.find(m => m.id === id);
     if (!meM) { await save(); return send(res, 403, { code: 'notin' }); }
     meM.seen = Date.now();
+    if (op !== 'get') meM.act = Date.now();
+    else if ((r.ph === 'lobby' || r.ph === 'end') && Date.now() - (meM.act || r.at || 0) > 15 * 60e3) { drop(r, id, 'idle'); await save(); return send(res, 404, { code: 'noroom' }); }
     const isHost = r.mem[0].id === id;
 
     if (op === 'get') { if (fighting(r) && Date.now() > r.dl + GRACE + 2000) advance(r, true); await save(); return send(res, 200, { st: view(r, id) }); }
