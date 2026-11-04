@@ -1,7 +1,7 @@
 // GET /api/slot?n=all         → { list:[1,2,3번 칸], pref }   (한 번에 — 서버 호출 절약)
 // GET /api/slot?n=1..3        → { data }   (본인 저장소만)
 // PUT /api/slot?n=1..3  {save, cdx, name, day, at, v}
-import { hasDb, redis, pipe, sessionUser, send, body, kday } from './_lib.js';
+import { hasDb, redis, pipe, sessionUser, send, body, kday, maintState } from './_lib.js';
 
 const MAX = 900_000;   // 저장 한 칸의 최대 크기(글자 수)
 
@@ -25,6 +25,7 @@ export default async function handler(req, res) {
       return send(res, 200, { data: raw ? JSON.parse(raw) : null });
     }
     if (req.method === 'PUT' || req.method === 'POST') {
+      if ((await maintState()).block) return send(res, 503, { code: 'maint' });   // 보수 중: 서버 기록은 그대로 둔다
       const b = body(req);
       const str = v => (typeof v === 'string' ? v : null);
       const data = {

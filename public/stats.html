@@ -48,12 +48,16 @@ td:first-child,th:first-child{text-align:left}
   <label class="mu"><input id="cmp" type="checkbox" checked> 직전 같은 기간과 비교</label>
   <button id="go">불러오기</button><button id="csv" title="일별 표를 CSV로 받기">CSV</button>
 </div>
+<div class="bar" id="mtbar"><b>보수 모드</b> <span id="mtst" class="mu">확인 중…</span>
+  <button data-m="on" title="시각과 상관없이 바로 막는다">켜기 (바로 막기)</button><button data-m="off" title="시각과 상관없이 연다 (23시가 지나도 열림)">끄기 (열기)</button><button data-m="auto" title="예약 시각부터 자동으로 막는다">예약으로 되돌리기</button>
+  <a class="mu" href="/?maint=test" target="_blank" title="다른 유저에게는 영향 없이, 이 기기에서만 보수 화면을 띄워 본다">나만 미리 보기 ↗</a></div>
+<div class="mu">켜기 · 끄기는 예약 시각보다 우선합니다. 다시 시각대로 하려면 「예약으로 되돌리기」.</div>
 <div id="msg" class="mu"></div>
 <div id="out"></div>
 <div class="tip" id="tip"></div>
 </main>
 <script>
-const PAGE_GZ=1426738;              // 게임 페이지 한 번 받을 때 전송량(압축 기준, 바이트) — 지금 버전
+const PAGE_GZ=1431969;              // 게임 페이지 한 번 받을 때 전송량(압축 기준, 바이트) — 지금 버전
 const LIMITS={inv:1e6,fdt:100e9,cmd:5e5,ubw:10e9};
 const $=s=>document.querySelector(s);
 const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
@@ -184,4 +188,14 @@ function draw(j,prev){const D=j.days,L=D.map(r=>r.d.slice(5)),t=tot(j),pt=prev?t
   D.slice().reverse().map(r=>{const P_=f(r.h,'p');return `<tr><td>${r.d} (${WN[new Date(r.d+'T00:00:00Z').getUTCDay()]})</td><td>${N(f(r.h,'v'))}</td><td>${N(r.u)}</td><td>${N(f(r.h,'vl'))}</td><td>${N(r.pu)}</td><td>${H(P_)}</td><td>${r.pu?H(P_/r.pu):'-'}</td><td>${N(f(r.h,'un'))}</td><td>${B(f(r.h,'ub'))}</td><td>${N(f(r.h,'su'))}</td><td>${N(f(r.h,'dv:m'))}</td><td>${N(f(r.h,'ap:app'))}</td><td>${B(est(r.h))}</td></tr>`}).join('')+'</table></div>';
  h+=`<h2>읽는 법</h2><ul class="mu"><li>고유 방문자·플레이 인원은 근사 집계(오차 약 1%)입니다. 기간 전체의 고유 방문자는 날짜를 합친 중복 없는 수입니다.</li><li>플레이 시간은 화면을 보고 있고 2분 안에 조작이 있었던 시간만 셉니다.</li><li>1인 하루 평균 플레이 = 그날 플레이 합계 ÷ 그날 플레이한 사람 수.</li><li>지역은 Vercel이 접속 주소로 판단한 국가·도시이며, 주소 자체는 저장하지 않습니다. 들어온 곳은 링크를 누른 사이트의 도메인만 남깁니다.</li><li>그래프의 막대·점에 마우스를 올리면 값이 보입니다.</li></ul>`;
  $('#out').innerHTML=h}
+/* 보수 모드 켜고 끄기 */
+async function mt(m){const k=$('#key').value.trim();const st=$('#mtst');
+  try{const r=m?await fetch('/api/maint',{method:'POST',headers:{'x-stats-key':k,'Content-Type':'application/json'},body:JSON.stringify({m})}):await fetch('/api/maint?t='+Date.now());const j=await r.json().catch(()=>({}));
+    if(!r.ok){st.innerHTML='<span class="err">'+({auth:'키가 맞지 않습니다.','too-many':'잘못된 키 시도가 많습니다.',nokey:'STATS_KEY 또는 저장소가 없습니다.'}[j.code]||('실패 '+r.status))+'</span>';return}
+    const at=j.at?new Date(j.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'-';
+    st.innerHTML=`<b style="color:${j.block?'#e06c5a':'#7cc47c'}">${j.block?'막힘':'열림'}</b> · 설정 ${({auto:'예약',on:'켜기(직접)',off:'끄기(직접)'})[j.m]||j.m} · 예약 시각 ${at}`;
+    document.querySelectorAll('#mtbar button').forEach(b=>b.style.outline=b.dataset.m===j.m?'2px solid #d9a441':'')}catch(e){st.textContent='확인 실패'}}
+document.querySelectorAll('#mtbar button').forEach(b=>b.onclick=()=>{if(!$('#key').value.trim()){$('#mtst').textContent='위에 키를 먼저 입력해 주세요.';return}
+  if(b.dataset.m==='on'&&!confirm('지금 바로 온라인 플레이를 막을까요?'))return;mt(b.dataset.m)});
+mt();
 </script></body></html>

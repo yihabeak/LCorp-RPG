@@ -84,3 +84,12 @@ export function body(req) {
   if (req.body && typeof req.body === 'object') return req.body;
   try { return JSON.parse(req.body || '{}'); } catch { return {}; }
 }
+
+// 보수 모드: 'auto'(정해진 시각부터 막음) · 'on'(지금 막음) · 'off'(열어 둠). Redis 키 maint
+export const MAINT_AT = Date.parse(process.env.MAINT_AT || '2026-11-05T23:00:00+09:00');
+export async function maintState() {
+  let m = 'auto';
+  try { const v = await redis('GET', 'maint'); if (['auto', 'on', 'off'].includes(v)) m = v; } catch {}
+  const block = m === 'on' || (m === 'auto' && Date.now() >= MAINT_AT);
+  return { m, block, at: MAINT_AT };
+}
