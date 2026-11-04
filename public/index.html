@@ -29,14 +29,23 @@ function show(){if(D.getElementById('mt207'))return;var b=D.body;if(!b){b=D.crea
  if(!S.length)h+='<p>'+T('새로 시작하는 플레이는 받지 않는다. 보수가 끝난 뒤 다시 찾아오시오.','New games cannot be started. Please come back after maintenance.','新しいプレイは受け付けていない。メンテナンス終了後に再訪されたい。')+'</p>';
  else{h+='<p>'+T('로그인 없이(비회원) 플레이한 기록은 이 기기에만 있다. <b>진행 코드 복사</b>로 안전한 곳에 보관하시오.','Saves made without logging in exist only on this device. Use <b>Copy progress code</b> and keep it somewhere safe.','ログインせず(ゲスト)プレイした記録はこの端末にしかない。<b>進行コードをコピー</b>して安全な場所に保管されたい。')+'</p>';
   S.forEach(function(o,i){h+='<div class="c"><b>'+esc(o.n)+'</b> <span class="n">'+esc(o.g.name||'')+(o.acc?' · '+T('서버에 저장됨','Saved on server','サーバーに保存済み'):'')+' · '+T((o.g.day||0)+'일차','Day '+(o.g.day||0),(o.g.day||0)+'日目')+'</span><br><button type="button" data-i="'+i+'">'+T('진행 코드 복사','Copy progress code','進行コードをコピー')+'</button><span class="ok" id="mt207o'+i+'"></span><textarea readonly id="mt207t'+i+'"></textarea></div>'});
+  h+='<div class="c" id="mt207l" style="display:none"><b>'+T('이 기기 기록으로 플레이','Play with the save on this device','この端末の記録でプレイ')+'</b><p>'+T('서버에 연결하지 않고 기기에 저장된 게임을 연다. 로그인 · 클라우드 저장 · 대전은 쓸 수 없다.','Opens the game stored on this device without contacting the server. Login, cloud save and battles are unavailable.','サーバーに接続せず、端末に保存されたゲームを開く。ログイン・クラウド保存・対戦は使えない。')+'</p><button type="button" id="mt207go">'+T('서버 연결 없이 플레이','Play without server','サーバー接続なしでプレイ')+'</button></div>';
   h+='<div class="c"><b>'+T('계속 플레이하려면','To keep playing','プレイを続けるには')+'</b><p>'+T('인터넷 연결을 끊은 뒤(비행기 모드 등) 설치한 앱이나 이 페이지를 다시 열면, 기기에 저장된 기록으로 오프라인 플레이를 할 수 있다. 다시 연결되면 이 화면으로 돌아온다.','Disconnect from the internet (e.g. airplane mode), then reopen the installed app or this page to play offline with the save on this device. Reconnecting brings back this screen.','インターネットを切断して(機内モードなど)インストールしたアプリかこのページを開き直すと、端末の記録でオフラインプレイができる。再接続するとこの画面に戻る。')+'</p></div>'}
  d.innerHTML=h+'</div>';b.appendChild(d);
+ /* 기기에 게임이 저장되어 있을 때만 버튼을 보인다 */
+ try{if(S.length&&W.caches&&navigator.serviceWorker&&navigator.serviceWorker.controller)caches.match('/').then(function(x){if(x){var l=D.getElementById('mt207l');if(l)l.style.display=''}})}catch(e){}
+ var go=D.getElementById('mt207go');if(go)go.onclick=function(){location.href='/?local=1'};
  d.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('button[data-i]');if(!t)return;var i=+t.getAttribute('data-i'),ta=D.getElementById('mt207t'+i),ok=D.getElementById('mt207o'+i);
   code(S[i]).then(function(c){ta.value=c;ta.style.display='block';function good(){ok.textContent=T('복사했다','Copied','コピーした')}
    function bad(){ta.focus();ta.select();ok.textContent=T('자동 복사가 안 된다. 아래 칸을 길게 눌러 복사하시오.','Auto copy failed. Select the box below and copy.','自動コピー不可。下の欄を選択してコピーされたい。')}
    try{navigator.clipboard.writeText(c).then(good,function(){ta.select();try{D.execCommand('copy')?good():bad()}catch(x){bad()}})}catch(x){bad()}})})}
 function hide(){var d=D.getElementById('mt207');if(d)d.remove()}
 W.__maint207={check:check,show:show,hide:hide};
+/* 「서버 연결 없이 플레이」: 이 창에서는 서버(/api)에 아무것도 보내지 않는다 → 로그인 · 클라우드 저장 · 대전은 꺼진 채, 기기 기록으로 플레이 */
+if(/[?&]local=1/.test(location.search)){W.__local207=1;var isApi=function(u){try{return new URL(String(u&&u.url||u),location.href).pathname.indexOf('/api/')===0}catch(e){return false}};
+ var F=W.fetch;W.fetch=function(u){if(isApi(u))return Promise.reject(new TypeError('Failed to fetch'));return F.apply(this,arguments)};
+ if(navigator.sendBeacon){var SB=navigator.sendBeacon.bind(navigator);navigator.sendBeacon=function(u){return isApi(u)?false:SB.apply(null,arguments)}}
+ return}
 /* 플레이 중: 다시 연결되거나, 정해진 시각이 되거나, 오래 쉬었다 돌아오면 다시 확인 */
 var last=Date.now();function re(){if(navigator.onLine===false)return;last=Date.now();check(false,function(v){if(v==='block')show()})}
 W.addEventListener('online',function(){setTimeout(re,1500)});W.addEventListener('offline',hide);
@@ -19849,9 +19858,9 @@ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading||!
 window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(reg=>{
  if(reg.waiting&&navigator.serviceWorker.controller)bar(reg.waiting);
  reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)bar(w)})});
- setInterval(()=>reg.update().catch(()=>{}),30*60*1000)}).catch(()=>{})});
+ if(!window.__local207)setInterval(()=>reg.update().catch(()=>{}),3*60*60*1000)}).catch(()=>{})});
 /* 서버가 멈춘 상태로 저장해 둔 게임이 열렸으면 알린다 */
-window.addEventListener('load',()=>setTimeout(async()=>{try{const r=await fetch('/?alive='+Date.now(),{method:'HEAD',cache:'no-store'});if(r.status<500&&r.status!==402)return;
+window.addEventListener('load',()=>setTimeout(async()=>{if(window.__maint207||window.__local207)return;try{const r=await fetch('/?alive='+Date.now(),{method:'HEAD',cache:'no-store'});if(r.status<500&&r.status!==402)return;
  if(document.getElementById('down205'))return;const d=document.createElement('div');d.id='down205';
  d.innerHTML=`<b>${T('지금 서버가 멈춰 있다.','The server is down right now.','現在サーバーが停止している。')}</b> ${T('이 기기에 저장해 둔 게임을 띄웠다. 로그인 · 서버 저장은 쓸 수 없다. 타이틀 화면의 [진행 코드 복사]로 기록을 꼭 백업해 두시오.','This device opened its saved copy of the game. Login and server saves are unavailable. Back up your progress with [Copy progress code] on the title screen.','この端末に保存したゲームを開いた。ログイン・サーバー保存は使えない。タイトル画面の[進行コードをコピー]で記録を必ずバックアップすること。')}<button type="button">✕</button>`;
  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99999;background:#3a1512;color:#ffd9d4;border:1px solid #ff5a4f;padding:10px 36px 10px 12px;font-size:13px;line-height:1.5;box-shadow:0 4px 16px rgba(0,0,0,.5)';
