@@ -1,0 +1,36 @@
+plugins { id 'com.android.application' }
+
+// 서명 키: GitHub 저장소 Secrets(ANDROID_KEYSTORE_B64 · ANDROID_KS_PASS)에서 받는다. 같은 키로 서명해야 업데이트가 기존 앱 위에 설치된다(기록 유지).
+def ks = file("${rootDir}/release.jks")
+android {
+    namespace 'com.lcorp.worklog'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'com.lcorp.worklog'
+        minSdk 24
+        targetSdk 34
+        versionCode((System.getenv('APP_VCODE') ?: '1') as int)
+        versionName(System.getenv('APP_VNAME') ?: '1.0')
+    }
+    signingConfigs {
+        release {
+            if (ks.exists()) {
+                storeFile ks
+                storePassword System.getenv('ANDROID_KS_PASS')
+                keyAlias 'lcorp'
+                keyPassword System.getenv('ANDROID_KS_PASS')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig ks.exists() ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    aaptOptions { noCompress 'mp3', 'webp' }
+}

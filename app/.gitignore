@@ -1,0 +1,6 @@
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/
+android/release.jks
+pc/www/

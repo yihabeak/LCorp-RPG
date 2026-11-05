@@ -1,0 +1,50 @@
+# 앱 빌드: PC(exe) · 안드로이드(apk) — 서버 기능 없는 오프라인판
+# 실행: GitHub 저장소 → Actions → "Build apps" → Run workflow   (app/ 폴더를 고쳐 푸시해도 자동 실행)
+# 결과: 실행 기록 아래 Artifacts 에서 LCorp-Worklog-exe · LCorp-Worklog-apk 를 받는다.
+name: Build apps
+on:
+  workflow_dispatch:
+  push:
+    paths: ['app/**', '.github/workflows/app.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble game files
+        run: |
+          set -e
+          for D in app/android/app/src/main/assets/www app/pc/www; do
+            mkdir -p $D
+            cp app/index.html $D/index.html
+            cp -r public/img public/ab public/bgm $D/
+            cp public/icon-192.png public/icon-512.png $D/
+          done
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Signing key
+        env: { KS: '${{ secrets.ANDROID_KEYSTORE_B64 }}' }
+        run: |
+          if [ -n "$KS" ]; then echo "$KS" | base64 -d > app/android/release.jks; else echo "::warning::ANDROID_KEYSTORE_B64 secret is missing - debug signing (updates will not install over a previous build)"; fi
+      - name: Build APK
+        env:
+          ANDROID_KS_PASS: '${{ secrets.ANDROID_KS_PASS }}'
+          APP_VCODE: '${{ github.run_number }}'
+          APP_VNAME: '1.${{ github.run_number }}'
+        run: |
+          gradle -p app/android assembleRelease --no-daemon
+          mkdir -p out && cp app/android/app/build/outputs/apk/release/*.apk out/LCorp-Worklog.apk
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - name: Build EXE
+        working-directory: app/pc
+        run: |
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -H windowsgui" -o LCorp-Worklog.exe .
+          mkdir -p pkg/LCorp-Worklog && mv LCorp-Worklog.exe pkg/LCorp-Worklog/ && cp -r www pkg/LCorp-Worklog/www
+          cd pkg && zip -qr ../../../out/LCorp-Worklog-PC.zip LCorp-Worklog
+      - uses: actions/upload-artifact@v4
+        with: { name: LCorp-Worklog-apk, path: out/LCorp-Worklog.apk }
+      - uses: actions/upload-artifact@v4
+        with: { name: LCorp-Worklog-PC, path: out/LCorp-Worklog-PC.zip }
