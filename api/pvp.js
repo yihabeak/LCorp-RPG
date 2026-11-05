@@ -129,6 +129,7 @@ const pl = (deck, uid) => { for (const m of deck) if (m.pl) m.n = String(uid).sl
 
 export default async function handler(req, res) {
   try {
+    if (process.env.MULTI_ON !== '1') return send(res, 503, { code: 'nomulti' });   // 멀티 플레이 막음 (다시 열려면 환경 변수 MULTI_ON=1)
     if (!hasDb) return send(res, 503, { code: 'nodb' });
     const uid = await sessionUser(req);
     if (!uid) return send(res, 401, { code: 'auth' });

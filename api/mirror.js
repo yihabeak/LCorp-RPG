@@ -100,6 +100,7 @@ export default async function handler(req, res) {
     const b = req.method === 'GET' ? {} : body(req);
     const op = req.method === 'GET' ? q(req, 'op') : b.op;
     // 계정 하나 = 거울 세계의 관리직 하나. 이름은 계정 아이디. 저장소 번호는 수비 덱이 어디서 왔는지만 기록한다.
+    if (process.env.MULTI_ON !== '1' && !['arch', 'slot_del'].includes(op)) return send(res, 503, { code: 'nomulti' });   // 멀티 플레이 막음 · 보관함만
     const slot = num(req.method === 'GET' ? q(req, 'slot') : b.slot, 0, 3);
     const id = uid;
     await migrate(uid);

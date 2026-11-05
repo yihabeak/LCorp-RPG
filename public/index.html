@@ -19844,6 +19844,28 @@ function deco(){try{const row=document.getElementById('t76');if(!row||row.queryS
  row.querySelector('#t206 input').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const t=await f.text();if(!/^LCWX:/.test(t.trim()))throw 0;const n=await window.__lcwxApply(t.trim());toast(T(`기록 ${n}개를 넣었다. 새로 고친다.`,`Loaded ${n} records. Reloading.`,`記録${n}件を入れた。再読み込みする。`));setTimeout(()=>location.replace(location.pathname),900)}catch(x){toast(T('옛 주소 백업 파일이 아니다.','Not an old-address backup file.','旧アドレスのバックアップファイルではない。'),'warn')}}}catch(e){}}
 setInterval(deco,800);
 })();
+/* ============ v207: 멀티 플레이 막기 · 설정에서 관리자 탭 바로 열기 (사이트판) ============
+   · 거울 세계의 서버 기능(덱 등록 · 도전 · 순위 · 기록 친선전)과 실시간 친선전을 막는다. 보관함은 그대로 쓴다.
+   · 설정 창에 [관리자 탭 열기] — 비밀번호 없이 연다. (로고 세 번 · Ctrl+Shift+A도 비밀번호 없이) */
+(function(){
+const T=(k,e,j)=>i80(k,e,j);const D=document;
+const MSG=()=>T('멀티 플레이(거울 세계 대전 · 친선전)는 지금 쓸 수 없다.','Multiplayer (Mirror World battles · friendly matches) is unavailable right now.','マルチプレイ(鏡の世界の対戦・親善戦)は現在利用できない。');
+function no(){try{toast(MSG())}catch(e){}}
+/* 1. 멀티 플레이 막기 */
+const M=window.mirror136;if(typeof M==='function')window.mirror136=function(t){if(t==='ar')return M('ar');no()};
+window.rt139=function(){no()};
+D.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-m136t]');if(b&&b.dataset.m136t!=='ar'){e.stopPropagation();e.preventDefault();no()}},true);
+const st=D.createElement('style');st.textContent=`[data-m136t]:not([data-m136t="ar"]){display:none!important}.mh-deck,.mh-find,.mh-rank,.mh-live,.mh-rec{display:none!important}`;D.head.appendChild(st);
+window.NOMULTI207=1;
+/* 2. 관리자 탭: 비밀번호 없이 */
+function admOpen(){if(!G){try{toast(T('게임을 시작한 뒤에 열 수 있다.','Start a game first.','ゲーム開始後に開ける。'))}catch(e){}return}
+ ADM=true;try{sessionStorage.setItem('lcw_adm','1')}catch(e){}G.flags=G.flags||{};G.flags.adm207=1;try{closePop()}catch(e){}TAB='admin';renderTabs()}
+admLogin=admOpen;
+try{adminView=(f=>function(){return String(f.apply(this,arguments)).replace('세션을 닫으면 다시 인증해야 한다.','설정 창에서 언제든 다시 열 수 있다.')})(adminView)}catch(e){}window.admOpen207=admOpen;
+settingsPop76=(f=>function(){const r=f.apply(this,arguments);try{const b=D.querySelector('.set76');if(b&&!b.querySelector('#adm207')){
+ b.insertAdjacentHTML('beforeend',`<section><h4>${T('관리자','Manager','管理者')}</h4><p class="note">${T('테스트용 관리자 탭을 연다. 진행 기록을 마음대로 바꿀 수 있다.','Opens the test manager tab. It can freely change your progress.','テスト用の管理者タブを開く。進行記録を自由に変更できる。')}</p><button class="btn ghost" id="adm207" type="button"${typeof G!=='undefined'&&G?'':' disabled'}>${T('관리자 탭 열기','Open manager tab','管理者タブを開く')}</button></section>`);
+ b.querySelector('#adm207').onclick=admOpen}}catch(e){console.error(e)}return r})(settingsPop76);
+})();
 
 /* ============ 웹 앱(PWA): 설치 · 오프라인 · 새 버전 알림 (공개 사이트에서만) ============ */
 (function(){if(!('serviceWorker' in navigator)||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
@@ -19872,6 +19894,8 @@ setInterval(()=>{try{const b=document.querySelector('.set76');if(!b||b.querySele
  b.insertAdjacentHTML('afterbegin',`<section id="ins205"><h4>${T('앱으로 설치','Install as app','アプリとしてインストール')}</h4><p class="note">${st?T('지금 앱으로 실행 중이다.','Running as an app.','アプリとして実行中。'):ios?T('Safari 아래쪽 공유 단추 → 「홈 화면에 추가」.','In Safari: Share → "Add to Home Screen".','Safariの共有ボタン → 「ホーム画面に追加」。'):T('홈 화면 · 바탕 화면에 아이콘을 두고 전체 화면으로 실행한다. 한 번 열면 인터넷 없이도 이어서 할 수 있다.','Adds an icon and runs full screen. After the first visit it also works offline.','ホーム画面に置いて全画面で起動。一度開けばオフラインでも続けられる。')}</p>${!st&&DP?`<button class="btn ghost" type="button" id="ins205b">${T('설치하기','Install','インストール')}</button>`:''}</section>`);
  const ib=b.querySelector('#ins205b');if(ib)ib.onclick=async()=>{if(!DP)return;DP.prompt();try{await DP.userChoice}catch(e){}DP=null;ib.remove()}}catch(e){}},700);
 })();
+
+;(function(){if(!('serviceWorker' in navigator))return;window.addEventListener('load',()=>setTimeout(()=>{try{if(navigator.connection&&navigator.connection.saveData)return;navigator.serviceWorker.ready.then(r=>{const w=navigator.serviceWorker.controller||r.active;if(w)w.postMessage('pre')})}catch(e){}},4000))})();
 </script>
 
 </body></html>
